@@ -17,6 +17,9 @@ const escribir = (rel, txt) => { const f = path.join(SRC, rel); fs.mkdirSync(pat
 const css = ["styles.css", "auction.css"].map(read).join("\n");
 const mod = (f) => `/* ---- ${f}.js ---- */\n` + read(`js/${f}.js`);
 const MODS = ["core", "shop", "pages", "auction", "main"];
+/* huella de los archivos: obliga al navegador a bajar la versión nueva tras cada despliegue */
+const TODOS = ["core", "shop", "pages", "auction", "main", "quote", "inventory", "clients", "market", "admin"];
+const VERSION = require("crypto").createHash("md5").update(css + TODOS.map((f) => read("js/" + f + ".js")).join("")).digest("hex").slice(0, 8);
 const FUENTES = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">`;
@@ -100,8 +103,8 @@ function pagina(ctx, { view, id }, lang) {
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#f3ebdd">
 ${FUENTES}
-<link rel="stylesheet" href="/styles.css">
-<link rel="stylesheet" href="/auction.css">
+<link rel="stylesheet" href="/styles.css?v=${VERSION}">
+<link rel="stylesheet" href="/auction.css?v=${VERSION}">
 <script type="application/ld+json" id="ld-json">${ld}</script>
 </head>
 <body data-view="${view}">
@@ -130,7 +133,7 @@ ${FUENTES}
   <div class="dlg-body" id="dlg-body"></div>
 </dialog>
 
-${MODS.map((f) => `<script src="/js/${f}.js"></script>`).join("\n")}
+${MODS.map((f) => `<script src="/js/${f}.js?v=${VERSION}"></script>`).join("\n")}
 </body>
 </html>
 `;
@@ -195,8 +198,8 @@ escribir("llms.txt", llms);
 /* ---------- 4. la tienda en un solo archivo (para enviar por WhatsApp) ---------- */
 const ctxEs = mundo("es");
 const unSolo = pagina(ctxEs, { view: "inicio" }, "es")
-  .replace(/<link rel="stylesheet" href="\/styles.css">\s*<link rel="stylesheet" href="\/auction.css">/, `<style>\n${css}\n</style>`)
-  .replace(new RegExp(MODS.map((f) => `<script src="/js/${f}.js"></script>`).join("\\s*")), `<script>\n${MODS.map(mod).join("\n")}\n</script>`);
+  .replace(/<link rel="stylesheet" href="\/styles\.css\?v=\w+">\s*<link rel="stylesheet" href="\/auction\.css\?v=\w+">/, `<style>\n${css}\n</style>`)
+  .replace(new RegExp(MODS.map((f) => `<script src="/js/${f}.js\\?v=${VERSION}"></script>`).join("\\s*")), `<script>\n${MODS.map(mod).join("\n")}\n</script>`);
 escribir("nandez.html", unSolo);
 
 /* ---------- 5. panel interno ---------- */
