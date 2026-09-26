@@ -22,6 +22,7 @@ Le compramos café a fincas de Norte de Santander —cada una con su variedad—
 
 | Archivo | Contenido |
 |---|---|
+| [docs/09_prompt_auditoria.md](docs/09_prompt_auditoria.md) | Prompt listo para auditar la página con ojos frescos |
 | [docs/08_envios.md](docs/08_envios.md) | Envíos: qué cobra el mercado, con quién enviar y qué nos conviene |
 | [docs/07_seo.md](docs/07_seo.md) | Cómo está armada la página para Google y para los asistentes de IA |
 | [docs/06_pagos_y_suscripciones.md](docs/06_pagos_y_suscripciones.md) | Mercado Pago: link de pago, Checkout Pro, comisiones y planes de suscripción |
