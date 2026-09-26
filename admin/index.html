@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Panel · Nandez Café</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,6 +16,8 @@
   --serif:"Instrument Serif","Iowan Old Style",Georgia,serif;
   --sans:"Instrument Sans","Segoe UI",system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --ease-out: cubic-bezier(.23, 1, .32, 1);
+  --ease-in-out: cubic-bezier(.77, 0, .175, 1);
   --r:14px;--shadow:0 1px 0 rgba(29,20,15,.04),0 14px 30px -16px rgba(29,20,15,.3);
 }
 *{box-sizing:border-box}
@@ -299,11 +301,12 @@ dialog::backdrop{background:rgba(18,12,9,.55);backdrop-filter:blur(3px)}
 .cmp-thumb{position:relative;height:60px;border-radius:10px;overflow:hidden;background:var(--paper-2);margin-bottom:8px}
 .cmp-thumb svg{position:absolute;inset:0;width:100%;height:100%}
 .bar{display:block;height:6px;background:var(--paper-2);border-radius:3px;overflow:hidden;margin-top:6px}
-.bar i{display:block;height:100%;width:var(--w);background:var(--ink-3);transform-origin:left;animation:grow .9s cubic-bezier(.2,.7,.2,1)}
+.bar i{display:block;height:100%;width:100%;transform:scaleX(var(--w));background:var(--ink-3);transform-origin:left;transition:transform .6s var(--ease-out)}
 td.best .bar i{background:var(--leaf)}
 td.best .mono{font-weight:600}
 td.best .mono::before{content:"◆ ";color:var(--leaf)}
 @keyframes grow{from{transform:scaleX(0)}}
+.rk-bar i,.cbar i,.vs i,.trust-bar i{transform-origin:left}
 .lvtag{font:600 9.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--c);border:1px solid var(--c);border-radius:999px;padding:1px 6px;white-space:nowrap}
 .src{display:block;color:var(--ink-3);font-size:12px}
 
@@ -420,7 +423,7 @@ body[data-view=subasta] .toast{background:#2a1d17;border:1px solid #3a2a21}
 .res-card .big small{font:500 13px var(--sans);color:var(--ink-2);margin-left:6px}
 .cbars{display:grid;gap:8px;margin:16px 0}
 .cbar{display:grid;grid-template-columns:96px 1fr auto;gap:10px;align-items:center;font-size:12.5px;color:var(--ink-2)}
-.cbar i{display:block;height:12px;border-radius:6px;width:var(--w);background:var(--ink-3);transition:width .4s}
+.cbar i{display:block;height:12px;border-radius:6px;width:100%;transform:scaleX(var(--w));background:var(--ink-3);transition:transform .4s var(--ease-out)}
 .cbar.ref i{background:var(--ink-3)}
 .cbar.hot i{background:var(--cherry)}
 .cbar.max i{background:repeating-linear-gradient(45deg,var(--leaf) 0 6px,color-mix(in srgb,var(--leaf) 60%,transparent) 6px 12px)}
@@ -482,7 +485,7 @@ p.al-bad{--c:var(--cherry);color:var(--cherry)}
 .rk{display:grid;grid-template-columns:minmax(120px,1.1fr) minmax(0,2fr) auto;gap:14px;align-items:center;font-size:13.5px}
 .rk-n{font-weight:600}
 .rk-bar{display:block;height:14px;background:var(--paper-2);border-radius:7px;overflow:hidden}
-.rk-bar i{display:block;height:100%;width:var(--w);background:var(--cherry);animation:grow .9s cubic-bezier(.2,.7,.2,1)}
+.rk-bar i{display:block;height:100%;width:100%;transform:scaleX(var(--w));background:var(--cherry);animation:grow .9s var(--ease-out)}
 @media (max-width:640px){.rk{grid-template-columns:1fr auto}.rk-bar{grid-column:1/-1}}
 
 /* ---- v5: dos productos y admin ---- */
@@ -645,6 +648,67 @@ body[data-view=subasta] .lang button[aria-pressed=true]{background:var(--crema);
 .faq p{margin:12px 0 0;color:var(--ink-2)}
 .prow-au .sobre{color:var(--leaf)}
 @media (max-width:900px){.prod-top{grid-template-columns:1fr;gap:28px}}
+
+
+/* ============================================================
+   POLISH · estándares de animación y de sensación nativa en móvil
+   (review-animations + mobile-native)
+   ============================================================ */
+
+/* --- base táctil: sin destello gris al tocar, sin zoom raro --- */
+html{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;overscroll-behavior:none}
+body{overscroll-behavior:none}
+button,a,[role=button],summary,.tab,.chip,.var,.qbtn{touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+
+/* el texto sí se debe poder copiar: precios, notas, direcciones */
+p,h1,h2,h3,td,th,li,.mono,.lede,.hint{user-select:text;-webkit-user-select:text}
+
+/* iOS hace zoom si el campo mide menos de 16px */
+@media (pointer:coarse){input,select,textarea{font-size:16px}}
+
+/* espacio del notch y de la barra inferior */
+.top-inner{padding-top:calc(10px + env(safe-area-inset-top,0px));padding-left:calc(20px + env(safe-area-inset-left,0px));padding-right:calc(20px + env(safe-area-inset-right,0px))}
+.tray{bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+.toasts{right:calc(18px + env(safe-area-inset-right,0px))}
+.wrap{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
+
+/* el hover se queda pegado al tocar: solo con mouse de verdad */
+@media (hover:none),(pointer:coarse){
+  .card-cafe:hover,.finca:hover,.entrada:hover,.tool:hover,.lot:hover,.mode:hover,.plan:hover,.up:hover{transform:none;box-shadow:var(--shadow)}
+  .step:hover,.live-link:hover{transform:none}
+  .btn:hover{background:transparent;color:var(--ink)}
+  .btn.primary:hover{background:var(--cherry);color:#fff}
+  .card-cafe:hover .cc-art .front,.lot:hover .lot-art .front{transform:none}
+}
+
+/* el hover debe responder rápido: menos de 300 ms */
+.card-cafe,.finca,.entrada,.tool,.plan,.lot,.mode{transition:transform .2s var(--ease-out),box-shadow .2s var(--ease-out),border-color .2s}
+.card-cafe:hover .cc-art .front,.lot:hover .lot-art .front{transition:transform .35s var(--ease-out)}
+.btn{transition:transform .12s var(--ease-out),background .15s,color .15s,border-color .15s}
+.btn:active,.qbtn:active,.var:active,.tab:active{transform:scale(.97)}
+.bidbtn{transition:transform .12s var(--ease-out),filter .15s}
+.bidbtn:active{transform:scale(.97)}
+
+/* entradas: curva fuerte y escalonado corto (30–80 ms) */
+.reveal{animation-duration:.5s;animation-timing-function:var(--ease-out);animation-delay:calc(var(--i,0)*50ms)}
+.item,.prow{animation-duration:.4s;animation-timing-function:var(--ease-out)}
+
+/* el aro del reloj de la subasta se mueve suave en vez de a saltos */
+@property --p{syntax:"<number>";inherits:false;initial-value:100}
+.clock{transition:--p .25s linear}
+
+/* el panel del diálogo no debe arrastrar el scroll de la página */
+.dlg-body,.au-feed ol{overscroll-behavior:contain}
+
+/* menos movimiento cuando el sistema lo pide: se mantiene el desvanecido, se quita el desplazamiento */
+@media (prefers-reduced-motion:reduce){
+  .reveal{animation:none;opacity:1;transform:none}
+  .float-chip{animation:none}
+  .live-dot{animation:none}
+  .bar i,.cbar i,.rk-bar i,.vs i,.trust-bar i{transition:none}
+  .card-cafe:hover,.finca:hover,.entrada:hover,.tool:hover,.plan:hover,.lot:hover{transform:none}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.12s!important}
+}
 
 /* sala de subasta */
 .auction{color:#f3e6d6}
@@ -1240,7 +1304,7 @@ function viewCotizador() {
 function cotResHTML() {
   const d = UI.q, r = calcCot(d);
   const max = Math.max(r.comiteKg, r.sugeridoKg, r.maxKg, 1);
-  const barra = (label, v, cls) => `<div class="cbar ${cls}"><span>${label}</span><i style="--w:${Math.max(0, (v / max) * 100)}%"></i><b class="mono">${cop(v)}</b></div>`;
+  const barra = (label, v, cls) => `<div class="cbar ${cls}"><span>${label}</span><i style="--w:${Math.max(0, v / max).toFixed(3)}"></i><b class="mono">${cop(v)}</b></div>`;
   const alertas = [];
   if (d.humedad > 12) alertas.push(["warn", `Humedad ${d.humedad} %: el peso se ajusta a base 12 % (${fmtNum(r.kgPerg12)} kg). Pide que lo sequen o descuenta el peso.`]);
   if (d.humedad < 10) alertas.push(["warn", `Humedad ${d.humedad} %: café sobresecado, pierde calidad en taza.`]);
@@ -1530,7 +1594,7 @@ function viewClientes() {
       <div class="section-head"><p class="eyebrow">Qué se vende</p><h2>Cafés <em>más pedidos</em></h2></div>
       <div class="rank">${ranking.map(([nombre, v]) => `<div class="rk">
         <span class="rk-n">${esc(nombre)}</span>
-        <span class="rk-bar"><i style="--w:${(v.plata / maxPlata) * 100}%"></i></span>
+        <span class="rk-bar"><i style="--w:${(v.plata / maxPlata).toFixed(3)}"></i></span>
         <span class="mono">${fmtNum(v.n)} u · ${cop(v.plata)}</span></div>`).join("")}</div>
     </section>`;
 }

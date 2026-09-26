@@ -97,7 +97,7 @@ function viewCotizador() {
 function cotResHTML() {
   const d = UI.q, r = calcCot(d);
   const max = Math.max(r.comiteKg, r.sugeridoKg, r.maxKg, 1);
-  const barra = (label, v, cls) => `<div class="cbar ${cls}"><span>${label}</span><i style="--w:${Math.max(0, (v / max) * 100)}%"></i><b class="mono">${cop(v)}</b></div>`;
+  const barra = (label, v, cls) => `<div class="cbar ${cls}"><span>${label}</span><i style="--w:${Math.max(0, v / max).toFixed(3)}"></i><b class="mono">${cop(v)}</b></div>`;
   const alertas = [];
   if (d.humedad > 12) alertas.push(["warn", `Humedad ${d.humedad} %: el peso se ajusta a base 12 % (${fmtNum(r.kgPerg12)} kg). Pide que lo sequen o descuenta el peso.`]);
   if (d.humedad < 10) alertas.push(["warn", `Humedad ${d.humedad} %: café sobresecado, pierde calidad en taza.`]);

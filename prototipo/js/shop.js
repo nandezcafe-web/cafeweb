@@ -177,9 +177,9 @@ function abrirPedido() {
   modal(t("pedido"), `<div class="table-scroll"><table class="cmp-table"><tbody>${filas}
     <tr><th>${t("total")}</th><td></td><td class="mono"><b>${cop(totalCarrito())}</b></td></tr></tbody></table></div>
     <div class="form-grid" style="margin-top:16px">
-      <div class="field"><label class="lbl" for="pd-nombre">${UI.lang === "en" ? "Name" : "Nombre o negocio"}</label><input id="pd-nombre" class="input"></div>
+      <div class="field"><label class="lbl" for="pd-nombre">${UI.lang === "en" ? "Name" : "Nombre o negocio"}</label><input id="pd-nombre" class="input" autocomplete="name" enterkeyhint="next"></div>
       <div class="field"><label class="lbl" for="pd-ciudad">${UI.lang === "en" ? "City" : "Ciudad"}</label><input id="pd-ciudad" class="input" value="Cúcuta"></div>
-      <div class="field"><label class="lbl" for="pd-tel">WhatsApp</label><input id="pd-tel" class="input" type="tel" placeholder="300 000 0000"></div>
+      <div class="field"><label class="lbl" for="pd-tel">WhatsApp</label><input id="pd-tel" class="input" type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="done" placeholder="300 000 0000"></div>
       <div class="field"><label class="lbl" for="pd-molienda">${UI.lang === "en" ? "Grind" : "Molienda"}</label>
         <select id="pd-molienda" class="input">${(UI.lang === "en" ? ["Whole bean", "Filter / V60", "French press", "Espresso"] : ["En grano", "Filtro / V60", "Prensa francesa", "Espresso"]).map((o) => `<option>${o}</option>`).join("")}</select></div>
     </div>

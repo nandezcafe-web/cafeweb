@@ -87,7 +87,7 @@ function pagina(ctx, { view, id }, lang) {
 <html lang="${lang}">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>${M.t}</title>
 <meta name="description" content="${M.d.replace(/"/g, "&quot;")}">
 <link rel="canonical" href="${url}">
@@ -101,7 +101,9 @@ function pagina(ctx, { view, id }, lang) {
 <meta property="og:url" content="${url}">
 <meta property="og:locale" content="${lang === "en" ? "en_US" : "es_CO"}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#f3ebdd">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f3ebdd">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#120c09">
+<meta name="color-scheme" content="light">
 ${FUENTES}
 <link rel="stylesheet" href="/styles.css?v=${VERSION}">
 <link rel="stylesheet" href="/auction.css?v=${VERSION}">
@@ -208,7 +210,7 @@ const panel = `<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Panel · Nandez Café</title>
 <meta name="robots" content="noindex, nofollow">
 ${FUENTES}

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Nandez Café · Café de origen de Norte de Santander</title>
 <meta name="description" content="Café especial comprado finca por finca en Norte de Santander. Una finca, una variedad, y cada dato con su fuente: altura, proceso, puntaje de catación y la finca de donde salió.">
 <link rel="canonical" href="https://cafeweb-five.vercel.app/">
@@ -16,7 +16,9 @@
 <meta property="og:url" content="https://cafeweb-five.vercel.app/">
 <meta property="og:locale" content="es_CO">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#f3ebdd">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f3ebdd">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#120c09">
+<meta name="color-scheme" content="light">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -28,6 +30,8 @@
   --serif:"Instrument Serif","Iowan Old Style",Georgia,serif;
   --sans:"Instrument Sans","Segoe UI",system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --ease-out: cubic-bezier(.23, 1, .32, 1);
+  --ease-in-out: cubic-bezier(.77, 0, .175, 1);
   --r:14px;--shadow:0 1px 0 rgba(29,20,15,.04),0 14px 30px -16px rgba(29,20,15,.3);
 }
 *{box-sizing:border-box}
@@ -311,11 +315,12 @@ dialog::backdrop{background:rgba(18,12,9,.55);backdrop-filter:blur(3px)}
 .cmp-thumb{position:relative;height:60px;border-radius:10px;overflow:hidden;background:var(--paper-2);margin-bottom:8px}
 .cmp-thumb svg{position:absolute;inset:0;width:100%;height:100%}
 .bar{display:block;height:6px;background:var(--paper-2);border-radius:3px;overflow:hidden;margin-top:6px}
-.bar i{display:block;height:100%;width:var(--w);background:var(--ink-3);transform-origin:left;animation:grow .9s cubic-bezier(.2,.7,.2,1)}
+.bar i{display:block;height:100%;width:100%;transform:scaleX(var(--w));background:var(--ink-3);transform-origin:left;transition:transform .6s var(--ease-out)}
 td.best .bar i{background:var(--leaf)}
 td.best .mono{font-weight:600}
 td.best .mono::before{content:"◆ ";color:var(--leaf)}
 @keyframes grow{from{transform:scaleX(0)}}
+.rk-bar i,.cbar i,.vs i,.trust-bar i{transform-origin:left}
 .lvtag{font:600 9.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--c);border:1px solid var(--c);border-radius:999px;padding:1px 6px;white-space:nowrap}
 .src{display:block;color:var(--ink-3);font-size:12px}
 
@@ -432,7 +437,7 @@ body[data-view=subasta] .toast{background:#2a1d17;border:1px solid #3a2a21}
 .res-card .big small{font:500 13px var(--sans);color:var(--ink-2);margin-left:6px}
 .cbars{display:grid;gap:8px;margin:16px 0}
 .cbar{display:grid;grid-template-columns:96px 1fr auto;gap:10px;align-items:center;font-size:12.5px;color:var(--ink-2)}
-.cbar i{display:block;height:12px;border-radius:6px;width:var(--w);background:var(--ink-3);transition:width .4s}
+.cbar i{display:block;height:12px;border-radius:6px;width:100%;transform:scaleX(var(--w));background:var(--ink-3);transition:transform .4s var(--ease-out)}
 .cbar.ref i{background:var(--ink-3)}
 .cbar.hot i{background:var(--cherry)}
 .cbar.max i{background:repeating-linear-gradient(45deg,var(--leaf) 0 6px,color-mix(in srgb,var(--leaf) 60%,transparent) 6px 12px)}
@@ -494,7 +499,7 @@ p.al-bad{--c:var(--cherry);color:var(--cherry)}
 .rk{display:grid;grid-template-columns:minmax(120px,1.1fr) minmax(0,2fr) auto;gap:14px;align-items:center;font-size:13.5px}
 .rk-n{font-weight:600}
 .rk-bar{display:block;height:14px;background:var(--paper-2);border-radius:7px;overflow:hidden}
-.rk-bar i{display:block;height:100%;width:var(--w);background:var(--cherry);animation:grow .9s cubic-bezier(.2,.7,.2,1)}
+.rk-bar i{display:block;height:100%;width:100%;transform:scaleX(var(--w));background:var(--cherry);animation:grow .9s var(--ease-out)}
 @media (max-width:640px){.rk{grid-template-columns:1fr auto}.rk-bar{grid-column:1/-1}}
 
 /* ---- v5: dos productos y admin ---- */
@@ -658,6 +663,67 @@ body[data-view=subasta] .lang button[aria-pressed=true]{background:var(--crema);
 .prow-au .sobre{color:var(--leaf)}
 @media (max-width:900px){.prod-top{grid-template-columns:1fr;gap:28px}}
 
+
+/* ============================================================
+   POLISH · estándares de animación y de sensación nativa en móvil
+   (review-animations + mobile-native)
+   ============================================================ */
+
+/* --- base táctil: sin destello gris al tocar, sin zoom raro --- */
+html{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;overscroll-behavior:none}
+body{overscroll-behavior:none}
+button,a,[role=button],summary,.tab,.chip,.var,.qbtn{touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+
+/* el texto sí se debe poder copiar: precios, notas, direcciones */
+p,h1,h2,h3,td,th,li,.mono,.lede,.hint{user-select:text;-webkit-user-select:text}
+
+/* iOS hace zoom si el campo mide menos de 16px */
+@media (pointer:coarse){input,select,textarea{font-size:16px}}
+
+/* espacio del notch y de la barra inferior */
+.top-inner{padding-top:calc(10px + env(safe-area-inset-top,0px));padding-left:calc(20px + env(safe-area-inset-left,0px));padding-right:calc(20px + env(safe-area-inset-right,0px))}
+.tray{bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+.toasts{right:calc(18px + env(safe-area-inset-right,0px))}
+.wrap{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
+
+/* el hover se queda pegado al tocar: solo con mouse de verdad */
+@media (hover:none),(pointer:coarse){
+  .card-cafe:hover,.finca:hover,.entrada:hover,.tool:hover,.lot:hover,.mode:hover,.plan:hover,.up:hover{transform:none;box-shadow:var(--shadow)}
+  .step:hover,.live-link:hover{transform:none}
+  .btn:hover{background:transparent;color:var(--ink)}
+  .btn.primary:hover{background:var(--cherry);color:#fff}
+  .card-cafe:hover .cc-art .front,.lot:hover .lot-art .front{transform:none}
+}
+
+/* el hover debe responder rápido: menos de 300 ms */
+.card-cafe,.finca,.entrada,.tool,.plan,.lot,.mode{transition:transform .2s var(--ease-out),box-shadow .2s var(--ease-out),border-color .2s}
+.card-cafe:hover .cc-art .front,.lot:hover .lot-art .front{transition:transform .35s var(--ease-out)}
+.btn{transition:transform .12s var(--ease-out),background .15s,color .15s,border-color .15s}
+.btn:active,.qbtn:active,.var:active,.tab:active{transform:scale(.97)}
+.bidbtn{transition:transform .12s var(--ease-out),filter .15s}
+.bidbtn:active{transform:scale(.97)}
+
+/* entradas: curva fuerte y escalonado corto (30–80 ms) */
+.reveal{animation-duration:.5s;animation-timing-function:var(--ease-out);animation-delay:calc(var(--i,0)*50ms)}
+.item,.prow{animation-duration:.4s;animation-timing-function:var(--ease-out)}
+
+/* el aro del reloj de la subasta se mueve suave en vez de a saltos */
+@property --p{syntax:"<number>";inherits:false;initial-value:100}
+.clock{transition:--p .25s linear}
+
+/* el panel del diálogo no debe arrastrar el scroll de la página */
+.dlg-body,.au-feed ol{overscroll-behavior:contain}
+
+/* menos movimiento cuando el sistema lo pide: se mantiene el desvanecido, se quita el desplazamiento */
+@media (prefers-reduced-motion:reduce){
+  .reveal{animation:none;opacity:1;transform:none}
+  .float-chip{animation:none}
+  .live-dot{animation:none}
+  .bar i,.cbar i,.rk-bar i,.vs i,.trust-bar i{transition:none}
+  .card-cafe:hover,.finca:hover,.entrada:hover,.tool:hover,.plan:hover,.lot:hover{transform:none}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.12s!important}
+}
+
 /* sala de subasta */
 .auction{color:#f3e6d6}
 .auction .kicker{color:#a58f7c}
@@ -798,9 +864,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
         <p class="hc-title">Geisha<br><em>Natural</em></p>
         <p class="hc-score">88.5<small>SCA</small></p>
         <div class="hc-ridge dark-art"><svg viewBox="0 0 420 180" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gu8tui4y" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
+    <defs><linearGradient id="gszz4pf2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
     <path d="M0 180 L0.0 159.3 L30.0 151.4 L60.0 151.5 L90.0 144.2 L120.0 141.9 L150.0 136.6 L180.0 121.8 L210.0 120.1 L240.0 115.6 L270.0 109.8 L300.0 102.6 L330.0 110.2 L360.0 113.8 L390.0 123.6 L420.0 135.8 L420 180 Z" fill="#9c3322" opacity="0.28"/>
-    <path class="front" d="M0 180 L0.0 180.0 L30.0 180.0 L60.0 180.0 L90.0 170.4 L120.0 159.2 L150.0 141.3 L180.0 131.3 L210.0 111.5 L240.0 97.4 L270.0 83.3 L300.0 86.8 L330.0 96.1 L360.0 113.6 L390.0 129.8 L420.0 139.6 L420 180 Z" fill="url(#gu8tui4y)"/>
+    <path class="front" d="M0 180 L0.0 180.0 L30.0 180.0 L60.0 180.0 L90.0 170.4 L120.0 159.2 L150.0 141.3 L180.0 131.3 L210.0 111.5 L240.0 97.4 L270.0 83.3 L300.0 86.8 L330.0 96.1 L360.0 113.6 L390.0 129.8 L420.0 139.6 L420 180 Z" fill="url(#gszz4pf2)"/>
     <line x1="0" x2="420" y1="80.10000000000001" y2="80.10000000000001" stroke="rgba(243,230,214,.5)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span></div>
       </div>
@@ -817,9 +883,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
     <div class="dos"><article class="card-cafe reveal" style="--i:0">
     <div class="cc-art" data-act="cafe" data-id="P-GEI" role="button" tabindex="0" aria-label="Bourbon rosado">
       <svg viewBox="0 0 420 200" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gr1dbg0p" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="g0177shl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 200 L0.0 198.9 L30.0 190.2 L60.0 187.3 L90.0 174.6 L120.0 172.3 L150.0 166.0 L180.0 158.4 L210.0 152.8 L240.0 134.2 L270.0 133.0 L300.0 133.5 L330.0 151.1 L360.0 156.7 L390.0 156.7 L420.0 173.8 L420 200 Z" fill="#3f6a4b" opacity="0.2"/>
-    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 183.7 L150.0 174.5 L180.0 155.0 L210.0 143.2 L240.0 124.9 L270.0 109.0 L300.0 124.5 L330.0 141.9 L360.0 156.4 L390.0 170.0 L420.0 182.7 L420 200 Z" fill="url(#gr1dbg0p)"/>
+    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 183.7 L150.0 174.5 L180.0 155.0 L210.0 143.2 L240.0 124.9 L270.0 109.0 L300.0 124.5 L330.0 141.9 L360.0 156.4 L390.0 170.0 L420.0 182.7 L420 200 Z" fill="url(#g0177shl)"/>
     <line x1="0" x2="420" y1="109.00000000000001" y2="109.00000000000001" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span>
       <span class="state st-publicado">118 disponibles</span>
@@ -834,9 +900,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
     </div></article><article class="card-cafe reveal" style="--i:1">
     <div class="cc-art" data-act="cafe" data-id="P-CAS" role="button" tabindex="0" aria-label="Castillo de Arboledas">
       <svg viewBox="0 0 420 200" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="g43wi79t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="gin2re1j" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 195.7 L120.0 191.5 L150.0 180.9 L180.0 175.9 L210.0 161.1 L240.0 153.0 L270.0 161.3 L300.0 160.3 L330.0 171.8 L360.0 174.1 L390.0 192.2 L420.0 189.9 L420 200 Z" fill="#3f6a4b" opacity="0.2"/>
-    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 198.5 L150.0 177.4 L180.0 161.1 L210.0 149.6 L240.0 136.9 L270.0 140.0 L300.0 152.2 L330.0 168.2 L360.0 177.7 L390.0 200.0 L420.0 200.0 L420 200 Z" fill="url(#g43wi79t)"/>
+    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 198.5 L150.0 177.4 L180.0 161.1 L210.0 149.6 L240.0 136.9 L270.0 140.0 L300.0 152.2 L330.0 168.2 L360.0 177.7 L390.0 200.0 L420.0 200.0 L420 200 Z" fill="url(#gin2re1j)"/>
     <line x1="0" x2="420" y1="129" y2="129" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:64.5%">1.550 msnm</span>
       <span class="state st-publicado">104 disponibles</span>
@@ -851,9 +917,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
     </div></article><article class="card-cafe dark reveal dark-art" style="--i:2">
     <div class="cc-art" data-act="go" data-to="subasta" role="button" tabindex="0" aria-label="Subasta">
       <svg viewBox="0 0 420 200" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gezjd01s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
+    <defs><linearGradient id="g8nl2sqb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
     <path d="M0 200 L0.0 177.4 L30.0 168.8 L60.0 168.2 L90.0 160.1 L120.0 157.2 L150.0 151.2 L180.0 135.6 L210.0 133.3 L240.0 128.0 L270.0 121.5 L300.0 114.2 L330.0 122.5 L360.0 126.8 L390.0 137.4 L420.0 150.2 L420 200 Z" fill="#9c3322" opacity="0.28"/>
-    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 189.1 L120.0 176.5 L150.0 157.0 L180.0 145.5 L210.0 124.2 L240.0 108.6 L270.0 93.0 L300.0 96.4 L330.0 107.2 L360.0 126.2 L390.0 143.9 L420.0 155.2 L420 200 Z" fill="url(#gezjd01s)"/>
+    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 189.1 L120.0 176.5 L150.0 157.0 L180.0 145.5 L210.0 124.2 L240.0 108.6 L270.0 93.0 L300.0 96.4 L330.0 107.2 L360.0 126.2 L390.0 143.9 L420.0 155.2 L420 200 Z" fill="url(#g8nl2sqb)"/>
     <line x1="0" x2="420" y1="89.00000000000001" y2="89.00000000000001" stroke="rgba(243,230,214,.5)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span>
       <span class="state st-en-subasta">en vivo</span>
@@ -880,9 +946,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
       <p>Hoy a fincas aliadas. Desde 2027, también de nuestra propia tierra, y seguiremos comprándole a los vecinos.</p></div>
     <div class="fincas"><article class="finca reveal " style="--i:0">
     <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="ge374sud" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="gsi0y28h" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 120 L0.0 107.3 L27.1 108.8 L54.3 96.7 L81.4 93.4 L108.6 94.6 L135.7 87.4 L162.9 78.9 L190.0 83.0 L217.1 70.6 L244.3 67.8 L271.4 67.8 L298.6 76.8 L325.7 80.2 L352.9 77.3 L380.0 84.1 L380 120 Z" fill="#6a5646" opacity="0.2"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 110.2 L108.6 106.6 L135.7 100.8 L162.9 92.0 L190.0 75.5 L217.1 71.3 L244.3 63.7 L271.4 57.5 L298.6 63.4 L325.7 77.3 L352.9 80.3 L380.0 94.7 L380 120 Z" fill="url(#ge374sud)"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 110.2 L108.6 106.6 L135.7 100.8 L162.9 92.0 L190.0 75.5 L217.1 71.3 L244.3 63.7 L271.4 57.5 L298.6 63.4 L325.7 77.3 L352.9 80.3 L380.0 94.7 L380 120 Z" fill="url(#gsi0y28h)"/>
     <line x1="0" x2="380" y1="53.400000000000006" y2="53.400000000000006" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span></div>
     <div class="finca-body">
@@ -896,9 +962,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
       </div>
     </div></article><article class="finca reveal " style="--i:1">
     <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="g9sn4ixq" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="gojas7p5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 120 L0.0 105.7 L27.1 113.0 L54.3 98.8 L81.4 102.4 L108.6 97.4 L135.7 86.7 L162.9 79.8 L190.0 86.2 L217.1 87.4 L244.3 89.5 L271.4 84.6 L298.6 94.7 L325.7 102.9 L352.9 99.6 L380.0 114.5 L380 120 Z" fill="#6a5646" opacity="0.2"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 118.0 L54.3 116.5 L81.4 102.7 L108.6 90.3 L135.7 83.8 L162.9 77.3 L190.0 66.6 L217.1 71.4 L244.3 83.6 L271.4 89.9 L298.6 99.3 L325.7 108.2 L352.9 116.2 L380.0 120.0 L380 120 Z" fill="url(#g9sn4ixq)"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 118.0 L54.3 116.5 L81.4 102.7 L108.6 90.3 L135.7 83.8 L162.9 77.3 L190.0 66.6 L217.1 71.4 L244.3 83.6 L271.4 89.9 L298.6 99.3 L325.7 108.2 L352.9 116.2 L380.0 120.0 L380 120 Z" fill="url(#gojas7p5)"/>
     <line x1="0" x2="380" y1="65.4" y2="65.4" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span></div>
     <div class="finca-body">
@@ -912,9 +978,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
       </div>
     </div></article><article class="finca reveal " style="--i:2">
     <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gaup26cr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="glu1jzbt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 119.9 L108.6 117.6 L135.7 111.7 L162.9 104.8 L190.0 97.9 L217.1 106.5 L244.3 99.8 L271.4 91.8 L298.6 93.1 L325.7 96.3 L352.9 105.6 L380.0 106.0 L380 120 Z" fill="#6a5646" opacity="0.2"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 120.0 L108.6 120.0 L135.7 120.0 L162.9 108.9 L190.0 99.8 L217.1 95.8 L244.3 81.5 L271.4 81.6 L298.6 90.7 L325.7 99.6 L352.9 105.9 L380.0 112.1 L380 120 Z" fill="url(#gaup26cr)"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 120.0 L108.6 120.0 L135.7 120.0 L162.9 108.9 L190.0 99.8 L217.1 95.8 L244.3 81.5 L271.4 81.6 L298.6 90.7 L325.7 99.6 L352.9 105.9 L380.0 112.1 L380 120 Z" fill="url(#glu1jzbt)"/>
     <line x1="0" x2="380" y1="77.4" y2="77.4" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:64.5%">1.550 msnm</span></div>
     <div class="finca-body">
@@ -928,9 +994,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
       </div>
     </div></article><article class="finca reveal propia" style="--i:3">
     <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="g6z09ck8" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="g6p439he" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 120 L0.0 113.9 L27.1 112.0 L54.3 109.9 L81.4 95.4 L108.6 90.3 L135.7 90.3 L162.9 82.4 L190.0 81.5 L217.1 86.8 L244.3 86.1 L271.4 92.9 L298.6 91.0 L325.7 98.9 L352.9 96.3 L380.0 103.6 L380 120 Z" fill="#6a5646" opacity="0.2"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 119.9 L81.4 107.7 L108.6 101.8 L135.7 90.4 L162.9 85.0 L190.0 75.7 L217.1 65.4 L244.3 78.9 L271.4 86.6 L298.6 91.1 L325.7 103.5 L352.9 117.0 L380.0 120.0 L380 120 Z" fill="url(#g6z09ck8)"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 119.9 L81.4 107.7 L108.6 101.8 L135.7 90.4 L162.9 85.0 L190.0 75.7 L217.1 65.4 L244.3 78.9 L271.4 86.6 L298.6 91.1 L325.7 103.5 L352.9 117.0 L380.0 120.0 L380 120 Z" fill="url(#g6p439he)"/>
     <line x1="0" x2="380" y1="65.4" y2="65.4" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span></div>
     <div class="finca-body">
@@ -1536,9 +1602,9 @@ function abrirPedido() {
   modal(t("pedido"), `<div class="table-scroll"><table class="cmp-table"><tbody>${filas}
     <tr><th>${t("total")}</th><td></td><td class="mono"><b>${cop(totalCarrito())}</b></td></tr></tbody></table></div>
     <div class="form-grid" style="margin-top:16px">
-      <div class="field"><label class="lbl" for="pd-nombre">${UI.lang === "en" ? "Name" : "Nombre o negocio"}</label><input id="pd-nombre" class="input"></div>
+      <div class="field"><label class="lbl" for="pd-nombre">${UI.lang === "en" ? "Name" : "Nombre o negocio"}</label><input id="pd-nombre" class="input" autocomplete="name" enterkeyhint="next"></div>
       <div class="field"><label class="lbl" for="pd-ciudad">${UI.lang === "en" ? "City" : "Ciudad"}</label><input id="pd-ciudad" class="input" value="Cúcuta"></div>
-      <div class="field"><label class="lbl" for="pd-tel">WhatsApp</label><input id="pd-tel" class="input" type="tel" placeholder="300 000 0000"></div>
+      <div class="field"><label class="lbl" for="pd-tel">WhatsApp</label><input id="pd-tel" class="input" type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="done" placeholder="300 000 0000"></div>
       <div class="field"><label class="lbl" for="pd-molienda">${UI.lang === "en" ? "Grind" : "Molienda"}</label>
         <select id="pd-molienda" class="input">${(UI.lang === "en" ? ["Whole bean", "Filter / V60", "French press", "Espresso"] : ["En grano", "Filtro / V60", "Prensa francesa", "Espresso"]).map((o) => `<option>${o}</option>`).join("")}</select></div>
     </div>
@@ -1667,7 +1733,7 @@ function suscribir(id) {
     <p class="hint">${en ? "Leave your email and we will send you the payment link as soon as the subscription goes live."
       : "Déjanos tu correo y te enviamos el link de pago apenas abramos la suscripción."}</p>
     <div class="form-grid">
-      <div class="field"><label class="lbl" for="sub-mail">${en ? "Email" : "Correo"}</label><input id="sub-mail" class="input" type="email"></div>
+      <div class="field"><label class="lbl" for="sub-mail">${en ? "Email" : "Correo"}</label><input id="sub-mail" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none" autocorrect="off" enterkeyhint="send"></div>
       <div class="field"><label class="lbl" for="sub-ciudad">${en ? "City" : "Ciudad"}</label><input id="sub-ciudad" class="input" value="Cúcuta"></div>
     </div>
     <div class="dlg-actions"><button class="btn" data-act="close">${en ? "Cancel" : "Cancelar"}</button>
@@ -1871,7 +1937,7 @@ function controlsHTML() {
       <div class="prow-au"><span>Participantes distintos</span><b>${participants(a)} / ${a.minP} mín.</b></div>
       <div class="prow-au"><span>Venta al precio actual</span><b>${cop(venta)}</b></div>
       <div class="prow-au total"><span>Utilidad del lote</span><b>${cop(util)} · ${((util / venta) * 100 || 0).toFixed(0)} %</b></div>
-      <div class="vs"><div><span>Costo</span><i style="--w:${(a.costo / max) * 100}%"></i></div><div class="hot"><span>Subasta</span><i style="--w:${(venta / max) * 100}%"></i></div></div>
+      <div class="vs"><div><span>Costo</span><i style="--w:${(a.costo / max).toFixed(3)}"></i></div><div class="hot"><span>Subasta</span><i style="--w:${(venta / max).toFixed(3)}"></i></div></div>
       <p class="au-note">Si tostáramos estos 30 kg y los vendiéramos en bolsas de 340 g, serían unas ${fmtNum(Math.floor((30 * 0.83 * 1000) / 340))} bolsas. La subasta se justifica solo si supera esa venta.</p></div>`;
   }
   return `<div class="bidbox"><span class="lbl">Tu puja · mínimo <span class="mono" id="au-min"></span></span>

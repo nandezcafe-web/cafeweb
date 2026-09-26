@@ -44,7 +44,7 @@ function suscribir(id) {
     <p class="hint">${en ? "Leave your email and we will send you the payment link as soon as the subscription goes live."
       : "Déjanos tu correo y te enviamos el link de pago apenas abramos la suscripción."}</p>
     <div class="form-grid">
-      <div class="field"><label class="lbl" for="sub-mail">${en ? "Email" : "Correo"}</label><input id="sub-mail" class="input" type="email"></div>
+      <div class="field"><label class="lbl" for="sub-mail">${en ? "Email" : "Correo"}</label><input id="sub-mail" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none" autocorrect="off" enterkeyhint="send"></div>
       <div class="field"><label class="lbl" for="sub-ciudad">${en ? "City" : "Ciudad"}</label><input id="sub-ciudad" class="input" value="Cúcuta"></div>
     </div>
     <div class="dlg-actions"><button class="btn" data-act="close">${en ? "Cancel" : "Cancelar"}</button>

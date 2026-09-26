@@ -153,7 +153,7 @@ function controlsHTML() {
       <div class="prow-au"><span>Participantes distintos</span><b>${participants(a)} / ${a.minP} mín.</b></div>
       <div class="prow-au"><span>Venta al precio actual</span><b>${cop(venta)}</b></div>
       <div class="prow-au total"><span>Utilidad del lote</span><b>${cop(util)} · ${((util / venta) * 100 || 0).toFixed(0)} %</b></div>
-      <div class="vs"><div><span>Costo</span><i style="--w:${(a.costo / max) * 100}%"></i></div><div class="hot"><span>Subasta</span><i style="--w:${(venta / max) * 100}%"></i></div></div>
+      <div class="vs"><div><span>Costo</span><i style="--w:${(a.costo / max).toFixed(3)}"></i></div><div class="hot"><span>Subasta</span><i style="--w:${(venta / max).toFixed(3)}"></i></div></div>
       <p class="au-note">Si tostáramos estos 30 kg y los vendiéramos en bolsas de 340 g, serían unas ${fmtNum(Math.floor((30 * 0.83 * 1000) / 340))} bolsas. La subasta se justifica solo si supera esa venta.</p></div>`;
   }
   return `<div class="bidbox"><span class="lbl">Tu puja · mínimo <span class="mono" id="au-min"></span></span>

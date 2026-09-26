@@ -70,7 +70,7 @@ function viewClientes() {
       <div class="section-head"><p class="eyebrow">Qué se vende</p><h2>Cafés <em>más pedidos</em></h2></div>
       <div class="rank">${ranking.map(([nombre, v]) => `<div class="rk">
         <span class="rk-n">${esc(nombre)}</span>
-        <span class="rk-bar"><i style="--w:${(v.plata / maxPlata) * 100}%"></i></span>
+        <span class="rk-bar"><i style="--w:${(v.plata / maxPlata).toFixed(3)}"></i></span>
         <span class="mono">${fmtNum(v.n)} u · ${cop(v.plata)}</span></div>`).join("")}</div>
     </section>`;
 }
