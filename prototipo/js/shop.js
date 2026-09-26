@@ -38,10 +38,10 @@ function subastaCard(i = 0) {
       <div class="cc-score"><b>${esc(l.puntaje)}</b><small>SCA</small></div>
     </div>
     <div class="cc-body">
-      <p class="kicker">${en ? "For roasters and cafés" : "Para tostadores y cafeterías"}<br>${esc(l.productor)}, ${esc(l.municipio)} · ${a.kg} kg ${en ? "green coffee" : "de café verde"}</p>
+      <p class="kicker">${en ? "For collectors and roasters" : "Para coleccionistas y tostadores"}<br>${esc(l.productor)}, ${esc(l.municipio)} · ${a.kg} kg ${en ? "green coffee" : "de café verde"}</p>
       <h3>${esc(tr(l.variedad))} <em>${esc(tr(l.proceso))}</em></h3>
       <p class="notas-linea">${l.perfil.map(tr).join(" · ")}</p>
-      <div class="cc-foot"><b class="mono" data-live-price>${cop(top ? top.p : a.start)}</b><small>${t("por_kg")} ${en ? "green" : "verde"}</small>
+      <div class="cc-foot"><b class="mono" data-live-price>${usd(top ? top.p : a.start)}</b><small>${t("por_kg")} ${en ? "green" : "verde"}</small>
         <button class="btn primary sm" data-act="go" data-to="subasta">${a.ended ? t("ver_cafe") : (en ? "See the auction" : "Ver la subasta")}</button></div>
     </div></article>`;
 }
@@ -137,17 +137,17 @@ function registrar(tipo, datos, texto, asunto) {
 function viewCafes() {
   const en = UI.lang === "en";
   return `<div class="view-head">
-      <div><p class="eyebrow reveal">${en ? "What we have now" : "Lo que hay ahora"}</p>
-        <h2 class="reveal" style="--i:1">${en ? "One coffee per <em>farm</em>" : "Un café por <em>finca</em>"}</h2>
+      <div><p class="eyebrow reveal">${en ? "This harvest" : "Esta cosecha"}</p>
+        <h2 class="reveal" style="--i:1">${en ? "What we have <em>at home</em>" : "Lo que tenemos <em>en casa</em>"}</h2>
         <p class="reveal" style="--i:2">${en
-          ? "We buy from farms in Norte de Santander. Each one grows a different variety, and we sell it under its own name."
-          : "Le compramos a fincas de Norte de Santander. Cada una tiene su variedad y la vendemos con su propio nombre."}</p></div>
+          ? "These are the coffees we are roasting right now. Each one comes from a neighbouring farm in Norte de Santander and carries the name of whoever grew it."
+          : "Estos son los cafés que estamos tostando ahora. Cada uno viene de una finca vecina de Norte de Santander y lleva el nombre de quien lo cultivó."}</p></div>
     </div>
     <div class="dos">${S.productos.map((p, i) => cafeCard(p, i)).join("")}${subastaCard(S.productos.length)}</div>
     ${bloqueCafeterias()}
     <section class="section">
-      <div class="section-head"><p class="eyebrow">${en ? "The farms" : "Las fincas"}</p>
-        <h2>${en ? "Who grows <em>what we sell</em>" : "Quién cultiva <em>lo que vendemos</em>"}</h2></div>
+      <div class="section-head"><p class="eyebrow">${en ? "The neighbours" : "Los vecinos"}</p>
+        <h2>${en ? "Who <em>grows it</em>" : "Quién <em>lo cultiva</em>"}</h2></div>
       <div class="fincas">${S.fincas.map((f, i) => fincaCard(f, i)).join("")}</div>
     </section>`;
 }
@@ -230,8 +230,8 @@ function viewCafe() {
 
     <section class="cierre reveal" style="--i:4">
       <p>${en
-        ? "Each lot is one harvest, and then it is gone. The subscription is the only way to be sure the next one reaches you."
-        : "Cada lote es una cosecha y se acaba. La suscripción es la única forma de asegurar que el próximo te llegue."}</p>
+        ? "Each lot comes from a single harvest, and it runs out. If you want the next one to reach your door, there is the subscription."
+        : "Cada lote es de una sola cosecha y se acaba. Si quieres que el siguiente te llegue a la casa, está la suscripción."}</p>
       <button class="btn" data-act="go" data-to="suscripcion">${en ? "See the subscription" : "Ver la suscripción"}</button>
     </section>
   </article>`;

@@ -19,8 +19,9 @@ const CONFIG = {
   formulario: "",               // https://formspree.io/f/xxxxxxx
   /* Suscripción: cuándo se tuesta y despacha cada mes. POR CONFIRMAR con el tostador. */
   suscripcion: { despacho: { es: "la primera semana de cada mes", en: "the first week of every month" } },
-  /* Subasta: cierre real del lote en sala (hora de Colombia) */
-  subasta: { cierre: "2026-10-05T19:00:00-05:00" },
+  /* Subasta: para compradores y coleccionistas del exterior, en dólares por kilo de café verde.
+     Referencia: USD 38/kg ≈ $120.000/kg a TRM 3.128. Cierre en hora de Colombia. */
+  subasta: { cierre: "2026-10-05T19:00:00-05:00", salida: 38, incremento: 1, reserva: 45 },
   /* Envíos. Referencia del mercado: las tiendas de café en Colombia cobran
      entre $9.000 y $12.000 y regalan el envío desde $150.000.
      Ver docs/08_envios.md antes de cambiar estos números. */
@@ -132,7 +133,7 @@ function seed() {
         receta: { metodo: "V60", dosis: "15 g", agua: "250 ml", temp: "93 °C", tiempo: "2:45", molienda: { es: "Media fina", en: "Medium fine" } },
         variantes: [
           { g: 100, precio: 32000, label: { es: "Muestra", en: "Sample" }, nota: { es: "para probarlo", en: "try it first" }, stock: 38 },
-          { g: 250, precio: 68000, label: { es: "Bolsa", en: "Bag" }, nota: { es: "lo más pedido", en: "most ordered" }, stock: 74, principal: true },
+          { g: 250, precio: 68000, label: { es: "Bolsa", en: "Bag" }, nota: { es: "la de siempre", en: "the usual" }, stock: 74, principal: true },
           { g: 1000, precio: 245000, label: { es: "Kilo", en: "Kilo" }, nota: { es: "para cafeterías", en: "for cafés" }, stock: 6 },
         ],
         presentacion: 250, precio: 68000, stock: 74, destacado: true },
@@ -236,7 +237,10 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 const fmtNum = (n, dec = 0) => Number(n || 0).toLocaleString(UI.lang === "en" ? "en-US" : "es-CO", { minimumFractionDigits: dec, maximumFractionDigits: dec });
 /* En inglés "$68.000" se lee como 68 dólares: allá va "COP 68,000" */
 const cop = (n) => (UI.lang === "en" ? "COP " : "$") + fmtNum(Math.round(n || 0));
-const copK = (n) => (Math.abs(n) >= 1e6 ? "$" + fmtNum(n / 1e6, 1) + " M" : cop(n));
+/* La subasta va en dólares: "USD 41" y, al lado, lo que da por libra */
+const usd = (n) => "USD " + Number(n || 0).toLocaleString(UI.lang === "en" ? "en-US" : "es-CO", { maximumFractionDigits: 0 });
+const usdLb = (n) => "USD " + (Number(n || 0) / 2.20462).toLocaleString(UI.lang === "en" ? "en-US" : "es-CO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "/lb";
+const copK =(n) => (Math.abs(n) >= 1e6 ? "$" + fmtNum(n / 1e6, 1) + " M" : cop(n));
 const isoToday = () => new Date().toISOString().slice(0, 10);
 const fmtFecha = (iso) => iso ? new Date(iso + "T00:00:00").toLocaleDateString(UI.lang === "en" ? "en-GB" : "es-CO", { day: "numeric", month: "short", year: "numeric" }) : "";
 const slug = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
@@ -326,9 +330,9 @@ function meta(view, id) {
           d: tx(p.nombre) + ": " + p.variedad + " " + p.proceso.toLowerCase() + " cultivado a " + fmtNum(p.altitud) + " msnm en " + (fincaDe(p).municipio || "") + ", con " + p.puntaje + " puntos SCA. Notas de " + tx(p.notas).join(", ").toLowerCase() + ". Desde " + cop(p.variantes[0].precio) + "." },
     subasta: en
       ? { t: "Live Geisha coffee auction · " + marca,
-          d: "Bid live for a Geisha microlot from Toledo, Norte de Santander: reserve price, at least three bidders and anti-sniping extension. Only 30 kg of green coffee." }
+          d: "Bid in US dollars for a single 30 kg Geisha microlot of green coffee from Toledo, Norte de Santander, Colombia: reserve price, verified bidders and a 100 g sample to cup first." }
       : { t: "Subasta de café Geisha en vivo · " + marca,
-          d: "Puja en vivo por un microlote de Geisha de Toledo, Norte de Santander: precio de reserva, mínimo tres participantes y extensión anti-último-segundo. Solo 30 kg de café verde." },
+          d: "Puja en dólares por un solo microlote de 30 kg de Geisha verde de Toledo, Norte de Santander: precio de reserva, postores verificados y muestra de 100 g para catar antes." },
     contacto: en
       ? { t: "Contact · " + marca, d: "Write to the Nandez family: orders, cafés and roasters, auction bidders and questions about our coffee from Chinácota, Norte de Santander." }
       : { t: "Contacto · " + marca, d: "Escríbele a la familia Nandez: pedidos, cafeterías y tostadores, postores de la subasta y preguntas sobre nuestro café de Chinácota, Norte de Santander." },
@@ -371,8 +375,8 @@ const FAQ = [
     a: { es: "Las fincas de Chinácota, Toledo y Arboledas están entre 1.500 y 1.950 metros, con noches frías que maduran el grano despacio. Es una región menos conocida que Huila o Nariño, y por eso todavía se consiguen microlotes excepcionales a precios sensatos.",
          en: "Farms in Chinácota, Toledo and Arboledas sit between 1,500 and 1,950 metres, with cold nights that ripen the cherry slowly. It is a lesser known region than Huila or Nariño, so exceptional microlots can still be found at sensible prices." } },
   { q: { es: "¿Cómo funciona una subasta de café?", en: "How does a coffee auction work?" },
-    a: { es: "Se publica un lote pequeño con su puntaje y su ficha, se abre con un precio de salida y los compradores pujan por kilo de café verde. Se adjudica solo si se alcanza el precio de reserva y participan al menos tres compradores distintos.",
-         en: "A small lot is published with its score and data sheet, opens at a starting price and buyers bid per kilo of green coffee. It is awarded only if the reserve price is met and at least three different buyers take part." } },
+    a: { es: "Se publica un lote pequeño con su puntaje y su ficha, se abre con un precio de salida y los compradores pujan en dólares por kilo de café verde. Se adjudica solo si se alcanza el precio de reserva y participan al menos tres compradores distintos.",
+         en: "A small lot is published with its score and data sheet, opens at a starting price and buyers bid in US dollars per kilo of green coffee. It is awarded only if the reserve price is met and at least three different buyers take part." } },
   { q: { es: "¿Le compran directo al productor?", en: "Do you buy directly from the grower?" },
     a: { es: "Sí. Vamos a la finca, medimos el factor de rendimiento y la humedad delante del productor, y pagamos de contado por encima del precio de referencia del día. Sin intermediarios entre la finca y la bolsa.",
          en: "Yes. We go to the farm, measure yield factor and moisture in front of the grower, and pay cash above the day's reference price. No middlemen between the farm and the bag." } },

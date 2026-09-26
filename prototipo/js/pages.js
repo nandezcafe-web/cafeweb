@@ -7,11 +7,11 @@ function viewSuscripcion() {
   const suelta = principal(S.productos[0]).precio + CONFIG.envio.costo;
   const razones = en
     ? [["Coffee has a season", "We buy each harvest once. A subscription is how we know how much to buy before the farm sells it elsewhere."],
-       ["You pay less than buying loose", `A loose bag plus shipping comes to ${cop(suelta)}. In the subscription, shipping is included.`],
-       ["The producer plans", "Knowing how much we ship every month lets us commit volumes to the farm in advance."]]
+       ["It costs you less than buying loose", `A loose bag plus shipping comes to ${cop(suelta)}. In the subscription, shipping is included.`],
+       ["The farm can plan too", "Knowing how much we ship every month lets us commit volumes to the farm in advance."]]
     : [["El café tiene temporada", "Cada cosecha se compra una vez. La suscripción es como sabemos cuánto comprar antes de que la finca venda su café a otro."],
-       ["Pagas menos que suelto", `Una bolsa suelta con envío te sale en ${cop(suelta)}. En la suscripción el envío va incluido.`],
-       ["El productor puede planear", "Saber cuánto despachamos cada mes nos deja comprometerle volumen a la finca por anticipado."]];
+       ["Te sale mejor que suelto", `Una bolsa suelta con envío te sale en ${cop(suelta)}. En la suscripción el envío va incluido.`],
+       ["La finca también puede planear", "Saber cuánto despachamos cada mes nos deja comprometerle volumen a la finca por anticipado."]];
   const como = en
     ? [["When it arrives", `We roast and ship in ${tx(CONFIG.suscripcion.despacho)}; it reaches you ${tx(CONFIG.envio.dias)} later.`],
        ["How you pay", "Each month, automatically through Mercado Pago, once the subscription opens."],
@@ -21,7 +21,7 @@ function viewSuscripcion() {
        ["Cómo cancelas", `Escribes a ${CONFIG.correo} antes del día 25 y el mes siguiente ya no se cobra. Sin permanencia.`]];
   return `<div class="view-head">
       <div><p class="eyebrow reveal">${en ? "Subscription" : "Suscripción"}${abierta ? "" : (en ? " · opening soon" : " · abrimos pronto")}</p>
-        <h2 class="reveal" style="--i:1">${en ? "Coffee that <em>arrives on its own</em>" : "Café que <em>llega solo</em>"}</h2>
+        <h2 class="reveal" style="--i:1">${en ? "Coffee at your door <em>every month</em>" : "Café en tu casa <em>cada mes</em>"}</h2>
         <p class="reveal" style="--i:2">${abierta
           ? (en ? "Every month we ship the freshest lot, with its data sheet." : "Cada mes despachamos el lote más fresco, con su ficha.")
           : (en ? "We are not charging yet. Leave your email on the plan you want and we will send you the payment link the day it opens."
@@ -30,7 +30,7 @@ function viewSuscripcion() {
     <div class="planes">${S.planes.map((p, i) => {
       const link = CONFIG.pagos.suscripcion[p.id];
       return `<article class="plan ${p.destacado ? "hot" : ""} reveal" style="--i:${i}">
-        ${p.destacado ? `<span class="plan-tag">${en ? "Most chosen" : "El más pedido"}</span>` : ""}
+        ${p.destacado ? `<span class="plan-tag">${en ? "Our favourite" : "El que más nos gusta"}</span>` : ""}
         <h3>${esc(tx(p.nombre))}</h3>
         <p class="plan-precio"><b class="mono">${cop(p.precio)}</b><small>${t("mes")}</small></p>
         <p class="hint">${esc(tx(p.desc))}</p>
@@ -44,8 +44,8 @@ function viewSuscripcion() {
       <div class="valor">${como.map(([a, b], i) => `<div class="val" style="--i:${i}"><b>${esc(a)}</b><span>${esc(b)}</span></div>`).join("")}</div>
     </section>
     <section class="section">
-      <div class="section-head"><p class="eyebrow">${en ? "Why subscribe" : "Por qué suscribirse"}</p>
-        <h2>${en ? "It is not a discount, <em>it is a plan</em>" : "No es un descuento, <em>es un plan</em>"}</h2></div>
+      <div class="section-head"><p class="eyebrow">${en ? "Why we made it" : "Por qué la hicimos"}</p>
+        <h2>${en ? "So you never <em>run out of coffee</em>" : "Para que no te quedes <em>sin café</em>"}</h2></div>
       <div class="valor">${razones.map(([a, b], i) => `<div class="val" style="--i:${i}"><b>${esc(a)}</b><span>${esc(b)}</span></div>`).join("")}</div>
     </section>`;
 }
@@ -103,8 +103,8 @@ function viewEntrada() {
     <p class="lede">${esc(tx(e.resumen))}</p>
     <div class="post-body"><p>${esc(tx(e.cuerpo))}</p></div>
     <div class="espera">
-      <div><h3>${UI.lang === "en" ? "Want the coffee we write about?" : "¿Quieres el café del que escribimos?"}</h3>
-        <p>${UI.lang === "en" ? "Every lot we publish is on sale while it lasts." : "Cada lote del que hablamos está a la venta mientras dure."}</p></div>
+      <div><h3>${UI.lang === "en" ? "Curious to taste it?" : "¿Te dio curiosidad?"}</h3>
+        <p>${UI.lang === "en" ? "The coffee in this story is at home while it lasts." : "El café de esta historia está en casa mientras dure."}</p></div>
       <button class="btn primary" data-act="go" data-to="cafes">${t("nav_cafes")}</button>
     </div>
   </article>`;

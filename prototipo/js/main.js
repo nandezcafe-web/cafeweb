@@ -5,14 +5,14 @@ function viewInicio() {
   const en = UI.lang === "en", a = UI.au;
   const p = S.productos.find((x) => x.destacado) || S.productos[0];
   const valor = en
-    ? [["A name, not a country", "We do not sell “Colombian coffee”. We sell one farm’s lot, one harvest, with the name of whoever grew it."],
-       ["Every number with its source", "Altitude, variety, process and score carry who checked them and when. What is not verified, we say so."],
-       ["We pay above the reference", "We buy at the farm, cash, above the day\u2019s reference price published by the Colombian Coffee Growers Federation."],
-       ["One farm, one variety", "Each allied farm brings a different variety. Exceptional lots go to auction."]]
-    : [["Un nombre, no un país", "No vendemos “café colombiano”. Vendemos el lote de una finca, de una cosecha, con el nombre de quien lo cultivó."],
-       ["Cada dato con su fuente", "Altura, variedad, proceso y puntaje llevan quién lo comprobó y cuándo. Lo que no está verificado, lo decimos."],
-       ["Pagamos por encima de la referencia", "Compramos en la finca, de contado y por encima del precio de referencia que publica la Federación Nacional de Cafeteros ese día."],
-       ["Una finca, una variedad", "Cada finca aliada trae una variedad distinta. Los lotes excepcionales van a subasta."]];
+    ? [["Every coffee has a grower", "Not just “Colombian coffee”: the coffee of one farm and one harvest, and we tell you who planted it."],
+       ["We tell you what we know", "Altitude, variety, process and score say who checked them and when. What we could not check, we tell you too."],
+       ["We pay our neighbours well", "We go to the farm, pay cash and above the price the Coffee Growers Federation publishes that day."],
+       ["The best is kept apart", "Each neighbouring farm grows its own variety. When a lot comes out truly special, it goes to the auction instead of a bag."]]
+    : [["Cada café tiene quién lo sembró", "No es “café colombiano” sin más: es el café de una finca y de una cosecha, y te decimos quién lo sembró."],
+       ["Te contamos lo que sabemos", "La altura, la variedad, el proceso y el puntaje dicen quién los revisó y cuándo. Lo que no hemos podido comprobar, también te lo decimos."],
+       ["Le pagamos bien al vecino", "Vamos a la finca, pagamos de contado y por encima del precio que publica ese día la Federación de Cafeteros."],
+       ["Lo mejor se guarda aparte", "Cada finca vecina tiene su variedad. Cuando un lote sale especial de verdad, no va a la bolsa: va a la subasta."]];
   const pasos = en
     ? [["We visit", "Yield factor, moisture and the day’s price, in hand."], ["We buy above the reference", "Cash, at the farm."],
        ["Milling and roasting", "Parchment to green, then roasted to taste of its origin."], ["Name and bag", "Each bag says which farm it came from."],
@@ -48,24 +48,24 @@ function viewInicio() {
   </section>
 
   <section class="section">
-    <div class="section-head"><p class="eyebrow">${en ? "On sale now" : "A la venta ahora"}</p>
-      <h2>${en ? "One coffee <em>per farm</em>" : "Un café <em>por finca</em>"}</h2>
-      <p>${en ? "Each allied farm grows a different variety. When a lot is exceptional, it goes to auction instead of the shelf."
-        : "Cada finca aliada tiene su variedad. Cuando un lote es excepcional, va a subasta en vez de a la estantería."}</p></div>
+    <div class="section-head"><p class="eyebrow">${en ? "This harvest" : "Esta cosecha"}</p>
+      <h2>${en ? "What we have <em>at home</em>" : "Lo que tenemos <em>en casa</em>"}</h2>
+      <p>${en ? "A few coffees, chosen one by one. Each comes from a neighbouring farm, and the truly special lot we keep for the auction."
+        : "Pocos cafés, escogidos uno por uno. Cada uno viene de una finca vecina, y el lote que sale muy especial lo guardamos para la subasta."}</p></div>
     <div class="dos">${S.productos.map((x, i) => cafeCard(x, i)).join("")}${subastaCard(S.productos.length)}</div>
   </section>
 
   <section class="section">
-    <div class="section-head"><p class="eyebrow">${en ? "Why it costs what it costs" : "Por qué cuesta lo que cuesta"}</p>
-      <h2>${en ? "Transparency is <em>not decoration</em>" : "La transparencia <em>no es un adorno</em>"}</h2></div>
+    <div class="section-head"><p class="eyebrow">${en ? "How we work" : "Cómo trabajamos"}</p>
+      <h2>${en ? "How the coffee reaches <em>your table</em>" : "Así llega el café <em>a tu mesa</em>"}</h2></div>
     <div class="valor">${valor.map(([tt, d], i) => `<div class="val" style="--i:${i}"><b>${tt}</b><span>${d}</span></div>`).join("")}</div>
   </section>
 
   <section class="section">
-    <div class="section-head"><p class="eyebrow">${en ? "The farms" : "Las fincas"}</p>
-      <h2>${en ? "We buy in <em>Norte de Santander</em>" : "Compramos en <em>Norte de Santander</em>"}</h2>
-      <p>${en ? "Today from allied farms. From 2027, also from our own land — and we will keep buying from our neighbours."
-        : "Hoy a fincas aliadas. Desde 2027, también de nuestra propia tierra, y seguiremos comprándole a los vecinos."}</p></div>
+    <div class="section-head"><p class="eyebrow">${en ? "The neighbours" : "Los vecinos"}</p>
+      <h2>${en ? "The farms <em>it comes from</em>" : "Las fincas <em>de donde viene</em>"}</h2>
+      <p>${en ? "Today we roast coffee from neighbouring farms. Our own first harvest comes in 2027, and we will keep buying from them."
+        : "Hoy tostamos café de fincas vecinas. En 2027 sale la primera cosecha de la nuestra, y les vamos a seguir comprando a ellos."}</p></div>
     <div class="fincas">${S.fincas.map((f, i) => fincaCard(f, i)).join("")}</div>
   </section>
 
@@ -76,14 +76,14 @@ function viewInicio() {
 
   <section class="section faqs">
     <div class="section-head"><p class="eyebrow">${en ? "Questions" : "Preguntas"}</p>
-      <h2>${en ? "What people ask <em>before buying</em>" : "Lo que preguntan <em>antes de comprar</em>"}</h2></div>
+      <h2>${en ? "What people <em>ask us</em>" : "Lo que <em>nos preguntan</em>"}</h2></div>
     <div class="faq-lista">${FAQ.map((f, i) => `<details class="faq" ${i === 0 ? "open" : ""}><summary><h3>${esc(tx(f.q))}</h3></summary><p>${esc(tx(f.a))}</p></details>`).join("")}</div>
   </section>
 
   <section class="section">
     <div class="section-head"><p class="eyebrow">${t("nav_suscripcion")}</p>
-      <h2>${en ? "Or let it <em>arrive every month</em>" : "O deja que <em>llegue cada mes</em>"}</h2>
-      <p>${en ? `From ${cop(S.planes[0].precio)} a month, always the freshest lot.` : `Desde ${cop(S.planes[0].precio)} al mes, siempre el lote más fresco.`}</p></div>
+      <h2>${en ? "If you like it, <em>we bring it every month</em>" : "Si te gusta, <em>te lo llevamos cada mes</em>"}</h2>
+      <p>${en ? `From ${cop(S.planes[0].precio)} a month, shipping included.` : `Desde ${cop(S.planes[0].precio)} al mes, con el envío incluido.`}</p></div>
     <div class="cta"><button class="btn primary" data-act="go" data-to="suscripcion">${en ? "See the plans" : "Ver los planes"}</button>
       <button class="btn" data-act="go" data-to="diario">${en ? "Read the journal" : "Leer el diario"}</button></div>
   </section>`;
@@ -214,7 +214,7 @@ function cambiarIdioma(l) {
 function liveBits() {
   const a = UI.au, top = topBid(a);
   document.querySelectorAll("[data-live-time]").forEach((el) => (el.textContent = a.ended ? t("cerrada") : restante(Math.max(0, a.endsAt - Date.now()))));
-  document.querySelectorAll("[data-live-price]").forEach((el) => (el.textContent = cop(top ? top.p : a.start)));
+  document.querySelectorAll("[data-live-price]").forEach((el) => (el.textContent = usd(top ? top.p : a.start)));
 }
 
 /* ---------- eventos ---------- */

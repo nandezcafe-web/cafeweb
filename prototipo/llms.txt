@@ -23,7 +23,7 @@ Es la calificación de un catador certificado sobre 100 puntos. Desde 80 se cons
 ### ¿Por qué se cultiva buen café en Norte de Santander?
 Las fincas de Chinácota, Toledo y Arboledas están entre 1.500 y 1.950 metros, con noches frías que maduran el grano despacio. Es una región menos conocida que Huila o Nariño, y por eso todavía se consiguen microlotes excepcionales a precios sensatos.
 ### ¿Cómo funciona una subasta de café?
-Se publica un lote pequeño con su puntaje y su ficha, se abre con un precio de salida y los compradores pujan por kilo de café verde. Se adjudica solo si se alcanza el precio de reserva y participan al menos tres compradores distintos.
+Se publica un lote pequeño con su puntaje y su ficha, se abre con un precio de salida y los compradores pujan en dólares por kilo de café verde. Se adjudica solo si se alcanza el precio de reserva y participan al menos tres compradores distintos.
 ### ¿Le compran directo al productor?
 Sí. Vamos a la finca, medimos el factor de rendimiento y la humedad delante del productor, y pagamos de contado por encima del precio de referencia del día. Sin intermediarios entre la finca y la bolsa.
 
