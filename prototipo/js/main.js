@@ -189,6 +189,7 @@ function renderNav() {
   document.querySelectorAll("[data-lang]").forEach((x) => x.setAttribute("aria-pressed", x.dataset.lang === UI.lang));
 }
 function cambiarIdioma(l) {
+  const v = $("#view"); v.classList.add("swap"); setTimeout(() => v.classList.remove("swap"), 140);
   UI.lang = l; try { localStorage.setItem("nandez-lang", l); } catch {}
   const id = UI.view === "cafe" ? UI.cafe : UI.view === "entrada" ? UI.entrada : null;
   try { history.replaceState({}, "", ruta(UI.view, id)); } catch {}

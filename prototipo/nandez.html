@@ -58,7 +58,7 @@ h1 em,h2 em,h3 em{color:var(--cherry)}
 .wrap{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding-inline:20px;padding-block:28px 120px}
 
 /* reveal */
-.reveal{opacity:0;transform:translateY(14px);animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(var(--i,0)*70ms)}
+.reveal{opacity:0;transform:translateY(14px);animation:rise .7s var(--ease-out) forwards;animation-delay:calc(var(--i,0)*70ms)}
 .calm .reveal{animation:none;opacity:1;transform:none}
 @keyframes rise{to{opacity:1;transform:none}}
 @keyframes pop{from{opacity:0;transform:translateY(16px) scale(.98)}}
@@ -143,23 +143,15 @@ body[data-view=subasta] .btn:not(.primary):hover{background:var(--crema);color:v
 .step .n{font:italic 30px/1 var(--serif);color:var(--cherry)}
 .step b{display:block;font-weight:600}
 .step span{color:var(--ink-2);font-size:13.5px}
-.core{position:relative;display:flex;align-items:center;justify-content:center}
-.core::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;background:linear-gradient(to bottom,var(--ink) 50%,transparent 0) 0 0/2px 12px;animation:flow 1s linear infinite;opacity:.35}
-@keyframes flow{to{background-position:0 12px}}
-.stamp{position:relative;width:190px;aspect-ratio:1;border-radius:50%;background:var(--paper);display:grid;place-items:center}
-.stamp svg{position:absolute;inset:0;width:100%;height:100%;animation:spin 36s linear infinite;color:var(--cherry)}
-@keyframes spin{to{transform:rotate(360deg)}}
-.stamp b{font:italic 400 2.6rem/1 var(--serif);color:var(--cherry)}
-.stamp small{display:block;font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);text-align:center}
+}
+}
 .deal{margin:30px auto 0;max-width:760px;background:var(--ink);color:var(--paper);border-radius:999px;padding:14px 24px;display:flex;justify-content:center;gap:8px 14px;flex-wrap:wrap;font:500 12.5px var(--mono);letter-spacing:.08em;text-transform:uppercase}
 .deal span:not(:last-child)::after{content:"→";margin-left:14px;color:var(--crema)}
 
 .levels{display:grid;grid-template-columns:repeat(4,1fr);margin-top:34px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card)}
 .level{padding:24px 22px;border-right:1px solid var(--line)}
 .level:last-child{border-right:0}
-.level .bar{height:4px;border-radius:2px;background:var(--paper-2);overflow:hidden}
-.level .bar i{display:block;height:100%;width:calc(var(--k)*25%);background:var(--c)}
-.level h3{font-size:1.9rem;margin:16px 0 6px;color:var(--c)}
+.level .level .level h3{font-size:1.9rem;margin:16px 0 6px;color:var(--c)}
 .level p{color:var(--ink-2);font-size:14px;margin:0 0 14px}
 .level code{font:12px var(--mono);background:var(--paper-2);padding:3px 8px;border-radius:6px}
 
@@ -212,12 +204,12 @@ input[type=range]{width:100%;accent-color:var(--cherry)}
 .count-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;color:var(--ink-2);font-size:14px;gap:10px;flex-wrap:wrap}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:20px}
-.lot{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s}
+.lot{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .2s var(--ease-out),box-shadow .2s}
 .lot:hover{transform:translateY(-5px);box-shadow:0 24px 44px -22px rgba(29,20,15,.5)}
 .lot.cmp{outline:2px solid var(--cherry);outline-offset:-2px}
 .lot-art{position:relative;height:150px;background:var(--paper-2);cursor:pointer;overflow:hidden}
 .lot-art svg{position:absolute;inset:0;width:100%;height:100%}
-.lot-art .front{transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.lot-art .front{transition:transform .35s var(--ease-out)}
 .lot:hover .lot-art .front{transform:translateY(-6px)}
 .alt-label{position:absolute;right:10px;transform:translateY(-135%);font:600 10px var(--mono);letter-spacing:.06em;color:var(--ink-2);white-space:nowrap}
 .dark-art .alt-label{color:#bba48f}
@@ -261,7 +253,7 @@ input[type=range]{width:100%;accent-color:var(--cherry)}
 /* dialog */
 dialog{border:0;padding:0;border-radius:22px;background:var(--card);color:var(--ink);width:min(1000px,calc(100vw - 24px));max-height:calc(100vh - 32px);box-shadow:0 40px 80px -20px rgba(0,0,0,.5)}
 dialog.narrow{width:min(560px,calc(100vw - 24px))}
-dialog[open]{animation:pop .35s cubic-bezier(.2,.8,.2,1)}
+dialog[open]{animation:pop .35s var(--ease-out)}
 dialog::backdrop{background:rgba(18,12,9,.55);backdrop-filter:blur(3px)}
 .dlg-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card);z-index:2}
 .dlg-head h3{font-size:1.7rem;line-height:1.1}
@@ -287,11 +279,6 @@ dialog::backdrop{background:rgba(18,12,9,.55);backdrop-filter:blur(3px)}
 .pp-cover .varietal{color:#bba48f}.pp-cover .varietal em{color:var(--crema)}
 .pp-score{font:400 4.6rem/1 var(--serif);margin:16px 0 4px}
 .pp-ridge{position:absolute;left:0;right:0;bottom:0;height:120px}
-.trust{margin-top:12px;position:relative;z-index:1}
-.trust-bar{height:7px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:6px}
-.trust-bar i{display:block;height:100%;width:var(--w);background:linear-gradient(90deg,var(--crema),var(--ember));transition:width .6s}
-.light .trust-bar{background:var(--paper-2)}
-.light .trust-bar i{background:linear-gradient(90deg,var(--gold),var(--leaf))}
 .timeline{list-style:none;margin:0;padding:0;position:relative}
 .timeline::before{content:"";position:absolute;left:11px;top:8px;bottom:8px;width:1px;background:var(--line)}
 .tl{display:grid;grid-template-columns:24px 1fr auto;gap:12px;padding:9px 0;align-items:start;opacity:0;animation:rise .5s forwards;animation-delay:calc(var(--i)*45ms)}
@@ -315,10 +302,9 @@ dialog::backdrop{background:rgba(18,12,9,.55);backdrop-filter:blur(3px)}
 .cmp-thumb svg{position:absolute;inset:0;width:100%;height:100%}
 .bar{display:block;height:6px;background:var(--paper-2);border-radius:3px;overflow:hidden;margin-top:6px}
 .bar i{display:block;height:100%;width:100%;transform:scaleX(var(--w));background:var(--ink-3);transform-origin:left;transition:transform .6s var(--ease-out)}
-td.best .bar i{background:var(--leaf)}
 td.best .mono{font-weight:600}
 td.best .mono::before{content:"◆ ";color:var(--leaf)}
-@keyframes grow{from{transform:scaleX(0)}}
+}
 .rk-bar i,.cbar i,.vs i,.trust-bar i{transform-origin:left}
 .lvtag{font:600 9.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--c);border:1px solid var(--c);border-radius:999px;padding:1px 6px;white-space:nowrap}
 .src{display:block;color:var(--ink-3);font-size:12px}
@@ -376,13 +362,6 @@ td.best .mono::before{content:"◆ ";color:var(--leaf)}
 .wpanel h3{font-size:2rem;margin-bottom:4px}
 .wpanel>p{color:var(--ink-2);margin:0 0 18px}
 .wstack{display:grid;gap:18px}
-.lvpick{display:flex;gap:5px;flex-wrap:wrap}
-.lvpick label{position:relative;cursor:pointer}
-.lvpick input{position:absolute;opacity:0;pointer-events:none}
-.lvpick span{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 10px;font:600 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);transition:all .2s}
-.lvpick span::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c)}
-.lvpick input:checked+span{border-color:var(--c);color:var(--c);background:color-mix(in srgb,var(--c) 10%,transparent)}
-.lvpick input:focus-visible+span{outline:2px solid var(--cherry)}
 .wnav{display:flex;justify-content:space-between;gap:8px;margin-top:22px;flex-wrap:wrap}
 .wpreview{position:sticky;top:90px;display:grid;gap:12px}
 .wpreview .lot:hover{transform:none}
@@ -395,7 +374,7 @@ td.best .mono::before{content:"◆ ";color:var(--leaf)}
 
 /* toasts */
 .toasts{position:fixed;right:18px;top:80px;z-index:120;display:flex;flex-direction:column;gap:8px;width:min(380px,calc(100vw - 36px))}
-.toast{background:var(--ink);color:var(--paper);border-radius:14px;padding:12px 14px;box-shadow:0 18px 40px -14px rgba(0,0,0,.55);display:flex;gap:10px;align-items:center;animation:slideIn .45s cubic-bezier(.2,.8,.2,1);font-size:14px}
+.toast{background:var(--ink);color:var(--paper);border-radius:14px;padding:12px 14px;box-shadow:0 18px 40px -14px rgba(0,0,0,.55);display:flex;gap:10px;align-items:center;animation:slideIn .45s var(--ease-out);font-size:14px}
 body[data-view=subasta] .toast{background:#2a1d17;border:1px solid #3a2a21}
 .toast.out{animation:slideOut .3s forwards}
 .toast.err .t-ico{background:var(--cherry)}
@@ -498,6 +477,7 @@ p.al-bad{--c:var(--cherry);color:var(--cherry)}
 .rk{display:grid;grid-template-columns:minmax(120px,1.1fr) minmax(0,2fr) auto;gap:14px;align-items:center;font-size:13.5px}
 .rk-n{font-weight:600}
 .rk-bar{display:block;height:14px;background:var(--paper-2);border-radius:7px;overflow:hidden}
+@keyframes grow{from{transform:scaleX(0)}}
 .rk-bar i{display:block;height:100%;width:100%;transform:scaleX(var(--w));background:var(--cherry);animation:grow .9s var(--ease-out)}
 @media (max-width:640px){.rk{grid-template-columns:1fr auto}.rk-bar{grid-column:1/-1}}
 
@@ -505,13 +485,13 @@ p.al-bad{--c:var(--cherry);color:var(--cherry)}
 .tab.adm{border:1px dashed var(--ink-3);color:var(--ink-3)}
 .tab.adm[aria-current=page]{border-style:solid}
 .dos{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px;margin-top:34px}
-.card-cafe{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s}
+.card-cafe{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .2s var(--ease-out),box-shadow .2s}
 .card-cafe:hover{transform:translateY(-5px);box-shadow:0 26px 46px -22px rgba(29,20,15,.5)}
 .card-cafe.dark{background:linear-gradient(180deg,#221812,#150e0a);border-color:#2e211a;color:#f3e6d6}
 .cc-art{position:relative;height:200px;background:var(--paper-2);cursor:pointer;overflow:hidden}
 .card-cafe.dark .cc-art{background:#1a120d}
 .cc-art svg{position:absolute;inset:0;width:100%;height:100%}
-.cc-art .front{transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.cc-art .front{transition:transform .35s var(--ease-out)}
 .card-cafe:hover .cc-art .front{transform:translateY(-6px)}
 .cc-score{position:absolute;left:16px;top:12px}
 .cc-score b{display:block;font:400 52px/1 var(--serif)}
@@ -730,6 +710,15 @@ p,h1,h2,h3,td,th,li,.mono,.lede,.hint{user-select:text;-webkit-user-select:text}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.12s!important}
 }
 
+
+/* el carrito entra desde abajo en vez de aparecer de golpe */
+.tray{transition:transform .28s var(--ease-out),opacity .2s var(--ease-out)}
+@starting-style{.tray{transform:translate(-50%,120%);opacity:0}}
+@media (prefers-reduced-motion:reduce){.tray{transition:opacity .15s}}
+
+/* el cambio de idioma reemplaza toda la página: un desvanecido corto evita el salto */
+#view.swap{opacity:.35;transition:opacity .12s var(--ease-out)}
+
 /* sala de subasta */
 .auction{color:#f3e6d6}
 .auction .kicker{color:#a58f7c}
@@ -788,7 +777,7 @@ p,h1,h2,h3,td,th,li,.mono,.lede,.hint{user-select:text;-webkit-user-select:text}
 .bid{display:grid;grid-template-columns:1fr auto;gap:0 10px;padding:10px 12px;border-radius:12px;background:#1f1510;border:1px solid #2e211a}
 .bid.top{border-color:var(--ember);background:linear-gradient(90deg,rgba(255,106,61,.16),transparent)}
 .bid.me .who{color:var(--crema)}
-.bid.new{animation:bidIn .7s cubic-bezier(.2,.8,.2,1)}
+.bid.new{animation:bidIn .5s var(--ease-out)}
 @keyframes bidIn{from{opacity:0;transform:translateX(26px) scale(.96);background:rgba(255,106,61,.4)}}
 .bid .who{font-weight:600;font-size:13.5px}
 .bid .p{font:600 14px var(--mono)}
@@ -821,7 +810,7 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
 .prow-au.total b{color:var(--crema);font-size:17px}
 .vs{display:grid;gap:6px;margin:14px 0 4px}
 .vs div{display:grid;grid-template-columns:90px 1fr;gap:8px;align-items:center;font:11px var(--mono);color:#a58f7c}
-.vs i{display:block;height:10px;border-radius:5px;width:var(--w);background:#5a4535;transition:width .6s}
+.vs i{display:block;height:10px;border-radius:5px;width:100%;transform:scaleX(var(--w));transform-origin:left;background:#5a4535;transition:transform .6s var(--ease-out)}
 .vs .hot i{background:linear-gradient(90deg,var(--crema),var(--ember))}
 
 /* responsive */
@@ -870,9 +859,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
         <p class="hc-title">Geisha<br><em>Natural</em></p>
         <p class="hc-score">88.5<small>SCA</small></p>
         <div class="hc-ridge dark-art"><svg viewBox="0 0 420 180" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gvxf95ba" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
+    <defs><linearGradient id="gk07b324" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
     <path d="M0 180 L0.0 159.3 L30.0 151.4 L60.0 151.5 L90.0 144.2 L120.0 141.9 L150.0 136.6 L180.0 121.8 L210.0 120.1 L240.0 115.6 L270.0 109.8 L300.0 102.6 L330.0 110.2 L360.0 113.8 L390.0 123.6 L420.0 135.8 L420 180 Z" fill="#9c3322" opacity="0.28"/>
-    <path class="front" d="M0 180 L0.0 180.0 L30.0 180.0 L60.0 180.0 L90.0 170.4 L120.0 159.2 L150.0 141.3 L180.0 131.3 L210.0 111.5 L240.0 97.4 L270.0 83.3 L300.0 86.8 L330.0 96.1 L360.0 113.6 L390.0 129.8 L420.0 139.6 L420 180 Z" fill="url(#gvxf95ba)"/>
+    <path class="front" d="M0 180 L0.0 180.0 L30.0 180.0 L60.0 180.0 L90.0 170.4 L120.0 159.2 L150.0 141.3 L180.0 131.3 L210.0 111.5 L240.0 97.4 L270.0 83.3 L300.0 86.8 L330.0 96.1 L360.0 113.6 L390.0 129.8 L420.0 139.6 L420 180 Z" fill="url(#gk07b324)"/>
     <line x1="0" x2="420" y1="80.10000000000001" y2="80.10000000000001" stroke="rgba(243,230,214,.5)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span></div>
       </div>
@@ -889,9 +878,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
     <div class="dos"><article class="card-cafe reveal" style="--i:0">
     <div class="cc-art" data-act="cafe" data-id="P-GEI" role="button" tabindex="0" aria-label="Bourbon rosado">
       <svg viewBox="0 0 420 200" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gcbfavwd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="gwl14vh8" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 200 L0.0 198.9 L30.0 190.2 L60.0 187.3 L90.0 174.6 L120.0 172.3 L150.0 166.0 L180.0 158.4 L210.0 152.8 L240.0 134.2 L270.0 133.0 L300.0 133.5 L330.0 151.1 L360.0 156.7 L390.0 156.7 L420.0 173.8 L420 200 Z" fill="#3f6a4b" opacity="0.2"/>
-    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 183.7 L150.0 174.5 L180.0 155.0 L210.0 143.2 L240.0 124.9 L270.0 109.0 L300.0 124.5 L330.0 141.9 L360.0 156.4 L390.0 170.0 L420.0 182.7 L420 200 Z" fill="url(#gcbfavwd)"/>
+    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 183.7 L150.0 174.5 L180.0 155.0 L210.0 143.2 L240.0 124.9 L270.0 109.0 L300.0 124.5 L330.0 141.9 L360.0 156.4 L390.0 170.0 L420.0 182.7 L420 200 Z" fill="url(#gwl14vh8)"/>
     <line x1="0" x2="420" y1="109.00000000000001" y2="109.00000000000001" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span>
       <span class="state st-publicado">118 disponibles</span>
@@ -906,9 +895,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
     </div></article><article class="card-cafe reveal" style="--i:1">
     <div class="cc-art" data-act="cafe" data-id="P-CAS" role="button" tabindex="0" aria-label="Castillo de Arboledas">
       <svg viewBox="0 0 420 200" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gkz2h4qu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="gdlwzxk5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 195.7 L120.0 191.5 L150.0 180.9 L180.0 175.9 L210.0 161.1 L240.0 153.0 L270.0 161.3 L300.0 160.3 L330.0 171.8 L360.0 174.1 L390.0 192.2 L420.0 189.9 L420 200 Z" fill="#3f6a4b" opacity="0.2"/>
-    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 198.5 L150.0 177.4 L180.0 161.1 L210.0 149.6 L240.0 136.9 L270.0 140.0 L300.0 152.2 L330.0 168.2 L360.0 177.7 L390.0 200.0 L420.0 200.0 L420 200 Z" fill="url(#gkz2h4qu)"/>
+    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 198.5 L150.0 177.4 L180.0 161.1 L210.0 149.6 L240.0 136.9 L270.0 140.0 L300.0 152.2 L330.0 168.2 L360.0 177.7 L390.0 200.0 L420.0 200.0 L420 200 Z" fill="url(#gdlwzxk5)"/>
     <line x1="0" x2="420" y1="129" y2="129" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:64.5%">1.550 msnm</span>
       <span class="state st-publicado">104 disponibles</span>
@@ -923,9 +912,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
     </div></article><article class="card-cafe dark reveal dark-art" style="--i:2">
     <div class="cc-art" data-act="go" data-to="subasta" role="button" tabindex="0" aria-label="Subasta">
       <svg viewBox="0 0 420 200" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="g3scl9wu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
+    <defs><linearGradient id="gymljodc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
     <path d="M0 200 L0.0 177.4 L30.0 168.8 L60.0 168.2 L90.0 160.1 L120.0 157.2 L150.0 151.2 L180.0 135.6 L210.0 133.3 L240.0 128.0 L270.0 121.5 L300.0 114.2 L330.0 122.5 L360.0 126.8 L390.0 137.4 L420.0 150.2 L420 200 Z" fill="#9c3322" opacity="0.28"/>
-    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 189.1 L120.0 176.5 L150.0 157.0 L180.0 145.5 L210.0 124.2 L240.0 108.6 L270.0 93.0 L300.0 96.4 L330.0 107.2 L360.0 126.2 L390.0 143.9 L420.0 155.2 L420 200 Z" fill="url(#g3scl9wu)"/>
+    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 189.1 L120.0 176.5 L150.0 157.0 L180.0 145.5 L210.0 124.2 L240.0 108.6 L270.0 93.0 L300.0 96.4 L330.0 107.2 L360.0 126.2 L390.0 143.9 L420.0 155.2 L420 200 Z" fill="url(#gymljodc)"/>
     <line x1="0" x2="420" y1="89.00000000000001" y2="89.00000000000001" stroke="rgba(243,230,214,.5)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span>
       <span class="state st-en-subasta">en vivo</span>
@@ -952,9 +941,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
       <p>Hoy a fincas aliadas. Desde 2027, también de nuestra propia tierra, y seguiremos comprándole a los vecinos.</p></div>
     <div class="fincas"><article class="finca reveal " style="--i:0">
     <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gbn11h90" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="gt71vtmg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 120 L0.0 107.3 L27.1 108.8 L54.3 96.7 L81.4 93.4 L108.6 94.6 L135.7 87.4 L162.9 78.9 L190.0 83.0 L217.1 70.6 L244.3 67.8 L271.4 67.8 L298.6 76.8 L325.7 80.2 L352.9 77.3 L380.0 84.1 L380 120 Z" fill="#6a5646" opacity="0.2"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 110.2 L108.6 106.6 L135.7 100.8 L162.9 92.0 L190.0 75.5 L217.1 71.3 L244.3 63.7 L271.4 57.5 L298.6 63.4 L325.7 77.3 L352.9 80.3 L380.0 94.7 L380 120 Z" fill="url(#gbn11h90)"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 110.2 L108.6 106.6 L135.7 100.8 L162.9 92.0 L190.0 75.5 L217.1 71.3 L244.3 63.7 L271.4 57.5 L298.6 63.4 L325.7 77.3 L352.9 80.3 L380.0 94.7 L380 120 Z" fill="url(#gt71vtmg)"/>
     <line x1="0" x2="380" y1="53.400000000000006" y2="53.400000000000006" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span></div>
     <div class="finca-body">
@@ -968,9 +957,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
       </div>
     </div></article><article class="finca reveal " style="--i:1">
     <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gn451qx2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="g1i6ku94" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 120 L0.0 105.7 L27.1 113.0 L54.3 98.8 L81.4 102.4 L108.6 97.4 L135.7 86.7 L162.9 79.8 L190.0 86.2 L217.1 87.4 L244.3 89.5 L271.4 84.6 L298.6 94.7 L325.7 102.9 L352.9 99.6 L380.0 114.5 L380 120 Z" fill="#6a5646" opacity="0.2"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 118.0 L54.3 116.5 L81.4 102.7 L108.6 90.3 L135.7 83.8 L162.9 77.3 L190.0 66.6 L217.1 71.4 L244.3 83.6 L271.4 89.9 L298.6 99.3 L325.7 108.2 L352.9 116.2 L380.0 120.0 L380 120 Z" fill="url(#gn451qx2)"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 118.0 L54.3 116.5 L81.4 102.7 L108.6 90.3 L135.7 83.8 L162.9 77.3 L190.0 66.6 L217.1 71.4 L244.3 83.6 L271.4 89.9 L298.6 99.3 L325.7 108.2 L352.9 116.2 L380.0 120.0 L380 120 Z" fill="url(#g1i6ku94)"/>
     <line x1="0" x2="380" y1="65.4" y2="65.4" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span></div>
     <div class="finca-body">
@@ -984,9 +973,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
       </div>
     </div></article><article class="finca reveal " style="--i:2">
     <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gr3soe3w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="gmkfsue3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 119.9 L108.6 117.6 L135.7 111.7 L162.9 104.8 L190.0 97.9 L217.1 106.5 L244.3 99.8 L271.4 91.8 L298.6 93.1 L325.7 96.3 L352.9 105.6 L380.0 106.0 L380 120 Z" fill="#6a5646" opacity="0.2"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 120.0 L108.6 120.0 L135.7 120.0 L162.9 108.9 L190.0 99.8 L217.1 95.8 L244.3 81.5 L271.4 81.6 L298.6 90.7 L325.7 99.6 L352.9 105.9 L380.0 112.1 L380 120 Z" fill="url(#gr3soe3w)"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 120.0 L108.6 120.0 L135.7 120.0 L162.9 108.9 L190.0 99.8 L217.1 95.8 L244.3 81.5 L271.4 81.6 L298.6 90.7 L325.7 99.6 L352.9 105.9 L380.0 112.1 L380 120 Z" fill="url(#gmkfsue3)"/>
     <line x1="0" x2="380" y1="77.4" y2="77.4" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:64.5%">1.550 msnm</span></div>
     <div class="finca-body">
@@ -1000,9 +989,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
       </div>
     </div></article><article class="finca reveal propia" style="--i:3">
     <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gkboox0e" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="g5b76ld8" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 120 L0.0 113.9 L27.1 112.0 L54.3 109.9 L81.4 95.4 L108.6 90.3 L135.7 90.3 L162.9 82.4 L190.0 81.5 L217.1 86.8 L244.3 86.1 L271.4 92.9 L298.6 91.0 L325.7 98.9 L352.9 96.3 L380.0 103.6 L380 120 Z" fill="#6a5646" opacity="0.2"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 119.9 L81.4 107.7 L108.6 101.8 L135.7 90.4 L162.9 85.0 L190.0 75.7 L217.1 65.4 L244.3 78.9 L271.4 86.6 L298.6 91.1 L325.7 103.5 L352.9 117.0 L380.0 120.0 L380 120 Z" fill="url(#gkboox0e)"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 119.9 L81.4 107.7 L108.6 101.8 L135.7 90.4 L162.9 85.0 L190.0 75.7 L217.1 65.4 L244.3 78.9 L271.4 86.6 L298.6 91.1 L325.7 103.5 L352.9 117.0 L380.0 120.0 L380 120 Z" fill="url(#g5b76ld8)"/>
     <line x1="0" x2="380" y1="65.4" y2="65.4" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span></div>
     <div class="finca-body">
@@ -2178,6 +2167,7 @@ function renderNav() {
   document.querySelectorAll("[data-lang]").forEach((x) => x.setAttribute("aria-pressed", x.dataset.lang === UI.lang));
 }
 function cambiarIdioma(l) {
+  const v = $("#view"); v.classList.add("swap"); setTimeout(() => v.classList.remove("swap"), 140);
   UI.lang = l; try { localStorage.setItem("nandez-lang", l); } catch {}
   const id = UI.view === "cafe" ? UI.cafe : UI.view === "entrada" ? UI.entrada : null;
   try { history.replaceState({}, "", ruta(UI.view, id)); } catch {}

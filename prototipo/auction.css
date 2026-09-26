@@ -56,7 +56,7 @@
 .bid{display:grid;grid-template-columns:1fr auto;gap:0 10px;padding:10px 12px;border-radius:12px;background:#1f1510;border:1px solid #2e211a}
 .bid.top{border-color:var(--ember);background:linear-gradient(90deg,rgba(255,106,61,.16),transparent)}
 .bid.me .who{color:var(--crema)}
-.bid.new{animation:bidIn .7s cubic-bezier(.2,.8,.2,1)}
+.bid.new{animation:bidIn .5s var(--ease-out)}
 @keyframes bidIn{from{opacity:0;transform:translateX(26px) scale(.96);background:rgba(255,106,61,.4)}}
 .bid .who{font-weight:600;font-size:13.5px}
 .bid .p{font:600 14px var(--mono)}
@@ -89,7 +89,7 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
 .prow-au.total b{color:var(--crema);font-size:17px}
 .vs{display:grid;gap:6px;margin:14px 0 4px}
 .vs div{display:grid;grid-template-columns:90px 1fr;gap:8px;align-items:center;font:11px var(--mono);color:#a58f7c}
-.vs i{display:block;height:10px;border-radius:5px;width:var(--w);background:#5a4535;transition:width .6s}
+.vs i{display:block;height:10px;border-radius:5px;width:100%;transform:scaleX(var(--w));transform-origin:left;background:#5a4535;transition:transform .6s var(--ease-out)}
 .vs .hot i{background:linear-gradient(90deg,var(--crema),var(--ember))}
 
 /* responsive */
