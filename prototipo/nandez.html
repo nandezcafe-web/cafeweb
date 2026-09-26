@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f3ebdd">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#120c09">
-<meta name="color-scheme" content="light">
+<meta name="color-scheme" content="light dark">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -34,6 +34,22 @@
   --ease-in-out: cubic-bezier(.77, 0, .175, 1);
   --r:14px;--shadow:0 1px 0 rgba(29,20,15,.04),0 14px 30px -16px rgba(29,20,15,.3);
 }
+/* Paleta oscura: los mismos tokens, no colores sueltos */
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#15100c;--paper-2:#1e1711;--card:#1d1611;--ink:#f2e8dd;--ink-2:#bba896;--ink-3:#8b7766;--line:#332720;
+    --cherry:#d9705a;--cherry-2:#e8836c;--leaf:#7fb894;--gold:#d3a253;--doc:#7fb0d8;
+    --shadow:0 1px 0 rgba(0,0,0,.3),0 16px 34px -18px rgba(0,0,0,.7);
+  }
+  body::before{background:repeating-radial-gradient(ellipse at 12% 18%,transparent 0 26px,rgba(255,220,180,.035) 26px 27px),repeating-radial-gradient(ellipse at 88% 72%,transparent 0 34px,rgba(255,220,180,.03) 34px 35px)}
+  body::after{opacity:.1;mix-blend-mode:screen}
+  .btn:hover{background:var(--ink);color:var(--paper)}
+  .espera{background:#0f0b08}
+  .espera .input{background:#221a14;border-color:#3a2c22}
+  .hero-card,.prod-card{box-shadow:0 40px 70px -30px rgba(0,0,0,.8)}
+  .notas-chips li,.notes li{background:var(--paper-2)}
+}
+
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 var(--sans);-webkit-font-smoothing:antialiased;min-height:100vh;transition:background .6s ease,color .6s ease}
@@ -528,14 +544,21 @@ p.al-bad{--c:var(--cherry);color:var(--cherry)}
 .cc-foot b{font:600 1.35rem var(--mono)}
 .cc-foot small{color:var(--ink-2)}
 .cc-foot .btn{margin-left:auto}
-.valor{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:32px}
+.valor{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-top:32px}
+.val{grid-column:span 3}
+.val:first-child{grid-column:span 6;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:8px 28px;align-items:baseline;padding:26px 28px}
+.val:first-child b{font-size:clamp(1.9rem,3.4vw,2.8rem)}
+.val:nth-child(3),.val:nth-child(4){grid-column:span 3}
+@media (max-width:900px){.valor{grid-template-columns:1fr}.val,.val:first-child,.val:nth-child(3),.val:nth-child(4){grid-column:auto}.val:first-child{grid-template-columns:1fr}}
 .val{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--cherry);border-radius:14px;padding:18px}
 .val b{display:block;font:400 1.5rem/1.1 var(--serif);margin-bottom:6px}
 .val span{color:var(--ink-2);font-size:14px}
 .cinta{border-top:1px solid var(--line);margin-top:30px}
 .cinta-pasos{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-top:20px}
 .cp{border-top:2px solid var(--ink);padding-top:10px}
-.cp .n{font:italic 26px/1 var(--serif);color:var(--cherry)}
+.cp .n{display:none}
+.cp{border-top:2px solid var(--ink);padding-top:12px}
+.cp b{font:400 1.35rem var(--serif);display:block}
 .cp b{display:block;margin-top:4px}
 .cp small{color:var(--ink-2);font-size:13px}
 .prod{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:44px 48px;align-items:start}
@@ -619,7 +642,7 @@ body[data-view=subasta] .lang button[aria-pressed=true]{background:var(--crema);
 .var-chip{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;background:var(--paper);border-radius:999px;padding:4px 10px}
 .pronto{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--cherry);margin-left:auto}
 .finca-foot .btn{margin-left:auto}
-.foto-pend{border:1px dashed var(--line);border-radius:10px;padding:10px 12px;background:var(--paper-2)}
+.foto-pend{display:grid;place-items:center;text-align:center;aspect-ratio:4/3;border:1px dashed var(--line);border-radius:16px;background:var(--paper-2);color:var(--ink-3);font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;margin-top:16px;padding:20px}
 .planes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:10px}
 .plan{position:relative;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px 24px;display:flex;flex-direction:column;gap:10px}
 .plan.hot{border-color:var(--cherry);box-shadow:0 20px 40px -24px rgba(168,50,31,.5)}
@@ -860,19 +883,19 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
     </div>
     <div class="hero-art reveal" style="--i:2">
       <div class="hero-card">
-        <div class="hc-top"><span class="kicker">Domingo Torres · Toledo</span><span class="state st-en-subasta">en vivo</span></div>
+        <div class="hc-top"><span class="kicker">Domingo Torres, Toledo</span><span class="state st-en-subasta">en vivo</span></div>
         <p class="hc-title">Geisha<br><em>Natural</em></p>
         <p class="hc-score">88.5<small>SCA</small></p>
         <div class="hc-ridge dark-art"><svg viewBox="0 0 420 180" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gszz4pf2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
+    <defs><linearGradient id="g24ul1yp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
     <path d="M0 180 L0.0 159.3 L30.0 151.4 L60.0 151.5 L90.0 144.2 L120.0 141.9 L150.0 136.6 L180.0 121.8 L210.0 120.1 L240.0 115.6 L270.0 109.8 L300.0 102.6 L330.0 110.2 L360.0 113.8 L390.0 123.6 L420.0 135.8 L420 180 Z" fill="#9c3322" opacity="0.28"/>
-    <path class="front" d="M0 180 L0.0 180.0 L30.0 180.0 L60.0 180.0 L90.0 170.4 L120.0 159.2 L150.0 141.3 L180.0 131.3 L210.0 111.5 L240.0 97.4 L270.0 83.3 L300.0 86.8 L330.0 96.1 L360.0 113.6 L390.0 129.8 L420.0 139.6 L420 180 Z" fill="url(#gszz4pf2)"/>
+    <path class="front" d="M0 180 L0.0 180.0 L30.0 180.0 L60.0 180.0 L90.0 170.4 L120.0 159.2 L150.0 141.3 L180.0 131.3 L210.0 111.5 L240.0 97.4 L270.0 83.3 L300.0 86.8 L330.0 96.1 L360.0 113.6 L390.0 129.8 L420.0 139.6 L420 180 Z" fill="url(#g24ul1yp)"/>
     <line x1="0" x2="420" y1="80.10000000000001" y2="80.10000000000001" stroke="rgba(243,230,214,.5)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span></div>
       </div>
       <div class="float-chip" style="--x:-6%;--y:66%;--d:0s"><i style="--c:var(--leaf)"></i><span>Altitud <b>1.950 m</b></span><small>verificado · GPS</small></div>
       <div class="float-chip" style="--x:58%;--y:24%;--d:-2s"><i style="--c:var(--leaf)"></i><span>Puntaje <b>88.5</b></span><small>verificado · Q-grader</small></div>
-      <div class="float-chip" style="--x:54%;--y:84%;--d:-4s"><i style="--c:var(--doc)"></i><span>Subasta <b data-live-price>$128.000</b></span><small>por kg verde</small></div>
+      <div class="float-chip" style="--x:54%;--y:84%;--d:-4s"><i style="--c:var(--gold)"></i><span>Puja actual <b data-live-price>$128.000</b></span><small>por kg verde</small></div>
     </div>
   </section>
 
@@ -883,16 +906,16 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
     <div class="dos"><article class="card-cafe reveal" style="--i:0">
     <div class="cc-art" data-act="cafe" data-id="P-GEI" role="button" tabindex="0" aria-label="Bourbon rosado">
       <svg viewBox="0 0 420 200" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="g0177shl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="gdajeff4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 200 L0.0 198.9 L30.0 190.2 L60.0 187.3 L90.0 174.6 L120.0 172.3 L150.0 166.0 L180.0 158.4 L210.0 152.8 L240.0 134.2 L270.0 133.0 L300.0 133.5 L330.0 151.1 L360.0 156.7 L390.0 156.7 L420.0 173.8 L420 200 Z" fill="#3f6a4b" opacity="0.2"/>
-    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 183.7 L150.0 174.5 L180.0 155.0 L210.0 143.2 L240.0 124.9 L270.0 109.0 L300.0 124.5 L330.0 141.9 L360.0 156.4 L390.0 170.0 L420.0 182.7 L420 200 Z" fill="url(#g0177shl)"/>
+    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 183.7 L150.0 174.5 L180.0 155.0 L210.0 143.2 L240.0 124.9 L270.0 109.0 L300.0 124.5 L330.0 141.9 L360.0 156.4 L390.0 170.0 L420.0 182.7 L420 200 Z" fill="url(#gdajeff4)"/>
     <line x1="0" x2="420" y1="109.00000000000001" y2="109.00000000000001" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span>
       <span class="state st-publicado">118 disponibles</span>
       <div class="cc-score"><b>87.5</b><small style="color:var(--leaf)">SCA · Verificado</small></div>
     </div>
     <div class="cc-body">
-      <p class="kicker">Lote Chinácota · 1.750 msnm</p>
+      <p class="kicker">Lote Chinácota<br>1.750 msnm</p>
       <h3>Bourbon rosado</h3>
       <p class="notas-linea">Jazmín · Bergamota · Durazno</p>
       <div class="cc-foot"><b class="mono">$68.000</b><small>250 g</small>
@@ -900,16 +923,16 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
     </div></article><article class="card-cafe reveal" style="--i:1">
     <div class="cc-art" data-act="cafe" data-id="P-CAS" role="button" tabindex="0" aria-label="Castillo de Arboledas">
       <svg viewBox="0 0 420 200" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gin2re1j" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="g8n32t2l" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 195.7 L120.0 191.5 L150.0 180.9 L180.0 175.9 L210.0 161.1 L240.0 153.0 L270.0 161.3 L300.0 160.3 L330.0 171.8 L360.0 174.1 L390.0 192.2 L420.0 189.9 L420 200 Z" fill="#3f6a4b" opacity="0.2"/>
-    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 198.5 L150.0 177.4 L180.0 161.1 L210.0 149.6 L240.0 136.9 L270.0 140.0 L300.0 152.2 L330.0 168.2 L360.0 177.7 L390.0 200.0 L420.0 200.0 L420 200 Z" fill="url(#gin2re1j)"/>
+    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 198.5 L150.0 177.4 L180.0 161.1 L210.0 149.6 L240.0 136.9 L270.0 140.0 L300.0 152.2 L330.0 168.2 L360.0 177.7 L390.0 200.0 L420.0 200.0 L420 200 Z" fill="url(#g8n32t2l)"/>
     <line x1="0" x2="420" y1="129" y2="129" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:64.5%">1.550 msnm</span>
       <span class="state st-publicado">104 disponibles</span>
       <div class="cc-score"><b>84</b><small style="color:var(--doc)">SCA · Documentado</small></div>
     </div>
     <div class="cc-body">
-      <p class="kicker">Lote Arboledas · 1.550 msnm</p>
+      <p class="kicker">Lote Arboledas<br>1.550 msnm</p>
       <h3>Castillo de Arboledas</h3>
       <p class="notas-linea">Panela · Chocolate · Naranja</p>
       <div class="cc-foot"><b class="mono">$38.000</b><small>250 g</small>
@@ -917,20 +940,20 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
     </div></article><article class="card-cafe dark reveal dark-art" style="--i:2">
     <div class="cc-art" data-act="go" data-to="subasta" role="button" tabindex="0" aria-label="Subasta">
       <svg viewBox="0 0 420 200" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="g8nl2sqb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
+    <defs><linearGradient id="gp7vi89z" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
     <path d="M0 200 L0.0 177.4 L30.0 168.8 L60.0 168.2 L90.0 160.1 L120.0 157.2 L150.0 151.2 L180.0 135.6 L210.0 133.3 L240.0 128.0 L270.0 121.5 L300.0 114.2 L330.0 122.5 L360.0 126.8 L390.0 137.4 L420.0 150.2 L420 200 Z" fill="#9c3322" opacity="0.28"/>
-    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 189.1 L120.0 176.5 L150.0 157.0 L180.0 145.5 L210.0 124.2 L240.0 108.6 L270.0 93.0 L300.0 96.4 L330.0 107.2 L360.0 126.2 L390.0 143.9 L420.0 155.2 L420 200 Z" fill="url(#g8nl2sqb)"/>
+    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 189.1 L120.0 176.5 L150.0 157.0 L180.0 145.5 L210.0 124.2 L240.0 108.6 L270.0 93.0 L300.0 96.4 L330.0 107.2 L360.0 126.2 L390.0 143.9 L420.0 155.2 L420 200 Z" fill="url(#gp7vi89z)"/>
     <line x1="0" x2="420" y1="89.00000000000001" y2="89.00000000000001" stroke="rgba(243,230,214,.5)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span>
       <span class="state st-en-subasta">en vivo</span>
       <div class="cc-score"><b>88.5</b><small>SCA</small></div>
     </div>
     <div class="cc-body">
-      <p class="kicker">Domingo Torres · Toledo · 30 kg</p>
+      <p class="kicker">Domingo Torres, Toledo<br>30 kg de café verde</p>
       <h3>Geisha <em>Natural</em></h3>
       <p class="notas-linea">Jazmín · Mango · Vino blanco · Bergamota</p>
       <div class="cc-foot"><b class="mono" data-live-price>$128.000</b><small>por kg</small>
-        <button class="btn primary sm" data-act="go" data-to="subasta"><span class="live-dot "></span> Pujar</button></div>
+        <button class="btn primary sm" data-act="go" data-to="subasta">Pujar</button></div>
     </div></article></div>
   </section>
 
@@ -946,9 +969,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
       <p>Hoy a fincas aliadas. Desde 2027, también de nuestra propia tierra, y seguiremos comprándole a los vecinos.</p></div>
     <div class="fincas"><article class="finca reveal " style="--i:0">
     <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gsi0y28h" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="gzl5k6u2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 120 L0.0 107.3 L27.1 108.8 L54.3 96.7 L81.4 93.4 L108.6 94.6 L135.7 87.4 L162.9 78.9 L190.0 83.0 L217.1 70.6 L244.3 67.8 L271.4 67.8 L298.6 76.8 L325.7 80.2 L352.9 77.3 L380.0 84.1 L380 120 Z" fill="#6a5646" opacity="0.2"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 110.2 L108.6 106.6 L135.7 100.8 L162.9 92.0 L190.0 75.5 L217.1 71.3 L244.3 63.7 L271.4 57.5 L298.6 63.4 L325.7 77.3 L352.9 80.3 L380.0 94.7 L380 120 Z" fill="url(#gsi0y28h)"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 110.2 L108.6 106.6 L135.7 100.8 L162.9 92.0 L190.0 75.5 L217.1 71.3 L244.3 63.7 L271.4 57.5 L298.6 63.4 L325.7 77.3 L352.9 80.3 L380.0 94.7 L380 120 Z" fill="url(#gzl5k6u2)"/>
     <line x1="0" x2="380" y1="53.400000000000006" y2="53.400000000000006" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span></div>
     <div class="finca-body">
@@ -962,9 +985,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
       </div>
     </div></article><article class="finca reveal " style="--i:1">
     <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gojas7p5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="g84mrfx8" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 120 L0.0 105.7 L27.1 113.0 L54.3 98.8 L81.4 102.4 L108.6 97.4 L135.7 86.7 L162.9 79.8 L190.0 86.2 L217.1 87.4 L244.3 89.5 L271.4 84.6 L298.6 94.7 L325.7 102.9 L352.9 99.6 L380.0 114.5 L380 120 Z" fill="#6a5646" opacity="0.2"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 118.0 L54.3 116.5 L81.4 102.7 L108.6 90.3 L135.7 83.8 L162.9 77.3 L190.0 66.6 L217.1 71.4 L244.3 83.6 L271.4 89.9 L298.6 99.3 L325.7 108.2 L352.9 116.2 L380.0 120.0 L380 120 Z" fill="url(#gojas7p5)"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 118.0 L54.3 116.5 L81.4 102.7 L108.6 90.3 L135.7 83.8 L162.9 77.3 L190.0 66.6 L217.1 71.4 L244.3 83.6 L271.4 89.9 L298.6 99.3 L325.7 108.2 L352.9 116.2 L380.0 120.0 L380 120 Z" fill="url(#g84mrfx8)"/>
     <line x1="0" x2="380" y1="65.4" y2="65.4" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span></div>
     <div class="finca-body">
@@ -978,9 +1001,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
       </div>
     </div></article><article class="finca reveal " style="--i:2">
     <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="glu1jzbt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="g3sp06o3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 119.9 L108.6 117.6 L135.7 111.7 L162.9 104.8 L190.0 97.9 L217.1 106.5 L244.3 99.8 L271.4 91.8 L298.6 93.1 L325.7 96.3 L352.9 105.6 L380.0 106.0 L380 120 Z" fill="#6a5646" opacity="0.2"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 120.0 L108.6 120.0 L135.7 120.0 L162.9 108.9 L190.0 99.8 L217.1 95.8 L244.3 81.5 L271.4 81.6 L298.6 90.7 L325.7 99.6 L352.9 105.9 L380.0 112.1 L380 120 Z" fill="url(#glu1jzbt)"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 120.0 L108.6 120.0 L135.7 120.0 L162.9 108.9 L190.0 99.8 L217.1 95.8 L244.3 81.5 L271.4 81.6 L298.6 90.7 L325.7 99.6 L352.9 105.9 L380.0 112.1 L380 120 Z" fill="url(#g3sp06o3)"/>
     <line x1="0" x2="380" y1="77.4" y2="77.4" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:64.5%">1.550 msnm</span></div>
     <div class="finca-body">
@@ -994,9 +1017,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
       </div>
     </div></article><article class="finca reveal propia" style="--i:3">
     <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="g6p439he" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="g59uxj0o" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 120 L0.0 113.9 L27.1 112.0 L54.3 109.9 L81.4 95.4 L108.6 90.3 L135.7 90.3 L162.9 82.4 L190.0 81.5 L217.1 86.8 L244.3 86.1 L271.4 92.9 L298.6 91.0 L325.7 98.9 L352.9 96.3 L380.0 103.6 L380 120 Z" fill="#6a5646" opacity="0.2"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 119.9 L81.4 107.7 L108.6 101.8 L135.7 90.4 L162.9 85.0 L190.0 75.7 L217.1 65.4 L244.3 78.9 L271.4 86.6 L298.6 91.1 L325.7 103.5 L352.9 117.0 L380.0 120.0 L380 120 Z" fill="url(#g6p439he)"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 119.9 L81.4 107.7 L108.6 101.8 L135.7 90.4 L162.9 85.0 L190.0 75.7 L217.1 65.4 L244.3 78.9 L271.4 86.6 L298.6 91.1 L325.7 103.5 L352.9 117.0 L380.0 120.0 L380 120 Z" fill="url(#g59uxj0o)"/>
     <line x1="0" x2="380" y1="65.4" y2="65.4" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span></div>
     <div class="finca-body">
@@ -1442,7 +1465,7 @@ function cafeCard(p, i = 0) {
       <div class="cc-score"><b>${esc(p.puntaje)}</b><small style="color:${LV[p.nivel].c}">SCA · ${lvl(p.nivel)}</small></div>
     </div>
     <div class="cc-body">
-      <p class="kicker">${esc(f.finca || "")} · ${esc(p.altitud ? fmtNum(p.altitud) + " msnm" : "")}</p>
+      <p class="kicker">${esc(f.finca || "")}<br>${esc(p.altitud ? fmtNum(p.altitud) + " msnm" : "")}</p>
       <h3>${esc(tx(p.nombre))}</h3>
       <p class="notas-linea">${tx(p.notas).join(" · ")}</p>
       <div class="cc-foot"><b class="mono">${cop(v.precio)}</b><small>${gramos(v.g)}</small>
@@ -1459,11 +1482,11 @@ function subastaCard(i = 0) {
       <div class="cc-score"><b>${esc(l.puntaje)}</b><small>SCA</small></div>
     </div>
     <div class="cc-body">
-      <p class="kicker">${esc(l.productor)} · ${esc(l.municipio)} · ${a.kg} kg</p>
+      <p class="kicker">${esc(l.productor)}, ${esc(l.municipio)}<br>${a.kg} kg de café verde</p>
       <h3>${esc(l.variedad)} <em>${esc(l.proceso)}</em></h3>
       <p class="notas-linea">${l.perfil.join(" · ")}</p>
       <div class="cc-foot"><b class="mono" data-live-price>${cop(top ? top.p : a.start)}</b><small>${t("por_kg")}</small>
-        <button class="btn primary sm" data-act="go" data-to="subasta"><span class="live-dot ${a.ended ? "off" : ""}"></span> ${a.ended ? t("ver_cafe") : "Pujar"}</button></div>
+        <button class="btn primary sm" data-act="go" data-to="subasta">${a.ended ? t("ver_cafe") : (UI.lang === "en" ? "Bid" : "Pujar")}</button></div>
     </div></article>`;
 }
 
@@ -1521,11 +1544,11 @@ function viewCafe() {
         <div class="hc-ridge">${ridge(p, { w: 460, h: 200, dark: true })}</div>
       </div>
       <ul class="notas-chips">${tx(p.notas).map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
-      <p class="hint foto-pend">${UI.lang === "en" ? "PENDING: photo of the farm and the producer." : "PENDIENTE: foto de la finca y del productor."}</p>
+      <div class="foto-pend">${UI.lang === "en" ? "Photo of the farm and the producer" : "Foto de la finca y del productor"}</div>
     </div>
 
     <div class="prod-buy reveal" style="--i:1">
-      <p class="eyebrow">${esc(f.finca || "")} · ${esc(f.productor || "")} · ${esc(tx(p.sub))}</p>
+      <p class="eyebrow">${esc(f.productor || "")}, ${esc(f.finca || "")}</p>
       <h1>${esc(tx(p.nombre))}</h1>
       <p class="lede">${esc(tx(f.historia || { es: "", en: "" }))}</p>
 
@@ -2018,14 +2041,14 @@ function viewInicio() {
     </div>
     <div class="hero-art reveal" style="--i:2">
       <div class="hero-card">
-        <div class="hc-top"><span class="kicker">${esc(l.productor)} · ${esc(l.municipio)}</span><span class="state st-en-subasta">${a.ended ? t("cerrada") : t("en_vivo")}</span></div>
+        <div class="hc-top"><span class="kicker">${esc(l.productor)}, ${esc(l.municipio)}</span><span class="state st-en-subasta">${a.ended ? t("cerrada") : t("en_vivo")}</span></div>
         <p class="hc-title">${esc(l.variedad)}<br><em>${esc(l.proceso)}</em></p>
         <p class="hc-score">${esc(l.puntaje)}<small>SCA</small></p>
         <div class="hc-ridge dark-art">${ridge(l, { w: 420, h: 180, dark: true })}</div>
       </div>
       <div class="float-chip" style="--x:-6%;--y:66%;--d:0s"><i style="--c:var(--leaf)"></i><span>${en ? "Altitude" : "Altitud"} <b>${fmtNum(l.altitud)} m</b></span><small>${en ? "verified · GPS" : "verificado · GPS"}</small></div>
       <div class="float-chip" style="--x:58%;--y:24%;--d:-2s"><i style="--c:var(--leaf)"></i><span>${en ? "Score" : "Puntaje"} <b>${esc(l.puntaje)}</b></span><small>${en ? "verified · Q-grader" : "verificado · Q-grader"}</small></div>
-      <div class="float-chip" style="--x:54%;--y:84%;--d:-4s"><i style="--c:var(--doc)"></i><span>${en ? "Auction" : "Subasta"} <b data-live-price>${cop(topBid(a)?.p || a.start)}</b></span><small>${en ? "per kg green" : "por kg verde"}</small></div>
+      <div class="float-chip" style="--x:54%;--y:84%;--d:-4s"><i style="--c:var(--gold)"></i><span>${en ? "Current bid" : "Puja actual"} <b data-live-price>${cop(topBid(a)?.p || a.start)}</b></span><small>${en ? "per kg green" : "por kg verde"}</small></div>
     </div>
   </section>
 

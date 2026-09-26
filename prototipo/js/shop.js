@@ -17,7 +17,7 @@ function cafeCard(p, i = 0) {
       <div class="cc-score"><b>${esc(p.puntaje)}</b><small style="color:${LV[p.nivel].c}">SCA · ${lvl(p.nivel)}</small></div>
     </div>
     <div class="cc-body">
-      <p class="kicker">${esc(f.finca || "")} · ${esc(p.altitud ? fmtNum(p.altitud) + " msnm" : "")}</p>
+      <p class="kicker">${esc(f.finca || "")}<br>${esc(p.altitud ? fmtNum(p.altitud) + " msnm" : "")}</p>
       <h3>${esc(tx(p.nombre))}</h3>
       <p class="notas-linea">${tx(p.notas).join(" · ")}</p>
       <div class="cc-foot"><b class="mono">${cop(v.precio)}</b><small>${gramos(v.g)}</small>
@@ -34,11 +34,11 @@ function subastaCard(i = 0) {
       <div class="cc-score"><b>${esc(l.puntaje)}</b><small>SCA</small></div>
     </div>
     <div class="cc-body">
-      <p class="kicker">${esc(l.productor)} · ${esc(l.municipio)} · ${a.kg} kg</p>
+      <p class="kicker">${esc(l.productor)}, ${esc(l.municipio)}<br>${a.kg} kg de café verde</p>
       <h3>${esc(l.variedad)} <em>${esc(l.proceso)}</em></h3>
       <p class="notas-linea">${l.perfil.join(" · ")}</p>
       <div class="cc-foot"><b class="mono" data-live-price>${cop(top ? top.p : a.start)}</b><small>${t("por_kg")}</small>
-        <button class="btn primary sm" data-act="go" data-to="subasta"><span class="live-dot ${a.ended ? "off" : ""}"></span> ${a.ended ? t("ver_cafe") : "Pujar"}</button></div>
+        <button class="btn primary sm" data-act="go" data-to="subasta">${a.ended ? t("ver_cafe") : (UI.lang === "en" ? "Bid" : "Pujar")}</button></div>
     </div></article>`;
 }
 
@@ -96,11 +96,11 @@ function viewCafe() {
         <div class="hc-ridge">${ridge(p, { w: 460, h: 200, dark: true })}</div>
       </div>
       <ul class="notas-chips">${tx(p.notas).map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
-      <p class="hint foto-pend">${UI.lang === "en" ? "PENDING: photo of the farm and the producer." : "PENDIENTE: foto de la finca y del productor."}</p>
+      <div class="foto-pend">${UI.lang === "en" ? "Photo of the farm and the producer" : "Foto de la finca y del productor"}</div>
     </div>
 
     <div class="prod-buy reveal" style="--i:1">
-      <p class="eyebrow">${esc(f.finca || "")} · ${esc(f.productor || "")} · ${esc(tx(p.sub))}</p>
+      <p class="eyebrow">${esc(f.productor || "")}, ${esc(f.finca || "")}</p>
       <h1>${esc(tx(p.nombre))}</h1>
       <p class="lede">${esc(tx(f.historia || { es: "", en: "" }))}</p>
 

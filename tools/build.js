@@ -103,7 +103,7 @@ function pagina(ctx, { view, id }, lang) {
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f3ebdd">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#120c09">
-<meta name="color-scheme" content="light">
+<meta name="color-scheme" content="light dark">
 ${FUENTES}
 <link rel="stylesheet" href="/styles.css?v=${VERSION}">
 <link rel="stylesheet" href="/auction.css?v=${VERSION}">

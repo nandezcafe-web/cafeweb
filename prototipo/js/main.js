@@ -35,14 +35,14 @@ function viewInicio() {
     </div>
     <div class="hero-art reveal" style="--i:2">
       <div class="hero-card">
-        <div class="hc-top"><span class="kicker">${esc(l.productor)} · ${esc(l.municipio)}</span><span class="state st-en-subasta">${a.ended ? t("cerrada") : t("en_vivo")}</span></div>
+        <div class="hc-top"><span class="kicker">${esc(l.productor)}, ${esc(l.municipio)}</span><span class="state st-en-subasta">${a.ended ? t("cerrada") : t("en_vivo")}</span></div>
         <p class="hc-title">${esc(l.variedad)}<br><em>${esc(l.proceso)}</em></p>
         <p class="hc-score">${esc(l.puntaje)}<small>SCA</small></p>
         <div class="hc-ridge dark-art">${ridge(l, { w: 420, h: 180, dark: true })}</div>
       </div>
       <div class="float-chip" style="--x:-6%;--y:66%;--d:0s"><i style="--c:var(--leaf)"></i><span>${en ? "Altitude" : "Altitud"} <b>${fmtNum(l.altitud)} m</b></span><small>${en ? "verified · GPS" : "verificado · GPS"}</small></div>
       <div class="float-chip" style="--x:58%;--y:24%;--d:-2s"><i style="--c:var(--leaf)"></i><span>${en ? "Score" : "Puntaje"} <b>${esc(l.puntaje)}</b></span><small>${en ? "verified · Q-grader" : "verificado · Q-grader"}</small></div>
-      <div class="float-chip" style="--x:54%;--y:84%;--d:-4s"><i style="--c:var(--doc)"></i><span>${en ? "Auction" : "Subasta"} <b data-live-price>${cop(topBid(a)?.p || a.start)}</b></span><small>${en ? "per kg green" : "por kg verde"}</small></div>
+      <div class="float-chip" style="--x:54%;--y:84%;--d:-4s"><i style="--c:var(--gold)"></i><span>${en ? "Current bid" : "Puja actual"} <b data-live-price>${cop(topBid(a)?.p || a.start)}</b></span><small>${en ? "per kg green" : "por kg verde"}</small></div>
     </div>
   </section>
 

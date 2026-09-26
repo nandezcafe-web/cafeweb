@@ -20,6 +20,22 @@
   --ease-in-out: cubic-bezier(.77, 0, .175, 1);
   --r:14px;--shadow:0 1px 0 rgba(29,20,15,.04),0 14px 30px -16px rgba(29,20,15,.3);
 }
+/* Paleta oscura: los mismos tokens, no colores sueltos */
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#15100c;--paper-2:#1e1711;--card:#1d1611;--ink:#f2e8dd;--ink-2:#bba896;--ink-3:#8b7766;--line:#332720;
+    --cherry:#d9705a;--cherry-2:#e8836c;--leaf:#7fb894;--gold:#d3a253;--doc:#7fb0d8;
+    --shadow:0 1px 0 rgba(0,0,0,.3),0 16px 34px -18px rgba(0,0,0,.7);
+  }
+  body::before{background:repeating-radial-gradient(ellipse at 12% 18%,transparent 0 26px,rgba(255,220,180,.035) 26px 27px),repeating-radial-gradient(ellipse at 88% 72%,transparent 0 34px,rgba(255,220,180,.03) 34px 35px)}
+  body::after{opacity:.1;mix-blend-mode:screen}
+  .btn:hover{background:var(--ink);color:var(--paper)}
+  .espera{background:#0f0b08}
+  .espera .input{background:#221a14;border-color:#3a2c22}
+  .hero-card,.prod-card{box-shadow:0 40px 70px -30px rgba(0,0,0,.8)}
+  .notas-chips li,.notes li{background:var(--paper-2)}
+}
+
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 var(--sans);-webkit-font-smoothing:antialiased;min-height:100vh;transition:background .6s ease,color .6s ease}
@@ -514,14 +530,21 @@ p.al-bad{--c:var(--cherry);color:var(--cherry)}
 .cc-foot b{font:600 1.35rem var(--mono)}
 .cc-foot small{color:var(--ink-2)}
 .cc-foot .btn{margin-left:auto}
-.valor{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:32px}
+.valor{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-top:32px}
+.val{grid-column:span 3}
+.val:first-child{grid-column:span 6;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:8px 28px;align-items:baseline;padding:26px 28px}
+.val:first-child b{font-size:clamp(1.9rem,3.4vw,2.8rem)}
+.val:nth-child(3),.val:nth-child(4){grid-column:span 3}
+@media (max-width:900px){.valor{grid-template-columns:1fr}.val,.val:first-child,.val:nth-child(3),.val:nth-child(4){grid-column:auto}.val:first-child{grid-template-columns:1fr}}
 .val{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--cherry);border-radius:14px;padding:18px}
 .val b{display:block;font:400 1.5rem/1.1 var(--serif);margin-bottom:6px}
 .val span{color:var(--ink-2);font-size:14px}
 .cinta{border-top:1px solid var(--line);margin-top:30px}
 .cinta-pasos{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-top:20px}
 .cp{border-top:2px solid var(--ink);padding-top:10px}
-.cp .n{font:italic 26px/1 var(--serif);color:var(--cherry)}
+.cp .n{display:none}
+.cp{border-top:2px solid var(--ink);padding-top:12px}
+.cp b{font:400 1.35rem var(--serif);display:block}
 .cp b{display:block;margin-top:4px}
 .cp small{color:var(--ink-2);font-size:13px}
 .prod{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:44px 48px;align-items:start}
@@ -605,7 +628,7 @@ body[data-view=subasta] .lang button[aria-pressed=true]{background:var(--crema);
 .var-chip{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;background:var(--paper);border-radius:999px;padding:4px 10px}
 .pronto{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--cherry);margin-left:auto}
 .finca-foot .btn{margin-left:auto}
-.foto-pend{border:1px dashed var(--line);border-radius:10px;padding:10px 12px;background:var(--paper-2)}
+.foto-pend{display:grid;place-items:center;text-align:center;aspect-ratio:4/3;border:1px dashed var(--line);border-radius:16px;background:var(--paper-2);color:var(--ink-3);font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;margin-top:16px;padding:20px}
 .planes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:10px}
 .plan{position:relative;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px 24px;display:flex;flex-direction:column;gap:10px}
 .plan.hot{border-color:var(--cherry);box-shadow:0 20px 40px -24px rgba(168,50,31,.5)}
