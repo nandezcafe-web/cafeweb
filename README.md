@@ -1,40 +1,59 @@
 # Altura — café de Norte de Santander
 
-Compramos café a pequeños productores, le ponemos marca y lo vendemos. Este repositorio tiene la plataforma (prototipo) y los documentos de trabajo.
+Compramos café a pequeños productores, le ponemos marca y lo vendemos. Al inicio, **dos productos**: un Geisha de Chinácota y un lote en subasta.
+
+## La página (`prototipo/`)
+
+**Pública**
+1. **Inicio** — los dos cafés, por qué cuesta lo que cuesta y el recorrido de la finca a la bolsa.
+2. **El Geisha** — ficha completa: presentaciones (100 g, 250 g, 1 kg), ficha de transparencia con el nivel de verificación de cada dato, lo que le pagamos al productor frente a la referencia del día, receta y lista de espera.
+3. **Subasta** — reserva, pujas en vivo, extensión en los últimos 20 s y vista interna con costo y utilidad.
+
+**Interna (pestaña Admin)**
+4. **Cotizador** — cuánto paga el comité hoy, cuánto podemos pagar y con qué margen.
+5. **Inventario** — cada lote de la compra a la bolsa vendida, con costos reales y plata quieta.
+6. **Clientes** — quién compra, cada cuánto, qué prefiere y a quién llamar.
+7. **Mercado** — precio FNC, bolsa de Nueva York, TRM, tabla por factor y cuándo vender.
 
 ## Documentos
 
 | Archivo | Contenido |
 |---|---|
-| [docs/03_compra_y_marca.md](docs/03_compra_y_marca.md) | **Cómo comprar en finca:** precio FNC, factor de rendimiento, humedad, ejemplo de una carga, temas legales y riesgos |
-| [docs/04_capsulas.md](docs/04_capsulas.md) | **Café en cápsulas:** proceso, formatos, cuentas, maquiladores para cotizar y recomendación |
-| [docs/02_competencia.md](docs/02_competencia.md) | Competidores y qué copiar (escrito para el modelo anterior, sigue siendo útil) |
-| [docs/01_analisis_y_mejoras.md](docs/01_analisis_y_mejoras.md) | Análisis del documento maestro |
-| [docs/00_documento_maestro_v0.1.md](docs/00_documento_maestro_v0.1.md) | Documento maestro original (modelo marketplace, ya superado) |
-| [validacion/](validacion/) | Guías de entrevista y plantillas de la etapa de validación |
+| [docs/05_referentes_web.md](docs/05_referentes_web.md) | Cómo venden las páginas mejor posicionadas, tendencias 2026 y decisiones de diseño |
+| [docs/03_compra_y_marca.md](docs/03_compra_y_marca.md) | Cómo comprar en finca: precio FNC, factor, humedad, ejemplo y temas legales |
+| [docs/04_capsulas.md](docs/04_capsulas.md) | Café en cápsulas: proceso, cuentas y maquiladores para cotizar |
+| [docs/02_competencia.md](docs/02_competencia.md) | Competidores del modelo marketplace y qué copiar |
+| [docs/01_analisis_y_mejoras.md](docs/01_analisis_y_mejoras.md) · [docs/00_documento_maestro_v0.1.md](docs/00_documento_maestro_v0.1.md) | Documentos de la etapa anterior |
 
-## La plataforma (`prototipo/`)
-
-Seis partes, dos públicas y cuatro internas:
-
-1. **Tienda** — catálogo de nuestros cafés con origen, altura, puntaje y notas; pedido por WhatsApp.
-2. **Subasta** — para microlotes excepcionales: reserva, pujas en vivo, extensión en los últimos 20 s y vista interna con nuestro costo y utilidad.
-3. **Cotizador** *(interno)* — lo que paga el comité hoy, lo máximo que podemos ofrecer y el margen, con toda la cadena: pergamino → verde → tostado → bolsas.
-4. **Inventario** *(interno)* — cada lote de la compra a la bolsa vendida: trilla, tueste, empaque, costo real por bolsa y cuánta plata está quieta en bodega.
-5. **Clientes** *(interno)* — quién compra, cada cuánto, qué café prefiere, quién se atrasó y mensaje de WhatsApp sugerido.
-6. **Mercado** *(interno)* — precio FNC, bolsa de Nueva York, TRM, tabla por factor, equivalencias y cuándo conviene vender.
-
-### Abrirlo
-
-`prototipo/altura.html` es todo en un archivo: se abre con doble clic. Para trabajar sobre el código:
+## Correr en local
 
 ```bash
-npx --yes serve prototipo
+node tools/serve.js prototipo 5174
 ```
 
-### Dónde cambiar los datos
-- `prototipo/js/core.js` → `CONFIG` (precio FNC, WhatsApp, marca), `COSTOS` (trilla, tueste, empaque, mermas) y `seed()` (productos y compras).
-- `prototipo/js/auction.js` → `AU_LOTE`: el lote que se subasta, incluido lo que nos costó.
-- La vista **Mercado** guarda el precio del día en el navegador y el cotizador lo usa de inmediato.
+Y abrir `http://localhost:5174`. El archivo `prototipo/altura.html` es la misma página en un solo archivo, para enviar por WhatsApp o correo.
 
-Los costos que trae por defecto son **supuestos**: reemplazarlos por las cotizaciones reales de trilla, tueste y empaque.
+## Publicar en Vercel
+
+1. Crear el repositorio en GitHub y subirlo:
+
+```bash
+git remote add origin https://github.com/USUARIO/altura-cafe.git
+git branch -M main
+git push -u origin main
+```
+
+2. En Vercel: **Add New → Project**, importar el repositorio y desplegar. No hay build: `vercel.json` ya indica que el sitio está en `prototipo/`. Si Vercel pide un *Root Directory*, poner `prototipo`.
+3. Cada `git push` vuelve a desplegar solo.
+
+## Configurar antes de publicar de verdad
+
+En `prototipo/js/core.js`:
+- `CONFIG.whatsapp` — número que recibe los pedidos, formato `573001234567`.
+- `CONFIG.marca` y `CONFIG.lugar`.
+- `S.productos` en `seed()` — el Geisha: precios, presentaciones, stock, ficha y lo pagado al productor.
+- `COSTOS` — trilla, tueste, empaque y mermas reales.
+
+En `prototipo/js/auction.js`: `AU_LOTE`, el lote que se subasta y lo que nos costó.
+
+Los datos de ejemplo se guardan en el navegador de cada visitante; el botón "Reiniciar datos de la demo" los borra.

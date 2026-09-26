@@ -484,6 +484,90 @@ p.al-bad{--c:var(--cherry);color:var(--cherry)}
 .rk-bar i{display:block;height:100%;width:var(--w);background:var(--cherry);animation:grow .9s cubic-bezier(.2,.7,.2,1)}
 @media (max-width:640px){.rk{grid-template-columns:1fr auto}.rk-bar{grid-column:1/-1}}
 
+/* ---- v5: dos productos y admin ---- */
+.tab.adm{border:1px dashed var(--ink-3);color:var(--ink-3)}
+.tab.adm[aria-current=page]{border-style:solid}
+.dos{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px;margin-top:34px}
+.card-cafe{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s}
+.card-cafe:hover{transform:translateY(-5px);box-shadow:0 26px 46px -22px rgba(29,20,15,.5)}
+.card-cafe.dark{background:linear-gradient(180deg,#221812,#150e0a);border-color:#2e211a;color:#f3e6d6}
+.cc-art{position:relative;height:200px;background:var(--paper-2);cursor:pointer;overflow:hidden}
+.card-cafe.dark .cc-art{background:#1a120d}
+.cc-art svg{position:absolute;inset:0;width:100%;height:100%}
+.cc-art .front{transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.card-cafe:hover .cc-art .front{transform:translateY(-6px)}
+.cc-score{position:absolute;left:16px;top:12px}
+.cc-score b{display:block;font:400 52px/1 var(--serif)}
+.cc-score small{font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.card-cafe.dark .cc-score small{color:#bba48f}
+.cc-body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.cc-body h3{font-size:1.9rem;line-height:1.05}
+.card-cafe.dark h3 em{color:var(--crema)}
+.notas-linea{margin:0;color:var(--ink-2);font-size:14px}
+.card-cafe.dark .notas-linea,.card-cafe.dark .kicker{color:#bba48f}
+.cc-foot{display:flex;align-items:baseline;gap:8px;margin-top:auto;padding-top:12px;border-top:1px dashed var(--line)}
+.card-cafe.dark .cc-foot{border-color:#3a2a21}
+.cc-foot b{font:600 1.35rem var(--mono)}
+.cc-foot small{color:var(--ink-2)}
+.cc-foot .btn{margin-left:auto}
+.valor{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:32px}
+.val{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--cherry);border-radius:14px;padding:18px}
+.val b{display:block;font:400 1.5rem/1.1 var(--serif);margin-bottom:6px}
+.val span{color:var(--ink-2);font-size:14px}
+.cinta{border-top:1px solid var(--line);margin-top:30px}
+.cinta-pasos{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-top:20px}
+.cp{border-top:2px solid var(--ink);padding-top:10px}
+.cp .n{font:italic 26px/1 var(--serif);color:var(--cherry)}
+.cp b{display:block;margin-top:4px}
+.cp small{color:var(--ink-2);font-size:13px}
+.prod{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:44px 48px;align-items:start}
+.prod-art{position:sticky;top:90px}
+.prod-card{position:relative;border-radius:24px;overflow:hidden;background:radial-gradient(120% 80% at 80% 0%,#3a2518,#140d0a 62%);color:#f3e6d6;padding:26px;min-height:420px}
+.prod-title{font:400 clamp(2.4rem,4.4vw,3.6rem)/1 var(--serif);margin:26px 0 0}
+.prod-title em{color:var(--crema)}
+.prod-score{font:400 clamp(3.4rem,6vw,4.8rem)/1 var(--serif);margin:22px 0 0;color:#fff}
+.prod-score small{font:600 12px var(--mono);letter-spacing:.1em;margin-left:8px;color:#bba48f}
+.notas-chips{list-style:none;display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:16px 0 0}
+.notas-chips li{border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:14px;background:var(--card)}
+.prod-buy h1{font-size:clamp(2.2rem,4.6vw,3.4rem);line-height:1;margin-bottom:12px}
+.vars{display:grid;gap:8px;margin:22px 0 18px}
+.var{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:center;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;cursor:pointer;font:inherit;color:inherit;transition:border-color .2s,background .2s}
+.var:hover{border-color:var(--ink-2)}
+.var.on{border-color:var(--cherry);background:color-mix(in srgb,var(--cherry) 6%,transparent);box-shadow:inset 0 0 0 1px var(--cherry)}
+.var b{font:400 1.5rem/1 var(--serif)}
+.var span{font-weight:600;font-size:13px}
+.var small{grid-column:2;color:var(--ink-2);font-size:12.5px}
+.var .precio{grid-row:1/3;grid-column:3;font-weight:600;font-size:1.1rem}
+.var:disabled{opacity:.45;cursor:not-allowed}
+.buy-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:16px}
+.precio-grande{font-size:2.2rem;display:block;line-height:1}
+.buy-row small{color:var(--ink-2)}
+.pago{display:grid;grid-template-columns:1fr 1fr auto;gap:14px;background:var(--paper-2);border-radius:16px;padding:16px 18px;margin-top:22px;align-items:center}
+.pago b{display:block;font-size:1.25rem}
+.pago small{color:var(--ink-2);font-size:12px}
+.pago .mas{text-align:center;border-left:1px dashed var(--ink-3);padding-left:14px}
+.pago .mas b{font:400 2rem/1 var(--serif);color:var(--leaf)}
+.prod-ficha,.prod-receta,.espera{grid-column:1/-1}
+.attrs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:26px}
+.attr{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:14px;padding:14px 16px;display:grid;gap:3px}
+.attr b{font:400 1.6rem/1.1 var(--serif)}
+.attr .lvtag{justify-self:start;margin-top:4px}
+.attr small{color:var(--ink-3);font-size:12px}
+.leyenda{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px;margin-top:18px;font-size:13px;color:var(--ink-2)}
+.leyenda span{display:flex;align-items:center;gap:8px}
+.leyenda i{width:10px;height:10px;border-radius:50%;background:var(--c);flex:0 0 auto}
+.receta{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-top:24px}
+.receta div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.receta b{display:block;font:400 1.5rem/1 var(--serif);margin-top:4px}
+.espera{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;background:var(--ink);color:var(--paper);border-radius:20px;padding:28px 30px;margin-top:20px}
+.espera h3{font-size:2rem;color:var(--paper)}
+.espera p{margin:6px 0 0;color:#c9b6a4;max-width:46ch}
+.espera-form{display:flex;gap:8px;flex-wrap:wrap}
+.espera-form .input{min-width:220px;background:#2a1f18;border-color:#4a382c;color:var(--paper)}
+.admin-bar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;background:var(--paper-2);border:1px dashed var(--line);border-radius:16px;padding:14px 18px;margin-bottom:24px}
+.admin-bar b{display:block;font:400 1.3rem var(--serif)}
+@media (max-width:900px){.prod{grid-template-columns:1fr;gap:28px}.prod-art{position:static}.pago{grid-template-columns:1fr 1fr}.pago .mas{grid-column:1/-1;border-left:0;border-top:1px dashed var(--ink-3);padding:10px 0 0}}
+
 /* sala de subasta */
 .auction{color:#f3e6d6}
 .auction .kicker{color:#a58f7c}
@@ -594,12 +678,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
     </button>
     <nav class="tabs" aria-label="Secciones">
       <button class="tab" data-act="go" data-to="inicio">Inicio</button>
-      <button class="tab" data-act="go" data-to="tienda">Tienda <span class="badge" id="b-cart" hidden></span></button>
+      <button class="tab" data-act="go" data-to="geisha">El Geisha <span class="badge" id="b-cart" hidden></span></button>
       <button class="tab" data-act="go" data-to="subasta"><span class="live-dot" id="nav-live"></span>Subasta <span class="mono nav-time" data-live-time></span></button>
-      <button class="tab" data-act="go" data-to="cotizador">Cotizador</button>
-      <button class="tab" data-act="go" data-to="inventario">Inventario</button>
-      <button class="tab" data-act="go" data-to="clientes">Clientes</button>
-      <button class="tab" data-act="go" data-to="mercado">Mercado</button>
+      <button class="tab adm" data-act="go" data-to="admin">Admin</button>
     </nav>
   </div>
 </header>
@@ -618,33 +699,28 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
 /* ============================================================
    ALTURA · núcleo: configuración, datos, estado y utilidades
    Modelo: compramos café a pequeños productores, le ponemos marca y lo vendemos.
+   La página pública vende DOS cosas: el Geisha y el lote en subasta.
    Datos de ejemplo — reemplazar por los reales.
    ============================================================ */
 const CONFIG = {
-  // Referencia FNC del día (editable en la vista Mercado). Fuente: federaciondecafeteros.org / preciocafe.com
-  fnc: { precioCarga: 2005000, factorBase: 94, fecha: "2026-09-16" },
-  mercado: { ny: 282, trm: 3128 },   // contrato C en US¢/lb y TRM del día
-  storageKey: "altura-v4",
-  whatsapp: "",                       // número para pedidos, formato 573001234567
+  fnc: { precioCarga: 2005000, factorBase: 94, fecha: "2026-09-16" },  // referencia del día (editable en Mercado)
+  mercado: { ny: 282, trm: 3128 },
+  storageKey: "altura-v5",
+  whatsapp: "",            // 573001234567 para que los pedidos salgan solos
   marca: "Altura",
+  lugar: "Chinácota, Norte de Santander",
 };
 
 /* Supuestos de costos: cámbialos por tus cotizaciones reales */
 const COSTOS = {
-  transporte: 300,      // COP por kg de pergamino, finca → bodega
-  trilla: 500,          // COP por kg de pergamino
-  tueste: 5000,         // COP por kg de café verde (maquila)
-  empaque: 1300,        // COP por bolsa (bolsa + válvula + etiqueta)
-  indirectos: 8,        // % sobre ingresos (transporte de venta, comisiones, mermas)
-  mermaTueste: 17,      // % de peso que se pierde al tostar
-  cerezaAPergamino: 5,  // kg de cereza por kg de pergamino seco
-  margenObjetivo: 35,   // % de utilidad bruta que queremos
-  primaSugerida: 15,    // % por encima del comité que ofrecemos de entrada
+  transporte: 300, trilla: 500, tueste: 5000, empaque: 1300,
+  indirectos: 8, mermaTueste: 17, cerezaAPergamino: 5,
+  margenObjetivo: 35, primaSugerida: 15,
 };
 
 const LV = {
-  DECLARADO:   { label: "Declarado",   c: "var(--ink-3)", k: 1, desc: "Lo afirma el productor.", ej: "Variedad: Geisha" },
-  DOCUMENTADO: { label: "Documentado", c: "var(--doc)",   k: 2, desc: "Tiene un documento que lo respalda.", ej: "Informe de trilla" },
+  DECLARADO:   { label: "Declarado",   c: "var(--ink-3)", k: 1, desc: "Lo dice el productor.", ej: "Variedad" },
+  DOCUMENTADO: { label: "Documentado", c: "var(--doc)",   k: 2, desc: "Hay un documento que lo respalda.", ej: "Informe de trilla" },
   VERIFICADO:  { label: "Verificado",  c: "var(--leaf)",  k: 3, desc: "Lo comprobamos nosotros o un tercero.", ej: "Catación Q-grader" },
   CERTIFICADO: { label: "Certificado", c: "var(--gold)",  k: 4, desc: "Lo avala una entidad competente.", ej: "Sello orgánico" },
 };
@@ -653,67 +729,81 @@ const A = (v, nivel, fuente, fecha, extra = {}) => ({ v, nivel, fuente, fecha, .
 
 function seed() {
   return {
-    v: 4, seq: 200,
-    /* Café que compramos y ya es nuestro */
+    v: 5, seq: 300,
+    /* ---------- EL CAFÉ QUE VENDEMOS ---------- */
+    productos: [
+      {
+        id: "P-GEI", loteId: "C-001", nombre: "Geisha de Chinácota", sub: "Lavado · cosecha 2026",
+        productor: "Familia fundadora", finca: "Finca Ejemplo A", municipio: "Chinácota", origen: "Finca Ejemplo A · Chinácota",
+        variedad: "Geisha", proceso: "Lavado", tueste: "Medio-claro", cosecha: "Principal 2026",
+        altitud: 1750, puntaje: 88, nivel: "VERIFICADO", fuente: "Q-grader independiente", fecha: "2026-09-02",
+        notas: ["Jazmín", "Bergamota", "Durazno", "Té blanco"],
+        /* la ficha de transparencia */
+        ficha: {
+          variedad: A("Geisha", "DECLARADO", "Productor", "2026-06-10"),
+          altitud: A(1750, "VERIFICADO", "GPS en visita de campo", "2026-06-10"),
+          proceso: A("Lavado", "DOCUMENTADO", "Bitácora con fotos", "2026-06-22", { detalle: "Fermentación 36 h · Marquesina 18 días" }),
+          puntaje: A(88, "VERIFICADO", "Q-grader independiente", "2026-09-02", { vig: 6 }),
+          factor: A(91, "DOCUMENTADO", "Informe de trilla", "2026-07-02"),
+          cosecha: A("Principal 2026", "DECLARADO", "Productor", "2026-06-10"),
+        },
+        pago: { pagadoKg: 26000, referenciaKg: 16040, fecha: "2026-06-25" },   // lo que pagamos vs. el precio del día
+        historia: "Tres mil palos de Geisha sembrados en la finca de la familia, a 1.750 metros. Esta es la primera cosecha que sale con nombre propio: 60 kilos de pergamino que dieron 153 bolsas y nada más.",
+        receta: { metodo: "V60", dosis: "15 g", agua: "250 ml", temp: "93 °C", tiempo: "2:45", molienda: "Media" },
+        variantes: [
+          { g: 100, precio: 32000, label: "Muestra", nota: "para probarlo antes", stock: 38 },
+          { g: 250, precio: 68000, label: "Bolsa", nota: "lo que compra la mayoría", stock: 74, principal: true },
+          { g: 1000, precio: 245000, label: "Kilo", nota: "para cafeterías", stock: 6 },
+        ],
+        /* espejo plano para los módulos internos */
+        presentacion: 250, precio: 68000, stock: 74, destacado: true,
+      },
+    ],
+
+    /* ---------- CAFÉ COMPRADO ---------- */
     compras: [
-      { id: "C-001", productor: "Familia fundadora", finca: "Finca Ejemplo A", municipio: "Chinácota", fecha: "2026-06-20",
-        estadoCafe: "Pergamino seco", kg: 250, factor: 92, humedad: 11, precioKg: 18500, sca: 85, destino: "Tostado", estado: "EMPACADO",
-        kgVerde: 190.2, kgTostado: 157.9, bolsas: 464, bolsasVendidas: 344, precioVenta: 32000, ingresos: 11008000,
-        costos: { compra: 4625000, trilla: 125000, tueste: 951000, empaque: 603200 } },
-      { id: "C-002", productor: "Don Ejemplo", finca: "Finca Ejemplo E", municipio: "Toledo", fecha: "2026-09-02",
-        estadoCafe: "Pergamino seco", kg: 125, factor: 90, humedad: 11, precioKg: 26000, sca: 88.5, destino: "Subasta", estado: "TRILLADO",
-        kgVerde: 97.2, costos: { compra: 3250000, trilla: 62500 } },
+      { id: "C-001", productor: "Familia fundadora", finca: "Finca Ejemplo A", municipio: "Chinácota", fecha: "2026-06-25",
+        estadoCafe: "Pergamino seco", kg: 60, factor: 91, humedad: 11, precioKg: 26000, sca: 88, destino: "Tostado", estado: "EMPACADO",
+        kgVerde: 46.2, kgTostado: 38.3, bolsas: 153, bolsasVendidas: 79, precioVenta: 68000, ingresos: 5372000,
+        costos: { compra: 1560000, trilla: 30000, tueste: 231000, empaque: 199000 } },
+      { id: "C-002", productor: "Productor aliado", finca: "Finca del aliado", municipio: "Toledo", fecha: "2026-09-02",
+        estadoCafe: "Pergamino seco", kg: 45, factor: 89, humedad: 11, precioKg: 34000, sca: 88.5, destino: "Subasta", estado: "TRILLADO",
+        kgVerde: 35.4, costos: { compra: 1530000, trilla: 22500 } },
       { id: "C-003", productor: "Doña Ejemplo", finca: "Finca Ejemplo C", municipio: "Arboledas", fecha: "2026-09-12",
-        estadoCafe: "Pergamino seco", kg: 180, factor: 94, humedad: 11.5, precioKg: 17000, sca: 83.5, destino: "Tostado", estado: "EN BODEGA",
+        estadoCafe: "Pergamino seco", kg: 180, factor: 94, humedad: 11.5, precioKg: 17000, sca: 83.5, destino: "Por definir", estado: "EN BODEGA",
         costos: { compra: 3060000 } },
     ],
-    /* Lo que vendemos con nuestra marca */
-    productos: [
-      { id: "P-001", loteId: "C-001", nombre: "Chinácota", sub: "Caturra lavado", origen: "Finca Ejemplo A · Chinácota", altitud: 1720, proceso: "Lavado",
-        variedad: "Caturra", puntaje: 85, tueste: "Medio", notas: ["Panela", "Mandarina", "Cacao"], presentacion: 340, precio: 32000, stock: 120,
-        nivel: "VERIFICADO", fuente: "Catación Q-grader", fecha: "2026-08-25", destacado: true },
-      { id: "P-002", nombre: "Toledo", sub: "Bourbon rosado natural", origen: "Finca Ejemplo E · Toledo", altitud: 1900, proceso: "Natural",
-        variedad: "Bourbon rosado", puntaje: 87.25, tueste: "Medio-claro", notas: ["Fresa", "Vino tinto", "Cacao"], presentacion: 250, precio: 46000, stock: 64,
-        nivel: "VERIFICADO", fuente: "Catación Q-grader", fecha: "2026-07-01" },
-      { id: "P-003", nombre: "Ragonvalia", sub: "Tabi lavado", origen: "Finca Ejemplo F · Ragonvalia", altitud: 1680, proceso: "Lavado",
-        variedad: "Tabi", puntaje: 85.75, tueste: "Medio", notas: ["Mandarina", "Miel", "Té negro"], presentacion: 340, precio: 34000, stock: 40,
-        nivel: "DOCUMENTADO", fuente: "Catación del tostador", fecha: "2026-01-15" },
-      { id: "P-004", nombre: "Mezcla de casa", sub: "Caturra + Castillo", origen: "Norte de Santander", altitud: 1600, proceso: "Lavado",
-        variedad: "Mezcla", puntaje: 83.5, tueste: "Medio-oscuro", notas: ["Chocolate", "Nuez", "Cuerpo alto"], presentacion: 500, precio: 38000, stock: 210,
-        nivel: "DECLARADO", fuente: "Nuestra tostión", fecha: "2026-09-01" },
-      { id: "P-005", nombre: "Chinácota", sub: "Caturra lavado · grano verde", origen: "Finca Ejemplo A · Chinácota", altitud: 1720, proceso: "Lavado",
-        variedad: "Caturra", puntaje: 85, tueste: "Verde (sin tostar)", notas: ["Para tostadores"], presentacion: 1000, precio: 42000, stock: 90,
-        nivel: "VERIFICADO", fuente: "Catación Q-grader", fecha: "2026-08-25", mayorista: true },
-    ],    clientes: [
+
+    /* ---------- CLIENTES Y PEDIDOS ---------- */
+    clientes: [
       { id: "CL-001", nombre: "Café Ejemplo Centro", tipo: "Cafetería", ciudad: "Cúcuta", tel: "300 111 1111" },
       { id: "CL-002", nombre: "Tostaduría Ejemplo", tipo: "Tostador", ciudad: "Bucaramanga", tel: "300 222 2222" },
       { id: "CL-003", nombre: "Tienda Ejemplo Pamplona", tipo: "Tienda", ciudad: "Pamplona", tel: "300 333 3333" },
-      { id: "CL-004", nombre: "Oficina Ejemplo", tipo: "Oficina", ciudad: "Cúcuta", tel: "" },
+      { id: "CL-004", nombre: "Ana Ejemplo", tipo: "Persona", ciudad: "Bogotá", tel: "" },
     ],
     pedidos: [
       { id: "PD-101", clienteId: "CL-001", nombre: "Café Ejemplo Centro", ciudad: "Cúcuta", fecha: "2026-09-08", canal: "tienda",
-        items: [{ id: "P-001", nombre: "Chinácota", n: 12, precio: 32000 }, { id: "P-004", nombre: "Mezcla de casa", n: 6, precio: 38000 }], total: 612000 },
+        items: [{ id: "P-GEI", nombre: "Geisha 250 g", n: 12, precio: 68000 }], total: 816000 },
       { id: "PD-102", clienteId: "CL-001", nombre: "Café Ejemplo Centro", ciudad: "Cúcuta", fecha: "2026-08-11", canal: "tienda",
-        items: [{ id: "P-001", nombre: "Chinácota", n: 10, precio: 32000 }], total: 320000 },
-      { id: "PD-103", clienteId: "CL-001", nombre: "Café Ejemplo Centro", ciudad: "Cúcuta", fecha: "2026-07-14", canal: "directo",
-        items: [{ id: "P-001", nombre: "Chinácota", n: 10, precio: 32000 }, { id: "P-003", nombre: "Ragonvalia", n: 4, precio: 34000 }], total: 456000 },
-      { id: "PD-104", clienteId: "CL-002", nombre: "Tostaduría Ejemplo", ciudad: "Bucaramanga", fecha: "2026-08-28", canal: "tienda",
-        items: [{ id: "P-005", nombre: "Chinácota verde", n: 30, precio: 42000 }], total: 1260000 },
-      { id: "PD-105", clienteId: "CL-002", nombre: "Tostaduría Ejemplo", ciudad: "Bucaramanga", fecha: "2026-06-30", canal: "tienda",
-        items: [{ id: "P-005", nombre: "Chinácota verde", n: 25, precio: 42000 }], total: 1050000 },
-      { id: "PD-106", clienteId: "CL-003", nombre: "Tienda Ejemplo Pamplona", ciudad: "Pamplona", fecha: "2026-05-18", canal: "directo",
-        items: [{ id: "P-002", nombre: "Toledo", n: 8, precio: 46000 }], total: 368000 },
-      { id: "PD-107", clienteId: "CL-004", nombre: "Oficina Ejemplo", ciudad: "Cúcuta", fecha: "2026-09-02", canal: "directo",
-        items: [{ id: "P-004", nombre: "Mezcla de casa", n: 4, precio: 38000 }], total: 152000 },
+        items: [{ id: "P-GEI", nombre: "Geisha 250 g", n: 10, precio: 68000 }], total: 680000 },
+      { id: "PD-103", clienteId: "CL-002", nombre: "Tostaduría Ejemplo", ciudad: "Bucaramanga", fecha: "2026-08-28", canal: "tienda",
+        items: [{ id: "P-GEI", nombre: "Geisha 1 kg", n: 4, precio: 245000 }], total: 980000 },
+      { id: "PD-104", clienteId: "CL-002", nombre: "Tostaduría Ejemplo", ciudad: "Bucaramanga", fecha: "2026-06-30", canal: "tienda",
+        items: [{ id: "P-GEI", nombre: "Geisha 1 kg", n: 3, precio: 245000 }], total: 735000 },
+      { id: "PD-105", clienteId: "CL-003", nombre: "Tienda Ejemplo Pamplona", ciudad: "Pamplona", fecha: "2026-05-18", canal: "directo",
+        items: [{ id: "P-GEI", nombre: "Geisha 250 g", n: 8, precio: 68000 }], total: 544000 },
+      { id: "PD-106", clienteId: "CL-004", nombre: "Ana Ejemplo", ciudad: "Bogotá", fecha: "2026-09-14", canal: "tienda",
+        items: [{ id: "P-GEI", nombre: "Geisha 100 g", n: 2, precio: 32000 }], total: 64000 },
     ],
+    espera: [],   // lista de espera del próximo lote
   };
 }
 
-function load() { try { const s = JSON.parse(localStorage.getItem(CONFIG.storageKey)); return s && s.v === 4 ? s : null; } catch { return null; } }
+function load() { try { const s = JSON.parse(localStorage.getItem(CONFIG.storageKey)); return s && s.v === 5 ? s : null; } catch { return null; } }
 function save() { try { localStorage.setItem(CONFIG.storageKey, JSON.stringify(S)); } catch {} }
 
 let S = load() || seed();
-const UI = { view: "inicio", animate: true, carrito: [], au: null, q: null, filtro: "todos" };
+const UI = { view: "inicio", atab: "cotizador", animate: true, carrito: [], au: null, q: null };
 
 /* ---------- utilidades ---------- */
 const $ = (s, r = document) => r.querySelector(s);
@@ -723,19 +813,17 @@ const cop = (n) => "$" + fmtNum(Math.round(n || 0));
 const copK = (n) => (Math.abs(n) >= 1e6 ? "$" + fmtNum(n / 1e6, 1) + " M" : cop(n));
 const isoToday = () => new Date().toISOString().slice(0, 10);
 const fmtFecha = (iso) => iso ? new Date(iso + "T00:00:00").toLocaleDateString("es-CO", { day: "numeric", month: "short", year: "numeric" }) : "";
-const slug = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, "-");
+const slug = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, "-");
 const nextId = (p) => `${p}-${S.seq++}`;
 const num = (id, def = 0) => { const el = $("#" + id); const v = el ? parseFloat(el.value) : NaN; return isNaN(v) ? def : v; };
+const geisha = () => S.productos.find((p) => p.id === "P-GEI") || S.productos[0];
+const gramos = (g) => (g >= 1000 ? g / 1000 + " kg" : g + " g");
 
-/* Precio del comité por kg de pergamino, ajustado por factor.
-   El precio se mueve con el café excelso que rinde la carga: 125 kg a factor F rinden 125·70/F kg. */
 function precioComiteKg(factor = CONFIG.fnc.factorBase) {
   return (CONFIG.fnc.precioCarga * (CONFIG.fnc.factorBase / factor)) / 125;
 }
-/* Peso equivalente al 12 % de humedad (base de las transacciones en Colombia) */
 const pesoSeco12 = (kg, humedad) => (humedad > 12 ? kg * ((100 - humedad) / 88) : kg);
 const kgExcelso = (kgPergamino, factor) => kgPergamino * (70 / factor);
-const precioLbUSD = () => (CONFIG.mercado.ny / 100);
 
 /* ---------- montaña: la altitud como firma visual ---------- */
 function rng(seedStr) {
@@ -785,142 +873,198 @@ function toast(msg, { label, act, type } = {}) {
 }
 function later(ms, fn) { setTimeout(() => { if (fn() !== false) { save(); softRefresh(); } }, ms); }
 
-/* ---- shop.js ---- */
+/* ---- product.js ---- */
 /* ============================================================
-   TIENDA: catálogo de nuestra marca, ficha del café y pedido
+   PÁGINA PÚBLICA DEL CAFÉ: ficha del Geisha, pedido y lista de espera
    ============================================================ */
-const FILTROS = [["todos", "Todos"], ["tostado", "Tostado"], ["verde", "Grano verde"], ["alto", "86+ SCA"]];
+const varSel = (p) => p.variantes.find((v) => v.g === (UI.variante || p.variantes.find((x) => x.principal).g)) || p.variantes[0];
+const enCarrito = (id, g) => UI.carrito.find((i) => i.id === id && i.g === g);
+const totalCarrito = () => UI.carrito.reduce((s, i) => s + i.n * i.precio, 0);
+const unidadesCarrito = () => UI.carrito.reduce((s, i) => s + i.n, 0);
 
-function pasaFiltro(p) {
-  const f = UI.filtro;
-  if (f === "tostado") return !p.mayorista;
-  if (f === "verde") return !!p.mayorista;
-  if (f === "alto") return p.puntaje >= 86;
-  return true;
-}
-const precioKgProducto = (p) => (p.precio / p.presentacion) * 1000;
-const enCarrito = (id) => UI.carrito.find((i) => i.id === id);
-
-function viewTienda() {
-  const lista = S.productos.filter(pasaFiltro);
-  return `<div class="view-head">
-      <div><p class="eyebrow reveal">Tienda · ${esc(CONFIG.marca)}</p>
-        <h2 class="reveal" style="--i:1">Café de <em>Norte de Santander</em>, tostado por nosotros</h2>
-        <p class="reveal" style="--i:2">Compramos el lote directo en la finca, lo trillamos, lo tostamos y lo vendemos con nuestra marca. Cada bolsa dice de qué finca salió.</p></div>
-      <div class="seg reveal" style="--i:3" role="group" aria-label="Filtros">
-        ${FILTROS.map(([k, t]) => `<button data-act="filtro" data-val="${k}" aria-pressed="${UI.filtro === k}">${t}</button>`).join("")}</div>
+/* Tarjeta corta, para el inicio */
+function cafeCard(p, i = 0) {
+  const v = p.variantes.find((x) => x.principal) || p.variantes[0];
+  const quedan = p.variantes.reduce((s, x) => s + x.stock, 0);
+  return `<article class="card-cafe reveal" style="--i:${i}">
+    <div class="cc-art" data-act="go" data-to="geisha" role="button" tabindex="0" aria-label="Ver ${esc(p.nombre)}">
+      ${ridge(p, { w: 420, h: 200 })}
+      <span class="state st-publicado">${quedan} disponibles</span>
+      <div class="cc-score"><b>${esc(p.puntaje)}</b><small>SCA · ${LV[p.nivel].label}</small></div>
     </div>
-    <div class="grid">${lista.length ? lista.map(prodCard).join("") : `<div class="empty"><h3>Sin café en esa categoría</h3></div>`}</div>`;
-}
-
-function prodCard(p, i = 0) {
-  const c = enCarrito(p.id);
-  return `<article class="lot reveal ${p.destacado ? "hero-prod" : ""}" style="--i:${i}">
-    <div class="lot-art" data-act="ficha" data-id="${p.id}" role="button" tabindex="0" aria-label="Ver ficha de ${esc(p.nombre)}">
-      ${ridge(p)}
-      <span class="state ${p.stock > 0 ? "st-publicado" : "st-vendido"}">${p.stock > 0 ? fmtNum(p.stock) + " disp." : "agotado"}</span>
-      <div class="lot-score"><b>${esc(p.puntaje)}</b><small style="color:${LV[p.nivel].c}">SCA · ${LV[p.nivel].label}</small></div>
-    </div>
-    <div class="lot-body">
-      <p class="kicker">${esc(p.origen)}</p>
+    <div class="cc-body">
+      <p class="kicker">${esc(p.municipio)} · ${fmtNum(p.altitud)} msnm · ${esc(p.cosecha)}</p>
       <h3>${esc(p.nombre)}</h3>
-      <p class="varietal"><em>${esc(p.sub)}</em></p>
-      <ul class="notes">${p.notas.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
-      <div class="pip-meta"><span>${esc(p.tueste)}</span><span>${p.presentacion >= 1000 ? p.presentacion / 1000 + " kg" : p.presentacion + " g"}</span></div>
-      <div class="lot-price"><b>${cop(p.precio)}</b><small>${cop(precioKgProducto(p))}/kg</small></div>
-      <div class="lot-actions">
-        <button class="btn primary sm" data-act="add" data-id="${p.id}" ${p.stock ? "" : "disabled"}>${c ? `En el pedido (${c.n})` : "Agregar al pedido"}</button>
-        <button class="btn sm" data-act="ficha" data-id="${p.id}">Ficha</button>
-      </div>
+      <p class="notas-linea">${p.notas.join(" · ")}</p>
+      <div class="cc-foot"><b class="mono">${cop(v.precio)}</b><small>${gramos(v.g)}</small>
+        <button class="btn primary sm" data-act="go" data-to="geisha">Ver el café</button></div>
     </div></article>`;
 }
 
-function fichaProducto(id) {
-  const p = S.productos.find((x) => x.id === id);
-  const filas = [
-    ["Origen", p.origen], ["Altitud", fmtNum(p.altitud) + " msnm"], ["Variedad", p.variedad], ["Proceso", p.proceso],
-    ["Tueste", p.tueste], ["Puntaje SCA", `${p.puntaje} · ${LV[p.nivel].label.toLowerCase()} (${p.fuente}, ${fmtFecha(p.fecha)})`],
-    ["Perfil", p.notas.join(", ")], ["Presentación", p.presentacion >= 1000 ? p.presentacion / 1000 + " kg" : p.presentacion + " g"],
-    ["Precio", `${cop(p.precio)} · ${cop(precioKgProducto(p))} por kg`], ["Disponible", `${fmtNum(p.stock)} unidades`],
-  ];
-  modal(`${esc(p.nombre)} · <em>${esc(p.sub)}</em>`, `<div class="passport">
-    <div class="pp-cover dark-art">
-      <p class="kicker">${esc(CONFIG.marca)}</p><h3>${esc(p.nombre)}</h3>
-      <p class="varietal"><em>${esc(p.variedad)}</em> — ${esc(p.proceso)}</p>
-      <p class="pp-score">${esc(p.puntaje)}</p>
-      <div class="trust"><span class="lbl" style="color:#bba48f">${esc(p.tueste)} · ${p.presentacion >= 1000 ? p.presentacion / 1000 + " kg" : p.presentacion + " g"}</span></div>
-      <div class="pp-ridge">${ridge(p, { w: 300, h: 120, dark: true })}</div>
+/* Tarjeta del lote en subasta */
+function subastaCard(i = 0) {
+  const a = UI.au, l = AU_LOTE, top = topBid(a);
+  return `<article class="card-cafe dark reveal dark-art" style="--i:${i}">
+    <div class="cc-art" data-act="go" data-to="subasta" role="button" tabindex="0" aria-label="Ir a la subasta">
+      ${ridge(l, { w: 420, h: 200, dark: true })}
+      <span class="state st-en-subasta">${a.ended ? "cerrada" : "en vivo"}</span>
+      <div class="cc-score"><b>${esc(l.puntaje)}</b><small>SCA · verificado</small></div>
     </div>
-    <div><div class="table-scroll"><table class="cmp-table"><tbody>
-      ${filas.map(([k, v]) => `<tr><th>${k}</th><td>${esc(v)}</td></tr>`).join("")}
-    </tbody></table></div>
-    <p class="hint">Trazabilidad: sabemos a qué productor le compramos este lote, cuánto le pagamos y cuándo se tostó.</p>
-    <div class="dlg-actions"><button class="btn primary" data-act="add" data-id="${p.id}" ${p.stock ? "" : "disabled"}>Agregar al pedido</button></div></div>
-  </div>`);
+    <div class="cc-body">
+      <p class="kicker">${esc(l.municipio)} · ${fmtNum(l.altitud)} msnm · ${a.kg} kg</p>
+      <h3>${esc(l.variedad)} <em>${esc(l.proceso)}</em></h3>
+      <p class="notas-linea">${l.perfil.join(" · ")}</p>
+      <div class="cc-foot"><b class="mono" data-live-price>${cop(top ? top.p : a.start)}</b><small>por kg verde</small>
+        <button class="btn primary sm" data-act="go" data-to="subasta"><span class="live-dot ${a.ended ? "off" : ""}"></span> ${a.ended ? "Ver resultado" : "Pujar"}</button></div>
+    </div></article>`;
+}
+
+/* ---------- la ficha completa ---------- */
+function viewGeisha() {
+  const p = geisha(), v = varSel(p), f = p.ficha;
+  const sobre = ((p.pago.pagadoKg / p.pago.referenciaKg - 1) * 100).toFixed(0);
+  const atributo = ([k, a]) => `<div class="attr" style="--c:${LV[a.nivel].c}">
+      <span class="lbl">${k}</span><b>${esc(a.v)}${k === "Altitud" ? " msnm" : ""}</b>
+      <span class="lvtag" style="--c:${LV[a.nivel].c}">${LV[a.nivel].label}</span>
+      <small>${esc(a.fuente)} · ${fmtFecha(a.fecha)}</small>
+      ${a.detalle ? `<small>${esc(a.detalle)}</small>` : ""}</div>`;
+  return `<article class="prod">
+    <div class="prod-art reveal">
+      <div class="prod-card dark-art">
+        <p class="kicker">${esc(CONFIG.marca)} · ${esc(p.municipio)}</p>
+        <h2 class="prod-title">${esc(p.variedad)}<br><em>${esc(p.proceso)}</em></h2>
+        <p class="prod-score">${esc(p.puntaje)}<small>SCA</small></p>
+        <div class="hc-ridge">${ridge(p, { w: 460, h: 200, dark: true })}</div>
+      </div>
+      <ul class="notas-chips">${p.notas.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
+    </div>
+
+    <div class="prod-buy reveal" style="--i:1">
+      <p class="eyebrow">Cosecha ${esc(p.cosecha)} · ${p.variantes.reduce((s, x) => s + x.stock, 0)} unidades</p>
+      <h1>${esc(p.nombre)}</h1>
+      <p class="lede">${esc(p.historia)}</p>
+
+      <div class="vars" role="radiogroup" aria-label="Presentación">
+        ${p.variantes.map((x) => `<button class="var ${x.g === v.g ? "on" : ""}" data-act="var" data-g="${x.g}" aria-pressed="${x.g === v.g}" ${x.stock ? "" : "disabled"}>
+          <b>${gramos(x.g)}</b><span>${esc(x.label)}</span><small>${x.stock ? esc(x.nota) : "agotado"}</small>
+          <span class="mono precio">${cop(x.precio)}</span></button>`).join("")}
+      </div>
+
+      <div class="buy-row">
+        <div><b class="precio-grande mono">${cop(v.precio)}</b><small>${gramos(v.g)} · ${cop((v.precio / v.g) * 1000)} por kg</small></div>
+        <button class="btn primary lg" data-act="add" data-g="${v.g}" ${v.stock ? "" : "disabled"}>Agregar al pedido</button>
+      </div>
+      <p class="hint">${v.stock} disponibles de esta presentación · molienda a elegir al confirmar · envíos desde Cúcuta.</p>
+
+      <div class="pago">
+        <div><span class="lbl">Le pagamos al productor</span><b class="mono">${cop(p.pago.pagadoKg)}</b><small>por kg de pergamino</small></div>
+        <div><span class="lbl">Precio de referencia ese día</span><b class="mono">${cop(p.pago.referenciaKg)}</b><small>FNC · ${fmtFecha(p.pago.fecha)}</small></div>
+        <div class="mas"><b>+${sobre} %</b><small>por encima de la referencia</small></div>
+      </div>
+    </div>
+
+    <section class="prod-ficha reveal" style="--i:2">
+      <div class="section-head"><p class="eyebrow">La ficha</p><h2>Cada dato dice <em>quién lo comprobó</em></h2>
+        <p>Casi todas las marcas cuentan la historia. Nosotros además decimos de dónde sale cada número y cuándo se midió.</p></div>
+      <div class="attrs-grid">
+        ${atributo(["Variedad", f.variedad])}${atributo(["Altitud", f.altitud])}${atributo(["Proceso", f.proceso])}
+        ${atributo(["Puntaje SCA", f.puntaje])}${atributo(["Factor de rendimiento", f.factor])}${atributo(["Cosecha", f.cosecha])}
+      </div>
+      <div class="leyenda">${Object.values(LV).map((o) => `<span><i style="--c:${o.c}"></i><b>${o.label}:</b> ${o.desc}</span>`).join("")}</div>
+    </section>
+
+    <section class="prod-receta reveal" style="--i:3">
+      <div class="section-head"><p class="eyebrow">Cómo prepararlo</p><h2>La receta <em>de la casa</em></h2>
+        <p>Un café así no se debe improvisar. Empieza por aquí y ajusta a tu gusto.</p></div>
+      <div class="receta">${Object.entries({ Método: p.receta.metodo, Café: p.receta.dosis, Agua: p.receta.agua, Temperatura: p.receta.temp, Tiempo: p.receta.tiempo, Molienda: p.receta.molienda })
+        .map(([k, val]) => `<div><span class="lbl">${k}</span><b>${esc(val)}</b></div>`).join("")}</div>
+      <p class="hint">Si te queda amargo, muele más grueso. Si queda aguado, muele más fino.</p>
+    </section>
+
+    <section class="espera reveal" style="--i:4">
+      <div><h3>Cuando se acabe, se acabó</h3>
+        <p>Son 60 kilos de una sola cosecha. Déjanos tu correo y te avisamos antes de que salga el próximo lote.</p></div>
+      <form class="espera-form" onsubmit="return false">
+        <input id="esp-mail" class="input" type="email" placeholder="tu@correo.com" aria-label="Correo">
+        <button class="btn primary" data-act="espera">Avisarme</button>
+      </form>
+    </section>
+  </article>`;
 }
 
 /* ---------- pedido ---------- */
-function addCarrito(id) {
-  const p = S.productos.find((x) => x.id === id), c = enCarrito(id);
-  if (c) { if (c.n < p.stock) c.n++; } else UI.carrito.push({ id, n: 1 });
-  render(); renderTray();
-  toast(`${esc(p.nombre)} agregado al pedido.`, { label: "Ver pedido", act: abrirPedido });
+function addCarrito(g) {
+  const p = geisha(), v = p.variantes.find((x) => x.g === +g);
+  const c = enCarrito(p.id, v.g);
+  if (c) { if (c.n < v.stock) c.n++; else return toast("No queda más de esa presentación.", { type: "err" }); }
+  else UI.carrito.push({ id: p.id, g: v.g, n: 1, precio: v.precio, nombre: `${p.nombre} ${gramos(v.g)}` });
+  render();
+  toast(`${esc(p.nombre)} ${gramos(v.g)} agregado.`, { label: "Ver pedido", act: abrirPedido });
 }
-const totalCarrito = () => UI.carrito.reduce((s, i) => s + i.n * S.productos.find((p) => p.id === i.id).precio, 0);
 
 function renderTray() {
   const t = $("#tray");
-  if (UI.view !== "tienda" || !UI.carrito.length) { t.hidden = true; return; }
+  if (!UI.carrito.length || UI.view === "admin") { t.hidden = true; return; }
   t.hidden = false;
-  const n = UI.carrito.reduce((s, i) => s + i.n, 0);
-  t.innerHTML = `<span>${n} ${n === 1 ? "producto" : "productos"} · <b class="mono">${cop(totalCarrito())}</b></span>
+  t.innerHTML = `<span>${unidadesCarrito()} ${unidadesCarrito() === 1 ? "bolsa" : "bolsas"} · <b class="mono">${cop(totalCarrito())}</b></span>
     <button class="btn sm" data-act="carrito-clear">Vaciar</button>
     <button class="btn sm primary" data-act="pedido">Hacer pedido</button>`;
 }
 
 function abrirPedido() {
-  const filas = UI.carrito.map((i) => {
-    const p = S.productos.find((x) => x.id === i.id);
-    return `<tr><th>${esc(p.nombre)} <small class="src">${esc(p.sub)} · ${p.presentacion} g</small></th>
-      <td class="qty"><button class="btn sm" data-act="qty" data-id="${p.id}" data-d="-1" aria-label="Quitar uno">−</button>
+  const filas = UI.carrito.map((i) => `<tr><th>${esc(i.nombre)}</th>
+      <td class="qty"><button class="btn sm" data-act="qty" data-g="${i.g}" data-d="-1" aria-label="Quitar uno">−</button>
       <span class="mono">${i.n}</span>
-      <button class="btn sm" data-act="qty" data-id="${p.id}" data-d="1" aria-label="Agregar uno" ${i.n >= p.stock ? "disabled" : ""}>+</button></td>
-      <td class="mono">${cop(p.precio * i.n)}</td></tr>`;
-  }).join("");
+      <button class="btn sm" data-act="qty" data-g="${i.g}" data-d="1" aria-label="Agregar uno">+</button></td>
+      <td class="mono">${cop(i.precio * i.n)}</td></tr>`).join("");
   modal("Tu <em>pedido</em>", `<div class="table-scroll"><table class="cmp-table"><tbody>${filas}
     <tr><th>Total</th><td></td><td class="mono"><b>${cop(totalCarrito())}</b></td></tr></tbody></table></div>
     <div class="form-grid" style="margin-top:16px">
-      <div class="field"><label class="lbl" for="pd-nombre">Nombre o negocio</label><input id="pd-nombre" class="input" placeholder="Cafetería…"></div>
+      <div class="field"><label class="lbl" for="pd-nombre">Nombre o negocio</label><input id="pd-nombre" class="input" placeholder="Tu nombre"></div>
       <div class="field"><label class="lbl" for="pd-ciudad">Ciudad</label><input id="pd-ciudad" class="input" value="Cúcuta"></div>
       <div class="field"><label class="lbl" for="pd-tel">WhatsApp</label><input id="pd-tel" class="input" type="tel" placeholder="300 000 0000"></div>
-      <div class="field"><label class="lbl" for="pd-nota">Nota</label><input id="pd-nota" class="input" placeholder="Molido, entrega…"></div>
+      <div class="field"><label class="lbl" for="pd-molienda">Molienda</label><select id="pd-molienda" class="input"><option>En grano</option><option>Filtro / V60</option><option>Prensa francesa</option><option>Espresso</option></select></div>
     </div>
-    <p class="hint">El pedido llega a nuestro WhatsApp y confirmamos disponibilidad y envío.</p>
+    <p class="hint">Confirmamos por WhatsApp disponibilidad, envío y forma de pago.</p>
     <div class="dlg-actions"><button class="btn" data-act="close">Seguir viendo</button><button class="btn primary" data-act="pedido-enviar">Enviar pedido</button></div>`, "narrow");
 }
 
-function cambiarCantidad(id, d) {
-  const c = enCarrito(id), p = S.productos.find((x) => x.id === id);
+function cambiarCantidad(g, d) {
+  const p = geisha(), v = p.variantes.find((x) => x.g === +g), c = enCarrito(p.id, +g);
   if (!c) return;
-  c.n = Math.max(0, Math.min(p.stock, c.n + d));
-  if (!c.n) UI.carrito = UI.carrito.filter((i) => i.id !== id);
+  c.n = Math.max(0, Math.min(v.stock, c.n + d));
+  if (!c.n) UI.carrito = UI.carrito.filter((i) => !(i.id === p.id && i.g === +g));
   renderTray();
   if (UI.carrito.length) abrirPedido(); else { closeModal(); render(); }
 }
 
 function enviarPedido() {
   const nombre = $("#pd-nombre").value.trim();
-  if (!nombre) return toast("Escribe tu nombre o el del negocio.", { type: "err" });
-  const items = UI.carrito.map((i) => { const p = S.productos.find((x) => x.id === i.id); return { nombre: p.nombre, n: i.n, precio: p.precio }; });
+  if (!nombre) return toast("Escribe tu nombre.", { type: "err" });
+  const p = geisha(), molienda = $("#pd-molienda").value;
   const cl = upsertCliente(nombre, $("#pd-ciudad").value.trim(), $("#pd-tel").value.trim());
-  const pedido = { id: nextId("PD"), clienteId: cl.id, canal: "tienda", nombre, ciudad: $("#pd-ciudad").value.trim(), tel: $("#pd-tel").value.trim(), nota: $("#pd-nota").value.trim(),
+  const items = UI.carrito.map((i) => ({ id: p.id, nombre: i.nombre, n: i.n, precio: i.precio }));
+  const pedido = { id: nextId("PD"), clienteId: cl.id, canal: "tienda", nombre, ciudad: cl.ciudad, tel: cl.tel, molienda,
     items, total: totalCarrito(), fecha: isoToday() };
   S.pedidos.unshift(pedido);
-  UI.carrito.forEach((i) => { const p = S.productos.find((x) => x.id === i.id); p.stock = Math.max(0, p.stock - i.n); atribuirVenta(p, i.n); });
+  /* descuenta stock de cada presentación y lo atribuye al lote */
+  UI.carrito.forEach((i) => {
+    const v = p.variantes.find((x) => x.g === i.g); v.stock = Math.max(0, v.stock - i.n);
+    atribuirVenta(p, (i.n * i.g) / p.presentacion, i.precio * i.n);   // en bolsas equivalentes de la presentación principal
+  });
+  p.stock = p.variantes.find((x) => x.principal).stock;
   UI.carrito = []; save(); closeModal(); render();
-  const texto = `Hola ${CONFIG.marca}, quiero pedir:\n${items.map((i) => `· ${i.n} × ${i.nombre}`).join("\n")}\nTotal: ${cop(pedido.total)}\nNombre: ${pedido.nombre}${pedido.ciudad ? " · " + pedido.ciudad : ""}`;
+  const texto = `Hola ${CONFIG.marca}, quiero pedir:\n${items.map((i) => `· ${i.n} × ${i.nombre}`).join("\n")}\nMolienda: ${molienda}\nTotal: ${cop(pedido.total)}\nNombre: ${nombre}${pedido.ciudad ? " · " + pedido.ciudad : ""}`;
   if (CONFIG.whatsapp) window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`, "_blank", "noopener");
-  toast(`Pedido ${pedido.id} registrado por ${cop(pedido.total)}.`, CONFIG.whatsapp ? {} : { label: "Ver texto", act: () => modal("Mensaje del pedido", `<pre class="pre">${esc(texto)}</pre><p class="hint">Configura <code>CONFIG.whatsapp</code> para que se envíe solo.</p>`, "narrow") });
+  toast(`Pedido ${pedido.id} por ${cop(pedido.total)}.`, CONFIG.whatsapp ? {} : { label: "Ver mensaje", act: () => modal("Mensaje del pedido", `<pre class="pre">${esc(texto)}</pre><p class="hint">Pon tu número en <code>CONFIG.whatsapp</code> para que se envíe solo.</p>`, "narrow") });
+}
+
+function listaEspera() {
+  const mail = $("#esp-mail").value.trim();
+  if (!/^\S+@\S+\.\S+$/.test(mail)) return toast("Escribe un correo válido.", { type: "err" });
+  S.espera.unshift({ mail, fecha: isoToday() }); save();
+  $("#esp-mail").value = "";
+  toast("Listo, te avisamos antes de que salga el próximo lote.");
 }
 
 /* ---- quote.js ---- */
@@ -1121,7 +1265,7 @@ const enJuego = (c) => Math.max(0, costoTotal(c) - recuperado(c));      // plata
 const factorReal = (c) => (c.kgVerde ? (c.kg * 70) / c.kgVerde : null);
 const mermaReal = (c) => (c.kgVerde && c.kgTostado ? (1 - c.kgTostado / c.kgVerde) * 100 : null);
 const dias = (iso) => Math.round((Date.now() - new Date(iso + "T00:00:00")) / 86400000);
-const bolsasLibres = (c) => Math.max(0, (c.bolsas || 0) - (c.bolsasVendidas || 0));
+const bolsasLibres = (c) => Math.max(0, Math.round((c.bolsas || 0) - (c.bolsasVendidas || 0)));
 /* Valor de venta de lo que queda, al precio del producto ligado (o al último precio conocido) */
 function valorPendiente(c) {
   const p = S.productos.find((x) => x.loteId === c.id);
@@ -1172,7 +1316,7 @@ function loteCard(c, i) {
     [`${fmtNum(c.kg)} kg pergamino`, `factor declarado ${c.factor}${fr ? ` · real ${fr.toFixed(1)}` : ""}`],
     c.kgVerde ? [`${fmtNum(c.kgVerde)} kg verde`, `tras trilla`] : null,
     c.kgTostado ? [`${fmtNum(c.kgTostado)} kg tostado`, `merma ${mm.toFixed(1)} %`] : null,
-    c.bolsas ? [`${fmtNum(c.bolsas)} bolsas`, `${fmtNum(c.bolsasVendidas || 0)} vendidas · ${fmtNum(bolsasLibres(c))} en stock`] : null,
+    c.bolsas ? [`${fmtNum(c.bolsas)} bolsas`, `${fmtNum(Math.round(c.bolsasVendidas || 0))} vendidas · ${fmtNum(bolsasLibres(c))} en stock`] : null,
   ].filter(Boolean);
   return `<div class="item lote" style="--i:${i}">
     <div><p class="kicker">${esc(c.id)} · ${fmtFecha(c.fecha)} · ${esc(c.municipio)}</p>
@@ -1240,11 +1384,11 @@ function invPasoOk() {
 }
 
 /* Las ventas de la tienda se descuentan del lote que las produjo */
-function atribuirVenta(producto, n) {
-  const c = S.compras.find((x) => x.id === producto.loteId); if (!c) return;
-  c.bolsasVendidas = (c.bolsasVendidas || 0) + n;
-  c.ingresos = (c.ingresos || 0) + n * producto.precio;
-  if (!bolsasLibres(c)) c.estado = "VENDIDO";
+function atribuirVenta(producto, unidades, valor) {
+  const c = S.compras.find((x) => x.id === producto.loteId); if (!c || !unidades) return;
+  c.bolsasVendidas = (c.bolsasVendidas || 0) + unidades;            // admite fracciones (muestras de 100 g)
+  c.ingresos = (c.ingresos || 0) + (valor != null ? valor : unidades * producto.precio);
+  if (bolsasLibres(c) < 1) c.estado = "VENDIDO";
 }
 
 /* ---- clients.js ---- */
@@ -1531,10 +1675,10 @@ const EXT_MS = 20000;
 
 /* El lote en subasta. Reemplazar por el del productor aliado cuando esté confirmado. */
 const AU_LOTE = {
-  id: "S-001", productor: "Productor aliado", finca: "Finca del aliado", municipio: "Chinácota", altitud: 1950,
+  id: "S-001", productor: "Productor aliado", finca: "Finca del aliado", municipio: "Toledo", altitud: 1950,
   variedad: "Geisha", proceso: "Natural", puntaje: 88.5, factor: 89, nivel: "VERIFICADO",
   detalle: "Anaeróbico 96 h · Camas africanas 28 días", perfil: ["Jazmín", "Mango", "Vino blanco", "Bergamota"],
-  compraKgVerde: 78000,   // lo que nos costó por kg de café verde
+  compraKgVerde: 43900,   // lo que nos costó por kg de café verde
 };
 
 function newAuction() {
@@ -1716,78 +1860,83 @@ function refreshAgo() { document.querySelectorAll("#au-feed [data-t]").forEach((
 
 /* ---- main.js ---- */
 /* ============================================================
-   INICIO + enrutado, render, eventos y reloj de la subasta
+   INICIO, ADMIN, enrutado, render y eventos
    ============================================================ */
 function viewInicio() {
-  const a = UI.au, l = AU_LOTE;
-  const stock = S.productos.reduce((s, p) => s + p.stock, 0);
-  const kgComprados = S.compras.reduce((s, c) => s + c.kg, 0);
-  const productores = new Set(S.compras.map((c) => c.productor)).size;
-  const paso = (n, t, s) => `<li><div class="step"><span class="n">${n}</span><div><b>${t}</b><span>${s}</span></div></div></li>`;
-  const herramienta = (to, t, s, interno) => `<button class="tool ${interno ? "int" : ""}" data-act="go" data-to="${to}">
-      <b>${t}</b><span>${s}</span><small>${interno ? "uso interno" : "pública"}</small></button>`;
+  const p = geisha(), a = UI.au, l = AU_LOTE;
+  const v = p.variantes.find((x) => x.principal);
+  const sobre = ((p.pago.pagadoKg / p.pago.referenciaKg - 1) * 100).toFixed(0);
+  const valor = [
+    ["Un nombre, no un país", "No vendemos “café colombiano”. Vendemos el lote de una finca, de una cosecha, con el nombre de quien lo cultivó."],
+    ["Cada dato con su fuente", "Altura, variedad, proceso y puntaje llevan quién lo comprobó y cuándo. Lo que no está verificado, lo decimos."],
+    ["Lo que le pagamos", `Pagamos ${cop(p.pago.pagadoKg)} por kilo de pergamino cuando la referencia del día era ${cop(p.pago.referenciaKg)}: <b>+${sobre} %</b>.`],
+    ["Se acaba y ya", "Son 60 kilos de una cosecha. Cuando se acaben, hay que esperar a la siguiente."],
+  ];
   return `
   <section class="hero">
     <div>
-      <p class="eyebrow reveal">${esc(CONFIG.marca)} · Chinácota, Norte de Santander</p>
-      <h1 class="reveal" style="--i:1">Compramos el café.<br><em>Le ponemos nombre.</em></h1>
-      <p class="lede reveal" style="--i:2">Le compramos a pequeños productores pagando por encima del comité, trillamos, tostamos y vendemos con nuestra marca. Los lotes excepcionales van a subasta.</p>
+      <p class="eyebrow reveal">${esc(CONFIG.marca)} · ${esc(CONFIG.lugar)}</p>
+      <h1 class="reveal" style="--i:1">Un café.<br><em>Toda su historia.</em></h1>
+      <p class="lede reveal" style="--i:2">Compramos el lote directo en la finca, pagando por encima de la referencia del día, y lo vendemos con su ficha completa: quién lo cultivó, a qué altura, quién lo cató y cuándo.</p>
       <div class="cta reveal" style="--i:3">
-        <button class="btn primary lg" data-act="go" data-to="tienda">Ver la tienda →</button>
-        <button class="btn lg" data-act="go" data-to="cotizador">Abrir el cotizador</button>
+        <button class="btn primary lg" data-act="go" data-to="geisha">Ver el Geisha · ${cop(v.precio)}</button>
+        <button class="btn lg" data-act="go" data-to="subasta"><span class="live-dot ${a.ended ? "off" : ""}"></span> Subasta en vivo</button>
       </div>
-      <button class="live-link reveal" style="--i:4" data-act="go" data-to="subasta"><span class="live-dot ${a.ended ? "off" : ""}"></span>
-        <span>Subasta: ${esc(l.variedad)} ${esc(l.proceso)}</span><b class="mono" data-live-price>${cop(topBid(a)?.p || a.start)}</b><span class="mono" data-live-time></span></button>
     </div>
     <div class="hero-art reveal" style="--i:2">
       <div class="hero-card">
-        <div class="hc-top"><span class="kicker">Lote ${esc(l.id)} · ${esc(l.municipio)}</span><span class="state st-en-subasta">en subasta</span></div>
-        <p class="hc-title">${esc(l.variedad)}<br><em>${esc(l.proceso)}</em></p>
-        <p class="hc-score">${esc(l.puntaje)}<small>SCA</small></p>
-        <div class="hc-ridge dark-art">${ridge(l, { w: 420, h: 180, dark: true })}</div>
+        <div class="hc-top"><span class="kicker">${esc(p.municipio)} · ${esc(p.cosecha)}</span><span class="state st-publicado">${v.stock} bolsas</span></div>
+        <p class="hc-title">${esc(p.variedad)}<br><em>${esc(p.proceso)}</em></p>
+        <p class="hc-score">${esc(p.puntaje)}<small>SCA</small></p>
+        <div class="hc-ridge dark-art">${ridge(p, { w: 420, h: 180, dark: true })}</div>
       </div>
-      <div class="float-chip" style="--x:-6%;--y:66%;--d:0s"><i style="--c:var(--leaf)"></i><span>Altitud <b>${fmtNum(l.altitud)} m</b></span><small>verificado · GPS</small></div>
-      <div class="float-chip" style="--x:58%;--y:24%;--d:-2s"><i style="--c:var(--leaf)"></i><span>Puntaje <b>${esc(l.puntaje)}</b></span><small>verificado · Q-grader</small></div>
-      <div class="float-chip" style="--x:54%;--y:84%;--d:-4s"><i style="--c:var(--doc)"></i><span>Factor <b>${esc(l.factor)}</b></span><small>informe de trilla</small></div>
+      <div class="float-chip" style="--x:-6%;--y:66%;--d:0s"><i style="--c:var(--leaf)"></i><span>Altitud <b>${fmtNum(p.altitud)} m</b></span><small>verificado · GPS</small></div>
+      <div class="float-chip" style="--x:58%;--y:24%;--d:-2s"><i style="--c:var(--leaf)"></i><span>Puntaje <b>${esc(p.puntaje)}</b></span><small>verificado · Q-grader</small></div>
+      <div class="float-chip" style="--x:54%;--y:84%;--d:-4s"><i style="--c:var(--doc)"></i><span>Lavado <b>36 h</b></span><small>documentado · bitácora</small></div>
     </div>
   </section>
 
-  <section class="stats reveal" style="--i:5">
-    <div class="stat"><b data-count="${S.productos.length}">${S.productos.length}</b><small>cafés en la tienda</small></div>
-    <div class="stat"><b data-count="${stock}">${fmtNum(stock)}</b><small>unidades en stock</small></div>
-    <div class="stat"><b data-count="${kgComprados}">${fmtNum(kgComprados)}</b><small>kg comprados</small></div>
-    <div class="stat"><b data-count="${productores}">${productores}</b><small>productores aliados</small></div>
+  <section class="section">
+    <div class="section-head"><p class="eyebrow">Lo que hay ahora</p><h2>Dos cafés, <em>nada más</em></h2>
+      <p>Uno para llevar a casa y uno que se remata al mejor postor. Cuando se acaban, se acaban.</p></div>
+    <div class="dos">${cafeCard(p, 0)}${subastaCard(1)}</div>
   </section>
 
   <section class="section">
-    <div class="section-head"><p class="eyebrow">Cómo trabajamos</p><h2>Del cafetal <em>a la bolsa</em></h2>
-      <p>Somos el comprador, no un intermediario que solo conecta. El café es nuestro desde que sale de la finca.</p></div>
-    <ol class="track wide">
-      ${paso(1, "Visitamos la finca", "Con el cotizador en la mano: factor, humedad y lo que paga el comité ese día.")}
-      ${paso(2, "Compramos y pagamos mejor", "Ofrecemos por encima del comité cuando el café lo merece, y de contado.")}
-      ${paso(3, "Trilla y tueste", "Llevamos el pergamino a trilla y tostamos por maquila mientras no tengamos tostadora.")}
-      ${paso(4, "Marca y empaque", "Cada bolsa dice de qué finca salió, a qué altura y quién la cultivó.")}
-      ${paso(5, "Vendemos", "Tienda propia, cafeterías y tostadores. Lo excepcional va a subasta.")}
-    </ol>
+    <div class="section-head"><p class="eyebrow">Por qué cuesta lo que cuesta</p><h2>La transparencia <em>no es un adorno</em></h2></div>
+    <div class="valor">${valor.map(([t, d], i) => `<div class="val" style="--i:${i}"><b>${t}</b><span>${d}</span></div>`).join("")}</div>
   </section>
 
-  <section class="section">
-    <div class="section-head"><p class="eyebrow">Las cuatro partes</p><h2>Qué hace <em>esta plataforma</em></h2></div>
-    <div class="tools">
-      ${herramienta("tienda", "Tienda", "El catálogo de nuestros cafés, con su origen y su puntaje, y pedidos por WhatsApp.")}
-      ${herramienta("subasta", "Subasta", "Para microlotes excepcionales: reserva, pujas en vivo y cierre con extensión.")}
-      ${herramienta("cotizador", "Cotizador de finca", "Cuánto le pagaría el comité, cuánto podemos pagar nosotros y con qué margen quedamos.", true)}
-      ${herramienta("inventario", "Inventario", "Cada lote desde la compra hasta la última bolsa: costos reales, plata quieta y margen.", true)}
-      ${herramienta("clientes", "Clientes", "Quién compra, cada cuánto, qué café prefiere y a quién toca volver a llamar.", true)}
-      ${herramienta("mercado", "Mercado", "Precio FNC, bolsa de Nueva York, TRM, tabla de factores y cuándo conviene vender.", true)}
-    </div>
+  <section class="section cinta">
+    <p class="eyebrow">De la finca a la bolsa</p>
+    <div class="cinta-pasos">${[
+      ["Compra", `${cop(p.pago.pagadoKg)}/kg de pergamino en la finca`],
+      ["Trilla", "60 kg de pergamino → 46 kg de café verde"],
+      ["Tueste", "medio-claro, para que se sienta el origen"],
+      ["Empaque", "153 bolsas con válvula y fecha de tueste"],
+      ["Tu taza", "15 g, 250 ml, 93 °C"],
+    ].map(([t, d], i) => `<div class="cp"><span class="n">${i + 1}</span><b>${t}</b><small>${d}</small></div>`).join("")}</div>
   </section>`;
 }
 
-const FOOT = `<footer class="foot"><span><b>${CONFIG.marca}</b> es un nombre provisional. Prototipo con <b>datos de ejemplo</b>: cafés, compras, pujas y costos son simulados.</span>
+/* ---------- área interna ---------- */
+const ATABS = [["cotizador", "Cotizador"], ["inventario", "Inventario"], ["clientes", "Clientes"], ["mercado", "Mercado"]];
+const APANELS = { cotizador: viewCotizador, inventario: viewInventario, clientes: viewClientes, mercado: viewMercado };
+
+function viewAdmin() {
+  return `<div class="admin-bar reveal">
+      <div><span class="lbl">Administración</span><b>Solo para nosotros</b></div>
+      <div class="seg" role="group" aria-label="Secciones internas">
+        ${ATABS.map(([k, t]) => `<button data-act="atab" data-tab="${k}" aria-pressed="${UI.atab === k}">${t}</button>`).join("")}
+      </div>
+    </div>
+    <div class="admin-body">${APANELS[UI.atab]()}</div>`;
+}
+
+const FOOT = `<footer class="foot"><span><b>${CONFIG.marca}</b> · ${CONFIG.lugar} · nombre provisional. Prototipo con <b>datos de ejemplo</b>.</span>
   <button class="btn sm" data-act="reset-demo">Reiniciar datos de la demo</button></footer>`;
 
-const VIEWS = { inicio: viewInicio, tienda: viewTienda, subasta: viewSubasta, cotizador: viewCotizador, inventario: viewInventario, clientes: viewClientes, mercado: viewMercado };
+const VIEWS = { inicio: viewInicio, geisha: viewGeisha, subasta: viewSubasta, admin: viewAdmin };
 
 function render() {
   const ae = document.activeElement, fid = ae && ae.id && !ae.closest("dialog") ? ae.id : null;
@@ -1798,14 +1947,14 @@ function render() {
   v.classList.toggle("calm", !UI.animate);
   v.innerHTML = VIEWS[UI.view]() + FOOT;
   if (UI.view === "subasta") updateAuction();
-  if (UI.view === "cotizador") renderCot();
+  if (UI.view === "admin" && UI.atab === "cotizador") renderCot();
   renderTray(); liveBits();
   if (UI.animate) countUp();
   UI.animate = false;
   if (fid) { const n = document.getElementById(fid); if (n) { n.focus({ preventScroll: true }); if (sel) try { n.setSelectionRange(...sel); } catch {} } }
 }
 function softRefresh() { if (UI.view === "subasta") return renderNav(); render(); }
-function go(view, opts = {}) {
+function go(view) {
   UI.view = view; UI.animate = true; closeModal();
   try { if (location.hash !== "#" + view) history.replaceState(null, "", "#" + view); } catch {}
   render();
@@ -1813,7 +1962,7 @@ function go(view, opts = {}) {
 }
 function renderNav() {
   document.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-current", t.dataset.to === UI.view ? "page" : "false"));
-  const n = UI.carrito.reduce((s, i) => s + i.n, 0), b = $("#b-cart");
+  const n = unidadesCarrito(), b = $("#b-cart");
   b.hidden = !n; b.textContent = n;
   $("#nav-live").classList.toggle("off", UI.au.ended);
 }
@@ -1838,23 +1987,21 @@ document.addEventListener("click", (e) => {
     case "go": return go(el.dataset.to);
     case "close": return closeModal();
     /* tienda */
-    case "filtro": UI.filtro = el.dataset.val; UI.animate = true; return render();
-    case "ficha": return fichaProducto(id);
-    case "add": return addCarrito(id);
-    case "qty": return cambiarCantidad(id, +el.dataset.d);
-    case "carrito-clear": UI.carrito = []; render(); return renderTray();
+    case "var": UI.variante = +el.dataset.g; UI.animate = false; return render();
+    case "add": return addCarrito(el.dataset.g);
+    case "qty": return cambiarCantidad(el.dataset.g, +el.dataset.d);
+    case "carrito-clear": UI.carrito = []; return render();
     case "pedido": return abrirPedido();
     case "pedido-enviar": return enviarPedido();
-    /* cotizador */
+    case "espera": return listaEspera();
+    /* admin */
+    case "atab": UI.atab = el.dataset.tab; UI.animate = true; return render();
     case "cot-reset": UI.q = nuevaCot(); UI.animate = false; return render();
     case "cot-save": return cotSave();
     case "cot-save-ok": return cotSaveOk();
-    /* mercado */
     case "mkt-save": return guardarMercado();
-    /* inventario */
     case "inv-paso": return invPaso(id, el.dataset.p);
     case "inv-paso-ok": return invPasoOk();
-    /* clientes */
     case "cl-ver": return clienteVer(id);
     case "cl-wa": return clienteWa(id);
     case "cl-nuevo": return clienteNuevo(id);
@@ -1867,7 +2014,7 @@ document.addEventListener("click", (e) => {
     case "remind": el.textContent = "✓ Te avisamos"; el.disabled = true; return;
     case "reset-demo":
       try { localStorage.removeItem(CONFIG.storageKey); } catch {}
-      S = seed(); UI.au = newAuction(); UI.carrito = []; UI.q = null; UI.filtro = "todos";
+      S = seed(); UI.au = newAuction(); UI.carrito = []; UI.q = null; UI.variante = null;
       return go("inicio");
   }
 });
@@ -1875,6 +2022,7 @@ document.addEventListener("keydown", (e) => {
   const t = e.target;
   if ((e.key === "Enter" || e.key === " ") && t.getAttribute?.("role") === "button" && t.dataset.act) { e.preventDefault(); t.click(); }
   if (e.key === "Enter" && t.id === "au-custom") myBid(0);
+  if (e.key === "Enter" && t.id === "esp-mail") { e.preventDefault(); listaEspera(); }
 });
 document.addEventListener("input", (e) => {
   const t = e.target;
