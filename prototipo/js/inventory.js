@@ -11,7 +11,6 @@ const enJuego = (c) => Math.max(0, costoTotal(c) - recuperado(c));      // plata
 const factorReal = (c) => (c.kgVerde ? (c.kg * 70) / c.kgVerde : null);
 const mermaReal = (c) => (c.kgVerde && c.kgTostado ? (1 - c.kgTostado / c.kgVerde) * 100 : null);
 const dias = (iso) => Math.round((Date.now() - new Date(iso + "T00:00:00")) / 86400000);
-const bolsasLibres = (c) => Math.max(0, Math.round((c.bolsas || 0) - (c.bolsasVendidas || 0)));
 /* Valor de venta de lo que queda, al precio del producto ligado (o al último precio conocido) */
 function valorPendiente(c) {
   const p = S.productos.find((x) => x.loteId === c.id);
@@ -130,9 +129,3 @@ function invPasoOk() {
 }
 
 /* Las ventas de la tienda se descuentan del lote que las produjo */
-function atribuirVenta(producto, unidades, valor) {
-  const c = S.compras.find((x) => x.id === producto.loteId); if (!c || !unidades) return;
-  c.bolsasVendidas = (c.bolsasVendidas || 0) + unidades;            // admite fracciones (muestras de 100 g)
-  c.ingresos = (c.ingresos || 0) + (valor != null ? valor : unidades * producto.precio);
-  if (bolsasLibres(c) < 1) c.estado = "VENDIDO";
-}

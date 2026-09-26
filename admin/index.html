@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Panel · Altura</title>
+<title>Panel · Nandez Café</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -581,6 +581,52 @@ body[data-view=login] .wrap{display:grid;place-items:center;min-height:calc(100v
 .admin-side{display:flex;align-items:center;gap:12px;margin-left:auto}
 .admin-side .mono{font-size:12.5px;color:var(--ink-2)}
 
+/* ---- v6: idioma, fincas, planes, diario ---- */
+.lang{display:flex;gap:2px;background:var(--paper-2);border-radius:999px;padding:3px}
+.lang button{border:0;background:transparent;border-radius:999px;padding:5px 10px;font:600 11.5px var(--mono);letter-spacing:.06em;color:var(--ink-3);cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+body[data-view=subasta] .lang{background:#231812}
+body[data-view=subasta] .lang button[aria-pressed=true]{background:var(--crema);color:var(--roast)}
+.fincas{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:32px}
+.finca{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;transition:transform .3s,box-shadow .3s}
+.finca:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.finca.propia{border-style:dashed;background:var(--paper-2)}
+.finca-art{position:relative;height:120px;background:var(--paper-2)}
+.finca-art svg{position:absolute;inset:0;width:100%;height:100%}
+.finca-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:6px;flex:1}
+.finca-body h3{font-size:1.5rem;line-height:1.1}
+.finca-prod{margin:0;font-weight:600;font-size:14px}
+.excl{font:600 9.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:2px 7px;vertical-align:middle}
+.finca-foot{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:12px;border-top:1px dashed var(--line);flex-wrap:wrap}
+.var-chip{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;background:var(--paper);border-radius:999px;padding:4px 10px}
+.pronto{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--cherry);margin-left:auto}
+.finca-foot .btn{margin-left:auto}
+.foto-pend{border:1px dashed var(--line);border-radius:10px;padding:10px 12px;background:var(--paper-2)}
+.planes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:10px}
+.plan{position:relative;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px 24px;display:flex;flex-direction:column;gap:10px}
+.plan.hot{border-color:var(--cherry);box-shadow:0 20px 40px -24px rgba(168,50,31,.5)}
+.plan-tag{position:absolute;top:-11px;left:24px;background:var(--cherry);color:#fff;font:600 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:999px}
+.plan h3{font-size:2rem;line-height:1}
+.plan-precio{margin:0;display:flex;align-items:baseline;gap:6px}
+.plan-precio b{font-size:1.9rem}
+.plan-precio small{color:var(--ink-2)}
+.plan-lista{list-style:none;padding:0;margin:6px 0 16px;display:grid;gap:7px;font-size:14px;flex:1}
+.plan-lista li{display:flex;gap:8px;color:var(--ink-2)}
+.plan-lista li::before{content:"✓";color:var(--leaf);font-weight:700}
+.entradas{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.entrada{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:10px;transition:transform .3s,box-shadow .3s}
+.entrada:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.entrada h3{font-size:1.7rem;line-height:1.1}
+.entrada p{color:var(--ink-2);margin:0;flex:1}
+.entrada .btn{align-self:flex-start}
+.ent-meta{display:flex;align-items:center;gap:10px;font:600 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.tag{border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--cherry)}
+.post{max-width:70ch;margin:0 auto;display:grid;gap:14px}
+.post h1{font-size:clamp(2.2rem,5vw,3.6rem);line-height:1.02}
+.post .btn{justify-self:start}
+.post-body{font-size:1.05rem;color:var(--ink-2)}
+.post .espera{margin-top:26px}
+
 /* sala de subasta */
 .auction{color:#f3e6d6}
 .auction .kicker{color:#a58f7c}
@@ -686,7 +732,7 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
 <body data-view="login">
 <header class="top"><div class="top-inner">
   <span class="brand"><svg class="mark" viewBox="0 0 28 20" aria-hidden="true"><path d="M1 19 L9 7 L13 12 L19 3 L27 19 Z" fill="currentColor"/></svg>
-  <b>Altura</b><small>panel interno</small></span>
+  <b>Nandez</b><small>panel interno</small></span>
 </div></header>
 <main class="wrap" id="view"></main>
 
@@ -698,113 +744,201 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
 <script>
 /* ---- core.js ---- */
 /* ============================================================
-   ALTURA · núcleo: configuración, datos, estado y utilidades
-   Modelo: compramos café a pequeños productores, le ponemos marca y lo vendemos.
-   La página pública vende DOS cosas: el Geisha y el lote en subasta.
-   Datos de ejemplo — reemplazar por los reales.
+   NANDEZ CAFÉ · núcleo: configuración, idioma, datos y utilidades
+   Compramos café a fincas de Norte de Santander, cada una con su
+   variedad; los lotes excepcionales van a subasta. Más adelante
+   entra el café de nuestra propia tierra.
+   Textos y fotos: PENDIENTES, los pone el cliente.
    ============================================================ */
 const CONFIG = {
-  fnc: { precioCarga: 2005000, factorBase: 94, fecha: "2026-09-16" },  // referencia del día (editable en Mercado)
+  marca: "Nandez Café",
+  lugar: { es: "Norte de Santander, Colombia", en: "Norte de Santander, Colombia" },
+  fnc: { precioCarga: 2005000, factorBase: 94, fecha: "2026-09-16" },
   mercado: { ny: 282, trm: 3128 },
-  storageKey: "altura-v5",
-  whatsapp: "",            // 573001234567 para que los pedidos salgan solos
-  marca: "Altura",
-  lugar: "Chinácota, Norte de Santander",
+  storageKey: "nandez-v6",
+  whatsapp: "",                 // 573001234567
+  correo: "nandezcafe@gmail.com",
+  /* Pagos. Mientras no haya links, el pedido sale por WhatsApp o correo.
+     Ver docs/06_pagos_y_suscripciones.md */
+  pagos: {
+    mercadoPago: "",            // link de pago general o Checkout Pro (/api/checkout)
+    porProducto: {},            // { "C-GEI-250": "https://mpago.la/xxxx" }
+    suscripcion: {},            // { descubrir: "https://mpago.la/xxxx" }
+  },
 };
 
-/* Supuestos de costos: cámbialos por tus cotizaciones reales */
-const COSTOS = {
-  transporte: 300, trilla: 500, tueste: 5000, empaque: 1300,
-  indirectos: 8, mermaTueste: 17, cerezaAPergamino: 5,
-  margenObjetivo: 35, primaSugerida: 15,
-};
+const COSTOS = { transporte: 300, trilla: 500, tueste: 5000, empaque: 1300, indirectos: 8,
+  mermaTueste: 17, cerezaAPergamino: 5, margenObjetivo: 35, primaSugerida: 15 };
 
 const LV = {
-  DECLARADO:   { label: "Declarado",   c: "var(--ink-3)", k: 1, desc: "Lo dice el productor.", ej: "Variedad" },
-  DOCUMENTADO: { label: "Documentado", c: "var(--doc)",   k: 2, desc: "Hay un documento que lo respalda.", ej: "Informe de trilla" },
-  VERIFICADO:  { label: "Verificado",  c: "var(--leaf)",  k: 3, desc: "Lo comprobamos nosotros o un tercero.", ej: "Catación Q-grader" },
-  CERTIFICADO: { label: "Certificado", c: "var(--gold)",  k: 4, desc: "Lo avala una entidad competente.", ej: "Sello orgánico" },
+  DECLARADO:   { label: { es: "Declarado", en: "Stated" },     c: "var(--ink-3)", k: 1, desc: { es: "Lo dice el productor.", en: "Stated by the producer." } },
+  DOCUMENTADO: { label: { es: "Documentado", en: "Documented" }, c: "var(--doc)",  k: 2, desc: { es: "Hay un documento que lo respalda.", en: "Backed by a document." } },
+  VERIFICADO:  { label: { es: "Verificado", en: "Verified" },   c: "var(--leaf)", k: 3, desc: { es: "Lo comprobamos nosotros o un tercero.", en: "Checked by us or a third party." } },
+  CERTIFICADO: { label: { es: "Certificado", en: "Certified" }, c: "var(--gold)", k: 4, desc: { es: "Lo avala una entidad competente.", en: "Backed by a certifying body." } },
 };
 const PROC_COLOR = { Lavado: "#3f6a4b", Natural: "#9c3322", Honey: "#b98330", "Anaeróbico": "#6b3a5c" };
 const A = (v, nivel, fuente, fecha, extra = {}) => ({ v, nivel, fuente, fecha, ...extra });
 
+/* ---------- idioma ---------- */
+const T = {
+  nav_inicio: { es: "Inicio", en: "Home" }, nav_cafes: { es: "Cafés", en: "Coffees" },
+  nav_subasta: { es: "Subasta", en: "Auction" }, nav_suscripcion: { es: "Suscripción", en: "Subscription" },
+  nav_diario: { es: "Diario", en: "Journal" },
+  comprar: { es: "Comprar", en: "Buy" }, agregar: { es: "Agregar al pedido", en: "Add to order" },
+  ver_cafe: { es: "Ver el café", en: "View coffee" }, agotado: { es: "Agotado", en: "Sold out" },
+  pedido: { es: "Tu pedido", en: "Your order" }, total: { es: "Total", en: "Total" },
+  pagar_mp: { es: "Pagar con Mercado Pago", en: "Pay with Mercado Pago" },
+  pedir_wa: { es: "Pedir por WhatsApp", en: "Order on WhatsApp" },
+  seguir: { es: "Seguir viendo", en: "Keep browsing" },
+  disponibles: { es: "disponibles", en: "available" }, por_kg: { es: "por kg", en: "per kg" },
+  ficha: { es: "La ficha", en: "The data" }, receta: { es: "Cómo prepararlo", en: "How to brew it" },
+  pagado: { es: "Le pagamos al productor", en: "We paid the producer" },
+  referencia: { es: "Precio de referencia ese día", en: "Reference price that day" },
+  sobre_ref: { es: "por encima de la referencia", en: "above the reference" },
+  pendiente: { es: "Contenido por confirmar", en: "Content to be confirmed" },
+  leer: { es: "Leer", en: "Read" }, volver: { es: "Volver", en: "Back" },
+  en_vivo: { es: "en vivo", en: "live" }, cerrada: { es: "cerrada", en: "closed" },
+  suscribirme: { es: "Suscribirme", en: "Subscribe" }, mes: { es: "al mes", en: "per month" },
+};
+const t = (k) => (T[k] ? T[k][UI.lang] || T[k].es : k);
+const tx = (o) => (o && typeof o === "object" && !Array.isArray(o) ? (o[UI.lang] ?? o.es) : o);
+const lvl = (nivel) => tx(LV[nivel].label);
+
 function seed() {
   return {
-    v: 5, seq: 300,
-    /* ---------- EL CAFÉ QUE VENDEMOS ---------- */
+    v: 6, seq: 400,
+
+    /* ---------- FINCAS ALIADAS ---------- */
+    fincas: [
+      { id: "F-01", productor: "Domingo Torres", finca: "Finca por confirmar", municipio: "Toledo", altitud: 1950,
+        variedad: "Geisha", exclusiva: true, premios: { es: "Ganador de concursos de calidad (por confirmar)", en: "Quality competition winner (to be confirmed)" },
+        historia: { es: "PENDIENTE: la historia de don Domingo, cuántos años lleva con el Geisha y qué premios ha ganado.",
+                    en: "PENDING: Domingo's story, how long he has grown Geisha and which awards he has won." }, pendiente: true },
+      { id: "F-02", productor: "Productor por confirmar", finca: "Lote Chinácota", municipio: "Chinácota", altitud: 1750,
+        variedad: "Bourbon rosado", exclusiva: false,
+        historia: { es: "PENDIENTE: quién cultiva este lote y por qué su café sabe distinto.", en: "PENDING: who grows this lot and why it tastes different." }, pendiente: true },
+      { id: "F-03", productor: "Productor por confirmar", finca: "Lote Arboledas", municipio: "Arboledas", altitud: 1550,
+        variedad: "Castillo", exclusiva: false,
+        historia: { es: "PENDIENTE: historia de la finca.", en: "PENDING: farm story." }, pendiente: true },
+      { id: "F-00", productor: "Familia Nández", finca: "Nuestra finca", municipio: "Chinácota", altitud: 1750,
+        variedad: "Geisha", exclusiva: true, propia: true, proxima: 2027,
+        historia: { es: "Tres mil palos de Geisha sembrados por la familia. La primera cosecha con nuestro nombre sale en 2027.",
+                    en: "Three thousand Geisha trees planted by the family. Our first harvest under our own name arrives in 2027." } },
+    ],
+
+    /* ---------- CAFÉS A LA VENTA ---------- */
     productos: [
-      {
-        id: "P-GEI", loteId: "C-001", nombre: "Geisha de Chinácota", sub: "Lavado · cosecha 2026",
-        productor: "Familia fundadora", finca: "Finca Ejemplo A", municipio: "Chinácota", origen: "Finca Ejemplo A · Chinácota",
-        variedad: "Geisha", proceso: "Lavado", tueste: "Medio-claro", cosecha: "Principal 2026",
-        altitud: 1750, puntaje: 88, nivel: "VERIFICADO", fuente: "Q-grader independiente", fecha: "2026-09-02",
-        notas: ["Jazmín", "Bergamota", "Durazno", "Té blanco"],
-        /* la ficha de transparencia */
+      { id: "P-GEI", fincaId: "F-02", loteId: "C-001",
+        nombre: { es: "Bourbon rosado", en: "Pink Bourbon" }, sub: { es: "Lavado · cosecha 2026", en: "Washed · 2026 harvest" },
+        variedad: "Bourbon rosado", proceso: "Lavado", tueste: { es: "Medio-claro", en: "Medium-light" }, cosecha: "2026",
+        altitud: 1750, puntaje: 87.5, nivel: "VERIFICADO", fuente: "Q-grader", fecha: "2026-09-02",
+        notas: { es: ["Jazmín", "Bergamota", "Durazno"], en: ["Jasmine", "Bergamot", "Peach"] },
         ficha: {
-          variedad: A("Geisha", "DECLARADO", "Productor", "2026-06-10"),
+          variedad: A("Bourbon rosado", "DECLARADO", "Productor", "2026-06-10"),
           altitud: A(1750, "VERIFICADO", "GPS en visita de campo", "2026-06-10"),
           proceso: A("Lavado", "DOCUMENTADO", "Bitácora con fotos", "2026-06-22", { detalle: "Fermentación 36 h · Marquesina 18 días" }),
-          puntaje: A(88, "VERIFICADO", "Q-grader independiente", "2026-09-02", { vig: 6 }),
+          puntaje: A(87.5, "VERIFICADO", "Q-grader independiente", "2026-09-02", { vig: 6 }),
           factor: A(91, "DOCUMENTADO", "Informe de trilla", "2026-07-02"),
-          cosecha: A("Principal 2026", "DECLARADO", "Productor", "2026-06-10"),
         },
-        pago: { pagadoKg: 26000, referenciaKg: 16040, fecha: "2026-06-25" },   // lo que pagamos vs. el precio del día
-        historia: "Tres mil palos de Geisha sembrados en la finca de la familia, a 1.750 metros. Esta es la primera cosecha que sale con nombre propio: 60 kilos de pergamino que dieron 153 bolsas y nada más.",
-        receta: { metodo: "V60", dosis: "15 g", agua: "250 ml", temp: "93 °C", tiempo: "2:45", molienda: "Media" },
+        pago: { pagadoKg: 26000, referenciaKg: 16040, fecha: "2026-06-25" },
+        receta: { metodo: "V60", dosis: "15 g", agua: "250 ml", temp: "93 °C", tiempo: "2:45", molienda: { es: "Media", en: "Medium" } },
         variantes: [
-          { g: 100, precio: 32000, label: "Muestra", nota: "para probarlo antes", stock: 38 },
-          { g: 250, precio: 68000, label: "Bolsa", nota: "lo que compra la mayoría", stock: 74, principal: true },
-          { g: 1000, precio: 245000, label: "Kilo", nota: "para cafeterías", stock: 6 },
+          { g: 100, precio: 32000, label: { es: "Muestra", en: "Sample" }, nota: { es: "para probarlo", en: "try it first" }, stock: 38 },
+          { g: 250, precio: 68000, label: { es: "Bolsa", en: "Bag" }, nota: { es: "lo más pedido", en: "most ordered" }, stock: 74, principal: true },
+          { g: 1000, precio: 245000, label: { es: "Kilo", en: "Kilo" }, nota: { es: "para cafeterías", en: "for cafés" }, stock: 6 },
         ],
-        /* espejo plano para los módulos internos */
-        presentacion: 250, precio: 68000, stock: 74, destacado: true,
-      },
+        presentacion: 250, precio: 68000, stock: 74, destacado: true },
+
+      { id: "P-CAS", fincaId: "F-03", loteId: "C-003",
+        nombre: { es: "Castillo de Arboledas", en: "Castillo from Arboledas" }, sub: { es: "Lavado · cosecha 2026", en: "Washed · 2026 harvest" },
+        variedad: "Castillo", proceso: "Lavado", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026",
+        altitud: 1550, puntaje: 84, nivel: "DOCUMENTADO", fuente: "Catación propia", fecha: "2026-09-14",
+        notas: { es: ["Panela", "Chocolate", "Naranja"], en: ["Brown sugar", "Chocolate", "Orange"] },
+        ficha: {
+          variedad: A("Castillo", "DECLARADO", "Productor", "2026-09-12"),
+          altitud: A(1550, "DECLARADO", "Productor", "2026-09-12"),
+          proceso: A("Lavado", "DECLARADO", "Productor", "2026-09-12", { detalle: "Fermentación 18 h" }),
+          puntaje: A(84, "DOCUMENTADO", "Catación propia", "2026-09-14", { vig: 6 }),
+          factor: A(94, "DOCUMENTADO", "Informe de trilla", "2026-09-13"),
+        },
+        pago: { pagadoKg: 17000, referenciaKg: 16040, fecha: "2026-09-12" },
+        receta: { metodo: "Prensa francesa", dosis: "30 g", agua: "500 ml", temp: "94 °C", tiempo: "4:00", molienda: { es: "Gruesa", en: "Coarse" } },
+        variantes: [
+          { g: 250, precio: 38000, label: { es: "Bolsa", en: "Bag" }, nota: { es: "el de todos los días", en: "the everyday one" }, stock: 90, principal: true },
+          { g: 1000, precio: 132000, label: { es: "Kilo", en: "Kilo" }, nota: { es: "para cafeterías", en: "for cafés" }, stock: 14 },
+        ],
+        presentacion: 250, precio: 38000, stock: 90 },
     ],
 
-    /* ---------- CAFÉ COMPRADO ---------- */
+    /* ---------- SUSCRIPCIÓN ---------- */
+    planes: [
+      { id: "descubrir", nombre: { es: "Descubrir", en: "Discover" }, precio: 68000, envios: 1,
+        desc: { es: "Una bolsa de 250 g al mes, siempre del lote más reciente.", en: "One 250 g bag a month, always from the newest lot." },
+        incluye: { es: ["250 g cada mes", "Ficha del lote en cada envío", "Cancelas cuando quieras"], en: ["250 g every month", "Lot data sheet in every shipment", "Cancel anytime"] } },
+      { id: "dos", nombre: { es: "Dos fincas", en: "Two farms" }, precio: 120000, envios: 2, destacado: true,
+        desc: { es: "Dos bolsas de 250 g de fincas distintas, para comparar en la misma semana.", en: "Two 250 g bags from different farms, to compare side by side." },
+        incluye: { es: ["2 × 250 g cada mes", "Dos orígenes distintos", "Acceso anticipado a la subasta", "Cancelas cuando quieras"], en: ["2 × 250 g monthly", "Two different origins", "Early access to the auction", "Cancel anytime"] } },
+      { id: "cafeteria", nombre: { es: "Cafetería", en: "Café" }, precio: 460000, envios: 2,
+        desc: { es: "Dos kilos al mes, con precio de mayorista y entrega programada.", en: "Two kilos a month at wholesale price, scheduled delivery." },
+        incluye: { es: ["2 kg cada mes", "Precio de mayorista", "Tostión a tu perfil", "Material para tu carta"], en: ["2 kg monthly", "Wholesale price", "Roast to your profile", "Menu material"] } },
+    ],
+
+    /* ---------- DIARIO (blog) — PENDIENTE de contenido real ---------- */
+    entradas: [
+      { id: "B-01", fecha: "2026-09-20", tag: { es: "Origen", en: "Origin" },
+        titulo: { es: "Por qué el factor de rendimiento decide el precio de tu café", en: "Why yield factor decides what your coffee costs" },
+        resumen: { es: "PENDIENTE. Explicar en palabras simples qué es el factor, cómo se mide y por qué dos bultos iguales valen distinto.", en: "PENDING. Explain in plain words what the yield factor is and why two identical sacks are worth different amounts." },
+        cuerpo: { es: "PENDIENTE: texto de la entrada.", en: "PENDING: post body." } },
+      { id: "B-02", fecha: "2026-09-10", tag: { es: "Finca", en: "Farm" },
+        titulo: { es: "Un día en la finca de don Domingo", en: "A day at Domingo's farm" },
+        resumen: { es: "PENDIENTE. La visita, el beneficio, el secado y por qué su Geisha gana concursos.", en: "PENDING. The visit, the processing, the drying and why his Geisha wins competitions." },
+        cuerpo: { es: "PENDIENTE: texto de la entrada.", en: "PENDING: post body." } },
+      { id: "B-03", fecha: "2026-08-28", tag: { es: "Taza", en: "Cup" },
+        titulo: { es: "Cómo preparar en casa un café que costó una cosecha", en: "How to brew, at home, a coffee that took a whole harvest" },
+        resumen: { es: "PENDIENTE. Receta base, errores comunes y cómo ajustar la molienda.", en: "PENDING. Base recipe, common mistakes and how to adjust the grind." },
+        cuerpo: { es: "PENDIENTE: texto de la entrada.", en: "PENDING: post body." } },
+    ],
+
+    /* ---------- INTERNO ---------- */
     compras: [
-      { id: "C-001", productor: "Familia fundadora", finca: "Finca Ejemplo A", municipio: "Chinácota", fecha: "2026-06-25",
-        estadoCafe: "Pergamino seco", kg: 60, factor: 91, humedad: 11, precioKg: 26000, sca: 88, destino: "Tostado", estado: "EMPACADO",
+      { id: "C-001", productor: "Lote Chinácota", finca: "Lote Chinácota", municipio: "Chinácota", fecha: "2026-06-25",
+        estadoCafe: "Pergamino seco", kg: 60, factor: 91, humedad: 11, precioKg: 26000, sca: 87.5, destino: "Tostado", estado: "EMPACADO",
         kgVerde: 46.2, kgTostado: 38.3, bolsas: 153, bolsasVendidas: 79, precioVenta: 68000, ingresos: 5372000,
         costos: { compra: 1560000, trilla: 30000, tueste: 231000, empaque: 199000 } },
-      { id: "C-002", productor: "Productor aliado", finca: "Finca del aliado", municipio: "Toledo", fecha: "2026-09-02",
+      { id: "C-002", productor: "Domingo Torres", finca: "Finca por confirmar", municipio: "Toledo", fecha: "2026-09-02",
         estadoCafe: "Pergamino seco", kg: 45, factor: 89, humedad: 11, precioKg: 34000, sca: 88.5, destino: "Subasta", estado: "TRILLADO",
         kgVerde: 35.4, costos: { compra: 1530000, trilla: 22500 } },
-      { id: "C-003", productor: "Doña Ejemplo", finca: "Finca Ejemplo C", municipio: "Arboledas", fecha: "2026-09-12",
-        estadoCafe: "Pergamino seco", kg: 180, factor: 94, humedad: 11.5, precioKg: 17000, sca: 83.5, destino: "Por definir", estado: "EN BODEGA",
-        costos: { compra: 3060000 } },
+      { id: "C-003", productor: "Lote Arboledas", finca: "Lote Arboledas", municipio: "Arboledas", fecha: "2026-09-12",
+        estadoCafe: "Pergamino seco", kg: 180, factor: 94, humedad: 11.5, precioKg: 17000, sca: 84, destino: "Tostado", estado: "EMPACADO",
+        kgVerde: 134, kgTostado: 111.2, bolsas: 444, bolsasVendidas: 354, precioVenta: 38000, ingresos: 13452000,
+        costos: { compra: 3060000, trilla: 90000, tueste: 670000, empaque: 577000 } },
     ],
-
-    /* ---------- CLIENTES Y PEDIDOS ---------- */
     clientes: [
       { id: "CL-001", nombre: "Café Ejemplo Centro", tipo: "Cafetería", ciudad: "Cúcuta", tel: "300 111 1111" },
       { id: "CL-002", nombre: "Tostaduría Ejemplo", tipo: "Tostador", ciudad: "Bucaramanga", tel: "300 222 2222" },
       { id: "CL-003", nombre: "Tienda Ejemplo Pamplona", tipo: "Tienda", ciudad: "Pamplona", tel: "300 333 3333" },
-      { id: "CL-004", nombre: "Ana Ejemplo", tipo: "Persona", ciudad: "Bogotá", tel: "" },
     ],
     pedidos: [
       { id: "PD-101", clienteId: "CL-001", nombre: "Café Ejemplo Centro", ciudad: "Cúcuta", fecha: "2026-09-08", canal: "tienda",
-        items: [{ id: "P-GEI", nombre: "Geisha 250 g", n: 12, precio: 68000 }], total: 816000 },
+        items: [{ id: "P-GEI", nombre: "Bourbon rosado 250 g", n: 12, precio: 68000 }], total: 816000 },
       { id: "PD-102", clienteId: "CL-001", nombre: "Café Ejemplo Centro", ciudad: "Cúcuta", fecha: "2026-08-11", canal: "tienda",
-        items: [{ id: "P-GEI", nombre: "Geisha 250 g", n: 10, precio: 68000 }], total: 680000 },
+        items: [{ id: "P-CAS", nombre: "Castillo 250 g", n: 20, precio: 38000 }], total: 760000 },
       { id: "PD-103", clienteId: "CL-002", nombre: "Tostaduría Ejemplo", ciudad: "Bucaramanga", fecha: "2026-08-28", canal: "tienda",
-        items: [{ id: "P-GEI", nombre: "Geisha 1 kg", n: 4, precio: 245000 }], total: 980000 },
-      { id: "PD-104", clienteId: "CL-002", nombre: "Tostaduría Ejemplo", ciudad: "Bucaramanga", fecha: "2026-06-30", canal: "tienda",
-        items: [{ id: "P-GEI", nombre: "Geisha 1 kg", n: 3, precio: 245000 }], total: 735000 },
-      { id: "PD-105", clienteId: "CL-003", nombre: "Tienda Ejemplo Pamplona", ciudad: "Pamplona", fecha: "2026-05-18", canal: "directo",
-        items: [{ id: "P-GEI", nombre: "Geisha 250 g", n: 8, precio: 68000 }], total: 544000 },
-      { id: "PD-106", clienteId: "CL-004", nombre: "Ana Ejemplo", ciudad: "Bogotá", fecha: "2026-09-14", canal: "tienda",
-        items: [{ id: "P-GEI", nombre: "Geisha 100 g", n: 2, precio: 32000 }], total: 64000 },
+        items: [{ id: "P-GEI", nombre: "Bourbon rosado 1 kg", n: 4, precio: 245000 }], total: 980000 },
+      { id: "PD-104", clienteId: "CL-003", nombre: "Tienda Ejemplo Pamplona", ciudad: "Pamplona", fecha: "2026-05-18", canal: "directo",
+        items: [{ id: "P-CAS", nombre: "Castillo 250 g", n: 8, precio: 38000 }], total: 304000 },
     ],
-    espera: [],   // lista de espera del próximo lote
+    espera: [], suscriptores: [],
   };
 }
 
-function load() { try { const s = JSON.parse(localStorage.getItem(CONFIG.storageKey)); return s && s.v === 5 ? s : null; } catch { return null; } }
+function load() { try { const s = JSON.parse(localStorage.getItem(CONFIG.storageKey)); return s && s.v === 6 ? s : null; } catch { return null; } }
 function save() { try { localStorage.setItem(CONFIG.storageKey, JSON.stringify(S)); } catch {} }
+function idiomaGuardado() { try { return localStorage.getItem("nandez-lang"); } catch { return null; } }
 
 let S = load() || seed();
-const UI = { view: "inicio", atab: "cotizador", animate: true, carrito: [], au: null, q: null };
+const UI = { view: "inicio", lang: idiomaGuardado() || (navigator.language || "es").slice(0, 2) === "en" ? "en" : "es",
+  atab: "cotizador", animate: true, carrito: [], au: null, q: null, cafe: null, entrada: null };
 
 /* ---------- utilidades ---------- */
 const $ = (s, r = document) => r.querySelector(s);
@@ -813,12 +947,13 @@ const fmtNum = (n, dec = 0) => Number(n || 0).toLocaleString("es-CO", { minimumF
 const cop = (n) => "$" + fmtNum(Math.round(n || 0));
 const copK = (n) => (Math.abs(n) >= 1e6 ? "$" + fmtNum(n / 1e6, 1) + " M" : cop(n));
 const isoToday = () => new Date().toISOString().slice(0, 10);
-const fmtFecha = (iso) => iso ? new Date(iso + "T00:00:00").toLocaleDateString("es-CO", { day: "numeric", month: "short", year: "numeric" }) : "";
-const slug = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, "-");
+const fmtFecha = (iso) => iso ? new Date(iso + "T00:00:00").toLocaleDateString(UI.lang === "en" ? "en-GB" : "es-CO", { day: "numeric", month: "short", year: "numeric" }) : "";
+const slug = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, "-");
 const nextId = (p) => `${p}-${S.seq++}`;
 const num = (id, def = 0) => { const el = $("#" + id); const v = el ? parseFloat(el.value) : NaN; return isNaN(v) ? def : v; };
-const geisha = () => S.productos.find((p) => p.id === "P-GEI") || S.productos[0];
 const gramos = (g) => (g >= 1000 ? g / 1000 + " kg" : g + " g");
+const prodById = (id) => S.productos.find((p) => p.id === id);
+const fincaDe = (p) => S.fincas.find((f) => f.id === p.fincaId) || {};
 
 function precioComiteKg(factor = CONFIG.fnc.factorBase) {
   return (CONFIG.fnc.precioCarga * (CONFIG.fnc.factorBase / factor)) / 125;
@@ -838,9 +973,9 @@ function rng(seedStr) {
   return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 }
 function ridge(o, { w = 320, h = 150, dark = false, label = true } = {}) {
-  const r = rng(o.id || o.nombre || "x"), alt = +(o.altitud?.v ?? o.altitud) || 1500, t = Math.min(1, Math.max(0.08, (alt - 1000) / 1200));
+  const r = rng(o.id || o.finca || "x"), alt = +(o.altitud?.v ?? o.altitud) || 1500, tt = Math.min(1, Math.max(0.08, (alt - 1000) / 1200));
   const col = PROC_COLOR[o.proceso?.v ?? o.proceso] || "#6a5646";
-  const peakX = w * (0.5 + r() * 0.3), peakY = h * (0.92 - t * 0.6);
+  const peakX = w * (0.5 + r() * 0.3), peakY = h * (0.92 - tt * 0.6);
   const layer = (amp, off, jit) => {
     let d = `M0 ${h}`;
     for (let i = 0; i <= 14; i++) {
@@ -860,6 +995,25 @@ function ridge(o, { w = 320, h = 150, dark = false, label = true } = {}) {
   </svg>${label ? `<span class="alt-label" style="top:${((peakY / h) * 100).toFixed(1)}%">${fmtNum(alt)} msnm</span>` : ""}`;
 }
 
+/* ---------- ventas: cliente y atribución al lote (lo usan la tienda y el panel) ---------- */
+const bolsasLibres = (c) => Math.max(0, Math.round((c.bolsas || 0) - (c.bolsasVendidas || 0)));
+
+function upsertCliente(nombre, ciudad, tel) {
+  let cl = S.clientes.find((x) => x.nombre.toLowerCase() === nombre.toLowerCase());
+  if (cl) { cl.tel = tel || cl.tel; cl.ciudad = ciudad || cl.ciudad; return cl; }
+  cl = { id: nextId("CL"), nombre, tipo: "Cliente", ciudad, tel };
+  S.clientes.unshift(cl);
+  return cl;
+}
+
+/* Cada venta descuenta del lote que produjo ese café (admite fracciones: muestras de 100 g) */
+function atribuirVenta(producto, unidades, valor) {
+  const c = S.compras.find((x) => x.id === producto.loteId); if (!c || !unidades) return;
+  c.bolsasVendidas = (c.bolsasVendidas || 0) + unidades;
+  c.ingresos = (c.ingresos || 0) + (valor != null ? valor : unidades * producto.precio);
+  if (bolsasLibres(c) < 1) c.estado = "VENDIDO";
+}
+
 /* ---------- modal y avisos ---------- */
 function modal(title, body, cls = "") {
   const d = $("#dlg"); d.className = cls;
@@ -870,12 +1024,12 @@ function modal(title, body, cls = "") {
 const closeModal = () => $("#dlg").open && $("#dlg").close();
 
 function toast(msg, { label, act, type } = {}) {
-  const t = document.createElement("div");
-  t.className = "toast " + (type || "");
-  t.innerHTML = `<span class="t-ico"></span><span>${msg}</span>`;
-  const kill = () => { t.classList.add("out"); setTimeout(() => t.remove(), 300); };
-  if (label) { const b = document.createElement("button"); b.className = "tbtn"; b.textContent = label; b.onclick = () => { act(); kill(); }; t.append(b); }
-  $("#toasts").append(t);
+  const el = document.createElement("div");
+  el.className = "toast " + (type || "");
+  el.innerHTML = `<span class="t-ico"></span><span>${msg}</span>`;
+  const kill = () => { el.classList.add("out"); setTimeout(() => el.remove(), 300); };
+  if (label) { const b = document.createElement("button"); b.className = "tbtn"; b.textContent = label; b.onclick = () => { act(); kill(); }; el.append(b); }
+  $("#toasts").append(el);
   setTimeout(kill, label ? 7000 : 4200);
 }
 function later(ms, fn) { setTimeout(() => { if (fn() !== false) { save(); softRefresh(); } }, ms); }
@@ -1078,7 +1232,6 @@ const enJuego = (c) => Math.max(0, costoTotal(c) - recuperado(c));      // plata
 const factorReal = (c) => (c.kgVerde ? (c.kg * 70) / c.kgVerde : null);
 const mermaReal = (c) => (c.kgVerde && c.kgTostado ? (1 - c.kgTostado / c.kgVerde) * 100 : null);
 const dias = (iso) => Math.round((Date.now() - new Date(iso + "T00:00:00")) / 86400000);
-const bolsasLibres = (c) => Math.max(0, Math.round((c.bolsas || 0) - (c.bolsasVendidas || 0)));
 /* Valor de venta de lo que queda, al precio del producto ligado (o al último precio conocido) */
 function valorPendiente(c) {
   const p = S.productos.find((x) => x.loteId === c.id);
@@ -1197,12 +1350,6 @@ function invPasoOk() {
 }
 
 /* Las ventas de la tienda se descuentan del lote que las produjo */
-function atribuirVenta(producto, unidades, valor) {
-  const c = S.compras.find((x) => x.id === producto.loteId); if (!c || !unidades) return;
-  c.bolsasVendidas = (c.bolsasVendidas || 0) + unidades;            // admite fracciones (muestras de 100 g)
-  c.ingresos = (c.ingresos || 0) + (valor != null ? valor : unidades * producto.precio);
-  if (bolsasLibres(c) < 1) c.estado = "VENDIDO";
-}
 
 /* ---- clients.js ---- */
 /* ============================================================
@@ -1366,14 +1513,6 @@ function clienteGuardar() {
   toast(`Venta a ${esc(cl.nombre)}: ${n} × ${esc(prod.nombre)} = ${cop(n * prod.precio)}.`);
 }
 
-/* Los pedidos de la tienda crean o actualizan el cliente */
-function upsertCliente(nombre, ciudad, tel) {
-  let cl = S.clientes.find((x) => x.nombre.toLowerCase() === nombre.toLowerCase());
-  if (cl) { cl.tel = tel || cl.tel; cl.ciudad = ciudad || cl.ciudad; return cl; }
-  cl = { id: nextId("CL"), nombre, tipo: "Cafetería", ciudad, tel };
-  S.clientes.unshift(cl);
-  return cl;
-}
 
 /* ---- market.js ---- */
 /* ============================================================

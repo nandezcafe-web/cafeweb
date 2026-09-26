@@ -159,11 +159,3 @@ function clienteGuardar() {
   toast(`Venta a ${esc(cl.nombre)}: ${n} × ${esc(prod.nombre)} = ${cop(n * prod.precio)}.`);
 }
 
-/* Los pedidos de la tienda crean o actualizan el cliente */
-function upsertCliente(nombre, ciudad, tel) {
-  let cl = S.clientes.find((x) => x.nombre.toLowerCase() === nombre.toLowerCase());
-  if (cl) { cl.tel = tel || cl.tel; cl.ciudad = ciudad || cl.ciudad; return cl; }
-  cl = { id: nextId("CL"), nombre, tipo: "Cafetería", ciudad, tel };
-  S.clientes.unshift(cl);
-  return cl;
-}

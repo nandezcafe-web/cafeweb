@@ -1,24 +1,28 @@
-# Altura — café de Norte de Santander
+# Nandez Café — café de origen de Norte de Santander
 
-Compramos café a pequeños productores, le ponemos marca y lo vendemos. Al inicio, **dos productos**: un Geisha de Chinácota y un lote en subasta.
+Le compramos café a fincas de Norte de Santander —cada una con su variedad— y lo vendemos con nuestra marca. Los lotes excepcionales van a subasta. Desde 2027 entra también el café de nuestra propia tierra.
 
 ## La página (`prototipo/`)
 
-**Pública**
-1. **Inicio** — los dos cafés, por qué cuesta lo que cuesta y el recorrido de la finca a la bolsa.
-2. **El Geisha** — ficha completa: presentaciones (100 g, 250 g, 1 kg), ficha de transparencia con el nivel de verificación de cada dato, lo que le pagamos al productor frente a la referencia del día, receta y lista de espera.
-3. **Subasta** — reserva, pujas en vivo, extensión en los últimos 20 s y vista interna con costo y utilidad.
+**Pública** — español e inglés (botón ES/EN, se recuerda en el navegador)
+1. **Inicio** — los cafés a la venta, por qué cuestan lo que cuestan, las fincas aliadas y el recorrido de la finca a la bolsa.
+2. **Cafés** — un café por finca, con las fincas aliadas y la nuestra (primera cosecha 2027).
+3. **Ficha del café** — presentaciones, ficha con el nivel de verificación de cada dato, lo que le pagamos al productor frente a la referencia del día, receta y lista de espera.
+4. **Subasta** — el lote de Domingo Torres: reserva, pujas en vivo y extensión en los últimos 20 s.
+5. **Suscripción** — tres planes; mientras no haya cobro automático, recoge correos.
+6. **Diario** — blog, listo para los textos reales.
 
-**Interna — es otra página, en `admin/`, con correo y contraseña. No se enlaza desde el sitio público.**
-4. **Cotizador** — cuánto paga el comité hoy, cuánto podemos pagar y con qué margen.
-5. **Inventario** — cada lote de la compra a la bolsa vendida, con costos reales y plata quieta.
-6. **Clientes** — quién compra, cada cuánto, qué prefiere y a quién llamar.
-7. **Mercado** — precio FNC, bolsa de Nueva York, TRM, tabla por factor y cuándo vender.
+**Interna — otra página, en `admin/`, con correo y contraseña. No se enlaza desde el sitio público.**
+7. **Cotizador** — cuánto paga el comité hoy, cuánto podemos pagar y con qué margen.
+8. **Inventario** — cada lote de la compra a la bolsa vendida, con costos reales y plata quieta.
+9. **Clientes** — quién compra, cada cuánto, qué prefiere y a quién llamar.
+10. **Mercado** — precio FNC, bolsa de Nueva York, TRM, tabla por factor y cuándo vender.
 
 ## Documentos
 
 | Archivo | Contenido |
 |---|---|
+| [docs/06_pagos_y_suscripciones.md](docs/06_pagos_y_suscripciones.md) | Mercado Pago: link de pago, Checkout Pro, comisiones y planes de suscripción |
 | [docs/05_referentes_web.md](docs/05_referentes_web.md) | Cómo venden las páginas mejor posicionadas, tendencias 2026 y decisiones de diseño |
 | [docs/03_compra_y_marca.md](docs/03_compra_y_marca.md) | Cómo comprar en finca: precio FNC, factor, humedad, ejemplo y temas legales |
 | [docs/04_capsulas.md](docs/04_capsulas.md) | Café en cápsulas: proceso, cuentas y maquiladores para cotizar |
@@ -45,7 +49,7 @@ El código vive en `prototipo/js/`. Después de cualquier cambio:
 node tools/build.js
 ```
 
-Eso genera `prototipo/altura.html` (la tienda en un solo archivo, para enviar por WhatsApp) y `admin/index.html` (el panel con login).
+Eso genera `prototipo/nandez.html` (la tienda en un solo archivo, para enviar por WhatsApp) y `admin/index.html` (el panel con login).
 
 ## Cambiar la contraseña del panel
 
@@ -76,6 +80,9 @@ Repite *Add New → Project* con el mismo repositorio, pero en **Root Directory*
 
 En `prototipo/js/core.js`:
 - `CONFIG.whatsapp` — número que recibe los pedidos, formato `573001234567`.
+- `CONFIG.pagos` — `mercadoPago: "/api/checkout"` para Checkout Pro, o links de pago en `porProducto` y `suscripcion`. El token va en Vercel como `MP_ACCESS_TOKEN`, nunca en el repositorio (ver `docs/06_pagos_y_suscripciones.md`).
+- `S.fincas` y `S.productos` — las fincas aliadas y el café de cada una.
+- `S.entradas` — las entradas del diario.
 - `CONFIG.marca` y `CONFIG.lugar`.
 - `S.productos` en `seed()` — el Geisha: precios, presentaciones, stock, ficha y lo pagado al productor.
 - `COSTOS` — trilla, tueste, empaque y mermas reales.

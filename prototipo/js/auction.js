@@ -13,10 +13,10 @@ const EXT_MS = 20000;
 
 /* El lote en subasta. Reemplazar por el del productor aliado cuando esté confirmado. */
 const AU_LOTE = {
-  id: "S-001", productor: "Productor aliado", finca: "Finca del aliado", municipio: "Toledo", altitud: 1950,
+  id: "S-001", productor: "Domingo Torres", finca: "Finca por confirmar", municipio: "Toledo", altitud: 1950,
   variedad: "Geisha", proceso: "Natural", puntaje: 88.5, factor: 89, nivel: "VERIFICADO",
   detalle: "Anaeróbico 96 h · Camas africanas 28 días", perfil: ["Jazmín", "Mango", "Vino blanco", "Bergamota"],
-  compraKgVerde: 43900,   // lo que nos costó por kg de café verde
+  compraKgVerde: 43900,   // lo que nos costó por kg verde (compra C-002)
 };
 
 function newAuction() {

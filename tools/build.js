@@ -29,22 +29,22 @@ ${extra}
 const publica = read("index.html")
   .replace(/<link rel="stylesheet" href="styles.css">\s*<link rel="stylesheet" href="auction.css">/, () => `<style>\n${css}\n</style>`)
   .replace(/(<script src="js\/[a-z]+\.js"><\/script>\s*)+/, () =>
-    `<script>\n${["core", "product", "auction", "main"].map(mod).join("\n")}\n</script>\n`);
+    `<script>\n${["core", "shop", "pages", "auction", "main"].map(mod).join("\n")}\n</script>\n`);
 if (/href="styles\.css"|src="js\//.test(publica)) throw new Error("quedaron referencias externas en la pública");
-fs.writeFileSync(path.join(SRC, "altura.html"), publica);
+fs.writeFileSync(path.join(SRC, "nandez.html"), publica);
 
 /* ---- panel interno: página aparte, con login ---- */
 const panelJs = ["core", "quote", "inventory", "clients", "market", "admin"].map(mod).join("\n");
 const panel = `<!doctype html>
 <html lang="es">
 <head>
-${cabeza("Panel · Altura")}
+${cabeza("Panel · Nandez Café")}
 <meta name="robots" content="noindex, nofollow">
 </head>
 <body data-view="login">
 <header class="top"><div class="top-inner">
   <span class="brand"><svg class="mark" viewBox="0 0 28 20" aria-hidden="true"><path d="M1 19 L9 7 L13 12 L19 3 L27 19 Z" fill="currentColor"/></svg>
-  <b>Altura</b><small>panel interno</small></span>
+  <b>Nandez</b><small>panel interno</small></span>
 </div></header>
 ${armazon()}
 <script>
