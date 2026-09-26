@@ -22,6 +22,7 @@ Le compramos café a fincas de Norte de Santander —cada una con su variedad—
 
 | Archivo | Contenido |
 |---|---|
+| [docs/08_envios.md](docs/08_envios.md) | Envíos: qué cobra el mercado, con quién enviar y qué nos conviene |
 | [docs/07_seo.md](docs/07_seo.md) | Cómo está armada la página para Google y para los asistentes de IA |
 | [docs/06_pagos_y_suscripciones.md](docs/06_pagos_y_suscripciones.md) | Mercado Pago: link de pago, Checkout Pro, comisiones y planes de suscripción |
 | [docs/05_referentes_web.md](docs/05_referentes_web.md) | Cómo venden las páginas mejor posicionadas, tendencias 2026 y decisiones de diseño |
@@ -83,6 +84,7 @@ Repite *Add New → Project* con el mismo repositorio, pero en **Root Directory*
 
 En `prototipo/js/core.js`:
 - `CONFIG.whatsapp` — número que recibe los pedidos, formato `573001234567`.
+- `CONFIG.envio` — costo, umbral de envío gratis, días y transportadora (ver `docs/08_envios.md`).
 - `CONFIG.pagos` — `mercadoPago: "/api/checkout"` para Checkout Pro, o links de pago en `porProducto` y `suscripcion`. El token va en Vercel como `MP_ACCESS_TOKEN`, nunca en el repositorio (ver `docs/06_pagos_y_suscripciones.md`).
 - `S.fincas` y `S.productos` — las fincas aliadas y el café de cada una.
 - `S.entradas` — las entradas del diario.

@@ -190,7 +190,7 @@ function renderCarrito() {
       <button class="btn primary" data-act="go" data-to="cafes">${en ? "See the coffees" : "Ver los cafés"}</button></div>`;
     return;
   }
-  const envio = totalCarrito() >= 150000 ? 0 : 12000;
+  const E = CONFIG.envio, envio = totalCarrito() >= E.gratisDesde ? 0 : E.costo;
   cuerpo.innerHTML = `
     <ul class="cart-items">${UI.carrito.map((i) => {
       const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
@@ -210,7 +210,9 @@ function renderCarrito() {
       <div><span>${en ? "Subtotal" : "Subtotal"}</span><b class="mono">${cop(totalCarrito())}</b></div>
       <div><span>${en ? "Shipping" : "Envío"}</span><b class="mono">${envio ? cop(envio) : (en ? "Free" : "Gratis")}</b></div>
       <div class="cart-total"><span>${t("total")}</span><b class="mono">${cop(totalCarrito() + envio)}</b></div>
-      ${envio ? `<p class="hint">${en ? "Free shipping from " : "Envío gratis desde "}${cop(150000)}.</p>` : ""}
+      <p class="hint">${envio
+        ? (en ? "Free shipping from " : "Envío gratis desde ") + cop(E.gratisDesde) + ". "
+        : ""}${en ? "Arrives in " : "Llega en "}${tx(E.dias)} ${en ? "with " : "por "}${esc(E.transportadora)}.</p>
     </div>
 
     <div class="form-grid cart-form">

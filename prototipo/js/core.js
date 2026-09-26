@@ -13,6 +13,11 @@ const CONFIG = {
   storageKey: "nandez-v6",
   whatsapp: "",                 // 573001234567
   correo: "nandezcafe@gmail.com",
+  /* Envíos. Referencia del mercado: las tiendas de café en Colombia cobran
+     entre $9.000 y $12.000 y regalan el envío desde $150.000.
+     Ver docs/08_envios.md antes de cambiar estos números. */
+  envio: { costo: 12000, gratisDesde: 150000, dias: { es: "2 a 5 días hábiles", en: "2 to 5 business days" },
+           transportadora: "Interrapidísimo", contraentrega: false },
   /* Pagos. Mientras no haya links, el pedido sale por WhatsApp o correo.
      Ver docs/06_pagos_y_suscripciones.md */
   pagos: {
