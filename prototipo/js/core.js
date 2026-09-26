@@ -224,7 +224,7 @@ function aplicarCfgGuardada() {
 
 
 /* ---------- SEO: sitio, rutas y textos de cada página ---------- */
-CONFIG.sitio = "https://cafeweb.vercel.app";     // cambiar por el dominio propio cuando exista
+CONFIG.sitio = "https://cafeweb-five.vercel.app";   // cambiar cuando haya dominio propio
 
 const RUTAS = { inicio: "", cafes: "cafes", cafe: "cafe", subasta: "subasta", suscripcion: "suscripcion", diario: "diario", entrada: "diario" };
 const slugEntrada = (e) => slug(tx(e.titulo)).slice(0, 60);

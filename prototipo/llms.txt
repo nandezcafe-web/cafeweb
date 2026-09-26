@@ -3,10 +3,10 @@
 > Café de origen de Norte de Santander, Colombia. Compramos lote por lote a fincas de Chinácota, Toledo y Arboledas, pagando por encima del precio de referencia del día, y vendemos cada café con su ficha verificable.
 
 ## Qué vendemos
-- Bourbon rosado: variedad Bourbon rosado, proceso Lavado, 1750 msnm, 87.5 puntos SCA, desde $32.000 (https://cafeweb.vercel.app/cafe-bourbon-rosado)
-- Castillo de Arboledas: variedad Castillo, proceso Lavado, 1550 msnm, 84 puntos SCA, desde $38.000 (https://cafeweb.vercel.app/cafe-castillo-de-arboledas)
-- Subasta en vivo de un microlote Geisha de Toledo (https://cafeweb.vercel.app/subasta)
-- Suscripción mensual desde $68.000 (https://cafeweb.vercel.app/suscripcion)
+- Bourbon rosado: variedad Bourbon rosado, proceso Lavado, 1750 msnm, 87.5 puntos SCA, desde $32.000 (https://cafeweb-five.vercel.app/cafe-bourbon-rosado)
+- Castillo de Arboledas: variedad Castillo, proceso Lavado, 1550 msnm, 84 puntos SCA, desde $38.000 (https://cafeweb-five.vercel.app/cafe-castillo-de-arboledas)
+- Subasta en vivo de un microlote Geisha de Toledo (https://cafeweb-five.vercel.app/subasta)
+- Suscripción mensual desde $68.000 (https://cafeweb-five.vercel.app/suscripcion)
 
 ## Cómo trabajamos
 - Una finca, una variedad. Cada dato (altura, variedad, proceso, puntaje) dice quién lo comprobó y cuándo.
@@ -28,13 +28,13 @@ Se publica un lote pequeño con su puntaje y su ficha, se abre con un precio de 
 Sí. Vamos a la finca, medimos el factor de rendimiento y la humedad delante del productor, y pagamos de contado por encima del precio de referencia del día. Sin intermediarios entre la finca y la bolsa.
 
 ## Páginas
-- https://cafeweb.vercel.app/
-- https://cafeweb.vercel.app/cafes
-- https://cafeweb.vercel.app/cafe-bourbon-rosado
-- https://cafeweb.vercel.app/cafe-castillo-de-arboledas
-- https://cafeweb.vercel.app/subasta
-- https://cafeweb.vercel.app/suscripcion
-- https://cafeweb.vercel.app/diario
-- https://cafeweb.vercel.app/diario-por-que-el-factor-de-rendimiento-decide-el-precio-de-tu-cafe
-- https://cafeweb.vercel.app/diario-un-dia-en-la-finca-de-don-domingo
-- https://cafeweb.vercel.app/diario-como-preparar-en-casa-un-cafe-que-costo-una-cosecha
+- https://cafeweb-five.vercel.app/
+- https://cafeweb-five.vercel.app/cafes
+- https://cafeweb-five.vercel.app/cafe-bourbon-rosado
+- https://cafeweb-five.vercel.app/cafe-castillo-de-arboledas
+- https://cafeweb-five.vercel.app/subasta
+- https://cafeweb-five.vercel.app/suscripcion
+- https://cafeweb-five.vercel.app/diario
+- https://cafeweb-five.vercel.app/diario-por-que-el-factor-de-rendimiento-decide-el-precio-de-tu-cafe
+- https://cafeweb-five.vercel.app/diario-un-dia-en-la-finca-de-don-domingo
+- https://cafeweb-five.vercel.app/diario-como-preparar-en-casa-un-cafe-que-costo-una-cosecha
