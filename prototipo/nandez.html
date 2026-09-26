@@ -719,6 +719,49 @@ p,h1,h2,h3,td,th,li,.mono,.lede,.hint{user-select:text;-webkit-user-select:text}
 /* el cambio de idioma reemplaza toda la página: un desvanecido corto evita el salto */
 #view.swap{opacity:.35;transition:opacity .12s var(--ease-out)}
 
+
+/* ---- carrito: botón del encabezado y panel lateral ---- */
+.cart-btn{position:relative;display:grid;place-items:center;width:38px;height:38px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);cursor:pointer;transition:transform .12s var(--ease-out),border-color .2s}
+.cart-btn:active{transform:scale(.94)}
+.cart-btn.lleno{border-color:var(--cherry);color:var(--cherry)}
+@media (hover:hover) and (pointer:fine){.cart-btn:hover{border-color:var(--ink)}}
+.cart-n{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--cherry);color:#fff;font:600 11px/18px var(--mono);text-align:center}
+body[data-view=subasta] .cart-btn{background:#231812;border-color:#3a2a21;color:#f3e6d6}
+
+dialog.drawer{position:fixed;inset:0 0 0 auto;width:min(440px,100vw);max-width:100vw;height:100dvh;max-height:100dvh;margin:0;border:0;border-left:1px solid var(--line);border-radius:0;background:var(--paper);color:var(--ink);padding:0;display:flex;flex-direction:column;box-shadow:-30px 0 60px -30px rgba(29,20,15,.5)}
+dialog.drawer::backdrop{background:rgba(18,12,9,.45);backdrop-filter:blur(2px)}
+dialog.drawer[open]{animation:drawerIn .32s cubic-bezier(.32,.72,0,1)}
+dialog.drawer[open]::backdrop{animation:fadeIn .32s var(--ease-out)}
+@keyframes drawerIn{from{transform:translateX(100%)}}
+@keyframes fadeIn{from{opacity:0}}
+.cart-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(18px + env(safe-area-inset-top,0px)) 20px 14px;border-bottom:1px solid var(--line)}
+.cart-head h3{font-size:1.8rem}
+.cart-body{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:16px 20px}
+.cart-foot{display:grid;gap:8px;padding:16px 20px calc(18px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--card)}
+.cart-foot .btn{width:100%;justify-content:center}
+.cart-foot .hint{margin:2px 0 0;text-align:center}
+.cart-items{list-style:none;margin:0 0 18px;padding:0;display:grid;gap:14px}
+.cart-item{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:14px;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.cart-item:last-child{border-bottom:0;padding-bottom:0}
+.cart-art{position:relative;height:56px;border-radius:10px;overflow:hidden;background:var(--paper-2)}
+.cart-art svg{position:absolute;inset:0;width:100%;height:100%}
+.cart-txt b{display:block;font:400 1.25rem/1.1 var(--serif)}
+.cart-txt small{color:var(--ink-2);font-size:12.5px}
+.cart-qty{display:flex;align-items:center;gap:8px;margin-top:8px}
+.cart-qty .btn{width:30px;padding:0;justify-content:center}
+.cart-del{border:0;background:transparent;color:var(--ink-3);font:500 12px var(--sans);cursor:pointer;text-decoration:underline;margin-left:4px}
+.cart-del:hover{color:var(--cherry)}
+.cart-precio{align-self:start;font-size:1.05rem}
+.cart-sumas{display:grid;gap:7px;padding:16px 0;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);font-size:14px;color:var(--ink-2)}
+.cart-sumas div{display:flex;justify-content:space-between;gap:12px}
+.cart-sumas b{color:var(--ink)}
+.cart-total{padding-top:7px;border-top:1px solid var(--line);font-size:16px}
+.cart-total b{font-size:1.3rem}
+.cart-form{margin-top:18px}
+.cart-vacio{display:grid;gap:14px;place-items:center;text-align:center;padding:60px 10px;color:var(--ink-2)}
+@media (max-width:520px){dialog.drawer{width:100vw;border-left:0}.cart-item{grid-template-columns:56px minmax(0,1fr) auto}}
+@media (prefers-reduced-motion:reduce){dialog.drawer[open]{animation:fadeIn .15s}}
+
 /* sala de subasta */
 .auction{color:#f3e6d6}
 .auction .kicker{color:#a58f7c}
@@ -835,6 +878,10 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
       <a class="tab" href="/suscripcion" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Suscripción </a>
       <a class="tab" href="/diario" data-act="go" data-to="diario" data-i18n="nav_diario">Diario </a>
     </nav>
+    <button class="cart-btn" id="cart-btn" data-act="carrito" aria-label="Pedido">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16l-1.2 11.2a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 7Z"/><path d="M9 7V5.5a3 3 0 0 1 6 0V7"/></svg>
+      <span class="cart-n" id="cart-n" hidden></span>
+    </button>
     <div class="lang" role="group" aria-label="Idioma">
       <button data-act="lang" data-lang="es" aria-pressed="true">ES</button>
       <button data-act="lang" data-lang="en" aria-pressed="false">EN</button>
@@ -859,9 +906,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
         <p class="hc-title">Geisha<br><em>Natural</em></p>
         <p class="hc-score">88.5<small>SCA</small></p>
         <div class="hc-ridge dark-art"><svg viewBox="0 0 420 180" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gviw3u4z" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
+    <defs><linearGradient id="gyoranxz" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
     <path d="M0 180 L0.0 159.3 L30.0 151.4 L60.0 151.5 L90.0 144.2 L120.0 141.9 L150.0 136.6 L180.0 121.8 L210.0 120.1 L240.0 115.6 L270.0 109.8 L300.0 102.6 L330.0 110.2 L360.0 113.8 L390.0 123.6 L420.0 135.8 L420 180 Z" fill="#9c3322" opacity="0.28"/>
-    <path class="front" d="M0 180 L0.0 180.0 L30.0 180.0 L60.0 180.0 L90.0 170.4 L120.0 159.2 L150.0 141.3 L180.0 131.3 L210.0 111.5 L240.0 97.4 L270.0 83.3 L300.0 86.8 L330.0 96.1 L360.0 113.6 L390.0 129.8 L420.0 139.6 L420 180 Z" fill="url(#gviw3u4z)"/>
+    <path class="front" d="M0 180 L0.0 180.0 L30.0 180.0 L60.0 180.0 L90.0 170.4 L120.0 159.2 L150.0 141.3 L180.0 131.3 L210.0 111.5 L240.0 97.4 L270.0 83.3 L300.0 86.8 L330.0 96.1 L360.0 113.6 L390.0 129.8 L420.0 139.6 L420 180 Z" fill="url(#gyoranxz)"/>
     <line x1="0" x2="420" y1="80.10000000000001" y2="80.10000000000001" stroke="rgba(243,230,214,.5)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span></div>
       </div>
@@ -878,9 +925,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
     <div class="dos"><article class="card-cafe reveal" style="--i:0">
     <div class="cc-art" data-act="cafe" data-id="P-GEI" role="button" tabindex="0" aria-label="Bourbon rosado">
       <svg viewBox="0 0 420 200" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="g2ksbxzx" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="gb84oroj" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 200 L0.0 198.9 L30.0 190.2 L60.0 187.3 L90.0 174.6 L120.0 172.3 L150.0 166.0 L180.0 158.4 L210.0 152.8 L240.0 134.2 L270.0 133.0 L300.0 133.5 L330.0 151.1 L360.0 156.7 L390.0 156.7 L420.0 173.8 L420 200 Z" fill="#3f6a4b" opacity="0.2"/>
-    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 183.7 L150.0 174.5 L180.0 155.0 L210.0 143.2 L240.0 124.9 L270.0 109.0 L300.0 124.5 L330.0 141.9 L360.0 156.4 L390.0 170.0 L420.0 182.7 L420 200 Z" fill="url(#g2ksbxzx)"/>
+    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 183.7 L150.0 174.5 L180.0 155.0 L210.0 143.2 L240.0 124.9 L270.0 109.0 L300.0 124.5 L330.0 141.9 L360.0 156.4 L390.0 170.0 L420.0 182.7 L420 200 Z" fill="url(#gb84oroj)"/>
     <line x1="0" x2="420" y1="109.00000000000001" y2="109.00000000000001" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span>
       <span class="state st-publicado">118 disponibles</span>
@@ -895,9 +942,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
     </div></article><article class="card-cafe reveal" style="--i:1">
     <div class="cc-art" data-act="cafe" data-id="P-CAS" role="button" tabindex="0" aria-label="Castillo de Arboledas">
       <svg viewBox="0 0 420 200" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gfqr0k3i" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="giupjc6g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 195.7 L120.0 191.5 L150.0 180.9 L180.0 175.9 L210.0 161.1 L240.0 153.0 L270.0 161.3 L300.0 160.3 L330.0 171.8 L360.0 174.1 L390.0 192.2 L420.0 189.9 L420 200 Z" fill="#3f6a4b" opacity="0.2"/>
-    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 198.5 L150.0 177.4 L180.0 161.1 L210.0 149.6 L240.0 136.9 L270.0 140.0 L300.0 152.2 L330.0 168.2 L360.0 177.7 L390.0 200.0 L420.0 200.0 L420 200 Z" fill="url(#gfqr0k3i)"/>
+    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 198.5 L150.0 177.4 L180.0 161.1 L210.0 149.6 L240.0 136.9 L270.0 140.0 L300.0 152.2 L330.0 168.2 L360.0 177.7 L390.0 200.0 L420.0 200.0 L420 200 Z" fill="url(#giupjc6g)"/>
     <line x1="0" x2="420" y1="129" y2="129" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:64.5%">1.550 msnm</span>
       <span class="state st-publicado">104 disponibles</span>
@@ -912,9 +959,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
     </div></article><article class="card-cafe dark reveal dark-art" style="--i:2">
     <div class="cc-art" data-act="go" data-to="subasta" role="button" tabindex="0" aria-label="Subasta">
       <svg viewBox="0 0 420 200" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="g06o41oz" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
+    <defs><linearGradient id="gdp8iice" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
     <path d="M0 200 L0.0 177.4 L30.0 168.8 L60.0 168.2 L90.0 160.1 L120.0 157.2 L150.0 151.2 L180.0 135.6 L210.0 133.3 L240.0 128.0 L270.0 121.5 L300.0 114.2 L330.0 122.5 L360.0 126.8 L390.0 137.4 L420.0 150.2 L420 200 Z" fill="#9c3322" opacity="0.28"/>
-    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 189.1 L120.0 176.5 L150.0 157.0 L180.0 145.5 L210.0 124.2 L240.0 108.6 L270.0 93.0 L300.0 96.4 L330.0 107.2 L360.0 126.2 L390.0 143.9 L420.0 155.2 L420 200 Z" fill="url(#g06o41oz)"/>
+    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 189.1 L120.0 176.5 L150.0 157.0 L180.0 145.5 L210.0 124.2 L240.0 108.6 L270.0 93.0 L300.0 96.4 L330.0 107.2 L360.0 126.2 L390.0 143.9 L420.0 155.2 L420 200 Z" fill="url(#gdp8iice)"/>
     <line x1="0" x2="420" y1="89.00000000000001" y2="89.00000000000001" stroke="rgba(243,230,214,.5)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span>
       <span class="state st-en-subasta">en vivo</span>
@@ -941,9 +988,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
       <p>Hoy a fincas aliadas. Desde 2027, también de nuestra propia tierra, y seguiremos comprándole a los vecinos.</p></div>
     <div class="fincas"><article class="finca reveal " style="--i:0">
     <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="g2kk4ldm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="ghn07iy7" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 120 L0.0 107.3 L27.1 108.8 L54.3 96.7 L81.4 93.4 L108.6 94.6 L135.7 87.4 L162.9 78.9 L190.0 83.0 L217.1 70.6 L244.3 67.8 L271.4 67.8 L298.6 76.8 L325.7 80.2 L352.9 77.3 L380.0 84.1 L380 120 Z" fill="#6a5646" opacity="0.2"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 110.2 L108.6 106.6 L135.7 100.8 L162.9 92.0 L190.0 75.5 L217.1 71.3 L244.3 63.7 L271.4 57.5 L298.6 63.4 L325.7 77.3 L352.9 80.3 L380.0 94.7 L380 120 Z" fill="url(#g2kk4ldm)"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 110.2 L108.6 106.6 L135.7 100.8 L162.9 92.0 L190.0 75.5 L217.1 71.3 L244.3 63.7 L271.4 57.5 L298.6 63.4 L325.7 77.3 L352.9 80.3 L380.0 94.7 L380 120 Z" fill="url(#ghn07iy7)"/>
     <line x1="0" x2="380" y1="53.400000000000006" y2="53.400000000000006" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span></div>
     <div class="finca-body">
@@ -957,9 +1004,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
       </div>
     </div></article><article class="finca reveal " style="--i:1">
     <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gp1wm9mx" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="gv1mbenx" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 120 L0.0 105.7 L27.1 113.0 L54.3 98.8 L81.4 102.4 L108.6 97.4 L135.7 86.7 L162.9 79.8 L190.0 86.2 L217.1 87.4 L244.3 89.5 L271.4 84.6 L298.6 94.7 L325.7 102.9 L352.9 99.6 L380.0 114.5 L380 120 Z" fill="#6a5646" opacity="0.2"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 118.0 L54.3 116.5 L81.4 102.7 L108.6 90.3 L135.7 83.8 L162.9 77.3 L190.0 66.6 L217.1 71.4 L244.3 83.6 L271.4 89.9 L298.6 99.3 L325.7 108.2 L352.9 116.2 L380.0 120.0 L380 120 Z" fill="url(#gp1wm9mx)"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 118.0 L54.3 116.5 L81.4 102.7 L108.6 90.3 L135.7 83.8 L162.9 77.3 L190.0 66.6 L217.1 71.4 L244.3 83.6 L271.4 89.9 L298.6 99.3 L325.7 108.2 L352.9 116.2 L380.0 120.0 L380 120 Z" fill="url(#gv1mbenx)"/>
     <line x1="0" x2="380" y1="65.4" y2="65.4" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span></div>
     <div class="finca-body">
@@ -973,9 +1020,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
       </div>
     </div></article><article class="finca reveal " style="--i:2">
     <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gshopcwa" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="g72za86i" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 119.9 L108.6 117.6 L135.7 111.7 L162.9 104.8 L190.0 97.9 L217.1 106.5 L244.3 99.8 L271.4 91.8 L298.6 93.1 L325.7 96.3 L352.9 105.6 L380.0 106.0 L380 120 Z" fill="#6a5646" opacity="0.2"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 120.0 L108.6 120.0 L135.7 120.0 L162.9 108.9 L190.0 99.8 L217.1 95.8 L244.3 81.5 L271.4 81.6 L298.6 90.7 L325.7 99.6 L352.9 105.9 L380.0 112.1 L380 120 Z" fill="url(#gshopcwa)"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 120.0 L108.6 120.0 L135.7 120.0 L162.9 108.9 L190.0 99.8 L217.1 95.8 L244.3 81.5 L271.4 81.6 L298.6 90.7 L325.7 99.6 L352.9 105.9 L380.0 112.1 L380 120 Z" fill="url(#g72za86i)"/>
     <line x1="0" x2="380" y1="77.4" y2="77.4" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:64.5%">1.550 msnm</span></div>
     <div class="finca-body">
@@ -989,9 +1036,9 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
       </div>
     </div></article><article class="finca reveal propia" style="--i:3">
     <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gwt81cao" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <defs><linearGradient id="g2wasgbc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 120 L0.0 113.9 L27.1 112.0 L54.3 109.9 L81.4 95.4 L108.6 90.3 L135.7 90.3 L162.9 82.4 L190.0 81.5 L217.1 86.8 L244.3 86.1 L271.4 92.9 L298.6 91.0 L325.7 98.9 L352.9 96.3 L380.0 103.6 L380 120 Z" fill="#6a5646" opacity="0.2"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 119.9 L81.4 107.7 L108.6 101.8 L135.7 90.4 L162.9 85.0 L190.0 75.7 L217.1 65.4 L244.3 78.9 L271.4 86.6 L298.6 91.1 L325.7 103.5 L352.9 117.0 L380.0 120.0 L380 120 Z" fill="url(#gwt81cao)"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 119.9 L81.4 107.7 L108.6 101.8 L135.7 90.4 L162.9 85.0 L190.0 75.7 L217.1 65.4 L244.3 78.9 L271.4 86.6 L298.6 91.1 L325.7 103.5 L352.9 117.0 L380.0 120.0 L380 120 Z" fill="url(#g2wasgbc)"/>
     <line x1="0" x2="380" y1="65.4" y2="65.4" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span></div>
     <div class="finca-body">
@@ -1030,6 +1077,12 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
 
 <div class="tray" id="tray" hidden></div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
+<dialog id="cart" class="drawer" aria-label="Tu pedido">
+  <div class="cart-head"><h3>Tu pedido</h3>
+    <button class="x" data-act="cart-close" aria-label="Cerrar">✕</button></div>
+  <div class="cart-body" id="cart-body"></div>
+  <div class="cart-foot" id="cart-foot"></div>
+</dialog>
 <dialog id="dlg">
   <div class="dlg-head"><h3 id="dlg-title"></h3><button class="x" data-act="close" aria-label="Cerrar">✕</button></div>
   <div class="dlg-body" id="dlg-body"></div>
@@ -1569,45 +1622,85 @@ function viewCafe() {
 }
 
 /* ---------- pedido y pago ---------- */
+const CART_KEY = "nandez-carrito";
+function guardarCarrito() { try { localStorage.setItem(CART_KEY, JSON.stringify(UI.carrito)); } catch {} }
+function cargarCarrito() {
+  try {
+    const v = JSON.parse(localStorage.getItem(CART_KEY));
+    if (!Array.isArray(v)) return;
+    UI.carrito = v.filter((i) => { const p = prodById(i.id); return p && p.variantes.some((x) => x.g === i.g && x.stock > 0); });
+  } catch {}
+}
 function addCarrito(pid, g) {
   const p = prodById(pid), v = p.variantes.find((x) => x.g === +g), c = enCarrito(p.id, v.g);
   if (c) { if (c.n < v.stock) c.n++; else return toast(UI.lang === "en" ? "No more of that size." : "No queda más de esa presentación.", { type: "err" }); }
   else UI.carrito.push({ id: p.id, g: v.g, n: 1, precio: v.precio, nombre: `${tx(p.nombre)} ${gramos(v.g)}` });
-  render();
-  toast(`${esc(tx(p.nombre))} ${gramos(v.g)} ✓`, { label: t("pedido"), act: abrirPedido });
+  guardarCarrito(); render(); abrirCarrito();
 }
 
 function renderTray() {
   const el = $("#tray");
-  if (!UI.carrito.length) { el.hidden = true; return; }
+  if (!UI.carrito.length || $("#cart")?.open) { el.hidden = true; return; }
   el.hidden = false;
   const n = unidadesCarrito();
   el.innerHTML = `<span>${n} ${n === 1 ? (UI.lang === "en" ? "bag" : "bolsa") : (UI.lang === "en" ? "bags" : "bolsas")} · <b class="mono">${cop(totalCarrito())}</b></span>
-    <button class="btn sm" data-act="carrito-clear">${UI.lang === "en" ? "Empty" : "Vaciar"}</button>
-    <button class="btn sm primary" data-act="pedido">${t("comprar")}</button>`;
+    <button class="btn sm primary" data-act="carrito">${UI.lang === "en" ? "View order" : "Ver el pedido"}</button>`;
 }
 
-function abrirPedido() {
-  const filas = UI.carrito.map((i) => `<tr><th>${esc(i.nombre)}</th>
-      <td class="qty"><button class="btn sm" data-act="qty" data-p="${i.id}" data-g="${i.g}" data-d="-1" aria-label="−">−</button>
-      <span class="mono">${i.n}</span>
-      <button class="btn sm" data-act="qty" data-p="${i.id}" data-g="${i.g}" data-d="1" aria-label="+">+</button></td>
-      <td class="mono">${cop(i.precio * i.n)}</td></tr>`).join("");
-  const mp = CONFIG.pagos.mercadoPago;
-  modal(t("pedido"), `<div class="table-scroll"><table class="cmp-table"><tbody>${filas}
-    <tr><th>${t("total")}</th><td></td><td class="mono"><b>${cop(totalCarrito())}</b></td></tr></tbody></table></div>
-    <div class="form-grid" style="margin-top:16px">
-      <div class="field"><label class="lbl" for="pd-nombre">${UI.lang === "en" ? "Name" : "Nombre o negocio"}</label><input id="pd-nombre" class="input" autocomplete="name" enterkeyhint="next"></div>
-      <div class="field"><label class="lbl" for="pd-ciudad">${UI.lang === "en" ? "City" : "Ciudad"}</label><input id="pd-ciudad" class="input" value="Cúcuta"></div>
-      <div class="field"><label class="lbl" for="pd-tel">WhatsApp</label><input id="pd-tel" class="input" type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="done" placeholder="300 000 0000"></div>
-      <div class="field"><label class="lbl" for="pd-molienda">${UI.lang === "en" ? "Grind" : "Molienda"}</label>
-        <select id="pd-molienda" class="input">${(UI.lang === "en" ? ["Whole bean", "Filter / V60", "French press", "Espresso"] : ["En grano", "Filtro / V60", "Prensa francesa", "Espresso"]).map((o) => `<option>${o}</option>`).join("")}</select></div>
+function abrirCarrito() {
+  const d = $("#cart"); if (!d) return;
+  renderCarrito();
+  if (!d.open) d.showModal();
+  renderTray();
+}
+function cerrarCarrito() { const d = $("#cart"); if (d?.open) d.close(); renderTray(); }
+
+function renderCarrito() {
+  const en = UI.lang === "en", cuerpo = $("#cart-body"); if (!cuerpo) return;
+  if (!UI.carrito.length) {
+    cuerpo.innerHTML = `<div class="cart-vacio">
+      <p>${en ? "Nothing here yet." : "Todavía no hay nada."}</p>
+      <button class="btn primary" data-act="go" data-to="cafes">${en ? "See the coffees" : "Ver los cafés"}</button></div>`;
+    return;
+  }
+  const envio = totalCarrito() >= 150000 ? 0 : 12000;
+  cuerpo.innerHTML = `
+    <ul class="cart-items">${UI.carrito.map((i) => {
+      const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
+      return `<li class="cart-item">
+        <div class="cart-art">${ridge(p, { w: 120, h: 90, label: false })}</div>
+        <div class="cart-txt"><b>${esc(tx(p.nombre))}</b><small>${gramos(i.g)} · ${esc(tx(v.label))}</small>
+          <div class="cart-qty">
+            <button class="btn sm" data-act="qty" data-p="${i.id}" data-g="${i.g}" data-d="-1" aria-label="${en ? "Remove one" : "Quitar uno"}">−</button>
+            <span class="mono">${i.n}</span>
+            <button class="btn sm" data-act="qty" data-p="${i.id}" data-g="${i.g}" data-d="1" aria-label="${en ? "Add one" : "Agregar uno"}" ${i.n >= v.stock ? "disabled" : ""}>+</button>
+            <button class="cart-del" data-act="quitar" data-p="${i.id}" data-g="${i.g}">${en ? "Remove" : "Quitar"}</button>
+          </div></div>
+        <b class="mono cart-precio">${cop(i.precio * i.n)}</b></li>`;
+    }).join("")}</ul>
+
+    <div class="cart-sumas">
+      <div><span>${en ? "Subtotal" : "Subtotal"}</span><b class="mono">${cop(totalCarrito())}</b></div>
+      <div><span>${en ? "Shipping" : "Envío"}</span><b class="mono">${envio ? cop(envio) : (en ? "Free" : "Gratis")}</b></div>
+      <div class="cart-total"><span>${t("total")}</span><b class="mono">${cop(totalCarrito() + envio)}</b></div>
+      ${envio ? `<p class="hint">${en ? "Free shipping from " : "Envío gratis desde "}${cop(150000)}.</p>` : ""}
     </div>
-    <p class="hint">${mp ? (UI.lang === "en" ? "You will be redirected to Mercado Pago to pay by card, PSE, Nequi or cash." : "Te llevamos a Mercado Pago para pagar con tarjeta, PSE, Nequi o efectivo.")
-      : (UI.lang === "en" ? "Online payment is not connected yet: we confirm the order on WhatsApp." : "El pago en línea todavía no está conectado: confirmamos el pedido por WhatsApp.")}</p>
-    <div class="dlg-actions"><button class="btn" data-act="close">${t("seguir")}</button>
-      <button class="btn" data-act="pedido-wa">${t("pedir_wa")}</button>
-      <button class="btn primary" data-act="pedido-mp" ${mp ? "" : "disabled"}>${t("pagar_mp")}</button></div>`, "narrow");
+
+    <div class="form-grid cart-form">
+      <div class="field"><label class="lbl" for="pd-nombre">${en ? "Name" : "Nombre o negocio"}</label><input id="pd-nombre" class="input" autocomplete="name" enterkeyhint="next"></div>
+      <div class="field"><label class="lbl" for="pd-ciudad">${en ? "City" : "Ciudad"}</label><input id="pd-ciudad" class="input" value="Cúcuta" autocomplete="address-level2"></div>
+      <div class="field"><label class="lbl" for="pd-tel">WhatsApp</label><input id="pd-tel" class="input" type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="done" placeholder="300 000 0000"></div>
+      <div class="field"><label class="lbl" for="pd-molienda">${en ? "Grind" : "Molienda"}</label>
+        <select id="pd-molienda" class="input">${(en ? ["Whole bean", "Filter / V60", "French press", "Espresso"] : ["En grano", "Filtro / V60", "Prensa francesa", "Espresso"]).map((o) => `<option>${o}</option>`).join("")}</select></div>
+    </div>`;
+  const pie = $("#cart-foot");
+  if (pie) pie.innerHTML = UI.carrito.length
+    ? `<button class="btn" data-act="pedido-wa">${t("pedir_wa")}</button>
+       <button class="btn primary" data-act="pedido-mp" ${CONFIG.pagos.mercadoPago ? "" : "disabled"}>${t("pagar_mp")}</button>
+       <p class="hint">${CONFIG.pagos.mercadoPago
+         ? (en ? "Card, PSE, Nequi or cash through Mercado Pago." : "Tarjeta, PSE, Nequi o efectivo con Mercado Pago.")
+         : (en ? "Online payment is not connected yet: we confirm on WhatsApp." : "El pago en línea todavía no está conectado: confirmamos por WhatsApp.")}</p>`
+    : "";
 }
 
 function cambiarCantidad(pid, g, d) {
@@ -1615,8 +1708,11 @@ function cambiarCantidad(pid, g, d) {
   if (!c) return;
   c.n = Math.max(0, Math.min(v.stock, c.n + d));
   if (!c.n) UI.carrito = UI.carrito.filter((i) => !(i.id === pid && i.g === +g));
-  renderTray();
-  if (UI.carrito.length) abrirPedido(); else { closeModal(); render(); }
+  guardarCarrito(); renderCarrito(); renderNav(); renderTray();
+}
+function quitarDelCarrito(pid, g) {
+  UI.carrito = UI.carrito.filter((i) => !(i.id === pid && i.g === +g));
+  guardarCarrito(); renderCarrito(); renderNav(); renderTray();
 }
 
 function datosPedido() {
@@ -1638,7 +1734,7 @@ function registrarPedido(d, canal) {
     atribuirVenta(p, (i.n * i.g) / p.presentacion, i.precio * i.n);
   });
   const texto = `Hola ${CONFIG.marca}, quiero pedir:\n${items.map((i) => `· ${i.n} × ${i.nombre}`).join("\n")}\n${UI.lang === "en" ? "Grind" : "Molienda"}: ${d.molienda}\nTotal: ${cop(pedido.total)}\n${d.nombre}${d.ciudad ? " · " + d.ciudad : ""}`;
-  UI.carrito = []; save(); closeModal(); render();
+  UI.carrito = []; guardarCarrito(); save(); cerrarCarrito(); closeModal(); render();
   return { pedido, texto };
 }
 
@@ -2162,7 +2258,10 @@ function renderNav() {
     const k = x.dataset.i18n; if (k) x.childNodes[0].nodeValue = t(k) + " ";
   });
   const n = unidadesCarrito(), b = $("#b-cart");
-  b.hidden = !n; b.textContent = n;
+  if (b) { b.hidden = !n; b.textContent = n; }
+  const bc = $("#cart-btn"), bn = $("#cart-n");
+  if (bc) { bc.setAttribute("aria-label", (UI.lang === "en" ? "Order" : "Pedido") + (n ? ` (${n})` : "")); bc.classList.toggle("lleno", !!n); }
+  if (bn) { bn.hidden = !n; bn.textContent = n; }
   $("#nav-live").classList.toggle("off", UI.au.ended);
   document.querySelectorAll("[data-lang]").forEach((x) => x.setAttribute("aria-pressed", x.dataset.lang === UI.lang));
 }
@@ -2193,8 +2292,10 @@ document.addEventListener("click", (e) => {
     case "var": (UI.variante ||= {})[el.dataset.p] = +el.dataset.g; UI.animate = false; return render();
     case "add": return addCarrito(el.dataset.p, el.dataset.g);
     case "qty": return cambiarCantidad(el.dataset.p, el.dataset.g, +el.dataset.d);
-    case "carrito-clear": UI.carrito = []; return render();
-    case "pedido": return abrirPedido();
+    case "carrito-clear": UI.carrito = []; guardarCarrito(); renderCarrito(); return render();
+    case "carrito": return abrirCarrito();
+    case "quitar": return quitarDelCarrito(el.dataset.p, el.dataset.g);
+    case "cart-close": return cerrarCarrito();
     case "pedido-wa": return pedidoWA();
     case "pedido-mp": return pedidoMP();
     case "espera": return listaEspera();
@@ -2218,10 +2319,13 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && x.id === "esp-mail") { e.preventDefault(); listaEspera(); }
 });
 $("#dlg").addEventListener("click", (e) => { if (e.target === $("#dlg")) closeModal(); });
+$("#cart")?.addEventListener("click", (e) => { if (e.target === $("#cart")) cerrarCarrito(); });
+$("#cart")?.addEventListener("close", () => renderTray());
 window.addEventListener("popstate", () => { const r = vistaDeRuta(location.pathname); UI.view = r.view; if (r.id) { UI.cafe = r.id; UI.entrada = r.id; } UI.animate = true; render(); });
 
 /* ---------- arranque ---------- */
 aplicarCfgGuardada();
+cargarCarrito();
 UI.au = newAuction();
 UI.lang = location.pathname.startsWith("/en") ? "en" : "es";   // manda la URL, no lo guardado
 const r0 = vistaDeRuta(location.pathname);

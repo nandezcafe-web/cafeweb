@@ -184,7 +184,10 @@ function renderNav() {
     const k = x.dataset.i18n; if (k) x.childNodes[0].nodeValue = t(k) + " ";
   });
   const n = unidadesCarrito(), b = $("#b-cart");
-  b.hidden = !n; b.textContent = n;
+  if (b) { b.hidden = !n; b.textContent = n; }
+  const bc = $("#cart-btn"), bn = $("#cart-n");
+  if (bc) { bc.setAttribute("aria-label", (UI.lang === "en" ? "Order" : "Pedido") + (n ? ` (${n})` : "")); bc.classList.toggle("lleno", !!n); }
+  if (bn) { bn.hidden = !n; bn.textContent = n; }
   $("#nav-live").classList.toggle("off", UI.au.ended);
   document.querySelectorAll("[data-lang]").forEach((x) => x.setAttribute("aria-pressed", x.dataset.lang === UI.lang));
 }
@@ -215,8 +218,10 @@ document.addEventListener("click", (e) => {
     case "var": (UI.variante ||= {})[el.dataset.p] = +el.dataset.g; UI.animate = false; return render();
     case "add": return addCarrito(el.dataset.p, el.dataset.g);
     case "qty": return cambiarCantidad(el.dataset.p, el.dataset.g, +el.dataset.d);
-    case "carrito-clear": UI.carrito = []; return render();
-    case "pedido": return abrirPedido();
+    case "carrito-clear": UI.carrito = []; guardarCarrito(); renderCarrito(); return render();
+    case "carrito": return abrirCarrito();
+    case "quitar": return quitarDelCarrito(el.dataset.p, el.dataset.g);
+    case "cart-close": return cerrarCarrito();
     case "pedido-wa": return pedidoWA();
     case "pedido-mp": return pedidoMP();
     case "espera": return listaEspera();
@@ -240,10 +245,13 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && x.id === "esp-mail") { e.preventDefault(); listaEspera(); }
 });
 $("#dlg").addEventListener("click", (e) => { if (e.target === $("#dlg")) closeModal(); });
+$("#cart")?.addEventListener("click", (e) => { if (e.target === $("#cart")) cerrarCarrito(); });
+$("#cart")?.addEventListener("close", () => renderTray());
 window.addEventListener("popstate", () => { const r = vistaDeRuta(location.pathname); UI.view = r.view; if (r.id) { UI.cafe = r.id; UI.entrada = r.id; } UI.animate = true; render(); });
 
 /* ---------- arranque ---------- */
 aplicarCfgGuardada();
+cargarCarrito();
 UI.au = newAuction();
 UI.lang = location.pathname.startsWith("/en") ? "en" : "es";   // manda la URL, no lo guardado
 const r0 = vistaDeRuta(location.pathname);

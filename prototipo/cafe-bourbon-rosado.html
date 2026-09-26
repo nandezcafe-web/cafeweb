@@ -21,8 +21,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=56ce4528">
-<link rel="stylesheet" href="/auction.css?v=56ce4528">
+<link rel="stylesheet" href="/styles.css?v=681706e0">
+<link rel="stylesheet" href="/auction.css?v=681706e0">
 <script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Café","url":"https://cafeweb-five.vercel.app","email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"Sembramos café en Chinácota y escogemos los mejores lotes de las fincas de Norte de Santander. Un café por finca, con su altura, su variedad, su proceso y su puntaje de catación."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Café","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"es"},{"@type":"Product","name":"Bourbon rosado","description":"Bourbon rosado: Bourbon rosado lavado cultivado a 1.750 msnm en Chinácota, con 87.5 puntos SCA. Notas de jazmín, bergamota, durazno. Desde $32.000.","brand":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"category":"Café de especialidad","additionalProperty":[{"@type":"PropertyValue","name":"Variedad","value":"Bourbon rosado"},{"@type":"PropertyValue","name":"Proceso","value":"Lavado"},{"@type":"PropertyValue","name":"Altitud","value":"1750 msnm"},{"@type":"PropertyValue","name":"SCA","value":"87.5"},{"@type":"PropertyValue","name":"Finca","value":"Lote Chinácota, Chinácota"}],"offers":[{"@type":"Offer","name":"100 g","price":32000,"priceCurrency":"COP","availability":"https://schema.org/InStock","url":"https://cafeweb-five.vercel.app/cafe-bourbon-rosado"},{"@type":"Offer","name":"250 g","price":68000,"priceCurrency":"COP","availability":"https://schema.org/InStock","url":"https://cafeweb-five.vercel.app/cafe-bourbon-rosado"},{"@type":"Offer","name":"1 kg","price":245000,"priceCurrency":"COP","availability":"https://schema.org/InStock","url":"https://cafeweb-five.vercel.app/cafe-bourbon-rosado"}]}]}</script>
 </head>
 <body data-view="cafe">
@@ -39,6 +39,10 @@
       <a class="tab" href="/suscripcion" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Suscripción </a>
       <a class="tab" href="/diario" data-act="go" data-to="diario" data-i18n="nav_diario">Diario </a>
     </nav>
+    <button class="cart-btn" id="cart-btn" data-act="carrito" aria-label="Pedido">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16l-1.2 11.2a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 7Z"/><path d="M9 7V5.5a3 3 0 0 1 6 0V7"/></svg>
+      <span class="cart-n" id="cart-n" hidden></span>
+    </button>
     <div class="lang" role="group" aria-label="Idioma">
       <button data-act="lang" data-lang="es" aria-pressed="true">ES</button>
       <button data-act="lang" data-lang="en" aria-pressed="false">EN</button>
@@ -54,9 +58,9 @@
         <h2 class="prod-title">Bourbon rosado<br><em>Lavado</em></h2>
         <p class="prod-score">87.5<small>SCA</small></p>
         <div class="hc-ridge"><svg viewBox="0 0 460 200" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gyv1u49v" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.25"/></linearGradient></defs>
+    <defs><linearGradient id="g5kdr9ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.25"/></linearGradient></defs>
     <path d="M0 200 L0.0 198.9 L32.9 190.2 L65.7 187.3 L98.6 174.6 L131.4 172.3 L164.3 166.0 L197.1 158.4 L230.0 152.8 L262.9 134.2 L295.7 133.0 L328.6 133.5 L361.4 151.1 L394.3 156.7 L427.1 156.7 L460.0 173.8 L460 200 Z" fill="#3f6a4b" opacity="0.28"/>
-    <path class="front" d="M0 200 L0.0 200.0 L32.9 200.0 L65.7 200.0 L98.6 200.0 L131.4 183.7 L164.3 174.5 L197.1 155.0 L230.0 143.2 L262.9 124.9 L295.7 109.0 L328.6 124.5 L361.4 141.9 L394.3 156.4 L427.1 170.0 L460.0 182.7 L460 200 Z" fill="url(#gyv1u49v)"/>
+    <path class="front" d="M0 200 L0.0 200.0 L32.9 200.0 L65.7 200.0 L98.6 200.0 L131.4 183.7 L164.3 174.5 L197.1 155.0 L230.0 143.2 L262.9 124.9 L295.7 109.0 L328.6 124.5 L361.4 141.9 L394.3 156.4 L427.1 170.0 L460.0 182.7 L460 200 Z" fill="url(#g5kdr9ag)"/>
     <line x1="0" x2="460" y1="109.00000000000001" y2="109.00000000000001" stroke="rgba(243,230,214,.5)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span></div>
       </div>
@@ -131,15 +135,21 @@
 
 <div class="tray" id="tray" hidden></div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
+<dialog id="cart" class="drawer" aria-label="Tu pedido">
+  <div class="cart-head"><h3>Tu pedido</h3>
+    <button class="x" data-act="cart-close" aria-label="Cerrar">✕</button></div>
+  <div class="cart-body" id="cart-body"></div>
+  <div class="cart-foot" id="cart-foot"></div>
+</dialog>
 <dialog id="dlg">
   <div class="dlg-head"><h3 id="dlg-title"></h3><button class="x" data-act="close" aria-label="Cerrar">✕</button></div>
   <div class="dlg-body" id="dlg-body"></div>
 </dialog>
 
-<script src="/js/core.js?v=56ce4528"></script>
-<script src="/js/shop.js?v=56ce4528"></script>
-<script src="/js/pages.js?v=56ce4528"></script>
-<script src="/js/auction.js?v=56ce4528"></script>
-<script src="/js/main.js?v=56ce4528"></script>
+<script src="/js/core.js?v=681706e0"></script>
+<script src="/js/shop.js?v=681706e0"></script>
+<script src="/js/pages.js?v=681706e0"></script>
+<script src="/js/auction.js?v=681706e0"></script>
+<script src="/js/main.js?v=681706e0"></script>
 </body>
 </html>

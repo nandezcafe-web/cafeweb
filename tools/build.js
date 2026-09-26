@@ -118,6 +118,10 @@ ${FUENTES}
     <nav class="tabs" aria-label="${lang === "en" ? "Sections" : "Secciones"}">
       ${navHTML(ctx, activa)}
     </nav>
+    <button class="cart-btn" id="cart-btn" data-act="carrito" aria-label="${lang === "en" ? "Order" : "Pedido"}">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16l-1.2 11.2a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 7Z"/><path d="M9 7V5.5a3 3 0 0 1 6 0V7"/></svg>
+      <span class="cart-n" id="cart-n" hidden></span>
+    </button>
     <div class="lang" role="group" aria-label="${lang === "en" ? "Language" : "Idioma"}">
       <button data-act="lang" data-lang="es" aria-pressed="${lang === "es"}">ES</button>
       <button data-act="lang" data-lang="en" aria-pressed="${lang === "en"}">EN</button>
@@ -129,6 +133,12 @@ ${FUENTES}
 
 <div class="tray" id="tray" hidden></div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
+<dialog id="cart" class="drawer" aria-label="${lang === "en" ? "Your order" : "Tu pedido"}">
+  <div class="cart-head"><h3>${lang === "en" ? "Your order" : "Tu pedido"}</h3>
+    <button class="x" data-act="cart-close" aria-label="${lang === "en" ? "Close" : "Cerrar"}">✕</button></div>
+  <div class="cart-body" id="cart-body"></div>
+  <div class="cart-foot" id="cart-foot"></div>
+</dialog>
 <dialog id="dlg">
   <div class="dlg-head"><h3 id="dlg-title"></h3><button class="x" data-act="close" aria-label="${lang === "en" ? "Close" : "Cerrar"}">✕</button></div>
   <div class="dlg-body" id="dlg-body"></div>

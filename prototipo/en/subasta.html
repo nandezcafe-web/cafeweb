@@ -21,8 +21,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=56ce4528">
-<link rel="stylesheet" href="/auction.css?v=56ce4528">
+<link rel="stylesheet" href="/styles.css?v=681706e0">
+<link rel="stylesheet" href="/auction.css?v=681706e0">
 <script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Café","url":"https://cafeweb-five.vercel.app","email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"We grow coffee in Chinácota and choose the best lots from farms across Norte de Santander, Colombia. Single origin, one farm per coffee, with altitude, variety, process and cupping score for each lot."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Café","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"en"},{"@type":"Event","name":"Geisha coffee auction · Domingo Torres","description":"Bid live for a Geisha microlot from Toledo, Norte de Santander: reserve price, at least three bidders and anti-sniping extension. Only 30 kg of green coffee.","eventAttendanceMode":"https://schema.org/OnlineEventAttendanceMode","location":{"@type":"VirtualLocation","url":"https://cafeweb-five.vercel.app/en/subasta"},"organizer":{"@id":"https://cafeweb-five.vercel.app/#organizacion"}}]}</script>
 </head>
 <body data-view="subasta">
@@ -39,6 +39,10 @@
       <a class="tab" href="/en/suscripcion" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Subscription </a>
       <a class="tab" href="/en/diario" data-act="go" data-to="diario" data-i18n="nav_diario">Journal </a>
     </nav>
+    <button class="cart-btn" id="cart-btn" data-act="carrito" aria-label="Order">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16l-1.2 11.2a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 7Z"/><path d="M9 7V5.5a3 3 0 0 1 6 0V7"/></svg>
+      <span class="cart-n" id="cart-n" hidden></span>
+    </button>
     <div class="lang" role="group" aria-label="Language">
       <button data-act="lang" data-lang="es" aria-pressed="false">ES</button>
       <button data-act="lang" data-lang="en" aria-pressed="true">EN</button>
@@ -68,9 +72,9 @@
         <ul class="notes dark"><li>Jazmín</li><li>Mango</li><li>Vino blanco</li><li>Bergamota</li></ul>
         <p class="au-note">Comprado por nosotros a Domingo Torres. Lo subastamos porque es un lote pequeño y excepcional: la subasta le saca más valor que la bolsa de 340 g.</p>
         <div class="au-ridge"><svg viewBox="0 0 420 120" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="gdomjnxl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
+    <defs><linearGradient id="gjj5wifs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
     <path d="M0 120 L0.0 105.0 L30.0 99.2 L60.0 101.5 L90.0 96.2 L120.0 96.2 L150.0 93.0 L180.0 80.3 L210.0 80.8 L240.0 78.4 L270.0 74.7 L300.0 67.8 L330.0 73.2 L360.0 74.6 L390.0 82.3 L420.0 92.3 L420 120 Z" fill="#9c3322" opacity="0.28"/>
-    <path class="front" d="M0 120 L0.0 120.0 L30.0 120.0 L60.0 120.0 L90.0 114.2 L120.0 107.6 L150.0 94.2 L180.0 88.7 L210.0 73.4 L240.0 63.8 L270.0 54.2 L300.0 58.0 L330.0 62.9 L360.0 75.9 L390.0 87.5 L420.0 92.8 L420 120 Z" fill="url(#gdomjnxl)"/>
+    <path class="front" d="M0 120 L0.0 120.0 L30.0 120.0 L60.0 120.0 L90.0 114.2 L120.0 107.6 L150.0 94.2 L180.0 88.7 L210.0 73.4 L240.0 63.8 L270.0 54.2 L300.0 58.0 L330.0 62.9 L360.0 75.9 L390.0 87.5 L420.0 92.8 L420 120 Z" fill="url(#gjj5wifs)"/>
     <line x1="0" x2="420" y1="53.400000000000006" y2="53.400000000000006" stroke="rgba(243,230,214,.5)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
   </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span></div>
       </article>
@@ -100,15 +104,21 @@
 
 <div class="tray" id="tray" hidden></div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
+<dialog id="cart" class="drawer" aria-label="Your order">
+  <div class="cart-head"><h3>Your order</h3>
+    <button class="x" data-act="cart-close" aria-label="Close">✕</button></div>
+  <div class="cart-body" id="cart-body"></div>
+  <div class="cart-foot" id="cart-foot"></div>
+</dialog>
 <dialog id="dlg">
   <div class="dlg-head"><h3 id="dlg-title"></h3><button class="x" data-act="close" aria-label="Close">✕</button></div>
   <div class="dlg-body" id="dlg-body"></div>
 </dialog>
 
-<script src="/js/core.js?v=56ce4528"></script>
-<script src="/js/shop.js?v=56ce4528"></script>
-<script src="/js/pages.js?v=56ce4528"></script>
-<script src="/js/auction.js?v=56ce4528"></script>
-<script src="/js/main.js?v=56ce4528"></script>
+<script src="/js/core.js?v=681706e0"></script>
+<script src="/js/shop.js?v=681706e0"></script>
+<script src="/js/pages.js?v=681706e0"></script>
+<script src="/js/auction.js?v=681706e0"></script>
+<script src="/js/main.js?v=681706e0"></script>
 </body>
 </html>

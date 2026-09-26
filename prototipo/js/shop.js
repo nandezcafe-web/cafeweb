@@ -149,45 +149,85 @@ function viewCafe() {
 }
 
 /* ---------- pedido y pago ---------- */
+const CART_KEY = "nandez-carrito";
+function guardarCarrito() { try { localStorage.setItem(CART_KEY, JSON.stringify(UI.carrito)); } catch {} }
+function cargarCarrito() {
+  try {
+    const v = JSON.parse(localStorage.getItem(CART_KEY));
+    if (!Array.isArray(v)) return;
+    UI.carrito = v.filter((i) => { const p = prodById(i.id); return p && p.variantes.some((x) => x.g === i.g && x.stock > 0); });
+  } catch {}
+}
 function addCarrito(pid, g) {
   const p = prodById(pid), v = p.variantes.find((x) => x.g === +g), c = enCarrito(p.id, v.g);
   if (c) { if (c.n < v.stock) c.n++; else return toast(UI.lang === "en" ? "No more of that size." : "No queda más de esa presentación.", { type: "err" }); }
   else UI.carrito.push({ id: p.id, g: v.g, n: 1, precio: v.precio, nombre: `${tx(p.nombre)} ${gramos(v.g)}` });
-  render();
-  toast(`${esc(tx(p.nombre))} ${gramos(v.g)} ✓`, { label: t("pedido"), act: abrirPedido });
+  guardarCarrito(); render(); abrirCarrito();
 }
 
 function renderTray() {
   const el = $("#tray");
-  if (!UI.carrito.length) { el.hidden = true; return; }
+  if (!UI.carrito.length || $("#cart")?.open) { el.hidden = true; return; }
   el.hidden = false;
   const n = unidadesCarrito();
   el.innerHTML = `<span>${n} ${n === 1 ? (UI.lang === "en" ? "bag" : "bolsa") : (UI.lang === "en" ? "bags" : "bolsas")} · <b class="mono">${cop(totalCarrito())}</b></span>
-    <button class="btn sm" data-act="carrito-clear">${UI.lang === "en" ? "Empty" : "Vaciar"}</button>
-    <button class="btn sm primary" data-act="pedido">${t("comprar")}</button>`;
+    <button class="btn sm primary" data-act="carrito">${UI.lang === "en" ? "View order" : "Ver el pedido"}</button>`;
 }
 
-function abrirPedido() {
-  const filas = UI.carrito.map((i) => `<tr><th>${esc(i.nombre)}</th>
-      <td class="qty"><button class="btn sm" data-act="qty" data-p="${i.id}" data-g="${i.g}" data-d="-1" aria-label="−">−</button>
-      <span class="mono">${i.n}</span>
-      <button class="btn sm" data-act="qty" data-p="${i.id}" data-g="${i.g}" data-d="1" aria-label="+">+</button></td>
-      <td class="mono">${cop(i.precio * i.n)}</td></tr>`).join("");
-  const mp = CONFIG.pagos.mercadoPago;
-  modal(t("pedido"), `<div class="table-scroll"><table class="cmp-table"><tbody>${filas}
-    <tr><th>${t("total")}</th><td></td><td class="mono"><b>${cop(totalCarrito())}</b></td></tr></tbody></table></div>
-    <div class="form-grid" style="margin-top:16px">
-      <div class="field"><label class="lbl" for="pd-nombre">${UI.lang === "en" ? "Name" : "Nombre o negocio"}</label><input id="pd-nombre" class="input" autocomplete="name" enterkeyhint="next"></div>
-      <div class="field"><label class="lbl" for="pd-ciudad">${UI.lang === "en" ? "City" : "Ciudad"}</label><input id="pd-ciudad" class="input" value="Cúcuta"></div>
-      <div class="field"><label class="lbl" for="pd-tel">WhatsApp</label><input id="pd-tel" class="input" type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="done" placeholder="300 000 0000"></div>
-      <div class="field"><label class="lbl" for="pd-molienda">${UI.lang === "en" ? "Grind" : "Molienda"}</label>
-        <select id="pd-molienda" class="input">${(UI.lang === "en" ? ["Whole bean", "Filter / V60", "French press", "Espresso"] : ["En grano", "Filtro / V60", "Prensa francesa", "Espresso"]).map((o) => `<option>${o}</option>`).join("")}</select></div>
+function abrirCarrito() {
+  const d = $("#cart"); if (!d) return;
+  renderCarrito();
+  if (!d.open) d.showModal();
+  renderTray();
+}
+function cerrarCarrito() { const d = $("#cart"); if (d?.open) d.close(); renderTray(); }
+
+function renderCarrito() {
+  const en = UI.lang === "en", cuerpo = $("#cart-body"); if (!cuerpo) return;
+  if (!UI.carrito.length) {
+    cuerpo.innerHTML = `<div class="cart-vacio">
+      <p>${en ? "Nothing here yet." : "Todavía no hay nada."}</p>
+      <button class="btn primary" data-act="go" data-to="cafes">${en ? "See the coffees" : "Ver los cafés"}</button></div>`;
+    return;
+  }
+  const envio = totalCarrito() >= 150000 ? 0 : 12000;
+  cuerpo.innerHTML = `
+    <ul class="cart-items">${UI.carrito.map((i) => {
+      const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
+      return `<li class="cart-item">
+        <div class="cart-art">${ridge(p, { w: 120, h: 90, label: false })}</div>
+        <div class="cart-txt"><b>${esc(tx(p.nombre))}</b><small>${gramos(i.g)} · ${esc(tx(v.label))}</small>
+          <div class="cart-qty">
+            <button class="btn sm" data-act="qty" data-p="${i.id}" data-g="${i.g}" data-d="-1" aria-label="${en ? "Remove one" : "Quitar uno"}">−</button>
+            <span class="mono">${i.n}</span>
+            <button class="btn sm" data-act="qty" data-p="${i.id}" data-g="${i.g}" data-d="1" aria-label="${en ? "Add one" : "Agregar uno"}" ${i.n >= v.stock ? "disabled" : ""}>+</button>
+            <button class="cart-del" data-act="quitar" data-p="${i.id}" data-g="${i.g}">${en ? "Remove" : "Quitar"}</button>
+          </div></div>
+        <b class="mono cart-precio">${cop(i.precio * i.n)}</b></li>`;
+    }).join("")}</ul>
+
+    <div class="cart-sumas">
+      <div><span>${en ? "Subtotal" : "Subtotal"}</span><b class="mono">${cop(totalCarrito())}</b></div>
+      <div><span>${en ? "Shipping" : "Envío"}</span><b class="mono">${envio ? cop(envio) : (en ? "Free" : "Gratis")}</b></div>
+      <div class="cart-total"><span>${t("total")}</span><b class="mono">${cop(totalCarrito() + envio)}</b></div>
+      ${envio ? `<p class="hint">${en ? "Free shipping from " : "Envío gratis desde "}${cop(150000)}.</p>` : ""}
     </div>
-    <p class="hint">${mp ? (UI.lang === "en" ? "You will be redirected to Mercado Pago to pay by card, PSE, Nequi or cash." : "Te llevamos a Mercado Pago para pagar con tarjeta, PSE, Nequi o efectivo.")
-      : (UI.lang === "en" ? "Online payment is not connected yet: we confirm the order on WhatsApp." : "El pago en línea todavía no está conectado: confirmamos el pedido por WhatsApp.")}</p>
-    <div class="dlg-actions"><button class="btn" data-act="close">${t("seguir")}</button>
-      <button class="btn" data-act="pedido-wa">${t("pedir_wa")}</button>
-      <button class="btn primary" data-act="pedido-mp" ${mp ? "" : "disabled"}>${t("pagar_mp")}</button></div>`, "narrow");
+
+    <div class="form-grid cart-form">
+      <div class="field"><label class="lbl" for="pd-nombre">${en ? "Name" : "Nombre o negocio"}</label><input id="pd-nombre" class="input" autocomplete="name" enterkeyhint="next"></div>
+      <div class="field"><label class="lbl" for="pd-ciudad">${en ? "City" : "Ciudad"}</label><input id="pd-ciudad" class="input" value="Cúcuta" autocomplete="address-level2"></div>
+      <div class="field"><label class="lbl" for="pd-tel">WhatsApp</label><input id="pd-tel" class="input" type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="done" placeholder="300 000 0000"></div>
+      <div class="field"><label class="lbl" for="pd-molienda">${en ? "Grind" : "Molienda"}</label>
+        <select id="pd-molienda" class="input">${(en ? ["Whole bean", "Filter / V60", "French press", "Espresso"] : ["En grano", "Filtro / V60", "Prensa francesa", "Espresso"]).map((o) => `<option>${o}</option>`).join("")}</select></div>
+    </div>`;
+  const pie = $("#cart-foot");
+  if (pie) pie.innerHTML = UI.carrito.length
+    ? `<button class="btn" data-act="pedido-wa">${t("pedir_wa")}</button>
+       <button class="btn primary" data-act="pedido-mp" ${CONFIG.pagos.mercadoPago ? "" : "disabled"}>${t("pagar_mp")}</button>
+       <p class="hint">${CONFIG.pagos.mercadoPago
+         ? (en ? "Card, PSE, Nequi or cash through Mercado Pago." : "Tarjeta, PSE, Nequi o efectivo con Mercado Pago.")
+         : (en ? "Online payment is not connected yet: we confirm on WhatsApp." : "El pago en línea todavía no está conectado: confirmamos por WhatsApp.")}</p>`
+    : "";
 }
 
 function cambiarCantidad(pid, g, d) {
@@ -195,8 +235,11 @@ function cambiarCantidad(pid, g, d) {
   if (!c) return;
   c.n = Math.max(0, Math.min(v.stock, c.n + d));
   if (!c.n) UI.carrito = UI.carrito.filter((i) => !(i.id === pid && i.g === +g));
-  renderTray();
-  if (UI.carrito.length) abrirPedido(); else { closeModal(); render(); }
+  guardarCarrito(); renderCarrito(); renderNav(); renderTray();
+}
+function quitarDelCarrito(pid, g) {
+  UI.carrito = UI.carrito.filter((i) => !(i.id === pid && i.g === +g));
+  guardarCarrito(); renderCarrito(); renderNav(); renderTray();
 }
 
 function datosPedido() {
@@ -218,7 +261,7 @@ function registrarPedido(d, canal) {
     atribuirVenta(p, (i.n * i.g) / p.presentacion, i.precio * i.n);
   });
   const texto = `Hola ${CONFIG.marca}, quiero pedir:\n${items.map((i) => `· ${i.n} × ${i.nombre}`).join("\n")}\n${UI.lang === "en" ? "Grind" : "Molienda"}: ${d.molienda}\nTotal: ${cop(pedido.total)}\n${d.nombre}${d.ciudad ? " · " + d.ciudad : ""}`;
-  UI.carrito = []; save(); closeModal(); render();
+  UI.carrito = []; guardarCarrito(); save(); cerrarCarrito(); closeModal(); render();
   return { pedido, texto };
 }
 
