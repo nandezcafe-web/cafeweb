@@ -4,15 +4,14 @@
 function viewInicio() {
   const en = UI.lang === "en", a = UI.au, l = AU_LOTE;
   const p = S.productos.find((x) => x.destacado) || S.productos[0];
-  const sobre = ((p.pago.pagadoKg / p.pago.referenciaKg - 1) * 100).toFixed(0);
   const valor = en
     ? [["A name, not a country", "We do not sell “Colombian coffee”. We sell one farm’s lot, one harvest, with the name of whoever grew it."],
        ["Every number with its source", "Altitude, variety, process and score carry who checked them and when. What is not verified, we say so."],
-       ["What we paid", `We paid ${cop(p.pago.pagadoKg)} per kilo of parchment when the reference that day was ${cop(p.pago.referenciaKg)}: <b>+${sobre} %</b>.`],
+       ["We pay above the reference", "We buy at the farm, cash, above the day\u2019s reference price published by the Colombian Coffee Growers Federation."],
        ["One farm, one variety", "Each allied farm brings a different variety. Exceptional lots go to auction."]]
     : [["Un nombre, no un país", "No vendemos “café colombiano”. Vendemos el lote de una finca, de una cosecha, con el nombre de quien lo cultivó."],
        ["Cada dato con su fuente", "Altura, variedad, proceso y puntaje llevan quién lo comprobó y cuándo. Lo que no está verificado, lo decimos."],
-       ["Lo que le pagamos", `Pagamos ${cop(p.pago.pagadoKg)} por kilo de pergamino cuando la referencia del día era ${cop(p.pago.referenciaKg)}: <b>+${sobre} %</b>.`],
+       ["Pagamos por encima de la referencia", "Compramos en la finca, de contado y por encima del precio de referencia que publica la Federación Nacional de Cafeteros ese día."],
        ["Una finca, una variedad", "Cada finca aliada trae una variedad distinta. Los lotes excepcionales van a subasta."]];
   const pasos = en
     ? [["We visit", "Yield factor, moisture and the day’s price, in hand."], ["We buy above the reference", "Cash, at the farm."],
@@ -74,8 +73,14 @@ function viewInicio() {
     <div class="cinta-pasos">${pasos.map(([tt, d], i) => `<div class="cp"><span class="n">${i + 1}</span><b>${esc(tt)}</b><small>${esc(d)}</small></div>`).join("")}</div>
   </section>
 
+  <section class="section faqs">
+    <div class="section-head"><p class="eyebrow">${en ? "Questions" : "Preguntas"}</p>
+      <h2>${en ? "What people ask <em>before buying</em>" : "Lo que preguntan <em>antes de comprar</em>"}</h2></div>
+    <div class="faq-lista">${FAQ.map((f, i) => `<details class="faq" ${i === 0 ? "open" : ""}><summary><h3>${esc(tx(f.q))}</h3></summary><p>${esc(tx(f.a))}</p></details>`).join("")}</div>
+  </section>
+
   <section class="section">
-    <div class="section-head"><p class="eyebrow">${t("nav_suscripcion")}</p>
+    <div class="section-head"><p class="eyebrow">${t("nav_suscripcion")}</p></p>
       <h2>${en ? "Or let it <em>arrive every month</em>" : "O deja que <em>llegue cada mes</em>"}</h2>
       <p>${en ? `From ${cop(S.planes[0].precio)} a month, always the freshest lot.` : `Desde ${cop(S.planes[0].precio)} al mes, siempre el lote más fresco.`}</p></div>
     <div class="cta"><button class="btn primary" data-act="go" data-to="suscripcion">${en ? "See the plans" : "Ver los planes"}</button>
@@ -90,12 +95,68 @@ const FOOT = () => `<footer class="foot">
 
 const VIEWS = { inicio: viewInicio, cafes: viewCafes, cafe: viewCafe, subasta: viewSubasta, suscripcion: viewSuscripcion, diario: viewDiario, entrada: viewEntrada };
 
+function actualizarMeta() {
+  const id = UI.view === "cafe" ? UI.cafe : UI.view === "entrada" ? UI.entrada : null;
+  const M = meta(UI.view, id), url = CONFIG.sitio + ruta(UI.view, id);
+  document.title = M.t;
+  const set = (sel, attr, val) => { const el = document.head.querySelector(sel); if (el) el.setAttribute(attr, val); };
+  set('meta[name="description"]', "content", M.d);
+  set('link[rel="canonical"]', "href", url);
+  set('meta[property="og:title"]', "content", M.t);
+  set('meta[property="og:description"]', "content", M.d);
+  set('meta[property="og:url"]', "content", url);
+  set('meta[property="og:locale"]', "content", UI.lang === "en" ? "en_US" : "es_CO");
+  set('link[rel="alternate"][hreflang="es"]', "href", CONFIG.sitio + ruta(UI.view, id, "es"));
+  set('link[rel="alternate"][hreflang="en"]', "href", CONFIG.sitio + ruta(UI.view, id, "en"));
+  const ld = document.getElementById("ld-json");
+  if (ld) ld.textContent = JSON.stringify(datosEstructurados(UI.view, id));
+}
+
+/* Datos estructurados: lo que leen Google y los asistentes de IA */
+function datosEstructurados(view, id) {
+  const org = {
+    "@type": "Organization", "@id": CONFIG.sitio + "/#organizacion", name: CONFIG.marca, url: CONFIG.sitio,
+    email: CONFIG.correo, address: { "@type": "PostalAddress", addressRegion: "Norte de Santander", addressCountry: "CO" },
+    description: meta("inicio").d,
+  };
+  const grafo = [org, { "@type": "WebSite", "@id": CONFIG.sitio + "/#sitio", url: CONFIG.sitio, name: CONFIG.marca, publisher: { "@id": org["@id"] }, inLanguage: UI.lang }];
+  if (view === "inicio") grafo.push({ "@type": "FAQPage", mainEntity: FAQ.map((f) => ({ "@type": "Question", name: tx(f.q), acceptedAnswer: { "@type": "Answer", text: tx(f.a) } })) });
+  if (view === "cafe" || view === "cafes") {
+    (view === "cafe" ? [prodById(id) || S.productos[0]] : S.productos).forEach((p) => {
+      const f = fincaDe(p);
+      grafo.push({
+        "@type": "Product", name: tx(p.nombre), description: meta("cafe", p.id).d,
+        brand: { "@id": org["@id"] }, category: UI.lang === "en" ? "Specialty coffee" : "Café de especialidad",
+        additionalProperty: [
+          { "@type": "PropertyValue", name: UI.lang === "en" ? "Variety" : "Variedad", value: p.variedad },
+          { "@type": "PropertyValue", name: UI.lang === "en" ? "Process" : "Proceso", value: p.proceso },
+          { "@type": "PropertyValue", name: UI.lang === "en" ? "Altitude" : "Altitud", value: p.altitud + " msnm" },
+          { "@type": "PropertyValue", name: "SCA", value: String(p.puntaje) },
+          { "@type": "PropertyValue", name: UI.lang === "en" ? "Farm" : "Finca", value: (f.finca || "") + ", " + (f.municipio || "") },
+        ],
+        offers: p.variantes.map((v) => ({ "@type": "Offer", name: gramos(v.g), price: v.precio, priceCurrency: "COP",
+          availability: v.stock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock", url: CONFIG.sitio + ruta("cafe", p.id) })),
+      });
+    });
+  }
+  if (view === "entrada") {
+    const e = S.entradas.find((x) => x.id === id) || S.entradas[0];
+    grafo.push({ "@type": "Article", headline: tx(e.titulo), description: tx(e.resumen), datePublished: e.fecha,
+      dateModified: e.fecha, author: { "@id": org["@id"] }, publisher: { "@id": org["@id"] }, inLanguage: UI.lang });
+  }
+  if (view === "subasta") grafo.push({ "@type": "Event", name: (UI.lang === "en" ? "Geisha coffee auction · " : "Subasta de café Geisha · ") + AU_LOTE.productor,
+    description: meta("subasta").d, eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+    location: { "@type": "VirtualLocation", url: CONFIG.sitio + ruta("subasta") }, organizer: { "@id": org["@id"] } });
+  return { "@context": "https://schema.org", "@graph": grafo };
+}
+
 function render() {
   const ae = document.activeElement, fid = ae && ae.id && !ae.closest("dialog") ? ae.id : null;
   const sel = fid && typeof ae.selectionStart === "number" ? [ae.selectionStart, ae.selectionEnd] : null;
   document.body.dataset.view = UI.view;
   document.documentElement.lang = UI.lang;
   renderNav();
+  actualizarMeta();
   const v = $("#view");
   v.classList.toggle("calm", !UI.animate);
   v.innerHTML = VIEWS[UI.view]() + FOOT();
@@ -105,9 +166,13 @@ function render() {
   if (fid) { const n = document.getElementById(fid); if (n) { n.focus({ preventScroll: true }); if (sel) try { n.setSelectionRange(...sel); } catch {} } }
 }
 function softRefresh() { if (UI.view === "subasta") return renderNav(); render(); }
-function go(view) {
-  UI.view = view; UI.animate = true; closeModal();
-  try { if (location.hash !== "#" + view) history.replaceState(null, "", "#" + view); } catch {}
+function go(view, id) {
+  UI.view = view;
+  if (view === "cafe" && id) UI.cafe = id;
+  if (view === "entrada" && id) UI.entrada = id;
+  UI.animate = true; closeModal();
+  const url = ruta(view, id || (view === "cafe" ? UI.cafe : view === "entrada" ? UI.entrada : null));
+  try { if (location.pathname !== url) history.pushState({ view }, "", url); } catch {}
   render();
   try { window.scrollTo({ top: 0, behavior: "instant" }); } catch { window.scrollTo(0, 0); }
 }
@@ -115,6 +180,7 @@ function renderNav() {
   const activa = UI.view === "cafe" ? "cafes" : UI.view === "entrada" ? "diario" : UI.view;
   document.querySelectorAll(".tab").forEach((x) => {
     x.setAttribute("aria-current", x.dataset.to === activa ? "page" : "false");
+    x.setAttribute("href", ruta(x.dataset.to));
     const k = x.dataset.i18n; if (k) x.childNodes[0].nodeValue = t(k) + " ";
   });
   const n = unidadesCarrito(), b = $("#b-cart");
@@ -124,6 +190,8 @@ function renderNav() {
 }
 function cambiarIdioma(l) {
   UI.lang = l; try { localStorage.setItem("nandez-lang", l); } catch {}
+  const id = UI.view === "cafe" ? UI.cafe : UI.view === "entrada" ? UI.entrada : null;
+  try { history.replaceState({}, "", ruta(UI.view, id)); } catch {}
   UI.animate = true; render();
 }
 function liveBits() {
@@ -135,13 +203,14 @@ function liveBits() {
 /* ---------- eventos ---------- */
 document.addEventListener("click", (e) => {
   const el = e.target.closest("[data-act]"); if (!el || el.disabled) return;
+  if (el.tagName === "A") e.preventDefault();
   const { act, id } = el.dataset;
   switch (act) {
     case "go": return go(el.dataset.to);
     case "lang": return cambiarIdioma(el.dataset.lang);
     case "close": return closeModal();
-    case "cafe": UI.cafe = id; return go("cafe");
-    case "entrada": UI.entrada = id; return go("entrada");
+    case "cafe": return go("cafe", id);
+    case "entrada": return go("entrada", id);
     case "var": (UI.variante ||= {})[el.dataset.p] = +el.dataset.g; UI.animate = false; return render();
     case "add": return addCarrito(el.dataset.p, el.dataset.g);
     case "qty": return cambiarCantidad(el.dataset.p, el.dataset.g, +el.dataset.d);
@@ -170,13 +239,15 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && x.id === "esp-mail") { e.preventDefault(); listaEspera(); }
 });
 $("#dlg").addEventListener("click", (e) => { if (e.target === $("#dlg")) closeModal(); });
-window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (VIEWS[v] && v !== UI.view) go(v); });
+window.addEventListener("popstate", () => { const r = vistaDeRuta(location.pathname); UI.view = r.view; if (r.id) { UI.cafe = r.id; UI.entrada = r.id; } UI.animate = true; render(); });
 
 /* ---------- arranque ---------- */
 aplicarCfgGuardada();
 UI.au = newAuction();
-const inicial = location.hash.slice(1);
-if (VIEWS[inicial]) UI.view = inicial;
+UI.lang = location.pathname.startsWith("/en") ? "en" : "es";   // manda la URL, no lo guardado
+const r0 = vistaDeRuta(location.pathname);
+UI.view = VIEWS[r0.view] ? r0.view : "inicio";
+if (r0.id) { UI.cafe = r0.id; UI.entrada = r0.id; }
 render();
 setInterval(() => {
   const a = UI.au, now = Date.now();

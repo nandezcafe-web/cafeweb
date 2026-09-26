@@ -203,7 +203,7 @@ const cop = (n) => "$" + fmtNum(Math.round(n || 0));
 const copK = (n) => (Math.abs(n) >= 1e6 ? "$" + fmtNum(n / 1e6, 1) + " M" : cop(n));
 const isoToday = () => new Date().toISOString().slice(0, 10);
 const fmtFecha = (iso) => iso ? new Date(iso + "T00:00:00").toLocaleDateString(UI.lang === "en" ? "en-GB" : "es-CO", { day: "numeric", month: "short", year: "numeric" }) : "";
-const slug = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, "-");
+const slug = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 const nextId = (p) => `${p}-${S.seq++}`;
 const num = (id, def = 0) => { const el = $("#" + id); const v = el ? parseFloat(el.value) : NaN; return isNaN(v) ? def : v; };
 const gramos = (g) => (g >= 1000 ? g / 1000 + " kg" : g + " g");
@@ -221,6 +221,95 @@ function aplicarCfgGuardada() {
   if (S.cfg?.fnc) Object.assign(CONFIG.fnc, S.cfg.fnc);
   if (S.cfg?.mercado) Object.assign(CONFIG.mercado, S.cfg.mercado);
 }
+
+
+/* ---------- SEO: sitio, rutas y textos de cada página ---------- */
+CONFIG.sitio = "https://cafeweb.vercel.app";     // cambiar por el dominio propio cuando exista
+
+const RUTAS = { inicio: "", cafes: "cafes", cafe: "cafe", subasta: "subasta", suscripcion: "suscripcion", diario: "diario", entrada: "diario" };
+const slugEntrada = (e) => slug(tx(e.titulo)).slice(0, 60);
+
+function ruta(view, id, lang) {
+  const L = lang || UI.lang, base = L === "en" ? "/en/" : "/";
+  const enIdioma = (o) => (o && typeof o === "object" ? (o[L] ?? o.es) : o);
+  if (view === "cafe" && id) { const p = prodById(id); return p ? base + "cafe-" + slug(enIdioma(p.nombre)) : base + "cafes"; }
+  if (view === "entrada" && id) { const e = S.entradas.find((x) => x.id === id); return e ? base + "diario-" + slug(enIdioma(e.titulo)).slice(0, 60) : base + "diario"; }
+  return base + (RUTAS[view] || "");
+}
+function vistaDeRuta(path) {
+  const p = String(path).replace(/^\/(en\/)?/, "").replace(/\.html$/, "").replace(/\/$/, "");
+  if (!p) return { view: "inicio" };
+  if (p.startsWith("cafe-")) { const pr = S.productos.find((x) => slug(x.nombre.es) === p.slice(5) || slug(x.nombre.en) === p.slice(5)); return pr ? { view: "cafe", id: pr.id } : { view: "cafes" }; }
+  if (p.startsWith("diario-")) { const e = S.entradas.find((x) => slug(x.titulo.es).slice(0, 60) === p.slice(7) || slug(x.titulo.en).slice(0, 60) === p.slice(7)); return e ? { view: "entrada", id: e.id } : { view: "diario" }; }
+  const v = Object.keys(RUTAS).find((k) => RUTAS[k] === p && k !== "cafe" && k !== "entrada");
+  return { view: v || "inicio" };
+}
+
+/* Título y descripción por página, escritos para buscar "café de origen",
+   "café especial de Norte de Santander" y "subasta de café Geisha". */
+function meta(view, id) {
+  view = view || UI.view; id = id || null;
+  const en = UI.lang === "en", marca = CONFIG.marca;
+  const p = (view === "cafe" && id && prodById(id)) || S.productos[0];
+  const e = (view === "entrada" && id && S.entradas.find((x) => x.id === id)) || S.entradas[0];
+  const limpio = (s) => String(s).replace(/^PEND\w+[:.]\s*/i, "");
+  const M = {
+    inicio: en
+      ? { t: marca + " · Single origin Colombian coffee from Norte de Santander",
+          d: "Specialty coffee bought farm by farm in Norte de Santander, Colombia. One farm, one variety, and every figure with its source: altitude, process, cupping score and the farm it came from." }
+      : { t: marca + " · Café de origen de Norte de Santander",
+          d: "Café especial comprado finca por finca en Norte de Santander. Una finca, una variedad, y cada dato con su fuente: altura, proceso, puntaje de catación y la finca de donde salió." },
+    cafes: en
+      ? { t: "Coffees on sale · " + marca,
+          d: "One coffee per farm: Pink Bourbon, Castillo and the Geisha lot going to auction. Colombian specialty coffee roasted in Norte de Santander and shipped countrywide." }
+      : { t: "Cafés a la venta · " + marca,
+          d: "Un café por finca: Bourbon rosado, Castillo y el lote Geisha que va a subasta. Café especial colombiano tostado en Norte de Santander, con envío a todo el país." },
+    cafe: en
+      ? { t: tx(p.nombre) + " · " + p.puntaje + " SCA · coffee from " + (fincaDe(p).municipio || "Colombia") + " · " + marca,
+          d: tx(p.nombre) + ": " + p.variedad + " " + p.proceso.toLowerCase() + " grown at " + fmtNum(p.altitud) + " m in " + (fincaDe(p).municipio || "") + ", " + p.puntaje + " SCA points. Notes of " + tx(p.notas).join(", ").toLowerCase() + ". From " + cop(p.variantes[0].precio) + "." }
+      : { t: tx(p.nombre) + " · " + p.puntaje + " SCA · café de " + (fincaDe(p).municipio || "Colombia") + " · " + marca,
+          d: tx(p.nombre) + ": " + p.variedad + " " + p.proceso.toLowerCase() + " cultivado a " + fmtNum(p.altitud) + " msnm en " + (fincaDe(p).municipio || "") + ", con " + p.puntaje + " puntos SCA. Notas de " + tx(p.notas).join(", ").toLowerCase() + ". Desde " + cop(p.variantes[0].precio) + "." },
+    subasta: en
+      ? { t: "Live Geisha coffee auction · " + marca,
+          d: "Bid live for a Geisha microlot from Toledo, Norte de Santander: reserve price, at least three bidders and anti-sniping extension. Only 30 kg of green coffee." }
+      : { t: "Subasta de café Geisha en vivo · " + marca,
+          d: "Puja en vivo por un microlote de Geisha de Toledo, Norte de Santander: precio de reserva, mínimo tres participantes y extensión anti-último-segundo. Solo 30 kg de café verde." },
+    suscripcion: en
+      ? { t: "Colombian coffee subscription · " + marca,
+          d: "Freshly roasted Colombian specialty coffee every month, from COP 68,000. One or two farms per shipment, with the lot data sheet. Cancel anytime." }
+      : { t: "Suscripción de café colombiano · " + marca,
+          d: "Café especial recién tostado cada mes, desde $68.000. Una o dos fincas por envío, con la ficha del lote. Cancelas cuando quieras." },
+    diario: en
+      ? { t: "Journal: buying coffee in Norte de Santander · " + marca,
+          d: "Farm visits, prices, yield factor, processing and brewing: what we learn buying coffee straight from growers in Norte de Santander." }
+      : { t: "Diario: comprar café en Norte de Santander · " + marca,
+          d: "Visitas a fincas, precios, factor de rendimiento, beneficio y preparación: lo que aprendemos comprando café directo a los productores de Norte de Santander." },
+    entrada: { t: tx(e.titulo) + " · " + marca, d: limpio(tx(e.resumen)).slice(0, 155) },
+  };
+  return M[view] || M.inicio;
+}
+
+/* Preguntas que la gente escribe en el buscador y que responden los asistentes de IA */
+const FAQ = [
+  { q: { es: "¿Qué es el café de origen y en qué se diferencia del café común?", en: "What is single origin coffee and how is it different?" },
+    a: { es: "El café de origen viene de una sola finca y una sola cosecha, no de la mezcla de muchos productores. Por eso se puede saber quién lo cultivó, a qué altura y con qué proceso, y por eso una taza sabe distinta de otra.",
+         en: "Single origin coffee comes from one farm and one harvest, not from a blend of many growers. That is why you can know who grew it, at what altitude and with which process, and why one cup tastes different from another." } },
+  { q: { es: "¿Cuánto cuesta un café especial colombiano?", en: "How much does Colombian specialty coffee cost?" },
+    a: { es: "En 2026 una bolsa de 250 g de café especial en Colombia va entre $35.000 y $70.000, según la variedad y el puntaje de catación. Un Geisha o un lote de subasta cuesta más porque se produce en cantidades muy pequeñas.",
+         en: "In 2026 a 250 g bag of specialty coffee in Colombia runs between COP 35,000 and 70,000, depending on variety and cupping score. A Geisha or an auction lot costs more because very little of it exists." } },
+  { q: { es: "¿Qué significa el puntaje SCA de un café?", en: "What does the SCA score mean?" },
+    a: { es: "Es la calificación de un catador certificado sobre 100 puntos. Desde 80 se considera café especial y desde 86 es excepcional. Publicamos quién hizo la catación y en qué fecha, porque el puntaje envejece junto con el café.",
+         en: "It is a certified cupper's score out of 100. From 80 it counts as specialty and from 86 it is exceptional. We publish who cupped it and when, because the score ages along with the coffee." } },
+  { q: { es: "¿Por qué se cultiva buen café en Norte de Santander?", en: "Why is good coffee grown in Norte de Santander?" },
+    a: { es: "Las fincas de Chinácota, Toledo y Arboledas están entre 1.500 y 1.950 metros, con noches frías que maduran el grano despacio. Es una región menos conocida que Huila o Nariño, y por eso todavía se consiguen microlotes excepcionales a precios sensatos.",
+         en: "Farms in Chinácota, Toledo and Arboledas sit between 1,500 and 1,950 metres, with cold nights that ripen the cherry slowly. It is a lesser known region than Huila or Nariño, so exceptional microlots can still be found at sensible prices." } },
+  { q: { es: "¿Cómo funciona una subasta de café?", en: "How does a coffee auction work?" },
+    a: { es: "Se publica un lote pequeño con su puntaje y su ficha, se abre con un precio de salida y los compradores pujan por kilo de café verde. Se adjudica solo si se alcanza el precio de reserva y participan al menos tres compradores distintos.",
+         en: "A small lot is published with its score and data sheet, opens at a starting price and buyers bid per kilo of green coffee. It is awarded only if the reserve price is met and at least three different buyers take part." } },
+  { q: { es: "¿Le compran directo al productor?", en: "Do you buy directly from the grower?" },
+    a: { es: "Sí. Vamos a la finca, medimos el factor de rendimiento y la humedad delante del productor, y pagamos de contado por encima del precio de referencia del día. Sin intermediarios entre la finca y la bolsa.",
+         en: "Yes. We go to the farm, measure yield factor and moisture in front of the grower, and pay cash above the day's reference price. No middlemen between the farm and the bag." } },
+];
 
 /* ---------- montaña: la altitud como firma visual ---------- */
 function rng(seedStr) {

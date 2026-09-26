@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Los asistentes de IA son bienvenidos: el contenido está en el HTML
+User-agent: GPTBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://cafeweb.vercel.app/sitemap.xml

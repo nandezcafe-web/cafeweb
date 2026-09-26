@@ -87,6 +87,7 @@ function viewCafe() {
       <small>${esc(a.fuente)} · ${fmtFecha(a.fecha)}</small>${a.detalle ? `<small>${esc(a.detalle)}</small>` : ""}</div>`;
   const R = p.receta;
   return `<article class="prod">
+    <div class="prod-top">
     <div class="prod-art reveal">
       <div class="prod-card dark-art">
         <p class="kicker">${esc(CONFIG.marca)} · ${esc(f.municipio || "")}</p>
@@ -115,11 +116,6 @@ function viewCafe() {
       </div>
       <p class="hint">${v.stock} ${t("disponibles")} · ${UI.lang === "en" ? "grind chosen at checkout · ships from Cúcuta" : "molienda a elegir al confirmar · envíos desde Cúcuta"}</p>
 
-      <div class="pago">
-        <div><span class="lbl">${t("pagado")}</span><b class="mono">${cop(p.pago.pagadoKg)}</b><small>${UI.lang === "en" ? "per kg of parchment" : "por kg de pergamino"}</small></div>
-        <div><span class="lbl">${t("referencia")}</span><b class="mono">${cop(p.pago.referenciaKg)}</b><small>FNC · ${fmtFecha(p.pago.fecha)}</small></div>
-        <div class="mas"><b>+${sobre} %</b><small>${t("sobre_ref")}</small></div>
-      </div>
     </div>
 
     <section class="prod-ficha reveal" style="--i:2">
@@ -143,13 +139,11 @@ function viewCafe() {
       <p class="hint">${UI.lang === "en" ? "Too bitter: grind coarser. Too weak: grind finer." : "Si queda amargo, muele más grueso. Si queda aguado, muele más fino."}</p>
     </section>
 
-    <section class="espera reveal" style="--i:4">
-      <div><h3>${UI.lang === "en" ? "One harvest, then it is gone" : "Cuando se acabe, se acabó"}</h3>
-        <p>${UI.lang === "en" ? "Leave your email and we will tell you before the next lot is released." : "Déjanos tu correo y te avisamos antes de que salga el próximo lote."}</p></div>
-      <form class="espera-form" onsubmit="return false">
-        <input id="esp-mail" class="input" type="email" placeholder="${UI.lang === "en" ? "you@email.com" : "tu@correo.com"}" aria-label="Email">
-        <button class="btn primary" data-act="espera">${UI.lang === "en" ? "Notify me" : "Avisarme"}</button>
-      </form>
+    <section class="cierre reveal" style="--i:4">
+      <p>${UI.lang === "en"
+        ? "Each lot is one harvest, and then it is gone. The subscription is the only way to be sure the next one reaches you."
+        : "Cada lote es una cosecha y se acaba. La suscripción es la única forma de asegurar que el próximo te llegue."}</p>
+      <button class="btn primary" data-act="go" data-to="suscripcion">${UI.lang === "en" ? "See the subscription" : "Ver la suscripción"}</button>
     </section>
   </article>`;
 }

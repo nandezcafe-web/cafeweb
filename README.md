@@ -22,6 +22,7 @@ Le compramos café a fincas de Norte de Santander —cada una con su variedad—
 
 | Archivo | Contenido |
 |---|---|
+| [docs/07_seo.md](docs/07_seo.md) | Cómo está armada la página para Google y para los asistentes de IA |
 | [docs/06_pagos_y_suscripciones.md](docs/06_pagos_y_suscripciones.md) | Mercado Pago: link de pago, Checkout Pro, comisiones y planes de suscripción |
 | [docs/05_referentes_web.md](docs/05_referentes_web.md) | Cómo venden las páginas mejor posicionadas, tendencias 2026 y decisiones de diseño |
 | [docs/03_compra_y_marca.md](docs/03_compra_y_marca.md) | Cómo comprar en finca: precio FNC, factor, humedad, ejemplo y temas legales |
@@ -41,7 +42,7 @@ node tools/serve.js admin 5175
 
 La tienda queda en `http://localhost:5174` y el panel en `http://localhost:5175`.
 
-## Armar los archivos
+## Armar el sitio
 
 El código vive en `prototipo/js/`. Después de cualquier cambio:
 
@@ -49,7 +50,9 @@ El código vive en `prototipo/js/`. Después de cualquier cambio:
 node tools/build.js
 ```
 
-Eso genera `prototipo/nandez.html` (la tienda en un solo archivo, para enviar por WhatsApp) y `admin/index.html` (el panel con login).
+Eso genera **20 páginas HTML reales** (10 en español y 10 en inglés), `sitemap.xml`, `robots.txt`, `llms.txt`, la tienda en un solo archivo (`prototipo/nandez.html`) y el panel (`admin/index.html`).
+
+Las páginas traen el contenido ya escrito en el HTML —porque los crawlers de IA no ejecutan JavaScript— y encima el mismo JavaScript toma el control en el navegador. Detalles en [docs/07_seo.md](docs/07_seo.md).
 
 ## Cambiar la contraseña del panel
 

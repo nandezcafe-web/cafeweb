@@ -69,7 +69,7 @@ function loteCard(c, i) {
       <div class="chain small">${detalle.map(([a, b], k) => `<div class="${k === detalle.length - 1 ? "end" : ""}"><b class="mono">${a}</b><small>${b}</small></div>`).join("")}</div>
       ${stepper}</div>
     <div class="lote-num">
-      <div class="prow-au"><span>Compra a ${cop(c.precioKg)}/kg</span><b>${cop(c.costos.compra)}</b></div>
+      <div class="prow-au"><span>Compra a ${cop(c.precioKg)}/kg · <b class="sobre">+${Math.round((c.precioKg / precioComiteKg(c.factor) - 1) * 100)} %</b> sobre la referencia del día</span><b>${cop(c.costos.compra)}</b></div>
       ${["trilla", "tueste", "empaque", "otros"].filter((k) => c.costos[k]).map((k) => `<div class="prow-au"><span>${k[0].toUpperCase() + k.slice(1)}</span><b>${cop(c.costos[k])}</b></div>`).join("")}
       <div class="prow-au"><span>Costo total${c.bolsas ? ` · ${cop(costoBolsa(c))}/bolsa` : ""}</span><b>${cop(total)}</b></div>
       <div class="prow-au"><span>Recuperado</span><b>${cop(rec)}</b></div>

@@ -7,9 +7,11 @@ http.createServer((req, res) => {
   if (p.endsWith("/")) p += "index.html";
   const file = path.join(root, p);
   if (!file.startsWith(root)) { res.writeHead(403); return res.end(); }
-  fs.readFile(file, (err, data) => {
+  const candidatos = [file, file + ".html", path.join(file, "index.html")];   // cleanUrls, como Vercel
+  const real = candidatos.find((f) => { try { return fs.statSync(f).isFile(); } catch { return false; } }) || file;
+  fs.readFile(real, (err, data) => {
     if (err) { res.writeHead(404); return res.end("404"); }
-    res.writeHead(200, { "Content-Type": types[path.extname(file)] || "application/octet-stream", "Cache-Control": "no-store" });
+    res.writeHead(200, { "Content-Type": types[path.extname(real) || ".html"] || "application/octet-stream", "Cache-Control": "no-store" });
     res.end(data);
   });
 }).listen(port, () => console.log("sirviendo " + root + " en http://localhost:" + port));

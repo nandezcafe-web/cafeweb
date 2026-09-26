@@ -616,3 +616,21 @@ body[data-view=subasta] .lang button[aria-pressed=true]{background:var(--crema);
 .post .btn{justify-self:start}
 .post-body{font-size:1.05rem;color:var(--ink-2)}
 .post .espera{margin-top:26px}
+
+/* ---- v7: ficha en dos zonas, preguntas frecuentes ---- */
+.prod{display:block}
+.prod-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:44px 48px;align-items:start;margin-bottom:20px}
+.prod-art{position:static}
+.cierre{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:34px;padding-top:22px}
+.cierre p{margin:0;color:var(--ink-2);max-width:56ch}
+.faq-lista{display:grid;gap:8px;margin-top:28px;max-width:80ch}
+.faq{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.faq[open]{border-color:var(--ink-3)}
+.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:14px;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font:600 20px var(--mono);color:var(--cherry);line-height:1}
+.faq[open] summary::after{content:"−"}
+.faq h3{font-size:1.35rem;line-height:1.2;margin:0}
+.faq p{margin:12px 0 0;color:var(--ink-2)}
+.prow-au .sobre{color:var(--leaf)}
+@media (max-width:900px){.prod-top{grid-template-columns:1fr;gap:28px}}

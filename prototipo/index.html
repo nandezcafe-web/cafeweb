@@ -3,27 +3,40 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nandez Café · Norte de Santander</title>
-<meta name="description" content="Café de origen de Norte de Santander: una finca, una variedad, cada dato con su fuente.">
+<title>Nandez Café · Café de origen de Norte de Santander</title>
+<meta name="description" content="Café especial comprado finca por finca en Norte de Santander. Una finca, una variedad, y cada dato con su fuente: altura, proceso, puntaje de catación y la finca de donde salió.">
+<link rel="canonical" href="https://cafeweb.vercel.app/">
+<link rel="alternate" hreflang="es" href="https://cafeweb.vercel.app/">
+<link rel="alternate" hreflang="en" href="https://cafeweb.vercel.app/en/">
+<link rel="alternate" hreflang="x-default" href="https://cafeweb.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nandez Café">
+<meta property="og:title" content="Nandez Café · Café de origen de Norte de Santander">
+<meta property="og:description" content="Café especial comprado finca por finca en Norte de Santander. Una finca, una variedad, y cada dato con su fuente: altura, proceso, puntaje de catación y la finca de donde salió.">
+<meta property="og:url" content="https://cafeweb.vercel.app/">
+<meta property="og:locale" content="es_CO">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#f3ebdd">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="auction.css">
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/auction.css">
+<script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb.vercel.app/#organizacion","name":"Nandez Café","url":"https://cafeweb.vercel.app","email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"Café especial comprado finca por finca en Norte de Santander. Una finca, una variedad, y cada dato con su fuente: altura, proceso, puntaje de catación y la finca de donde salió."},{"@type":"WebSite","@id":"https://cafeweb.vercel.app/#sitio","url":"https://cafeweb.vercel.app","name":"Nandez Café","publisher":{"@id":"https://cafeweb.vercel.app/#organizacion"},"inLanguage":"es"},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es el café de origen y en qué se diferencia del café común?","acceptedAnswer":{"@type":"Answer","text":"El café de origen viene de una sola finca y una sola cosecha, no de la mezcla de muchos productores. Por eso se puede saber quién lo cultivó, a qué altura y con qué proceso, y por eso una taza sabe distinta de otra."}},{"@type":"Question","name":"¿Cuánto cuesta un café especial colombiano?","acceptedAnswer":{"@type":"Answer","text":"En 2026 una bolsa de 250 g de café especial en Colombia va entre $35.000 y $70.000, según la variedad y el puntaje de catación. Un Geisha o un lote de subasta cuesta más porque se produce en cantidades muy pequeñas."}},{"@type":"Question","name":"¿Qué significa el puntaje SCA de un café?","acceptedAnswer":{"@type":"Answer","text":"Es la calificación de un catador certificado sobre 100 puntos. Desde 80 se considera café especial y desde 86 es excepcional. Publicamos quién hizo la catación y en qué fecha, porque el puntaje envejece junto con el café."}},{"@type":"Question","name":"¿Por qué se cultiva buen café en Norte de Santander?","acceptedAnswer":{"@type":"Answer","text":"Las fincas de Chinácota, Toledo y Arboledas están entre 1.500 y 1.950 metros, con noches frías que maduran el grano despacio. Es una región menos conocida que Huila o Nariño, y por eso todavía se consiguen microlotes excepcionales a precios sensatos."}},{"@type":"Question","name":"¿Cómo funciona una subasta de café?","acceptedAnswer":{"@type":"Answer","text":"Se publica un lote pequeño con su puntaje y su ficha, se abre con un precio de salida y los compradores pujan por kilo de café verde. Se adjudica solo si se alcanza el precio de reserva y participan al menos tres compradores distintos."}},{"@type":"Question","name":"¿Le compran directo al productor?","acceptedAnswer":{"@type":"Answer","text":"Sí. Vamos a la finca, medimos el factor de rendimiento y la humedad delante del productor, y pagamos de contado por encima del precio de referencia del día. Sin intermediarios entre la finca y la bolsa."}}]}]}</script>
 </head>
 <body data-view="inicio">
 <header class="top">
   <div class="top-inner">
-    <button class="brand" data-act="go" data-to="inicio" aria-label="Nandez Café">
+    <a class="brand" href="/" data-act="go" data-to="inicio" aria-label="Nandez Café">
       <svg class="mark" viewBox="0 0 28 20" aria-hidden="true"><path d="M1 19 L9 7 L13 12 L19 3 L27 19 Z" fill="currentColor"/></svg>
       <b>Nandez</b><small>café de origen</small>
-    </button>
+    </a>
     <nav class="tabs" aria-label="Secciones">
-      <button class="tab" data-act="go" data-to="inicio" data-i18n="nav_inicio">Inicio </button>
-      <button class="tab" data-act="go" data-to="cafes" data-i18n="nav_cafes">Cafés <span class="badge" id="b-cart" hidden></span></button>
-      <button class="tab" data-act="go" data-to="subasta" data-i18n="nav_subasta">Subasta <span class="live-dot" id="nav-live"></span><span class="mono nav-time" data-live-time></span></button>
-      <button class="tab" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Suscripción </button>
-      <button class="tab" data-act="go" data-to="diario" data-i18n="nav_diario">Diario </button>
+      <a class="tab" href="/" data-act="go" data-to="inicio" data-i18n="nav_inicio" aria-current="page">Inicio </a>
+      <a class="tab" href="/cafes" data-act="go" data-to="cafes" data-i18n="nav_cafes">Cafés <span class="badge" id="b-cart" hidden></span></a>
+      <a class="tab" href="/subasta" data-act="go" data-to="subasta" data-i18n="nav_subasta">Subasta <span class="live-dot" id="nav-live"></span><span class="mono nav-time" data-live-time></span></a>
+      <a class="tab" href="/suscripcion" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Suscripción </a>
+      <a class="tab" href="/diario" data-act="go" data-to="diario" data-i18n="nav_diario">Diario </a>
     </nav>
     <div class="lang" role="group" aria-label="Idioma">
       <button data-act="lang" data-lang="es" aria-pressed="true">ES</button>
@@ -32,7 +45,191 @@
   </div>
 </header>
 
-<main class="wrap" id="view"></main>
+<main class="wrap calm" id="view">
+  <section class="hero">
+    <div>
+      <p class="eyebrow reveal">Nandez Café · Norte de Santander, Colombia</p>
+      <h1 class="reveal" style="--i:1">Café con<br><em>nombre propio.</em></h1>
+      <p class="lede reveal" style="--i:2">Le compramos a fincas de Norte de Santander, pagando por encima de la referencia del día, y vendemos cada lote con su ficha completa: quién lo cultivó, a qué altura, quién lo cató y cuándo.</p>
+      <div class="cta reveal" style="--i:3">
+        <button class="btn primary lg" data-act="go" data-to="cafes">Ver los cafés</button>
+        <button class="btn lg" data-act="go" data-to="subasta"><span class="live-dot "></span> Subasta en vivo</button>
+      </div>
+    </div>
+    <div class="hero-art reveal" style="--i:2">
+      <div class="hero-card">
+        <div class="hc-top"><span class="kicker">Domingo Torres · Toledo</span><span class="state st-en-subasta">en vivo</span></div>
+        <p class="hc-title">Geisha<br><em>Natural</em></p>
+        <p class="hc-score">88.5<small>SCA</small></p>
+        <div class="hc-ridge dark-art"><svg viewBox="0 0 420 180" preserveAspectRatio="none" aria-hidden="true">
+    <defs><linearGradient id="g3m3cjer" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
+    <path d="M0 180 L0.0 159.3 L30.0 151.4 L60.0 151.5 L90.0 144.2 L120.0 141.9 L150.0 136.6 L180.0 121.8 L210.0 120.1 L240.0 115.6 L270.0 109.8 L300.0 102.6 L330.0 110.2 L360.0 113.8 L390.0 123.6 L420.0 135.8 L420 180 Z" fill="#9c3322" opacity="0.28"/>
+    <path class="front" d="M0 180 L0.0 180.0 L30.0 180.0 L60.0 180.0 L90.0 170.4 L120.0 159.2 L150.0 141.3 L180.0 131.3 L210.0 111.5 L240.0 97.4 L270.0 83.3 L300.0 86.8 L330.0 96.1 L360.0 113.6 L390.0 129.8 L420.0 139.6 L420 180 Z" fill="url(#g3m3cjer)"/>
+    <line x1="0" x2="420" y1="80.10000000000001" y2="80.10000000000001" stroke="rgba(243,230,214,.5)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
+  </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span></div>
+      </div>
+      <div class="float-chip" style="--x:-6%;--y:66%;--d:0s"><i style="--c:var(--leaf)"></i><span>Altitud <b>1.950 m</b></span><small>verificado · GPS</small></div>
+      <div class="float-chip" style="--x:58%;--y:24%;--d:-2s"><i style="--c:var(--leaf)"></i><span>Puntaje <b>88.5</b></span><small>verificado · Q-grader</small></div>
+      <div class="float-chip" style="--x:54%;--y:84%;--d:-4s"><i style="--c:var(--doc)"></i><span>Subasta <b data-live-price>$128.000</b></span><small>por kg verde</small></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><p class="eyebrow">A la venta ahora</p>
+      <h2>Un café <em>por finca</em></h2>
+      <p>Cada finca aliada tiene su variedad. Cuando un lote es excepcional, va a subasta en vez de a la estantería.</p></div>
+    <div class="dos"><article class="card-cafe reveal" style="--i:0">
+    <div class="cc-art" data-act="cafe" data-id="P-GEI" role="button" tabindex="0" aria-label="Bourbon rosado">
+      <svg viewBox="0 0 420 200" preserveAspectRatio="none" aria-hidden="true">
+    <defs><linearGradient id="glzmu5w6" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
+    <path d="M0 200 L0.0 198.9 L30.0 190.2 L60.0 187.3 L90.0 174.6 L120.0 172.3 L150.0 166.0 L180.0 158.4 L210.0 152.8 L240.0 134.2 L270.0 133.0 L300.0 133.5 L330.0 151.1 L360.0 156.7 L390.0 156.7 L420.0 173.8 L420 200 Z" fill="#3f6a4b" opacity="0.2"/>
+    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 183.7 L150.0 174.5 L180.0 155.0 L210.0 143.2 L240.0 124.9 L270.0 109.0 L300.0 124.5 L330.0 141.9 L360.0 156.4 L390.0 170.0 L420.0 182.7 L420 200 Z" fill="url(#glzmu5w6)"/>
+    <line x1="0" x2="420" y1="109.00000000000001" y2="109.00000000000001" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
+  </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span>
+      <span class="state st-publicado">118 disponibles</span>
+      <div class="cc-score"><b>87.5</b><small style="color:var(--leaf)">SCA · Verificado</small></div>
+    </div>
+    <div class="cc-body">
+      <p class="kicker">Lote Chinácota · 1.750 msnm</p>
+      <h3>Bourbon rosado</h3>
+      <p class="notas-linea">Jazmín · Bergamota · Durazno</p>
+      <div class="cc-foot"><b class="mono">$68.000</b><small>250 g</small>
+        <button class="btn primary sm" data-act="cafe" data-id="P-GEI">Ver el café</button></div>
+    </div></article><article class="card-cafe reveal" style="--i:1">
+    <div class="cc-art" data-act="cafe" data-id="P-CAS" role="button" tabindex="0" aria-label="Castillo de Arboledas">
+      <svg viewBox="0 0 420 200" preserveAspectRatio="none" aria-hidden="true">
+    <defs><linearGradient id="go6n7a57" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6a4b" stop-opacity=".95"/><stop offset="1" stop-color="#3f6a4b" stop-opacity="0.5"/></linearGradient></defs>
+    <path d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 195.7 L120.0 191.5 L150.0 180.9 L180.0 175.9 L210.0 161.1 L240.0 153.0 L270.0 161.3 L300.0 160.3 L330.0 171.8 L360.0 174.1 L390.0 192.2 L420.0 189.9 L420 200 Z" fill="#3f6a4b" opacity="0.2"/>
+    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 200.0 L120.0 198.5 L150.0 177.4 L180.0 161.1 L210.0 149.6 L240.0 136.9 L270.0 140.0 L300.0 152.2 L330.0 168.2 L360.0 177.7 L390.0 200.0 L420.0 200.0 L420 200 Z" fill="url(#go6n7a57)"/>
+    <line x1="0" x2="420" y1="129" y2="129" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
+  </svg><span class="alt-label" style="top:64.5%">1.550 msnm</span>
+      <span class="state st-publicado">104 disponibles</span>
+      <div class="cc-score"><b>84</b><small style="color:var(--doc)">SCA · Documentado</small></div>
+    </div>
+    <div class="cc-body">
+      <p class="kicker">Lote Arboledas · 1.550 msnm</p>
+      <h3>Castillo de Arboledas</h3>
+      <p class="notas-linea">Panela · Chocolate · Naranja</p>
+      <div class="cc-foot"><b class="mono">$38.000</b><small>250 g</small>
+        <button class="btn primary sm" data-act="cafe" data-id="P-CAS">Ver el café</button></div>
+    </div></article><article class="card-cafe dark reveal dark-art" style="--i:2">
+    <div class="cc-art" data-act="go" data-to="subasta" role="button" tabindex="0" aria-label="Subasta">
+      <svg viewBox="0 0 420 200" preserveAspectRatio="none" aria-hidden="true">
+    <defs><linearGradient id="g86fr757" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3322" stop-opacity=".95"/><stop offset="1" stop-color="#9c3322" stop-opacity="0.25"/></linearGradient></defs>
+    <path d="M0 200 L0.0 177.4 L30.0 168.8 L60.0 168.2 L90.0 160.1 L120.0 157.2 L150.0 151.2 L180.0 135.6 L210.0 133.3 L240.0 128.0 L270.0 121.5 L300.0 114.2 L330.0 122.5 L360.0 126.8 L390.0 137.4 L420.0 150.2 L420 200 Z" fill="#9c3322" opacity="0.28"/>
+    <path class="front" d="M0 200 L0.0 200.0 L30.0 200.0 L60.0 200.0 L90.0 189.1 L120.0 176.5 L150.0 157.0 L180.0 145.5 L210.0 124.2 L240.0 108.6 L270.0 93.0 L300.0 96.4 L330.0 107.2 L360.0 126.2 L390.0 143.9 L420.0 155.2 L420 200 Z" fill="url(#g86fr757)"/>
+    <line x1="0" x2="420" y1="89.00000000000001" y2="89.00000000000001" stroke="rgba(243,230,214,.5)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
+  </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span>
+      <span class="state st-en-subasta">en vivo</span>
+      <div class="cc-score"><b>88.5</b><small>SCA</small></div>
+    </div>
+    <div class="cc-body">
+      <p class="kicker">Domingo Torres · Toledo · 30 kg</p>
+      <h3>Geisha <em>Natural</em></h3>
+      <p class="notas-linea">Jazmín · Mango · Vino blanco · Bergamota</p>
+      <div class="cc-foot"><b class="mono" data-live-price>$128.000</b><small>por kg</small>
+        <button class="btn primary sm" data-act="go" data-to="subasta"><span class="live-dot "></span> Pujar</button></div>
+    </div></article></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><p class="eyebrow">Por qué cuesta lo que cuesta</p>
+      <h2>La transparencia <em>no es un adorno</em></h2></div>
+    <div class="valor"><div class="val" style="--i:0"><b>Un nombre, no un país</b><span>No vendemos “café colombiano”. Vendemos el lote de una finca, de una cosecha, con el nombre de quien lo cultivó.</span></div><div class="val" style="--i:1"><b>Cada dato con su fuente</b><span>Altura, variedad, proceso y puntaje llevan quién lo comprobó y cuándo. Lo que no está verificado, lo decimos.</span></div><div class="val" style="--i:2"><b>Pagamos por encima de la referencia</b><span>Compramos en la finca, de contado y por encima del precio de referencia que publica la Federación Nacional de Cafeteros ese día.</span></div><div class="val" style="--i:3"><b>Una finca, una variedad</b><span>Cada finca aliada trae una variedad distinta. Los lotes excepcionales van a subasta.</span></div></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><p class="eyebrow">Las fincas</p>
+      <h2>Compramos en <em>Norte de Santander</em></h2>
+      <p>Hoy a fincas aliadas. Desde 2027, también de nuestra propia tierra, y seguiremos comprándole a los vecinos.</p></div>
+    <div class="fincas"><article class="finca reveal " style="--i:0">
+    <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
+    <defs><linearGradient id="g7jy7ugo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <path d="M0 120 L0.0 107.3 L27.1 108.8 L54.3 96.7 L81.4 93.4 L108.6 94.6 L135.7 87.4 L162.9 78.9 L190.0 83.0 L217.1 70.6 L244.3 67.8 L271.4 67.8 L298.6 76.8 L325.7 80.2 L352.9 77.3 L380.0 84.1 L380 120 Z" fill="#6a5646" opacity="0.2"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 110.2 L108.6 106.6 L135.7 100.8 L162.9 92.0 L190.0 75.5 L217.1 71.3 L244.3 63.7 L271.4 57.5 L298.6 63.4 L325.7 77.3 L352.9 80.3 L380.0 94.7 L380 120 Z" fill="url(#g7jy7ugo)"/>
+    <line x1="0" x2="380" y1="53.400000000000006" y2="53.400000000000006" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
+  </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span></div>
+    <div class="finca-body">
+      <p class="kicker">Toledo · 1.950 msnm</p>
+      <h3>Finca por confirmar</h3>
+      <p class="finca-prod">Domingo Torres <span class="excl">exclusivo</span></p>
+      <p class="hint">PENDIENTE: la historia de don Domingo, cuántos años lleva con el Geisha y qué premios ha ganado.</p>
+      <div class="finca-foot">
+        <span class="var-chip">Geisha</span>
+        <button class="btn sm" data-act="go" data-to="subasta">Subasta</button>
+      </div>
+    </div></article><article class="finca reveal " style="--i:1">
+    <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
+    <defs><linearGradient id="g61fe8z9" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <path d="M0 120 L0.0 105.7 L27.1 113.0 L54.3 98.8 L81.4 102.4 L108.6 97.4 L135.7 86.7 L162.9 79.8 L190.0 86.2 L217.1 87.4 L244.3 89.5 L271.4 84.6 L298.6 94.7 L325.7 102.9 L352.9 99.6 L380.0 114.5 L380 120 Z" fill="#6a5646" opacity="0.2"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 118.0 L54.3 116.5 L81.4 102.7 L108.6 90.3 L135.7 83.8 L162.9 77.3 L190.0 66.6 L217.1 71.4 L244.3 83.6 L271.4 89.9 L298.6 99.3 L325.7 108.2 L352.9 116.2 L380.0 120.0 L380 120 Z" fill="url(#g61fe8z9)"/>
+    <line x1="0" x2="380" y1="65.4" y2="65.4" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
+  </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span></div>
+    <div class="finca-body">
+      <p class="kicker">Chinácota · 1.750 msnm</p>
+      <h3>Lote Chinácota</h3>
+      <p class="finca-prod">Productor por confirmar</p>
+      <p class="hint">PENDIENTE: quién cultiva este lote y por qué su café sabe distinto.</p>
+      <div class="finca-foot">
+        <span class="var-chip">Bourbon rosado</span>
+        <button class="btn sm" data-act="cafe" data-id="P-GEI">Ver el café</button>
+      </div>
+    </div></article><article class="finca reveal " style="--i:2">
+    <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
+    <defs><linearGradient id="gbdmcteo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <path d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 119.9 L108.6 117.6 L135.7 111.7 L162.9 104.8 L190.0 97.9 L217.1 106.5 L244.3 99.8 L271.4 91.8 L298.6 93.1 L325.7 96.3 L352.9 105.6 L380.0 106.0 L380 120 Z" fill="#6a5646" opacity="0.2"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 120.0 L108.6 120.0 L135.7 120.0 L162.9 108.9 L190.0 99.8 L217.1 95.8 L244.3 81.5 L271.4 81.6 L298.6 90.7 L325.7 99.6 L352.9 105.9 L380.0 112.1 L380 120 Z" fill="url(#gbdmcteo)"/>
+    <line x1="0" x2="380" y1="77.4" y2="77.4" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
+  </svg><span class="alt-label" style="top:64.5%">1.550 msnm</span></div>
+    <div class="finca-body">
+      <p class="kicker">Arboledas · 1.550 msnm</p>
+      <h3>Lote Arboledas</h3>
+      <p class="finca-prod">Productor por confirmar</p>
+      <p class="hint">PENDIENTE: historia de la finca.</p>
+      <div class="finca-foot">
+        <span class="var-chip">Castillo</span>
+        <button class="btn sm" data-act="cafe" data-id="P-CAS">Ver el café</button>
+      </div>
+    </div></article><article class="finca reveal propia" style="--i:3">
+    <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
+    <defs><linearGradient id="gmp2hi5v" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5646" stop-opacity=".95"/><stop offset="1" stop-color="#6a5646" stop-opacity="0.5"/></linearGradient></defs>
+    <path d="M0 120 L0.0 113.9 L27.1 112.0 L54.3 109.9 L81.4 95.4 L108.6 90.3 L135.7 90.3 L162.9 82.4 L190.0 81.5 L217.1 86.8 L244.3 86.1 L271.4 92.9 L298.6 91.0 L325.7 98.9 L352.9 96.3 L380.0 103.6 L380 120 Z" fill="#6a5646" opacity="0.2"/>
+    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 119.9 L81.4 107.7 L108.6 101.8 L135.7 90.4 L162.9 85.0 L190.0 75.7 L217.1 65.4 L244.3 78.9 L271.4 86.6 L298.6 91.1 L325.7 103.5 L352.9 117.0 L380.0 120.0 L380 120 Z" fill="url(#gmp2hi5v)"/>
+    <line x1="0" x2="380" y1="65.4" y2="65.4" stroke="rgba(29,20,15,.4)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
+  </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span></div>
+    <div class="finca-body">
+      <p class="kicker">Chinácota · 1.750 msnm</p>
+      <h3>Nuestra finca</h3>
+      <p class="finca-prod">Familia Nández <span class="excl">exclusivo</span></p>
+      <p class="hint">Tres mil palos de Geisha sembrados por la familia. La primera cosecha con nuestro nombre sale en 2027.</p>
+      <div class="finca-foot">
+        <span class="var-chip">Geisha</span>
+        <span class="pronto">Primera cosecha 2027</span>
+      </div>
+    </div></article></div>
+  </section>
+
+  <section class="section cinta">
+    <p class="eyebrow">De la finca a la bolsa</p>
+    <div class="cinta-pasos"><div class="cp"><span class="n">1</span><b>Visitamos</b><small>Con el factor, la humedad y el precio del día en la mano.</small></div><div class="cp"><span class="n">2</span><b>Compramos por encima de la referencia</b><small>De contado, en la finca.</small></div><div class="cp"><span class="n">3</span><b>Trilla y tueste</b><small>De pergamino a verde, y tostado para que sepa a su origen.</small></div><div class="cp"><span class="n">4</span><b>Nombre y empaque</b><small>Cada bolsa dice de qué finca salió.</small></div><div class="cp"><span class="n">5</span><b>Tu taza</b><small>15 g, 250 ml, 93 °C.</small></div></div>
+  </section>
+
+  <section class="section faqs">
+    <div class="section-head"><p class="eyebrow">Preguntas</p>
+      <h2>Lo que preguntan <em>antes de comprar</em></h2></div>
+    <div class="faq-lista"><details class="faq" open><summary><h3>¿Qué es el café de origen y en qué se diferencia del café común?</h3></summary><p>El café de origen viene de una sola finca y una sola cosecha, no de la mezcla de muchos productores. Por eso se puede saber quién lo cultivó, a qué altura y con qué proceso, y por eso una taza sabe distinta de otra.</p></details><details class="faq" ><summary><h3>¿Cuánto cuesta un café especial colombiano?</h3></summary><p>En 2026 una bolsa de 250 g de café especial en Colombia va entre $35.000 y $70.000, según la variedad y el puntaje de catación. Un Geisha o un lote de subasta cuesta más porque se produce en cantidades muy pequeñas.</p></details><details class="faq" ><summary><h3>¿Qué significa el puntaje SCA de un café?</h3></summary><p>Es la calificación de un catador certificado sobre 100 puntos. Desde 80 se considera café especial y desde 86 es excepcional. Publicamos quién hizo la catación y en qué fecha, porque el puntaje envejece junto con el café.</p></details><details class="faq" ><summary><h3>¿Por qué se cultiva buen café en Norte de Santander?</h3></summary><p>Las fincas de Chinácota, Toledo y Arboledas están entre 1.500 y 1.950 metros, con noches frías que maduran el grano despacio. Es una región menos conocida que Huila o Nariño, y por eso todavía se consiguen microlotes excepcionales a precios sensatos.</p></details><details class="faq" ><summary><h3>¿Cómo funciona una subasta de café?</h3></summary><p>Se publica un lote pequeño con su puntaje y su ficha, se abre con un precio de salida y los compradores pujan por kilo de café verde. Se adjudica solo si se alcanza el precio de reserva y participan al menos tres compradores distintos.</p></details><details class="faq" ><summary><h3>¿Le compran directo al productor?</h3></summary><p>Sí. Vamos a la finca, medimos el factor de rendimiento y la humedad delante del productor, y pagamos de contado por encima del precio de referencia del día. Sin intermediarios entre la finca y la bolsa.</p></details></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><p class="eyebrow">Suscripción</p></p>
+      <h2>O deja que <em>llegue cada mes</em></h2>
+      <p>Desde $68.000 al mes, siempre el lote más fresco.</p></div>
+    <div class="cta"><button class="btn primary" data-act="go" data-to="suscripcion">Ver los planes</button>
+      <button class="btn" data-act="go" data-to="diario">Leer el diario</button></div>
+  </section><footer class="foot">
+  <span>Nandez Café · Norte de Santander, Colombia · nandezcafe@gmail.com<br>
+  <small>Prototipo con datos de ejemplo: fotos, textos y precios por confirmar.</small></span>
+  <button class="btn sm" data-act="reset-demo">Reiniciar datos de la demo</button></footer></main>
 
 <div class="tray" id="tray" hidden></div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
@@ -41,10 +238,10 @@
   <div class="dlg-body" id="dlg-body"></div>
 </dialog>
 
-<script src="js/core.js"></script>
-<script src="js/shop.js"></script>
-<script src="js/pages.js"></script>
-<script src="js/auction.js"></script>
-<script src="js/main.js"></script>
+<script src="/js/core.js"></script>
+<script src="/js/shop.js"></script>
+<script src="/js/pages.js"></script>
+<script src="/js/auction.js"></script>
+<script src="/js/main.js"></script>
 </body>
 </html>
