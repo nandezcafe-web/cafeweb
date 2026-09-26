@@ -101,9 +101,8 @@ function pagina(ctx, { view, id }, lang) {
 <meta property="og:url" content="${url}">
 <meta property="og:locale" content="${lang === "en" ? "en_US" : "es_CO"}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f3ebdd">
-<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#120c09">
-<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f3ebdd">
+<meta name="color-scheme" content="light">
 ${FUENTES}
 <link rel="stylesheet" href="/styles.css?v=${VERSION}">
 <link rel="stylesheet" href="/auction.css?v=${VERSION}">
