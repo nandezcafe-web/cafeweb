@@ -10,9 +10,17 @@ const CONFIG = {
   lugar: { es: "Norte de Santander, Colombia", en: "Norte de Santander, Colombia" },
   fnc: { precioCarga: 2005000, factorBase: 94, fecha: "2026-09-16" },
   mercado: { ny: 282, trm: 3128 },
-  storageKey: "nandez-v6",
-  whatsapp: "",                 // 573001234567
+  storageKey: "nandez-v7",
+  whatsapp: "",                 // 573001234567 · mientras esté vacío, pedidos y avisos salen por correo
   correo: "nandezcafe@gmail.com",
+  /* Formulario externo (Formspree, Getform…): si hay URL, pedidos, suscriptores y postores
+     llegan ahí además de abrir WhatsApp o el correo. Sin base de datos, es lo que evita
+     que un registro se quede solo en el navegador del cliente. */
+  formulario: "",               // https://formspree.io/f/xxxxxxx
+  /* Suscripción: cuándo se tuesta y despacha cada mes. POR CONFIRMAR con el tostador. */
+  suscripcion: { despacho: { es: "la primera semana de cada mes", en: "the first week of every month" } },
+  /* Subasta: cierre real del lote en sala (hora de Colombia) */
+  subasta: { cierre: "2026-10-05T19:00:00-05:00" },
   /* Envíos. Referencia del mercado: las tiendas de café en Colombia cobran
      entre $9.000 y $12.000 y regalan el envío desde $150.000.
      Ver docs/08_envios.md antes de cambiar estos números. */
@@ -24,6 +32,8 @@ const CONFIG = {
     mercadoPago: "",            // link de pago general o Checkout Pro (/api/checkout)
     porProducto: {},            // { "C-GEI-250": "https://mpago.la/xxxx" }
     suscripcion: {},            // { descubrir: "https://mpago.la/xxxx" }
+    /* Cómo se paga mientras no haya pago en línea. POR CONFIRMAR con la cuenta real. */
+    manual: { es: "transferencia bancaria o Nequi", en: "bank transfer or Nequi" },
   },
 };
 
@@ -36,7 +46,8 @@ const LV = {
   VERIFICADO:  { label: { es: "Verificado", en: "Verified" },   c: "var(--leaf)", k: 3, desc: { es: "Lo comprobamos nosotros o un tercero.", en: "Checked by us or a third party." } },
   CERTIFICADO: { label: { es: "Certificado", en: "Certified" }, c: "var(--gold)", k: 4, desc: { es: "Lo avala una entidad competente.", en: "Backed by a certifying body." } },
 };
-const PROC_COLOR = { Lavado: "#3f6a4b", Natural: "#9c3322", Honey: "#b98330", "Anaeróbico": "#6b3a5c" };
+/* Solo las cuatro tintas de la línea gráfica */
+const PROC_COLOR = { Lavado: "#2E4732", Natural: "#C05A3E", Honey: "#C05A3E", "Anaeróbico": "#4A2E1B" };
 const A = (v, nivel, fuente, fecha, extra = {}) => ({ v, nivel, fuente, fecha, ...extra });
 
 /* ---------- idioma ---------- */
@@ -64,9 +75,25 @@ const t = (k) => (T[k] ? T[k][UI.lang] || T[k].es : k);
 const tx = (o) => (o && typeof o === "object" && !Array.isArray(o) ? (o[UI.lang] ?? o.es) : o);
 const lvl = (nivel) => tx(LV[nivel].label);
 
+/* Datos que se guardan en español (fichas, fincas, procesos) y su versión en inglés */
+const ES_EN = {
+  "Productor por confirmar": "Grower to be confirmed", "Finca por confirmar": "Farm to be confirmed",
+  "Nuestra finca": "Our farm", "Familia Nandez": "The Nandez family",
+  "Bourbon rosado": "Pink Bourbon", Castillo: "Castillo", Geisha: "Geisha",
+  Lavado: "Washed", Natural: "Natural", Honey: "Honey", "Anaeróbico": "Anaerobic",
+  Productor: "Grower", "GPS en visita de campo": "GPS on a farm visit", "Bitácora con fotos": "Photo log",
+  "Q-grader independiente": "Independent Q-grader", "Informe de trilla": "Milling report", "Catación propia": "Our own cupping",
+  "Fermentación 36 h · Marquesina 18 días": "36 h fermentation · 18 days in a drying tent",
+  "Fermentación 18 h": "18 h fermentation",
+  "Anaeróbico 96 h · Camas africanas 28 días": "96 h anaerobic · 28 days on raised beds",
+  "Jazmín": "Jasmine", Mango: "Mango", "Vino blanco": "White wine", Bergamota: "Bergamot",
+};
+const tr = (s) => (UI.lang === "en" && ES_EN[s] ? ES_EN[s] : s);
+const msnm = (n) => fmtNum(n) + (UI.lang === "en" ? " m a.s.l." : " msnm");
+
 function seed() {
   return {
-    v: 6, seq: 400,
+    v: 7, seq: 400,
 
     /* ---------- FINCAS ALIADAS ---------- */
     fincas: [
@@ -80,10 +107,10 @@ function seed() {
       { id: "F-03", productor: "Productor por confirmar", finca: "Lote Arboledas", municipio: "Arboledas", altitud: 1550,
         variedad: "Castillo", exclusiva: false,
         historia: { es: "PENDIENTE: historia de la finca.", en: "PENDING: farm story." }, pendiente: true },
-      { id: "F-00", productor: "Familia Nández", finca: "Nuestra finca", municipio: "Chinácota", altitud: 1750,
+      { id: "F-00", productor: "Familia Nandez", finca: "Nuestra finca", municipio: "Chinácota", altitud: 1750,
         variedad: "Geisha", exclusiva: true, propia: true, proxima: 2027,
-        historia: { es: "Tres mil palos de Geisha sembrados por la familia. La primera cosecha con nuestro nombre sale en 2027.",
-                    en: "Three thousand Geisha trees planted by the family. Our first harvest under our own name arrives in 2027." } },
+        historia: { es: "5.000 plantas de Geisha sembradas por la familia. La primera cosecha con nuestro nombre sale en 2027.",
+                    en: "5,000 Geisha plants planted by the family. Our first harvest under our own name arrives in 2027." } },
     ],
 
     /* ---------- CAFÉS A LA VENTA ---------- */
@@ -91,7 +118,7 @@ function seed() {
       { id: "P-GEI", fincaId: "F-02", loteId: "C-001",
         nombre: { es: "Bourbon rosado", en: "Pink Bourbon" }, sub: { es: "Lavado · cosecha 2026", en: "Washed · 2026 harvest" },
         variedad: "Bourbon rosado", proceso: "Lavado", tueste: { es: "Medio-claro", en: "Medium-light" }, cosecha: "2026",
-        sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que no pierda aroma. Si no tienes molino, escríbenos.", en: "We ship it whole so it keeps its aroma. No grinder? Write to us." },
+        sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que no pierda aroma.", en: "We ship it whole so it keeps its aroma." },
         altitud: 1750, puntaje: 87.5, nivel: "VERIFICADO", fuente: "Q-grader", fecha: "2026-09-02",
         notas: { es: ["Jazmín", "Bergamota", "Durazno"], en: ["Jasmine", "Bergamot", "Peach"] },
         ficha: {
@@ -113,7 +140,7 @@ function seed() {
       { id: "P-CAS", fincaId: "F-03", loteId: "C-003",
         nombre: { es: "Castillo de Arboledas", en: "Castillo from Arboledas" }, sub: { es: "Lavado · cosecha 2026", en: "Washed · 2026 harvest" },
         variedad: "Castillo", proceso: "Lavado", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026",
-        sale: { es: "Molido, media", en: "Ground, medium" }, saleNota: { es: "Molienda media, lista para cafetera de goteo o Chemex.", en: "Medium grind, ready for drip or Chemex." },
+        sale: { es: "Molido, media", en: "Ground, medium" }, saleNota: { es: "Molienda media, lista para cafetera de goteo o Chemex. El kilo va en grano.", en: "Medium grind, ready for drip or Chemex. The kilo ships whole bean." },
         altitud: 1550, puntaje: 84, nivel: "DOCUMENTADO", fuente: "Catación propia", fecha: "2026-09-14",
         notas: { es: ["Panela", "Chocolate", "Naranja"], en: ["Brown sugar", "Chocolate", "Orange"] },
         ficha: {
@@ -127,7 +154,8 @@ function seed() {
         receta: { metodo: "Prensa francesa", dosis: "30 g", agua: "500 ml", temp: "94 °C", tiempo: "4:00", molienda: { es: "Gruesa", en: "Coarse" } },
         variantes: [
           { g: 250, precio: 38000, label: { es: "Bolsa", en: "Bag" }, nota: { es: "el de todos los días", en: "the everyday one" }, stock: 90, principal: true },
-          { g: 1000, precio: 132000, label: { es: "Kilo", en: "Kilo" }, nota: { es: "para cafeterías", en: "for cafés" }, stock: 14 },
+          { g: 1000, precio: 132000, label: { es: "Kilo", en: "Kilo" }, nota: { es: "para cafeterías · en grano", en: "for cafés · whole bean" }, stock: 14,
+            sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "El kilo va en grano, para que lo muelas en tu máquina el día que lo usas.", en: "The kilo ships whole bean, so you grind it on your machine the day you use it." } },
         ],
         presentacion: 250, precio: 38000, stock: 90 },
     ],
@@ -135,14 +163,14 @@ function seed() {
     /* ---------- SUSCRIPCIÓN ---------- */
     planes: [
       { id: "descubrir", nombre: { es: "Descubrir", en: "Discover" }, precio: 68000, envios: 1,
-        desc: { es: "Una bolsa de 250 g al mes, siempre del lote más reciente.", en: "One 250 g bag a month, always from the newest lot." },
-        incluye: { es: ["250 g cada mes", "Molienda a tu gusto", "Ficha del lote en cada envío", "Cancelas cuando quieras"], en: ["250 g every month", "Ground to your taste", "Lot data sheet in every shipment", "Cancel anytime"] } },
+        desc: { es: "Una bolsa de 250 g al mes del café de especialidad del momento (hoy, el Bourbon rosado).", en: "One 250 g bag a month of our current specialty coffee (today, the Pink Bourbon)." },
+        incluye: { es: ["250 g cada mes", "Envío incluido", "Molienda a tu gusto", "Ficha del lote en cada envío", "Sin permanencia"], en: ["250 g every month", "Shipping included", "Ground to your taste", "Lot data sheet in every shipment", "No minimum term"] } },
       { id: "dos", nombre: { es: "Dos fincas", en: "Two farms" }, precio: 120000, envios: 2, destacado: true,
-        desc: { es: "Dos bolsas de 250 g de fincas distintas, para comparar en la misma semana.", en: "Two 250 g bags from different farms, to compare side by side." },
-        incluye: { es: ["2 × 250 g cada mes", "Dos orígenes distintos", "Molienda a tu gusto", "Acceso anticipado a la subasta", "Cancelas cuando quieras"], en: ["2 × 250 g monthly", "Two different origins", "Ground to your taste", "Early access to the auction", "Cancel anytime"] } },
+        desc: { es: "Dos bolsas de 250 g de fincas distintas, para comparar en la misma semana (hoy, Bourbon rosado y Castillo).", en: "Two 250 g bags from different farms, to compare side by side (today, Pink Bourbon and Castillo)." },
+        incluye: { es: ["2 × 250 g cada mes", "Envío incluido", "Dos orígenes distintos", "Molienda a tu gusto", "Acceso anticipado a la subasta", "Sin permanencia"], en: ["2 × 250 g monthly", "Shipping included", "Two different origins", "Ground to your taste", "Early access to the auction", "No minimum term"] } },
       { id: "cafeteria", nombre: { es: "Cafetería", en: "Café" }, precio: 460000, envios: 2,
-        desc: { es: "Dos kilos al mes, con precio de mayorista y entrega programada.", en: "Two kilos a month at wholesale price, scheduled delivery." },
-        incluye: { es: ["2 kg cada mes", "Precio de mayorista", "Tostión a tu perfil", "Material para tu carta"], en: ["2 kg monthly", "Wholesale price", "Roast to your profile", "Menu material"] } },
+        desc: { es: "Dos kilos de Bourbon rosado en grano al mes: $230.000 el kilo, frente a $245.000 suelto.", en: "Two kilos of whole bean Pink Bourbon a month: COP 230,000 per kilo, against 245,000 bought loose." },
+        incluye: { es: ["2 kg en grano cada mes", "Envío incluido", "Tostión a tu perfil", "Material para tu carta", "¿Más de 2 kg? Te cotizamos"], en: ["2 kg whole bean monthly", "Shipping included", "Roast to your profile", "Menu material", "More than 2 kg? Ask for a quote"] } },
     ],
 
     /* ---------- DIARIO (blog) — PENDIENTE de contenido real ---------- */
@@ -194,7 +222,7 @@ function seed() {
   };
 }
 
-function load() { try { const s = JSON.parse(localStorage.getItem(CONFIG.storageKey)); return s && s.v === 6 ? s : null; } catch { return null; } }
+function load() { try { const s = JSON.parse(localStorage.getItem(CONFIG.storageKey)); return s && s.v === 7 ? s : null; } catch { return null; } }
 function save() { try { localStorage.setItem(CONFIG.storageKey, JSON.stringify(S)); } catch {} }
 function idiomaGuardado() { try { return localStorage.getItem("nandez-lang"); } catch { return null; } }
 
@@ -205,8 +233,9 @@ const UI = { view: "inicio", lang: idiomaGuardado() || (navigator.language || "e
 /* ---------- utilidades ---------- */
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const fmtNum = (n, dec = 0) => Number(n || 0).toLocaleString("es-CO", { minimumFractionDigits: dec, maximumFractionDigits: dec });
-const cop = (n) => "$" + fmtNum(Math.round(n || 0));
+const fmtNum = (n, dec = 0) => Number(n || 0).toLocaleString(UI.lang === "en" ? "en-US" : "es-CO", { minimumFractionDigits: dec, maximumFractionDigits: dec });
+/* En inglés "$68.000" se lee como 68 dólares: allá va "COP 68,000" */
+const cop = (n) => (UI.lang === "en" ? "COP " : "$") + fmtNum(Math.round(n || 0));
 const copK = (n) => (Math.abs(n) >= 1e6 ? "$" + fmtNum(n / 1e6, 1) + " M" : cop(n));
 const isoToday = () => new Date().toISOString().slice(0, 10);
 const fmtFecha = (iso) => iso ? new Date(iso + "T00:00:00").toLocaleDateString(UI.lang === "en" ? "en-GB" : "es-CO", { day: "numeric", month: "short", year: "numeric" }) : "";
@@ -244,23 +273,31 @@ const MOLIENDAS = [
 /* ---------- SEO: sitio, rutas y textos de cada página ---------- */
 CONFIG.sitio = "https://cafeweb-five.vercel.app";   // cambiar cuando haya dominio propio
 
-const RUTAS = { inicio: "", cafes: "cafes", cafe: "cafe", subasta: "subasta", suscripcion: "suscripcion", diario: "diario", entrada: "diario" };
+const RUTAS = {
+  es: { inicio: "", cafes: "cafes", cafe: "cafe", subasta: "subasta", suscripcion: "suscripcion", diario: "diario", entrada: "diario",
+        contacto: "contacto", envios: "envios-y-devoluciones", terminos: "terminos", privacidad: "privacidad" },
+  en: { inicio: "", cafes: "coffees", cafe: "coffee", subasta: "auction", suscripcion: "subscription", diario: "journal", entrada: "journal",
+        contacto: "contact", envios: "shipping-and-returns", terminos: "terms", privacidad: "privacy" },
+};
 const slugEntrada = (e) => slug(tx(e.titulo)).slice(0, 60);
 
 function ruta(view, id, lang) {
   const L = lang || UI.lang, base = L === "en" ? "/en/" : "/";
   const enIdioma = (o) => (o && typeof o === "object" ? (o[L] ?? o.es) : o);
-  if (view === "cafe" && id) { const p = prodById(id); return p ? base + "cafe-" + slug(enIdioma(p.nombre)) : base + "cafes"; }
-  if (view === "entrada" && id) { const e = S.entradas.find((x) => x.id === id); return e ? base + "diario-" + slug(enIdioma(e.titulo)).slice(0, 60) : base + "diario"; }
-  return base + (RUTAS[view] || "");
+  const R = RUTAS[L] || RUTAS.es;
+  if (view === "cafe" && id) { const p = prodById(id); return p ? base + R.cafe + "-" + slug(enIdioma(p.nombre)) : base + R.cafes; }
+  if (view === "entrada" && id) { const e = S.entradas.find((x) => x.id === id); return e ? base + R.entrada + "-" + slug(enIdioma(e.titulo)).slice(0, 60) : base + R.diario; }
+  return base + (R[view] ?? "");
 }
 function vistaDeRuta(path) {
   const p = String(path).replace(/^\/(en\/)?/, "").replace(/\.html$/, "").replace(/\/$/, "");
   if (!p) return { view: "inicio" };
-  if (p.startsWith("cafe-")) { const pr = S.productos.find((x) => slug(x.nombre.es) === p.slice(5) || slug(x.nombre.en) === p.slice(5)); return pr ? { view: "cafe", id: pr.id } : { view: "cafes" }; }
-  if (p.startsWith("diario-")) { const e = S.entradas.find((x) => slug(x.titulo.es).slice(0, 60) === p.slice(7) || slug(x.titulo.en).slice(0, 60) === p.slice(7)); return e ? { view: "entrada", id: e.id } : { view: "diario" }; }
-  const v = Object.keys(RUTAS).find((k) => RUTAS[k] === p && k !== "cafe" && k !== "entrada");
-  return { view: v || "inicio" };
+  const pre = ["cafe-", "coffee-"].find((x) => p.startsWith(x));
+  if (pre) { const s = p.slice(pre.length), pr = S.productos.find((x) => slug(x.nombre.es) === s || slug(x.nombre.en) === s); return pr ? { view: "cafe", id: pr.id } : { view: "cafes" }; }
+  const preE = ["diario-", "journal-"].find((x) => p.startsWith(x));
+  if (preE) { const s = p.slice(preE.length), e = S.entradas.find((x) => slug(x.titulo.es).slice(0, 60) === s || slug(x.titulo.en).slice(0, 60) === s); return e ? { view: "entrada", id: e.id } : { view: "diario" }; }
+  for (const R of [RUTAS.es, RUTAS.en]) { const v = Object.keys(R).find((k) => R[k] === p && k !== "cafe" && k !== "entrada"); if (v) return { view: v }; }
+  return { view: "inicio" };
 }
 
 /* Título y descripción por página, escritos para buscar "café de origen",
@@ -274,9 +311,9 @@ function meta(view, id) {
   const M = {
     inicio: en
       ? { t: marca + " · Single origin Colombian coffee from Norte de Santander",
-          d: "We grow coffee in Chinácota and choose the best lots from farms across Norte de Santander, Colombia. Single origin, one farm per coffee, with altitude, variety, process and cupping score for each lot." }
+          d: "A coffee-growing family from Chinácota, Colombia. We buy the best lots from farms across Norte de Santander and roast them under our name: one farm per coffee, with altitude, variety, process and cupping score for each lot." }
       : { t: marca + " · Café de origen de Norte de Santander",
-          d: "Sembramos café en Chinácota y escogemos los mejores lotes de las fincas de Norte de Santander. Un café por finca, con su altura, su variedad, su proceso y su puntaje de catación." },
+          d: "Familia cafetera de Chinácota. Le compramos los mejores lotes a fincas de Norte de Santander y los tostamos con nuestra marca: un café por finca, con su altura, su variedad, su proceso y su puntaje de catación." },
     cafes: en
       ? { t: "Coffees on sale · " + marca,
           d: "One coffee per farm: Pink Bourbon, Castillo and the Geisha lot going to auction. Colombian specialty coffee roasted in Norte de Santander and shipped countrywide." }
@@ -292,6 +329,18 @@ function meta(view, id) {
           d: "Bid live for a Geisha microlot from Toledo, Norte de Santander: reserve price, at least three bidders and anti-sniping extension. Only 30 kg of green coffee." }
       : { t: "Subasta de café Geisha en vivo · " + marca,
           d: "Puja en vivo por un microlote de Geisha de Toledo, Norte de Santander: precio de reserva, mínimo tres participantes y extensión anti-último-segundo. Solo 30 kg de café verde." },
+    contacto: en
+      ? { t: "Contact · " + marca, d: "Write to the Nandez family: orders, cafés and roasters, auction bidders and questions about our coffee from Chinácota, Norte de Santander." }
+      : { t: "Contacto · " + marca, d: "Escríbele a la familia Nandez: pedidos, cafeterías y tostadores, postores de la subasta y preguntas sobre nuestro café de Chinácota, Norte de Santander." },
+    envios: en
+      ? { t: "Shipping and returns · " + marca, d: "What shipping costs, how long it takes to reach each city in Colombia and what we do if your coffee arrives damaged." }
+      : { t: "Envíos y devoluciones · " + marca, d: "Cuánto cuesta el envío, cuánto tarda en llegar a cada ciudad de Colombia y qué hacemos si tu café llega mal." },
+    terminos: en
+      ? { t: "Terms of sale · " + marca, d: "How buying from Nandez Café works: prices, payment, shipping, subscription and auction." }
+      : { t: "Términos y condiciones · " + marca, d: "Cómo funciona comprarle a Nandez Café: precios, pago, envío, suscripción y subasta." },
+    privacidad: en
+      ? { t: "Privacy policy · " + marca, d: "What personal data we collect, what we use it for and how to ask us to change or delete it." }
+      : { t: "Política de datos · " + marca, d: "Qué datos personales pedimos, para qué los usamos y cómo pedirnos que los cambiemos o los borremos (Ley 1581 de 2012)." },
     suscripcion: en
       ? { t: "Colombian coffee subscription · " + marca,
           d: "Freshly roasted Colombian specialty coffee every month, from COP 68,000. One or two farms per shipment, with the lot data sheet. Cancel anytime." }
@@ -347,14 +396,13 @@ function ridge(o, { w = 320, h = 150, dark = false, label = true } = {}) {
     }
     return d + ` L${w} ${h} Z`;
   };
-  const gid = "g" + Math.random().toString(36).slice(2, 9);
-  const lineCol = dark ? "rgba(243,230,214,.5)" : "rgba(29,20,15,.4)";
+  /* una sola tinta, sin degradados (línea gráfica) */
+  const lineCol = dark ? "rgba(230,215,195,.55)" : "rgba(74,46,27,.45)";
   return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".95"/><stop offset="1" stop-color="${col}" stop-opacity="${dark ? 0.25 : 0.5}"/></linearGradient></defs>
-    <path d="${layer(0.5, h * 0.12, 14)}" fill="${col}" opacity="${dark ? 0.28 : 0.2}"/>
-    <path class="front" d="${layer(1.05, 0, 10)}" fill="url(#${gid})"/>
+    <path d="${layer(0.5, h * 0.12, 14)}" fill="${col}" opacity="${dark ? 0.35 : 0.22}"/>
+    <path class="front" d="${layer(1.05, 0, 10)}" fill="${col}" opacity="${dark ? 0.9 : 0.8}"/>
     ${label ? `<line x1="0" x2="${w}" y1="${peakY}" y2="${peakY}" stroke="${lineCol}" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>` : ""}
-  </svg>${label ? `<span class="alt-label" style="top:${((peakY / h) * 100).toFixed(1)}%">${fmtNum(alt)} msnm</span>` : ""}`;
+  </svg>${label ? `<span class="alt-label" style="top:${((peakY / h) * 100).toFixed(1)}%">${msnm(alt)}</span>` : ""}`;
 }
 
 /* ---------- ventas: cliente y atribución al lote (lo usan la tienda y el panel) ---------- */
@@ -375,6 +423,21 @@ function atribuirVenta(producto, unidades, valor) {
   c.ingresos = (c.ingresos || 0) + (valor != null ? valor : unidades * producto.precio);
   if (bolsasLibres(c) < 1) c.estado = "VENDIDO";
 }
+
+/* ---------- contacto: WhatsApp si hay número, si no correo ---------- */
+function contactoURL(texto, asunto) {
+  if (CONFIG.whatsapp) return `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`;
+  return `mailto:${CONFIG.correo}?subject=${encodeURIComponent(asunto || CONFIG.marca)}&body=${encodeURIComponent(texto)}`;
+}
+const canalContacto = () => (CONFIG.whatsapp ? "WhatsApp" : (UI.lang === "en" ? "email" : "correo"));
+/* Manda el registro al formulario externo si existe. Sin él, el registro solo sale si la persona
+   envía el WhatsApp o el correo que le abrimos: por eso ese paso siempre queda a la vista. */
+function enviarAviso(tipo, datos) {
+  if (!CONFIG.formulario) return Promise.resolve(false);
+  return fetch(CONFIG.formulario, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({ tipo, ...datos, pagina: location.href }) }).then((r) => r.ok).catch(() => false);
+}
+const demo = () => { try { return /[?&]demo/.test(location.search); } catch { return false; } };
 
 /* ---------- modal y avisos ---------- */
 function modal(title, body, cls = "") {

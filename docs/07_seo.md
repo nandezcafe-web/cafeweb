@@ -20,7 +20,7 @@ Es el mismo patrón de Next.js o Nuxt, pero sin framework ni servidor: archivos 
 | Elemento | Detalle |
 |---|---|
 | **20 páginas** | 10 en español y 10 en inglés: inicio, cafés, una por café, subasta, suscripción, diario y una por entrada |
-| **URLs limpias** | `/cafe-bourbon-rosado`, `/subasta`, `/en/cafe-pink-bourbon`. Sin `#`, que los buscadores ignoran |
+| **URLs limpias** | `/cafe-bourbon-rosado`, `/subasta`, `/en/coffee-pink-bourbon`, `/en/auction`. Sin `#`, que los buscadores ignoran |
 | **Título y descripción por página** | Escritos con las palabras que la gente busca, no con relleno |
 | **`hreflang`** | Cada página apunta a su versión en el otro idioma, y al revés |
 | **Datos estructurados** | `Organization`, `WebSite`, `Product` (con precio, stock, variedad, altura y puntaje), `Article`, `Event` para la subasta y `FAQPage` |

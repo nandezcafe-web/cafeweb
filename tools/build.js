@@ -22,7 +22,7 @@ const TODOS = ["core", "shop", "pages", "auction", "main", "quote", "inventory",
 const VERSION = require("crypto").createHash("md5").update(css + TODOS.map((f) => read("js/" + f + ".js")).join("")).digest("hex").slice(0, 8);
 const FUENTES = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">`;
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">`;
 
 /* ---------- 1. un “navegador” mínimo para ejecutar las vistas en Node ---------- */
 function mundo(lang) {
@@ -58,6 +58,7 @@ function paginas(ctx) {
     { view: "inicio", prio: "1.0" }, { view: "cafes", prio: "0.9" },
     ...ids.p.map((id) => ({ view: "cafe", id, prio: "0.9" })),
     { view: "subasta", prio: "0.8" }, { view: "suscripcion", prio: "0.8" }, { view: "diario", prio: "0.7" },
+    { view: "contacto", prio: "0.5" }, { view: "envios", prio: "0.5" }, { view: "terminos", prio: "0.3" }, { view: "privacidad", prio: "0.3" },
     ...ids.e.map((id) => ({ view: "entrada", id, prio: "0.6" })),
   ];
 }
@@ -66,7 +67,7 @@ const ev = (ctx, expr) => vm.runInContext(expr, ctx);
 
 function navHTML(ctx, activa) {
   const it = [["inicio", "nav_inicio"], ["cafes", "nav_cafes"], ["subasta", "nav_subasta"], ["suscripcion", "nav_suscripcion"], ["diario", "nav_diario"]];
-  const extra = { cafes: '<span class="badge" id="b-cart" hidden></span>', subasta: '<span class="live-dot" id="nav-live"></span><span class="mono nav-time" data-live-time></span>' };
+  const extra = { subasta: '<span class="live-dot" id="nav-live"></span><span class="mono nav-time" data-live-time></span>' };
   return it.map(([v, k]) => {
     const href = ev(ctx, `ruta(${JSON.stringify(v)})`), txt = ev(ctx, `t(${JSON.stringify(k)})`);
     return `<a class="tab" href="${href}" data-act="go" data-to="${v}" data-i18n="${k}"${v === activa ? ' aria-current="page"' : ""}>${txt} ${extra[v] || ""}</a>`;
@@ -101,7 +102,7 @@ function pagina(ctx, { view, id }, lang) {
 <meta property="og:url" content="${url}">
 <meta property="og:locale" content="${lang === "en" ? "en_US" : "es_CO"}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#f3ebdd">
+<meta name="theme-color" content="#E6D7C3">
 <meta name="color-scheme" content="light">
 ${FUENTES}
 <link rel="stylesheet" href="/styles.css?v=${VERSION}">
@@ -112,15 +113,18 @@ ${FUENTES}
 <header class="top">
   <div class="top-inner">
     <a class="brand" href="${lang === "en" ? "/en/" : "/"}" data-act="go" data-to="inicio" aria-label="${ev(ctx, "CONFIG.marca")}">
-      <svg class="mark" viewBox="0 0 28 20" aria-hidden="true"><path d="M1 19 L9 7 L13 12 L19 3 L27 19 Z" fill="currentColor"/></svg>
+      <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor">${[0, 72, 144, 216, 288].map((r) => `<ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(${r} 12 12)"/>`).join("")}</g><circle cx="12" cy="12" r="1.3" fill="var(--paper)"/></svg>
       <b>Nandez</b><small>${lang === "en" ? "single origin coffee" : "café de origen"}</small>
     </a>
-    <nav class="tabs" aria-label="${lang === "en" ? "Sections" : "Secciones"}">
+    <nav class="tabs" id="nav-principal" aria-label="${lang === "en" ? "Sections" : "Secciones"}">
       ${navHTML(ctx, activa)}
     </nav>
     <button class="cart-btn" id="cart-btn" data-act="carrito" aria-label="${lang === "en" ? "Order" : "Pedido"}">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16l-1.2 11.2a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 7Z"/><path d="M9 7V5.5a3 3 0 0 1 6 0V7"/></svg>
       <span class="cart-n" id="cart-n" hidden></span>
+    </button>
+    <button class="menu-btn" id="menu-btn" data-act="menu" aria-expanded="false" aria-controls="nav-principal" aria-label="${lang === "en" ? "Menu" : "Menú"}">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
     <div class="lang" role="group" aria-label="${lang === "en" ? "Language" : "Idioma"}">
       <button data-act="lang" data-lang="es" aria-pressed="${lang === "es"}">ES</button>
@@ -151,6 +155,11 @@ ${MODS.map((f) => `<script src="/js/${f}.js?v=${VERSION}"></script>`).join("\n")
 }
 
 /* ---------- 3. generar ---------- */
+/* borra los HTML generados antes: si una dirección cambia, no queda la página vieja suelta */
+["", "en"].forEach((d) => {
+  const dir = path.join(SRC, d);
+  fs.readdirSync(dir).filter((f) => f.endsWith(".html") && f !== "nandez.html").forEach((f) => fs.unlinkSync(path.join(dir, f)));
+});
 const hoy = new Date().toISOString().slice(0, 10);
 const urls = [];
 ["es", "en"].forEach((lang) => {
@@ -190,7 +199,7 @@ const c0 = mundo("es");
 const llms = ev(c0, [
   '[',
   '"# " + CONFIG.marca, "",',
-  '"> Café de origen de Norte de Santander, Colombia. Compramos lote por lote a fincas de Chinácota, Toledo y Arboledas, pagando por encima del precio de referencia del día, y vendemos cada café con su ficha verificable.", "",',
+  '"> Familia cafetera de Chinácota, Norte de Santander (Colombia). Compramos lote por lote a fincas de Chinácota, Toledo y Arboledas, pagando por encima del precio de referencia del día, y vendemos cada café tostado con su ficha verificable. Nuestra propia finca (5.000 plantas de Geisha) da su primera cosecha en 2027.", "",',
   '"## Qué vendemos",',
   '...S.productos.map((p) => "- " + tx(p.nombre) + ": variedad " + p.variedad + ", proceso " + p.proceso + ", " + p.altitud + " msnm, " + p.puntaje + " puntos SCA, desde " + cop(p.variantes[0].precio) + " (" + CONFIG.sitio + ruta("cafe", p.id, "es") + ")"),',
   '"- Subasta en vivo de un microlote Geisha de Toledo (" + CONFIG.sitio + "/subasta)",',
@@ -229,7 +238,7 @@ ${css}
 </head>
 <body data-view="login">
 <header class="top"><div class="top-inner">
-  <span class="brand"><svg class="mark" viewBox="0 0 28 20" aria-hidden="true"><path d="M1 19 L9 7 L13 12 L19 3 L27 19 Z" fill="currentColor"/></svg>
+  <span class="brand"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor">${[0, 72, 144, 216, 288].map((r) => `<ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(${r} 12 12)"/>`).join("")}</g><circle cx="12" cy="12" r="1.3" fill="var(--paper)"/></svg>
   <b>Nandez</b><small>panel interno</small></span>
 </div></header>
 <main class="wrap" id="view"></main>

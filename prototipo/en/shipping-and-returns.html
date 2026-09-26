@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>Shipping and returns · Nandez Café</title>
+<meta name="description" content="What shipping costs, how long it takes to reach each city in Colombia and what we do if your coffee arrives damaged.">
+<link rel="canonical" href="https://cafeweb-five.vercel.app/en/shipping-and-returns">
+<link rel="alternate" hreflang="es" href="https://cafeweb-five.vercel.app/envios-y-devoluciones">
+<link rel="alternate" hreflang="en" href="https://cafeweb-five.vercel.app/en/shipping-and-returns">
+<link rel="alternate" hreflang="x-default" href="https://cafeweb-five.vercel.app/envios-y-devoluciones">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nandez Café">
+<meta property="og:title" content="Shipping and returns · Nandez Café">
+<meta property="og:description" content="What shipping costs, how long it takes to reach each city in Colombia and what we do if your coffee arrives damaged.">
+<meta property="og:url" content="https://cafeweb-five.vercel.app/en/shipping-and-returns">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#E6D7C3">
+<meta name="color-scheme" content="light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css?v=323e7c2a">
+<link rel="stylesheet" href="/auction.css?v=323e7c2a">
+<script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Café","url":"https://cafeweb-five.vercel.app","email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"A coffee-growing family from Chinácota, Colombia. We buy the best lots from farms across Norte de Santander and roast them under our name: one farm per coffee, with altitude, variety, process and cupping score for each lot."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Café","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"en"}]}</script>
+</head>
+<body data-view="envios">
+<header class="top">
+  <div class="top-inner">
+    <a class="brand" href="/en/" data-act="go" data-to="inicio" aria-label="Nandez Café">
+      <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor"><ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(0 12 12)"/><ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(72 12 12)"/><ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(144 12 12)"/><ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(216 12 12)"/><ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(288 12 12)"/></g><circle cx="12" cy="12" r="1.3" fill="var(--paper)"/></svg>
+      <b>Nandez</b><small>single origin coffee</small>
+    </a>
+    <nav class="tabs" id="nav-principal" aria-label="Sections">
+      <a class="tab" href="/en/" data-act="go" data-to="inicio" data-i18n="nav_inicio">Home </a>
+      <a class="tab" href="/en/coffees" data-act="go" data-to="cafes" data-i18n="nav_cafes">Coffees </a>
+      <a class="tab" href="/en/auction" data-act="go" data-to="subasta" data-i18n="nav_subasta">Auction <span class="live-dot" id="nav-live"></span><span class="mono nav-time" data-live-time></span></a>
+      <a class="tab" href="/en/subscription" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Subscription </a>
+      <a class="tab" href="/en/journal" data-act="go" data-to="diario" data-i18n="nav_diario">Journal </a>
+    </nav>
+    <button class="cart-btn" id="cart-btn" data-act="carrito" aria-label="Order">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16l-1.2 11.2a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 7Z"/><path d="M9 7V5.5a3 3 0 0 1 6 0V7"/></svg>
+      <span class="cart-n" id="cart-n" hidden></span>
+    </button>
+    <button class="menu-btn" id="menu-btn" data-act="menu" aria-expanded="false" aria-controls="nav-principal" aria-label="Menu">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <div class="lang" role="group" aria-label="Language">
+      <button data-act="lang" data-lang="es" aria-pressed="false">ES</button>
+      <button data-act="lang" data-lang="en" aria-pressed="true">EN</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap calm" id="view"><article class="legal">
+    <div class="view-head"><div><p class="eyebrow reveal">Shipping and returns</p><h2 class="reveal" style="--i:1">What it costs and <em>when it arrives</em></h2>
+      </div></div>
+    <section class="legal-b"><h3>Cost</h3><p>Shipping costs COP 12,000 anywhere in Colombia and is free on orders from COP 150,000. You see it in the cart before giving us any data.</p></section><section class="legal-b"><h3>Time</h3><p>We roast in the week of your order and ship from Cúcuta with Interrapidísimo. It arrives in 2 to 5 business days; rural areas can take a few days more. We send you the tracking number.</p></section><section class="legal-b"><h3>If something goes wrong</h3><p>If the bag arrives broken, wet or is not what you ordered, write to nandezcafe@gmail.com within 5 days of receiving it, with a photo and your order number. We send it again or refund you, at our cost.</p></section><section class="legal-b"><h3>Returns</h3><p>Coffee is food: once opened we cannot take it back. If you change your mind before we ship, we cancel the order and refund you in full.</p></section>
+  </article><footer class="foot">
+  <div class="foot-marca"><b>Nandez Café</b><span>Chinácota · Norte de Santander, Colombia</span>
+    <a href="mailto:nandezcafe@gmail.com">nandezcafe@gmail.com</a></div>
+  <nav class="foot-links" aria-label="Information"><a href="/en/contact" data-act="go" data-to="contacto">Contact</a><a href="/en/shipping-and-returns" data-act="go" data-to="envios">Shipping and returns</a><a href="/en/terms" data-act="go" data-to="terminos">Terms</a><a href="/en/privacy" data-act="go" data-to="privacidad">Privacy</a></nav>
+  <small class="foot-nota">Prototype with example data: photos, texts and prices to be confirmed.</small>
+  </footer></main>
+
+<div class="tray" id="tray" hidden></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<dialog id="cart" class="drawer" aria-label="Your order">
+  <div class="cart-head"><h3>Your order</h3>
+    <button class="x" data-act="cart-close" aria-label="Close">✕</button></div>
+  <div class="cart-body" id="cart-body"></div>
+  <div class="cart-foot" id="cart-foot"></div>
+</dialog>
+<dialog id="dlg">
+  <div class="dlg-head"><h3 id="dlg-title"></h3><button class="x" data-act="close" aria-label="Close">✕</button></div>
+  <div class="dlg-body" id="dlg-body"></div>
+</dialog>
+
+<script src="/js/core.js?v=323e7c2a"></script>
+<script src="/js/shop.js?v=323e7c2a"></script>
+<script src="/js/pages.js?v=323e7c2a"></script>
+<script src="/js/auction.js?v=323e7c2a"></script>
+<script src="/js/main.js?v=323e7c2a"></script>
+</body>
+</html>

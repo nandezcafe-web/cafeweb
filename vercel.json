@@ -3,6 +3,14 @@
   "outputDirectory": "prototipo",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/en/cafes", "destination": "/en/coffees", "permanent": true },
+    { "source": "/en/subasta", "destination": "/en/auction", "permanent": true },
+    { "source": "/en/suscripcion", "destination": "/en/subscription", "permanent": true },
+    { "source": "/en/diario", "destination": "/en/journal", "permanent": true },
+    { "source": "/en/cafe-(.*)", "destination": "/en/coffee-$1", "permanent": true },
+    { "source": "/en/diario-(.*)", "destination": "/en/journal-$1", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/(.*)",

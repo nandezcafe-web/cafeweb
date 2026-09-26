@@ -4,7 +4,7 @@
    ============================================================ */
 function nuevaCot() {
   return { estado: "Pergamino seco", kg: 125, factor: 94, humedad: 11, sca: 85,
-    precioCarga: CONFIG.fnc.precioCarga, ...COSTOS, presentacion: 340, precioVenta: 32000 };
+    precioCarga: CONFIG.fnc.precioCarga, ...COSTOS, presentacion: 250, precioVenta: 38000 };
 }
 
 function calcCot(d) {

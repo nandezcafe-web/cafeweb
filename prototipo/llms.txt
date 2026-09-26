@@ -1,6 +1,6 @@
 # Nandez Café
 
-> Café de origen de Norte de Santander, Colombia. Compramos lote por lote a fincas de Chinácota, Toledo y Arboledas, pagando por encima del precio de referencia del día, y vendemos cada café con su ficha verificable.
+> Familia cafetera de Chinácota, Norte de Santander (Colombia). Compramos lote por lote a fincas de Chinácota, Toledo y Arboledas, pagando por encima del precio de referencia del día, y vendemos cada café tostado con su ficha verificable. Nuestra propia finca (5.000 plantas de Geisha) da su primera cosecha en 2027.
 
 ## Qué vendemos
 - Bourbon rosado: variedad Bourbon rosado, proceso Lavado, 1750 msnm, 87.5 puntos SCA, desde $32.000 (https://cafeweb-five.vercel.app/cafe-bourbon-rosado)
@@ -35,6 +35,10 @@ Sí. Vamos a la finca, medimos el factor de rendimiento y la humedad delante del
 - https://cafeweb-five.vercel.app/subasta
 - https://cafeweb-five.vercel.app/suscripcion
 - https://cafeweb-five.vercel.app/diario
+- https://cafeweb-five.vercel.app/contacto
+- https://cafeweb-five.vercel.app/envios-y-devoluciones
+- https://cafeweb-five.vercel.app/terminos
+- https://cafeweb-five.vercel.app/privacidad
 - https://cafeweb-five.vercel.app/diario-por-que-el-factor-de-rendimiento-decide-el-precio-de-tu-cafe
 - https://cafeweb-five.vercel.app/diario-un-dia-en-la-finca-de-don-domingo
 - https://cafeweb-five.vercel.app/diario-como-preparar-en-casa-un-cafe-que-costo-una-cosecha
