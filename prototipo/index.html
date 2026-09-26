@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Altura · Café de Norte de Santander</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="auction.css">
+</head>
+<body data-view="inicio">
+<header class="top">
+  <div class="top-inner">
+    <button class="brand" data-act="go" data-to="inicio" aria-label="Altura, ir al inicio">
+      <svg class="mark" viewBox="0 0 28 20" aria-hidden="true"><path d="M1 19 L9 7 L13 12 L19 3 L27 19 Z" fill="currentColor"/></svg>
+      <b>Altura</b><small>café de Norte de Santander</small>
+    </button>
+    <nav class="tabs" aria-label="Secciones">
+      <button class="tab" data-act="go" data-to="inicio">Inicio</button>
+      <button class="tab" data-act="go" data-to="geisha">El Geisha <span class="badge" id="b-cart" hidden></span></button>
+      <button class="tab" data-act="go" data-to="subasta"><span class="live-dot" id="nav-live"></span>Subasta <span class="mono nav-time" data-live-time></span></button>
+      <button class="tab adm" data-act="go" data-to="admin">Admin</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="view"></main>
+
+<div class="tray" id="tray" hidden></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<dialog id="dlg">
+  <div class="dlg-head"><h3 id="dlg-title"></h3><button class="x" data-act="close" aria-label="Cerrar">✕</button></div>
+  <div class="dlg-body" id="dlg-body"></div>
+</dialog>
+
+<script src="js/core.js"></script>
+<script src="js/product.js"></script>
+<script src="js/quote.js"></script>
+<script src="js/inventory.js"></script>
+<script src="js/clients.js"></script>
+<script src="js/market.js"></script>
+<script src="js/auction.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,2 @@
+fecha,tipo_evento,lote_id,comprador,productor,canal,cantidad_kg,precio_cop_kg,puntaje_comprador,resultado,siguiente_paso,responsable,notas
+2026-09-15,entrevista_comprador,,(nombre tostador),,presencial,,,,pedido_sourcing,enviar catalogo cuando haya lotes,,EJEMPLO - borrar esta fila

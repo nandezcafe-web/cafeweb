@@ -1,0 +1,1901 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Altura · Café de Norte de Santander</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f3ebdd;--paper-2:#e9dcc7;--card:#fbf7f0;--ink:#1d140f;--ink-2:#6a5646;--ink-3:#9a8574;--line:#d9c8b0;
+  --cherry:#a8321f;--cherry-2:#c4452c;--leaf:#2f5f3f;--gold:#b88326;--doc:#35668a;
+  --roast:#120c09;--roast-2:#1d1410;--roast-3:#2a1d17;--ember:#ff6a3d;--crema:#e9c48a;
+  --serif:"Instrument Serif","Iowan Old Style",Georgia,serif;
+  --sans:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --r:14px;--shadow:0 1px 0 rgba(29,20,15,.04),0 14px 30px -16px rgba(29,20,15,.3);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 var(--sans);-webkit-font-smoothing:antialiased;min-height:100vh;transition:background .6s ease,color .6s ease}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:repeating-radial-gradient(ellipse at 12% 18%,transparent 0 26px,rgba(29,20,15,.045) 26px 27px),
+             repeating-radial-gradient(ellipse at 88% 72%,transparent 0 34px,rgba(29,20,15,.04) 34px 35px)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:200;opacity:.22;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+body[data-view=subasta]{background:var(--roast);color:#f3e6d6}
+body[data-view=subasta]::before{background:repeating-radial-gradient(ellipse at 15% 20%,transparent 0 26px,rgba(255,200,150,.03) 26px 27px),repeating-radial-gradient(ellipse at 85% 80%,transparent 0 34px,rgba(255,200,150,.025) 34px 35px)}
+body[data-view=subasta]::after{opacity:.12}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--cherry);outline-offset:2px}
+h1,h2,h3{font-family:var(--serif);font-weight:400;letter-spacing:-.015em;margin:0}
+h1 em,h2 em,h3 em{color:var(--cherry)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--ink-3)}
+.hint{color:var(--ink-2);font-size:13.5px;margin:12px 0}
+.err{color:var(--cherry);font:600 12px var(--mono)}
+.eyebrow{font:600 11.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--cherry);margin:0 0 14px;display:flex;align-items:center;gap:8px}
+.kicker{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin:0}
+.lbl{font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.wrap{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding-inline:20px;padding-block:28px 120px}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(14px);animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(var(--i,0)*70ms)}
+.calm .reveal{animation:none;opacity:1;transform:none}
+@keyframes rise{to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.98)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-delay:0ms!important;transition:none!important}}
+
+/* header */
+.top{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:color-mix(in srgb,var(--paper) 84%,transparent);border-bottom:1px solid var(--line);transition:background .6s}
+body[data-view=subasta] .top{background:color-mix(in srgb,var(--roast) 82%,transparent);border-color:#2e211a}
+.top-inner{max-width:1240px;margin:auto;padding:10px 20px;display:flex;align-items:center;gap:14px 18px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:9px;background:none;border:0;padding:0;cursor:pointer}
+.brand .mark{width:26px;color:var(--cherry)}
+body[data-view=subasta] .brand .mark{color:var(--ember)}
+.brand b{font:italic 400 30px/1 var(--serif)}
+.brand small{font:600 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.tabs{display:flex;gap:2px;margin-left:auto;background:var(--paper-2);padding:4px;border-radius:999px;flex-wrap:wrap}
+body[data-view=subasta] .tabs{background:#231812}
+.tab{border:0;background:transparent;padding:8px 14px;border-radius:999px;font:600 13.5px var(--sans);color:var(--ink-2);cursor:pointer;display:flex;align-items:center;gap:7px}
+body[data-view=subasta] .tab{color:#bba48f}
+.tab[aria-current=page]{background:var(--ink);color:var(--paper)}
+body[data-view=subasta] .tab[aria-current=page]{background:var(--crema);color:var(--roast)}
+.nav-time{font-size:11.5px;opacity:.8}
+.badge{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--cherry);color:#fff;font:600 11px/18px var(--mono);text-align:center}
+.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ember);animation:ping 1.6s infinite;flex:0 0 auto}
+.live-dot.off{background:var(--ink-3);animation:none}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(255,106,61,.55)}80%,100%{box-shadow:0 0 0 9px rgba(255,106,61,0)}}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--ink);background:transparent;color:var(--ink);padding:10px 16px;border-radius:999px;font:600 14px var(--sans);cursor:pointer;transition:transform .15s,background .2s,color .2s,border-color .2s;white-space:nowrap}
+.btn:hover{background:var(--ink);color:var(--paper)}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--cherry);border-color:var(--cherry);color:#fff}
+.btn.primary:hover{background:var(--cherry-2);border-color:var(--cherry-2)}
+.btn.sm{padding:7px 12px;font-size:13px}
+.btn.lg{padding:14px 22px;font-size:15px}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn:disabled:hover{background:transparent;color:var(--ink)}
+.btn.primary:disabled:hover{background:var(--cherry);color:#fff}
+body[data-view=subasta] .btn:not(.primary){border-color:#5a4535;color:#f3e6d6}
+body[data-view=subasta] .btn:not(.primary):hover{background:var(--crema);color:var(--roast)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center;padding-block:28px 56px}
+.hero h1{font-size:clamp(2.6rem,6.4vw,5.6rem);line-height:.94}
+.lede{font-size:1.14rem;color:var(--ink-2);max-width:50ch;margin:22px 0 28px}
+.cta{display:flex;flex-wrap:wrap;gap:10px}
+.live-link{margin-top:22px;display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--roast);color:#f3e6d6;border:0;border-radius:999px;padding:10px 18px;cursor:pointer;font-size:14px;transition:transform .2s}
+.live-link:hover{transform:translateX(4px)}
+.live-link b{color:var(--crema)}
+.hero-art{position:relative;aspect-ratio:1/1.05;width:100%;max-width:520px;justify-self:center}
+.hero-card{position:absolute;inset:4% 8% 4% 8%;border-radius:26px;overflow:hidden;background:radial-gradient(120% 80% at 80% 0%,#3a2518,#140d0a 60%);box-shadow:0 40px 70px -30px rgba(29,20,15,.7);transform:rotate(-2.5deg);color:#f3e6d6;padding:26px}
+.hc-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.hc-top .kicker{color:#bba48f}
+.hc-title{font:400 clamp(2.4rem,4.6vw,3.6rem)/1 var(--serif);margin:28px 0 0}
+.hc-title em{color:var(--crema)}
+.hc-score{font:400 clamp(3.6rem,7vw,5rem)/1 var(--serif);margin:26px 0 0;color:#fff}
+.hc-score small{font:600 12px var(--mono);letter-spacing:.1em;margin-left:8px;color:#bba48f}
+.hc-ridge{position:absolute;left:0;right:0;bottom:0;height:46%}
+.float-chip{position:absolute;left:var(--x);top:var(--y);display:grid;grid-template-columns:auto 1fr;gap:0 8px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 13px;box-shadow:var(--shadow);animation:bob 6s ease-in-out infinite;animation-delay:var(--d);font-size:13.5px;z-index:2}
+.float-chip i{grid-row:span 2;width:9px;height:9px;border-radius:50%;background:var(--c)}
+.float-chip small{font:600 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+@keyframes bob{50%{transform:translateY(-9px)}}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--ink);border-bottom:1px solid var(--line)}
+.stat{padding:20px 18px;border-right:1px solid var(--line)}
+.stat:last-child{border-right:0}
+.stat b{display:block;font:400 2.8rem/1 var(--serif)}
+.stat small,.kpi small{font:600 10.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+
+.section{padding-block:80px 8px}
+.section-head{max-width:720px}
+.section-head h2{font-size:clamp(2.1rem,4.8vw,3.6rem);line-height:1}
+.section-head p{color:var(--ink-2);font-size:1.05rem}
+
+/* flows */
+.tracks{display:grid;grid-template-columns:1fr 210px 1fr;gap:24px;margin-top:40px}
+.track{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.track-title{font:600 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+.track-title::before{content:"";width:22px;height:2px;background:var(--cherry)}
+.step{display:grid;grid-template-columns:36px 1fr;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;cursor:pointer;text-align:left;transition:transform .25s,border-color .25s,box-shadow .25s;width:100%}
+.seller .step:hover{transform:translateX(6px);border-color:var(--ink);box-shadow:var(--shadow)}
+.buyer .step:hover{transform:translateX(-6px);border-color:var(--ink);box-shadow:var(--shadow)}
+.step .n{font:italic 30px/1 var(--serif);color:var(--cherry)}
+.step b{display:block;font-weight:600}
+.step span{color:var(--ink-2);font-size:13.5px}
+.core{position:relative;display:flex;align-items:center;justify-content:center}
+.core::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;background:linear-gradient(to bottom,var(--ink) 50%,transparent 0) 0 0/2px 12px;animation:flow 1s linear infinite;opacity:.35}
+@keyframes flow{to{background-position:0 12px}}
+.stamp{position:relative;width:190px;aspect-ratio:1;border-radius:50%;background:var(--paper);display:grid;place-items:center}
+.stamp svg{position:absolute;inset:0;width:100%;height:100%;animation:spin 36s linear infinite;color:var(--cherry)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.stamp b{font:italic 400 2.6rem/1 var(--serif);color:var(--cherry)}
+.stamp small{display:block;font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);text-align:center}
+.deal{margin:30px auto 0;max-width:760px;background:var(--ink);color:var(--paper);border-radius:999px;padding:14px 24px;display:flex;justify-content:center;gap:8px 14px;flex-wrap:wrap;font:500 12.5px var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.deal span:not(:last-child)::after{content:"→";margin-left:14px;color:var(--crema)}
+
+.levels{display:grid;grid-template-columns:repeat(4,1fr);margin-top:34px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card)}
+.level{padding:24px 22px;border-right:1px solid var(--line)}
+.level:last-child{border-right:0}
+.level .bar{height:4px;border-radius:2px;background:var(--paper-2);overflow:hidden}
+.level .bar i{display:block;height:100%;width:calc(var(--k)*25%);background:var(--c)}
+.level h3{font-size:1.9rem;margin:16px 0 6px;color:var(--c)}
+.level p{color:var(--ink-2);font-size:14px;margin:0 0 14px}
+.level code{font:12px var(--mono);background:var(--paper-2);padding:3px 8px;border-radius:6px}
+
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px}
+.mode{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:12px;transition:transform .3s,box-shadow .3s}
+.mode:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+.mode h3{font-size:2.1rem;line-height:1}
+.mode p{color:var(--ink-2);margin:0;flex:1}
+.mini-flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font:500 11px var(--mono);text-transform:uppercase;letter-spacing:.05em}
+.mini-flow span{background:var(--paper-2);padding:4px 8px;border-radius:6px}
+.mode.dark{background:radial-gradient(120% 90% at 100% 0%,#3a2518,#140d0a 65%);color:#f3e6d6;border-color:#2e211a}
+.mode.dark p{color:#bba48f}.mode.dark h3 em{color:var(--crema)}
+.mode.dark .mini-flow span{background:#2a1d17}
+.mode.dark .btn{border-color:#5a4535;color:#f3e6d6}
+.foot{margin-top:90px;padding-top:20px;border-top:1px solid var(--line);color:var(--ink-2);font-size:13px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+body[data-view=subasta] .foot{border-color:#2e211a;color:#a58f7c}
+
+/* view head / segmented */
+.view-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;padding-block:8px 24px;border-bottom:1px solid var(--line);margin-bottom:26px}
+.view-head h2{font-size:clamp(2.1rem,4.8vw,3.8rem);line-height:1}
+.view-head p{margin:10px 0 0;color:var(--ink-2)}
+.seg{display:inline-flex;background:var(--paper-2);border-radius:999px;padding:4px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;padding:8px 14px;border-radius:999px;font:600 13px var(--sans);color:var(--ink-2);cursor:pointer;display:flex;gap:6px;align-items:center}
+.seg button[aria-pressed=true]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.seg.dark{background:#231812}
+.seg.dark button{color:#bba48f}
+.seg.dark button[aria-pressed=true]{background:var(--crema);color:var(--roast)}
+
+/* buyer */
+.buyer-layout{display:grid;grid-template-columns:250px 1fr;gap:30px;align-items:start}
+.filters{position:sticky;top:90px;display:flex;flex-direction:column;gap:20px}
+.f-group h4{font:600 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin:0 0 8px;display:flex;justify-content:space-between}
+.input,.search{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:10px 12px;width:100%;min-width:0}
+.search{border-radius:999px;padding:10px 16px}
+.input:focus,.search:focus{outline:2px solid var(--cherry);outline-offset:1px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 11px;font:500 13px var(--sans);cursor:pointer;transition:background .2s,color .2s}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.chip-radio{position:relative}
+.chip-radio input{position:absolute;opacity:0;pointer-events:none}
+.chip-radio span{display:inline-block;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer}
+.chip-radio input:checked+span{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.chip-radio input:focus-visible+span{outline:2px solid var(--cherry)}
+input[type=range]{width:100%;accent-color:var(--cherry)}
+.toggle{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px}
+.toggle input{width:18px;height:18px;accent-color:var(--cherry)}
+.legend{display:grid;gap:6px;font-size:12.5px;color:var(--ink-2)}
+.legend span{display:flex;align-items:center;gap:8px}
+.legend i{width:18px;height:5px;border-radius:3px;background:var(--c)}
+.count-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;color:var(--ink-2);font-size:14px;gap:10px;flex-wrap:wrap}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:20px}
+.lot{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s}
+.lot:hover{transform:translateY(-5px);box-shadow:0 24px 44px -22px rgba(29,20,15,.5)}
+.lot.cmp{outline:2px solid var(--cherry);outline-offset:-2px}
+.lot-art{position:relative;height:150px;background:var(--paper-2);cursor:pointer;overflow:hidden}
+.lot-art svg{position:absolute;inset:0;width:100%;height:100%}
+.lot-art .front{transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.lot:hover .lot-art .front{transform:translateY(-6px)}
+.alt-label{position:absolute;right:10px;transform:translateY(-135%);font:600 10px var(--mono);letter-spacing:.06em;color:var(--ink-2);white-space:nowrap}
+.dark-art .alt-label{color:#bba48f}
+.state{position:absolute;top:12px;right:12px;font:600 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;background:var(--card);border:1px solid currentColor;padding:4px 8px;border-radius:999px;color:var(--ink-2);z-index:1}
+.hc-top .state{position:static}
+.st-publicado{color:var(--leaf)}.st-muestra-solicitada{color:var(--doc)}.st-en-negociacion{color:var(--gold)}
+.st-reservado{color:var(--cherry)}.st-vendido{background:var(--ink)!important;color:var(--paper)!important;border-color:var(--ink)!important}
+.st-en-subasta{background:var(--ember)!important;color:#1a0d07!important;border-color:var(--ember)!important}
+.st-borrador{color:var(--ink-3);border-style:dashed}.st-en-revision{color:var(--doc);border-style:dashed}
+.lot-score{position:absolute;left:14px;top:10px;z-index:1}
+.lot-score b{display:block;font:400 46px/1 var(--serif);letter-spacing:-.02em}
+.lot-score small{font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.lot-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.lot h3{font-size:1.6rem;line-height:1.05}
+.founder{font:600 9.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;border:1px dashed var(--ink-3);color:var(--ink-2);border-radius:999px;padding:2px 7px;vertical-align:middle;white-space:nowrap}
+.varietal{margin:0;color:var(--ink-2)}
+.varietal em{font:italic 1.2rem var(--serif);color:var(--ink)}
+.notes{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:5px}
+.notes li{font-size:12px;background:var(--paper);border-radius:999px;padding:2px 9px;color:var(--ink-2)}
+.notes.dark li{background:#2a1d17;color:#d9c3ad}
+.pips{display:flex;gap:4px;margin-top:4px}
+.pip{flex:1;height:5px;border-radius:3px;background:var(--c)}
+.pip.miss{background:repeating-linear-gradient(90deg,var(--line) 0 4px,transparent 4px 7px)}
+.pip-meta{display:flex;justify-content:space-between;font:500 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.lot-price{display:flex;align-items:baseline;gap:6px;margin-top:auto;padding-top:10px;border-top:1px dashed var(--line)}
+.lot-price b{font:600 1.2rem var(--mono)}
+.lot-price small{color:var(--ink-2)}
+.diff{margin-left:auto;font:600 12px var(--mono);color:var(--leaf)}
+.lot-actions{display:flex;gap:6px}
+.lot-actions .btn{flex:1;padding-inline:8px}
+.lot-actions .cmp-toggle{flex:0 0 38px;padding:0}
+.empty{padding:60px 20px;text-align:center;color:var(--ink-2);border:1px dashed var(--line);border-radius:18px;grid-column:1/-1}
+.empty h3{font-size:2rem;color:var(--ink)}
+
+.tray{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--paper);border-radius:999px;padding:8px 8px 8px 12px;display:flex;align-items:center;gap:12px;box-shadow:0 20px 40px -12px rgba(0,0,0,.5);max-width:calc(100vw - 32px);flex-wrap:wrap;justify-content:center;animation:pop .4s}
+.tray-thumbs{display:flex}
+.tray-thumbs span{width:30px;height:30px;border-radius:50%;background:var(--cherry);border:2px solid var(--ink);margin-left:-8px;display:grid;place-items:center;font:italic 16px var(--serif)}
+.tray-thumbs span:first-child{margin-left:0}
+.tray .btn:not(.primary){border-color:#5a473b;color:var(--paper)}
+
+/* dialog */
+dialog{border:0;padding:0;border-radius:22px;background:var(--card);color:var(--ink);width:min(1000px,calc(100vw - 24px));max-height:calc(100vh - 32px);box-shadow:0 40px 80px -20px rgba(0,0,0,.5)}
+dialog.narrow{width:min(560px,calc(100vw - 24px))}
+dialog[open]{animation:pop .35s cubic-bezier(.2,.8,.2,1)}
+dialog::backdrop{background:rgba(18,12,9,.55);backdrop-filter:blur(3px)}
+.dlg-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card);z-index:2}
+.dlg-head h3{font-size:1.7rem;line-height:1.1}
+.x{border:1px solid var(--line);background:transparent;border-radius:50%;width:36px;height:36px;cursor:pointer;flex:0 0 auto}
+.dlg-body{padding:20px 22px 24px}
+.dlg-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;flex-wrap:wrap}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.offer-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;background:var(--paper);border-radius:12px;padding:12px 14px;margin-bottom:16px}
+.offer-sum b{display:block;font-size:15px}
+.offer-live{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:14px 0;padding:12px 14px;border:1px dashed var(--line);border-radius:12px}
+.offer-live b{font-size:1.5rem}
+.pos{color:var(--leaf);font:600 13px var(--mono)}.neg{color:var(--cherry);font:600 13px var(--mono)}
+.cata-score{text-align:center;margin-bottom:16px}
+.cata-score b{display:block;font-size:3.4rem;line-height:1.1;color:var(--cherry)}
+.range-scale{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3)}
+
+/* passport */
+.passport{display:grid;grid-template-columns:300px 1fr;gap:28px}
+.pp-cover{background:radial-gradient(120% 80% at 80% 0%,#3a2518,#120c09 65%);color:#f3e6d6;border-radius:18px;padding:22px;position:relative;overflow:hidden;min-height:380px;align-self:start}
+.pp-cover .kicker{color:#bba48f}
+.pp-cover h3{font-size:2.3rem;line-height:1;margin-top:10px}
+.pp-cover .varietal{color:#bba48f}.pp-cover .varietal em{color:var(--crema)}
+.pp-score{font:400 4.6rem/1 var(--serif);margin:16px 0 4px}
+.pp-ridge{position:absolute;left:0;right:0;bottom:0;height:120px}
+.trust{margin-top:12px;position:relative;z-index:1}
+.trust-bar{height:7px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:6px}
+.trust-bar i{display:block;height:100%;width:var(--w);background:linear-gradient(90deg,var(--crema),var(--ember));transition:width .6s}
+.light .trust-bar{background:var(--paper-2)}
+.light .trust-bar i{background:linear-gradient(90deg,var(--gold),var(--leaf))}
+.timeline{list-style:none;margin:0;padding:0;position:relative}
+.timeline::before{content:"";position:absolute;left:11px;top:8px;bottom:8px;width:1px;background:var(--line)}
+.tl{display:grid;grid-template-columns:24px 1fr auto;gap:12px;padding:9px 0;align-items:start;opacity:0;animation:rise .5s forwards;animation-delay:calc(var(--i)*45ms)}
+.tl .dot{width:23px;height:23px;border-radius:50%;border:1.5px solid var(--c);background:var(--card);display:grid;place-items:center;position:relative;z-index:1}
+.tl .dot::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--c)}
+.tl.pending .dot{border-style:dashed;--c:var(--ink-3)}
+.tl.pending .dot::after{display:none}
+.tl b{display:block;font-weight:600}
+.tl span{font-size:13.5px;color:var(--ink-2)}
+.stampmini{font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--c);border:1.5px solid var(--c);padding:3px 7px;border-radius:6px;transform:rotate(-3deg);white-space:nowrap;text-align:center}
+.stampmini small{display:block;font-weight:400;letter-spacing:0;text-transform:none}
+
+/* compare */
+.table-scroll{overflow-x:auto}
+.cmp-table{border-collapse:collapse;width:100%;min-width:620px;font-size:14px}
+.cmp-table th,.cmp-table td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.cmp-table tbody th{font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);white-space:nowrap}
+.cmp-table thead th b{display:block;font:400 1.4rem/1.1 var(--serif)}
+.cmp-table thead th small{color:var(--ink-2)}
+.cmp-thumb{position:relative;height:60px;border-radius:10px;overflow:hidden;background:var(--paper-2);margin-bottom:8px}
+.cmp-thumb svg{position:absolute;inset:0;width:100%;height:100%}
+.bar{display:block;height:6px;background:var(--paper-2);border-radius:3px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;width:var(--w);background:var(--ink-3);transform-origin:left;animation:grow .9s cubic-bezier(.2,.7,.2,1)}
+td.best .bar i{background:var(--leaf)}
+td.best .mono{font-weight:600}
+td.best .mono::before{content:"◆ ";color:var(--leaf)}
+@keyframes grow{from{transform:scaleX(0)}}
+.lvtag{font:600 9.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--c);border:1px solid var(--c);border-radius:999px;padding:1px 6px;white-space:nowrap}
+.src{display:block;color:var(--ink-3);font-size:12px}
+
+/* activity / inbox */
+.list{display:grid;gap:12px}
+.item{display:grid;grid-template-columns:72px 1fr auto;gap:16px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;animation:rise .45s both;animation-delay:calc(var(--i,0)*50ms)}
+.calm .item{animation:none}
+.thumb{position:relative;height:56px;border-radius:10px;overflow:hidden;background:var(--paper-2)}
+.thumb svg{position:absolute;inset:0;width:100%;height:100%}
+.item h4{margin:0;font:400 1.35rem/1.1 var(--serif)}
+.item p{margin:2px 0 0;color:var(--ink-2);font-size:13.5px}
+.item-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.prog{display:flex;align-items:center;gap:4px;margin-top:8px;flex-wrap:wrap}
+.prog span{font:600 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--paper-2);color:var(--ink-3)}
+.prog span.on{background:var(--ink);color:var(--paper)}
+.prog span.now{background:var(--cherry);color:#fff}
+.prog span.fail{background:transparent;color:var(--cherry);border:1px solid var(--cherry)}
+.prog i{width:12px;height:1px;background:var(--line)}
+.avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:var(--paper);font:italic 20px var(--serif)}
+.counter-row{display:flex;gap:6px;align-items:center}
+.counter-row .input{width:130px;padding:7px 10px}
+.score-chip{font:600 13px var(--mono);background:var(--leaf);color:#fff;border-radius:999px;padding:4px 10px}
+
+/* producer */
+.profile-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ptag{font:600 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2)}
+.ptag.ok{border-color:var(--leaf);color:var(--leaf)}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--ink);border-bottom:1px solid var(--line);margin-bottom:26px}
+.kpi{padding:16px 18px;border-right:1px solid var(--line)}
+.kpi:last-child{border-right:0}
+.kpi b{display:block;font:400 2.5rem/1 var(--serif)}
+.kpi.alert b{color:var(--cherry)}
+.prow{display:grid;grid-template-columns:84px minmax(0,1.3fr) minmax(0,2fr) .7fr .9fr auto;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);animation:rise .45s both;animation-delay:calc(var(--i,0)*60ms)}
+.calm .prow{animation:none}
+.prow h4{margin:0;font:400 1.35rem/1.1 var(--serif)}
+.prow p{margin:2px 0 0;font-size:13px;color:var(--ink-2)}
+.stepper{display:flex;align-items:center}
+.stepper b{width:11px;height:11px;border-radius:50%;border:2px solid var(--line);background:var(--card);flex:0 0 auto}
+.stepper i{flex:1;height:2px;background:var(--line)}
+.stepper .on{border-color:var(--cherry);background:var(--cherry)}
+.stepper i.on{background:var(--cherry)}
+.stepper .now{box-shadow:0 0 0 4px color-mix(in srgb,var(--cherry) 22%,transparent)}
+.stepper-label{font:600 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin-top:8px}
+.num b{display:block;font:600 14px var(--mono)}
+.num small{font-size:12px;color:var(--ink-2)}
+
+.wizard{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:30px;align-items:start}
+.wsteps{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.wsteps button{border:1px solid var(--line);background:transparent;border-radius:999px;padding:6px 12px;font:600 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);cursor:pointer}
+.wsteps button.done{color:var(--leaf);border-color:var(--leaf)}
+.wsteps button[aria-current=step]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.wsteps button:disabled{cursor:not-allowed}
+.wpanel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px}
+.wpanel h3{font-size:2rem;margin-bottom:4px}
+.wpanel>p{color:var(--ink-2);margin:0 0 18px}
+.wstack{display:grid;gap:18px}
+.lvpick{display:flex;gap:5px;flex-wrap:wrap}
+.lvpick label{position:relative;cursor:pointer}
+.lvpick input{position:absolute;opacity:0;pointer-events:none}
+.lvpick span{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 10px;font:600 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);transition:all .2s}
+.lvpick span::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c)}
+.lvpick input:checked+span{border-color:var(--c);color:var(--c);background:color-mix(in srgb,var(--c) 10%,transparent)}
+.lvpick input:focus-visible+span{outline:2px solid var(--cherry)}
+.wnav{display:flex;justify-content:space-between;gap:8px;margin-top:22px;flex-wrap:wrap}
+.wpreview{position:sticky;top:90px;display:grid;gap:12px}
+.wpreview .lot:hover{transform:none}
+.check{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.check li{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.check li::before{content:"!";width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--gold);color:#fff;font:700 13px var(--mono)}
+.check li.ok::before{content:"✓";background:var(--leaf)}
+.check span{color:var(--ink-2);font-size:13px;display:block}
+.wiz-err{margin-top:12px}
+
+/* toasts */
+.toasts{position:fixed;right:18px;top:80px;z-index:120;display:flex;flex-direction:column;gap:8px;width:min(380px,calc(100vw - 36px))}
+.toast{background:var(--ink);color:var(--paper);border-radius:14px;padding:12px 14px;box-shadow:0 18px 40px -14px rgba(0,0,0,.55);display:flex;gap:10px;align-items:center;animation:slideIn .45s cubic-bezier(.2,.8,.2,1);font-size:14px}
+body[data-view=subasta] .toast{background:#2a1d17;border:1px solid #3a2a21}
+.toast.out{animation:slideOut .3s forwards}
+.toast.err .t-ico{background:var(--cherry)}
+.t-ico{width:8px;height:8px;border-radius:50%;background:var(--crema);flex:0 0 auto}
+.tbtn{margin-left:auto;background:transparent;border:1px solid #6a5646;color:var(--crema);border-radius:999px;padding:4px 10px;font:600 12px var(--sans);cursor:pointer;white-space:nowrap}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}}
+@keyframes slideOut{to{opacity:0;transform:translateX(30px)}}
+
+/* ---- v2: tienda, cotizador y mercado ---- */
+.unit{font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-3)}
+.pre{white-space:pre-wrap;background:var(--paper);padding:12px;border-radius:10px;font:13px var(--mono)}
+.qty{display:flex;align-items:center;gap:8px}
+.qty .btn{width:30px;padding:0;justify-content:center}
+.hero-prod{outline:1px solid var(--gold);outline-offset:-1px}
+.track.wide{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:34px}
+.track.wide li{list-style:none}
+.track.wide .step{cursor:default;height:100%}
+.track.wide .step:hover{transform:none}
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:32px}
+.tool{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:transform .3s,box-shadow .3s,border-color .3s;font:inherit;color:inherit}
+.tool:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:var(--ink)}
+.tool b{font:400 1.9rem/1 var(--serif)}
+.tool span{color:var(--ink-2);flex:1}
+.tool small{font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--leaf)}
+.tool.int{background:var(--paper-2);border-style:dashed}
+.tool.int small{color:var(--cherry)}
+
+.ref-chip{display:flex;align-items:center;gap:6px 14px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+.ref-chip b{font-size:1.3rem}
+.ref-chip small{color:var(--ink-2);font-size:12px}
+.cot{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:26px;align-items:start}
+.cot-form{display:grid;gap:16px}
+.cot-form .wpanel{padding:20px}
+.cot-form h3{font-size:1.5rem;margin-bottom:14px}
+.cot-res{position:sticky;top:90px;display:grid;gap:14px}
+.res-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+.res-card .big{display:block;font:600 2.6rem/1.05 var(--mono);color:var(--cherry);margin:6px 0}
+.res-card .big small{font:500 13px var(--sans);color:var(--ink-2);margin-left:6px}
+.cbars{display:grid;gap:8px;margin:16px 0}
+.cbar{display:grid;grid-template-columns:96px 1fr auto;gap:10px;align-items:center;font-size:12.5px;color:var(--ink-2)}
+.cbar i{display:block;height:12px;border-radius:6px;width:var(--w);background:var(--ink-3);transition:width .4s}
+.cbar.ref i{background:var(--ink-3)}
+.cbar.hot i{background:var(--cherry)}
+.cbar.max i{background:repeating-linear-gradient(45deg,var(--leaf) 0 6px,color-mix(in srgb,var(--leaf) 60%,transparent) 6px 12px)}
+.cbar b{font-size:13px;color:var(--ink)}
+.res-card .prow-au{border-bottom-color:var(--line);color:var(--ink-2)}
+.res-card .prow-au b{color:var(--ink)}
+.res-card .prow-au.total b{color:var(--cherry);font-size:16px}
+.chain{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 16px}
+.chain div{position:relative;padding-right:8px}
+.chain div:not(.end)::after{content:"→";position:absolute;right:-4px;top:4px;color:var(--ink-3)}
+.chain b{display:block;font-size:1.1rem}
+.chain small{font-size:10.5px;color:var(--ink-2);line-height:1.2;display:block}
+.alerts{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.alerts li{border-radius:12px;padding:11px 14px;font-size:13.5px;border-left:4px solid var(--c);background:var(--card);border:1px solid var(--line);border-left:4px solid var(--c)}
+.al-bad{--c:var(--cherry)}.al-warn{--c:var(--gold)}.al-good{--c:var(--leaf)}
+.res-actions{display:flex;gap:8px;justify-content:flex-end}
+
+.mkt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.mkt{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.mkt small{color:var(--ink-2);font-size:12px}
+.mkt-in{border:0;border-bottom:2px solid var(--line);background:transparent;font:600 1.7rem var(--mono);padding:4px 0;width:100%;color:var(--ink)}
+.mkt-in:focus{outline:none;border-color:var(--cherry)}
+.mkt.act{justify-content:center;align-items:flex-start;gap:10px;background:var(--paper-2);border-style:dashed}
+.mkt-table th.best{color:var(--cherry)}
+.eqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:26px}
+.eq{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.eq b{display:block;font:600 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--cherry)}
+.eq span{color:var(--ink-2);font-size:13.5px}
+.signals{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:26px}
+.sig{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:12px;padding:14px 16px}
+.sig.hot{--c:var(--cherry)}.sig.ref{--c:var(--gold)}.sig.max{--c:var(--ink-3)}
+.sig b{display:block;font:400 1.4rem var(--serif)}
+.sig span{color:var(--ink-2);font-size:13.5px}
+.status{font:600 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2)}
+@media (max-width:1000px){.cot{grid-template-columns:1fr}.cot-res{position:static}}
+@media (max-width:640px){.chain{grid-template-columns:1fr 1fr}.chain div::after{display:none}}
+
+/* ---- inventario ---- */
+.item.lote{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);align-items:start;gap:22px}
+.lote-num .prow-au{border-bottom:1px dashed var(--line);color:var(--ink-2);font-size:13.5px}
+.lote-num .prow-au b{color:var(--ink)}
+.lote-num .prow-au.total b{color:var(--cherry);font-size:15px}
+.lote .chain{margin:10px 0 14px}
+.chain.small b{font-size:.95rem}
+.lote .stepper{margin-top:4px}
+.mini{font-size:12.5px;margin:8px 0 0;padding-left:10px;border-left:3px solid var(--c)}
+p.al-warn{--c:var(--gold);color:var(--gold)}
+p.al-bad{--c:var(--cherry);color:var(--cherry)}
+.lote .item-actions{justify-content:flex-start;margin-top:12px}
+@media (max-width:820px){.item.lote{grid-template-columns:1fr}}
+
+/* ---- clientes ---- */
+.item.cliente{grid-template-columns:auto minmax(0,1fr) auto}
+.est{font:600 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:999px;border:1px solid currentColor}
+.est.fiel{color:var(--leaf)}.est.nuevo{color:var(--doc)}.est.riesgo{color:var(--gold)}.est.perdido{color:var(--cherry)}
+.llamar{background:var(--paper-2);border:1px dashed var(--line);border-radius:16px;padding:16px 18px;margin-bottom:18px}
+.llamar h3{font-size:1.5rem;margin-bottom:10px}
+.rank{display:grid;gap:8px;margin-top:26px}
+.rk{display:grid;grid-template-columns:minmax(120px,1.1fr) minmax(0,2fr) auto;gap:14px;align-items:center;font-size:13.5px}
+.rk-n{font-weight:600}
+.rk-bar{display:block;height:14px;background:var(--paper-2);border-radius:7px;overflow:hidden}
+.rk-bar i{display:block;height:100%;width:var(--w);background:var(--cherry);animation:grow .9s cubic-bezier(.2,.7,.2,1)}
+@media (max-width:640px){.rk{grid-template-columns:1fr auto}.rk-bar{grid-column:1/-1}}
+
+/* sala de subasta */
+.auction{color:#f3e6d6}
+.auction .kicker{color:#a58f7c}
+.au-top{display:flex;justify-content:space-between;align-items:end;gap:14px;flex-wrap:wrap;margin-bottom:26px}
+.au-top .eyebrow{color:var(--ember)}
+.au-sub{margin:0;color:#bba48f}
+.au-grid{display:grid;grid-template-columns:1.15fr 1fr .85fr;gap:20px;align-items:stretch}
+.au-panel{background:linear-gradient(180deg,var(--roast-2),#170f0c);border:1px solid #2e211a;border-radius:22px;padding:22px;position:relative;overflow:hidden}
+.au-lot{display:flex;flex-direction:column;gap:12px;padding-bottom:130px}
+.au-title{font-size:clamp(3rem,6.5vw,5.4rem);line-height:.9;color:#f7ead9}
+.au-title em{color:var(--crema)}
+.au-facts{list-style:none;padding:0;margin:6px 0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.au-facts li{border-top:1px solid #3a2a21;padding-top:8px}
+.au-facts b{display:block;font:400 1.9rem/1 var(--serif);color:#fff}
+.au-facts small{font:500 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#a58f7c}
+.au-detail{margin:0;color:#bba48f;font-size:14px}
+.au-lot .btn{align-self:flex-start;position:relative;z-index:1}
+.au-ridge{position:absolute;left:0;right:0;bottom:0;height:120px}
+.au-console{display:flex;flex-direction:column;gap:16px}
+.clock{--p:100;position:relative;width:176px;aspect-ratio:1;margin:0 auto;border-radius:50%;background:conic-gradient(var(--ember) calc(var(--p)*1%),rgba(255,255,255,.07) 0);display:grid;place-items:center}
+.clock::before{content:"";position:absolute;inset:8px;border-radius:50%;background:var(--roast-2)}
+.clock>div{position:relative;text-align:center}
+.clock span{display:block;font:500 2.5rem/1 var(--mono);letter-spacing:-.02em;color:#fff}
+.clock small{font:600 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#a58f7c}
+.clock.urgent span{color:var(--ember);animation:throb 1s infinite}
+.clock.done{background:rgba(255,255,255,.07)}
+@keyframes throb{50%{opacity:.5}}
+.au-price{text-align:center}
+.au-price .lbl{color:#a58f7c}
+.au-price b{display:block;font:600 clamp(2.2rem,4.4vw,3.2rem)/1.1 var(--mono);color:#fff}
+.au-price b.flash{animation:flash 1s}
+@keyframes flash{0%{color:var(--ember);text-shadow:0 0 28px rgba(255,106,61,.8);transform:scale(1.06)}100%{color:#fff;text-shadow:none;transform:none}}
+.au-total{font:12.5px var(--mono);color:#bba48f}
+.au-status{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.rpill{font:600 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:999px;border:1px solid #5a4535;color:var(--crema)}
+.rpill.ok{color:#8fd19e;border-color:#3d6b48;background:rgba(80,160,100,.1)}
+.rpill.me{color:#1a0d07;background:var(--crema);border-color:var(--crema)}
+.rpill.warn{color:var(--ember);border-color:var(--ember)}
+.bidbox .quick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.qbtn{background:#241913;border:1px solid #3a2a21;color:#f3e6d6;border-radius:12px;padding:10px 4px;font:600 12.5px var(--mono);cursor:pointer;transition:border-color .2s,transform .15s}
+.qbtn:hover{border-color:var(--ember)}
+.qbtn:active{transform:scale(.96)}
+.qbtn small{display:block;font-size:10px;color:#a58f7c;font-weight:400}
+.bid-row{display:flex;gap:8px;margin-top:8px}
+.au-input{flex:1;background:#0e0907;border:1px solid #3a2a21;border-radius:12px;padding:12px;color:#fff;font:600 16px var(--mono);min-width:0}
+.au-input.shake{animation:shake .4s;border-color:var(--ember)}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.bidbtn{background:var(--ember);color:#1a0d07;border:0;border-radius:12px;padding:0 20px;font:700 15px var(--sans);cursor:pointer;box-shadow:0 10px 30px -10px rgba(255,106,61,.8)}
+.bidbtn:hover{filter:brightness(1.08)}
+.au-note{font-size:12.5px;color:#a58f7c;margin:10px 0 0}
+.au-feed{display:flex;flex-direction:column}
+.feed-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;gap:8px}
+.feed-head h3{font-size:1.7rem}
+.feed-head span{font-size:12px;color:#a58f7c}
+.au-feed ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;max-height:460px;overflow:auto}
+.bid{display:grid;grid-template-columns:1fr auto;gap:0 10px;padding:10px 12px;border-radius:12px;background:#1f1510;border:1px solid #2e211a}
+.bid.top{border-color:var(--ember);background:linear-gradient(90deg,rgba(255,106,61,.16),transparent)}
+.bid.me .who{color:var(--crema)}
+.bid.new{animation:bidIn .7s cubic-bezier(.2,.8,.2,1)}
+@keyframes bidIn{from{opacity:0;transform:translateX(26px) scale(.96);background:rgba(255,106,61,.4)}}
+.bid .who{font-weight:600;font-size:13.5px}
+.bid .p{font:600 14px var(--mono)}
+.bid .t{font:11px var(--mono);color:#8b7766;grid-column:1/-1}
+.bid.sys{display:block;background:transparent;border-style:dashed;color:var(--ember);font:12px var(--mono)}
+.au-lower{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}
+.au-lower h3{font-size:1.9rem;margin-bottom:8px}
+details.rule{border-bottom:1px solid #2e211a;padding:12px 0}
+details.rule summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:10px}
+details.rule summary::-webkit-details-marker{display:none}
+details.rule summary::after{content:"+";font-family:var(--mono);color:var(--ember)}
+details.rule[open] summary::after{content:"−"}
+details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
+.upcoming{display:grid;gap:10px}
+.up{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:12px 14px;border:1px solid #2e211a;border-radius:14px;transition:border-color .2s}
+.up:hover{border-color:#5a4535}
+.up .date{text-align:center;min-width:52px}
+.up .date b{display:block;font:400 2.1rem/1 var(--serif);color:var(--crema)}
+.up .date small,.up p small{font:600 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#a58f7c}
+.up p{margin:0;font-weight:600}
+.up p small{display:block;font-weight:400;letter-spacing:.04em;text-transform:none;font-size:12px}
+.au-result{border-radius:18px;padding:20px;text-align:center;background:repeating-linear-gradient(-45deg,#2a1d17 0 10px,#241813 10px 20px);border:1.5px solid var(--crema);animation:pop .5s}
+.au-result h3{font-size:2.5rem;line-height:1;color:var(--crema);transform:rotate(-1.5deg)}
+.au-result.lose h3{color:#f3e6d6}
+.au-result p{color:#d9c3ad;margin:10px 0 14px}
+.au-result .btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.ppanel .lbl{color:#a58f7c}
+.prow-au{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px dashed #3a2a21;font-size:14px}
+.prow-au b{font:600 14px var(--mono);text-align:right}
+.prow-au.total b{color:var(--crema);font-size:17px}
+.vs{display:grid;gap:6px;margin:14px 0 4px}
+.vs div{display:grid;grid-template-columns:90px 1fr;gap:8px;align-items:center;font:11px var(--mono);color:#a58f7c}
+.vs i{display:block;height:10px;border-radius:5px;width:var(--w);background:#5a4535;transition:width .6s}
+.vs .hot i{background:linear-gradient(90deg,var(--crema),var(--ember))}
+
+/* responsive */
+@media (max-width:1080px){.au-grid{grid-template-columns:1fr 1fr}.au-feed{grid-column:1/-1}.kpis{grid-template-columns:repeat(3,1fr)}.prow{grid-template-columns:72px minmax(0,1fr) minmax(0,1fr);gap:12px 18px}.prow>:nth-child(2){grid-column:2/-1}.prow>.stepper-wrap{grid-column:1/-1}.prow>:nth-child(4){grid-column:1/3}.prow>:nth-child(5){grid-column:3/4}.prow>.item-actions{grid-column:1/-1;justify-content:flex-start}}
+@media (max-width:900px){.hero{grid-template-columns:1fr;gap:30px}.tracks{grid-template-columns:1fr}.core{height:200px}.levels,.modes{grid-template-columns:1fr 1fr}.buyer-layout,.wizard,.passport{grid-template-columns:1fr}.filters,.wpreview{position:static}.au-lower{grid-template-columns:1fr}}
+@media (max-width:640px){.stats,.kpis{grid-template-columns:1fr 1fr}.stat,.kpi{border-bottom:1px solid var(--line)}.levels,.modes,.form-grid,.au-grid{grid-template-columns:1fr}.level{border-right:0;border-bottom:1px solid var(--line)}.item{grid-template-columns:56px 1fr}.item-actions{grid-column:1/-1;justify-content:flex-start}.tabs{margin-left:0;width:100%;justify-content:space-between}.tab{padding:7px 9px;font-size:12.5px}.brand small{display:none}.offer-sum{grid-template-columns:1fr 1fr}.prow{grid-template-columns:60px minmax(0,1fr)}.prow>*:nth-child(n+3){grid-column:1/-1}}
+
+</style>
+</head>
+<body data-view="inicio">
+<header class="top">
+  <div class="top-inner">
+    <button class="brand" data-act="go" data-to="inicio" aria-label="Altura, ir al inicio">
+      <svg class="mark" viewBox="0 0 28 20" aria-hidden="true"><path d="M1 19 L9 7 L13 12 L19 3 L27 19 Z" fill="currentColor"/></svg>
+      <b>Altura</b><small>café de Norte de Santander</small>
+    </button>
+    <nav class="tabs" aria-label="Secciones">
+      <button class="tab" data-act="go" data-to="inicio">Inicio</button>
+      <button class="tab" data-act="go" data-to="tienda">Tienda <span class="badge" id="b-cart" hidden></span></button>
+      <button class="tab" data-act="go" data-to="subasta"><span class="live-dot" id="nav-live"></span>Subasta <span class="mono nav-time" data-live-time></span></button>
+      <button class="tab" data-act="go" data-to="cotizador">Cotizador</button>
+      <button class="tab" data-act="go" data-to="inventario">Inventario</button>
+      <button class="tab" data-act="go" data-to="clientes">Clientes</button>
+      <button class="tab" data-act="go" data-to="mercado">Mercado</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="view"></main>
+
+<div class="tray" id="tray" hidden></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<dialog id="dlg">
+  <div class="dlg-head"><h3 id="dlg-title"></h3><button class="x" data-act="close" aria-label="Cerrar">✕</button></div>
+  <div class="dlg-body" id="dlg-body"></div>
+</dialog>
+
+<script>
+/* ---- core.js ---- */
+/* ============================================================
+   ALTURA · núcleo: configuración, datos, estado y utilidades
+   Modelo: compramos café a pequeños productores, le ponemos marca y lo vendemos.
+   Datos de ejemplo — reemplazar por los reales.
+   ============================================================ */
+const CONFIG = {
+  // Referencia FNC del día (editable en la vista Mercado). Fuente: federaciondecafeteros.org / preciocafe.com
+  fnc: { precioCarga: 2005000, factorBase: 94, fecha: "2026-09-16" },
+  mercado: { ny: 282, trm: 3128 },   // contrato C en US¢/lb y TRM del día
+  storageKey: "altura-v4",
+  whatsapp: "",                       // número para pedidos, formato 573001234567
+  marca: "Altura",
+};
+
+/* Supuestos de costos: cámbialos por tus cotizaciones reales */
+const COSTOS = {
+  transporte: 300,      // COP por kg de pergamino, finca → bodega
+  trilla: 500,          // COP por kg de pergamino
+  tueste: 5000,         // COP por kg de café verde (maquila)
+  empaque: 1300,        // COP por bolsa (bolsa + válvula + etiqueta)
+  indirectos: 8,        // % sobre ingresos (transporte de venta, comisiones, mermas)
+  mermaTueste: 17,      // % de peso que se pierde al tostar
+  cerezaAPergamino: 5,  // kg de cereza por kg de pergamino seco
+  margenObjetivo: 35,   // % de utilidad bruta que queremos
+  primaSugerida: 15,    // % por encima del comité que ofrecemos de entrada
+};
+
+const LV = {
+  DECLARADO:   { label: "Declarado",   c: "var(--ink-3)", k: 1, desc: "Lo afirma el productor.", ej: "Variedad: Geisha" },
+  DOCUMENTADO: { label: "Documentado", c: "var(--doc)",   k: 2, desc: "Tiene un documento que lo respalda.", ej: "Informe de trilla" },
+  VERIFICADO:  { label: "Verificado",  c: "var(--leaf)",  k: 3, desc: "Lo comprobamos nosotros o un tercero.", ej: "Catación Q-grader" },
+  CERTIFICADO: { label: "Certificado", c: "var(--gold)",  k: 4, desc: "Lo avala una entidad competente.", ej: "Sello orgánico" },
+};
+const PROC_COLOR = { Lavado: "#3f6a4b", Natural: "#9c3322", Honey: "#b98330", "Anaeróbico": "#6b3a5c" };
+const A = (v, nivel, fuente, fecha, extra = {}) => ({ v, nivel, fuente, fecha, ...extra });
+
+function seed() {
+  return {
+    v: 4, seq: 200,
+    /* Café que compramos y ya es nuestro */
+    compras: [
+      { id: "C-001", productor: "Familia fundadora", finca: "Finca Ejemplo A", municipio: "Chinácota", fecha: "2026-06-20",
+        estadoCafe: "Pergamino seco", kg: 250, factor: 92, humedad: 11, precioKg: 18500, sca: 85, destino: "Tostado", estado: "EMPACADO",
+        kgVerde: 190.2, kgTostado: 157.9, bolsas: 464, bolsasVendidas: 344, precioVenta: 32000, ingresos: 11008000,
+        costos: { compra: 4625000, trilla: 125000, tueste: 951000, empaque: 603200 } },
+      { id: "C-002", productor: "Don Ejemplo", finca: "Finca Ejemplo E", municipio: "Toledo", fecha: "2026-09-02",
+        estadoCafe: "Pergamino seco", kg: 125, factor: 90, humedad: 11, precioKg: 26000, sca: 88.5, destino: "Subasta", estado: "TRILLADO",
+        kgVerde: 97.2, costos: { compra: 3250000, trilla: 62500 } },
+      { id: "C-003", productor: "Doña Ejemplo", finca: "Finca Ejemplo C", municipio: "Arboledas", fecha: "2026-09-12",
+        estadoCafe: "Pergamino seco", kg: 180, factor: 94, humedad: 11.5, precioKg: 17000, sca: 83.5, destino: "Tostado", estado: "EN BODEGA",
+        costos: { compra: 3060000 } },
+    ],
+    /* Lo que vendemos con nuestra marca */
+    productos: [
+      { id: "P-001", loteId: "C-001", nombre: "Chinácota", sub: "Caturra lavado", origen: "Finca Ejemplo A · Chinácota", altitud: 1720, proceso: "Lavado",
+        variedad: "Caturra", puntaje: 85, tueste: "Medio", notas: ["Panela", "Mandarina", "Cacao"], presentacion: 340, precio: 32000, stock: 120,
+        nivel: "VERIFICADO", fuente: "Catación Q-grader", fecha: "2026-08-25", destacado: true },
+      { id: "P-002", nombre: "Toledo", sub: "Bourbon rosado natural", origen: "Finca Ejemplo E · Toledo", altitud: 1900, proceso: "Natural",
+        variedad: "Bourbon rosado", puntaje: 87.25, tueste: "Medio-claro", notas: ["Fresa", "Vino tinto", "Cacao"], presentacion: 250, precio: 46000, stock: 64,
+        nivel: "VERIFICADO", fuente: "Catación Q-grader", fecha: "2026-07-01" },
+      { id: "P-003", nombre: "Ragonvalia", sub: "Tabi lavado", origen: "Finca Ejemplo F · Ragonvalia", altitud: 1680, proceso: "Lavado",
+        variedad: "Tabi", puntaje: 85.75, tueste: "Medio", notas: ["Mandarina", "Miel", "Té negro"], presentacion: 340, precio: 34000, stock: 40,
+        nivel: "DOCUMENTADO", fuente: "Catación del tostador", fecha: "2026-01-15" },
+      { id: "P-004", nombre: "Mezcla de casa", sub: "Caturra + Castillo", origen: "Norte de Santander", altitud: 1600, proceso: "Lavado",
+        variedad: "Mezcla", puntaje: 83.5, tueste: "Medio-oscuro", notas: ["Chocolate", "Nuez", "Cuerpo alto"], presentacion: 500, precio: 38000, stock: 210,
+        nivel: "DECLARADO", fuente: "Nuestra tostión", fecha: "2026-09-01" },
+      { id: "P-005", nombre: "Chinácota", sub: "Caturra lavado · grano verde", origen: "Finca Ejemplo A · Chinácota", altitud: 1720, proceso: "Lavado",
+        variedad: "Caturra", puntaje: 85, tueste: "Verde (sin tostar)", notas: ["Para tostadores"], presentacion: 1000, precio: 42000, stock: 90,
+        nivel: "VERIFICADO", fuente: "Catación Q-grader", fecha: "2026-08-25", mayorista: true },
+    ],    clientes: [
+      { id: "CL-001", nombre: "Café Ejemplo Centro", tipo: "Cafetería", ciudad: "Cúcuta", tel: "300 111 1111" },
+      { id: "CL-002", nombre: "Tostaduría Ejemplo", tipo: "Tostador", ciudad: "Bucaramanga", tel: "300 222 2222" },
+      { id: "CL-003", nombre: "Tienda Ejemplo Pamplona", tipo: "Tienda", ciudad: "Pamplona", tel: "300 333 3333" },
+      { id: "CL-004", nombre: "Oficina Ejemplo", tipo: "Oficina", ciudad: "Cúcuta", tel: "" },
+    ],
+    pedidos: [
+      { id: "PD-101", clienteId: "CL-001", nombre: "Café Ejemplo Centro", ciudad: "Cúcuta", fecha: "2026-09-08", canal: "tienda",
+        items: [{ id: "P-001", nombre: "Chinácota", n: 12, precio: 32000 }, { id: "P-004", nombre: "Mezcla de casa", n: 6, precio: 38000 }], total: 612000 },
+      { id: "PD-102", clienteId: "CL-001", nombre: "Café Ejemplo Centro", ciudad: "Cúcuta", fecha: "2026-08-11", canal: "tienda",
+        items: [{ id: "P-001", nombre: "Chinácota", n: 10, precio: 32000 }], total: 320000 },
+      { id: "PD-103", clienteId: "CL-001", nombre: "Café Ejemplo Centro", ciudad: "Cúcuta", fecha: "2026-07-14", canal: "directo",
+        items: [{ id: "P-001", nombre: "Chinácota", n: 10, precio: 32000 }, { id: "P-003", nombre: "Ragonvalia", n: 4, precio: 34000 }], total: 456000 },
+      { id: "PD-104", clienteId: "CL-002", nombre: "Tostaduría Ejemplo", ciudad: "Bucaramanga", fecha: "2026-08-28", canal: "tienda",
+        items: [{ id: "P-005", nombre: "Chinácota verde", n: 30, precio: 42000 }], total: 1260000 },
+      { id: "PD-105", clienteId: "CL-002", nombre: "Tostaduría Ejemplo", ciudad: "Bucaramanga", fecha: "2026-06-30", canal: "tienda",
+        items: [{ id: "P-005", nombre: "Chinácota verde", n: 25, precio: 42000 }], total: 1050000 },
+      { id: "PD-106", clienteId: "CL-003", nombre: "Tienda Ejemplo Pamplona", ciudad: "Pamplona", fecha: "2026-05-18", canal: "directo",
+        items: [{ id: "P-002", nombre: "Toledo", n: 8, precio: 46000 }], total: 368000 },
+      { id: "PD-107", clienteId: "CL-004", nombre: "Oficina Ejemplo", ciudad: "Cúcuta", fecha: "2026-09-02", canal: "directo",
+        items: [{ id: "P-004", nombre: "Mezcla de casa", n: 4, precio: 38000 }], total: 152000 },
+    ],
+  };
+}
+
+function load() { try { const s = JSON.parse(localStorage.getItem(CONFIG.storageKey)); return s && s.v === 4 ? s : null; } catch { return null; } }
+function save() { try { localStorage.setItem(CONFIG.storageKey, JSON.stringify(S)); } catch {} }
+
+let S = load() || seed();
+const UI = { view: "inicio", animate: true, carrito: [], au: null, q: null, filtro: "todos" };
+
+/* ---------- utilidades ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmtNum = (n, dec = 0) => Number(n || 0).toLocaleString("es-CO", { minimumFractionDigits: dec, maximumFractionDigits: dec });
+const cop = (n) => "$" + fmtNum(Math.round(n || 0));
+const copK = (n) => (Math.abs(n) >= 1e6 ? "$" + fmtNum(n / 1e6, 1) + " M" : cop(n));
+const isoToday = () => new Date().toISOString().slice(0, 10);
+const fmtFecha = (iso) => iso ? new Date(iso + "T00:00:00").toLocaleDateString("es-CO", { day: "numeric", month: "short", year: "numeric" }) : "";
+const slug = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, "-");
+const nextId = (p) => `${p}-${S.seq++}`;
+const num = (id, def = 0) => { const el = $("#" + id); const v = el ? parseFloat(el.value) : NaN; return isNaN(v) ? def : v; };
+
+/* Precio del comité por kg de pergamino, ajustado por factor.
+   El precio se mueve con el café excelso que rinde la carga: 125 kg a factor F rinden 125·70/F kg. */
+function precioComiteKg(factor = CONFIG.fnc.factorBase) {
+  return (CONFIG.fnc.precioCarga * (CONFIG.fnc.factorBase / factor)) / 125;
+}
+/* Peso equivalente al 12 % de humedad (base de las transacciones en Colombia) */
+const pesoSeco12 = (kg, humedad) => (humedad > 12 ? kg * ((100 - humedad) / 88) : kg);
+const kgExcelso = (kgPergamino, factor) => kgPergamino * (70 / factor);
+const precioLbUSD = () => (CONFIG.mercado.ny / 100);
+
+/* ---------- montaña: la altitud como firma visual ---------- */
+function rng(seedStr) {
+  let a = 0; for (const ch of String(seedStr)) a = (a * 31 + ch.charCodeAt(0)) >>> 0;
+  return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+function ridge(o, { w = 320, h = 150, dark = false, label = true } = {}) {
+  const r = rng(o.id || o.nombre || "x"), alt = +(o.altitud?.v ?? o.altitud) || 1500, t = Math.min(1, Math.max(0.08, (alt - 1000) / 1200));
+  const col = PROC_COLOR[o.proceso?.v ?? o.proceso] || "#6a5646";
+  const peakX = w * (0.5 + r() * 0.3), peakY = h * (0.92 - t * 0.6);
+  const layer = (amp, off, jit) => {
+    let d = `M0 ${h}`;
+    for (let i = 0; i <= 14; i++) {
+      const x = (w * i) / 14, dist = Math.abs(x - peakX) / w;
+      const y = Math.min(h, Math.max(peakY + off, peakY + off + dist * h * amp + (r() - 0.5) * jit));
+      d += ` L${x.toFixed(1)} ${y.toFixed(1)}`;
+    }
+    return d + ` L${w} ${h} Z`;
+  };
+  const gid = "g" + Math.random().toString(36).slice(2, 9);
+  const lineCol = dark ? "rgba(243,230,214,.5)" : "rgba(29,20,15,.4)";
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">
+    <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".95"/><stop offset="1" stop-color="${col}" stop-opacity="${dark ? 0.25 : 0.5}"/></linearGradient></defs>
+    <path d="${layer(0.5, h * 0.12, 14)}" fill="${col}" opacity="${dark ? 0.28 : 0.2}"/>
+    <path class="front" d="${layer(1.05, 0, 10)}" fill="url(#${gid})"/>
+    ${label ? `<line x1="0" x2="${w}" y1="${peakY}" y2="${peakY}" stroke="${lineCol}" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>` : ""}
+  </svg>${label ? `<span class="alt-label" style="top:${((peakY / h) * 100).toFixed(1)}%">${fmtNum(alt)} msnm</span>` : ""}`;
+}
+
+/* ---------- modal y avisos ---------- */
+function modal(title, body, cls = "") {
+  const d = $("#dlg"); d.className = cls;
+  $("#dlg-title").innerHTML = title; $("#dlg-body").innerHTML = body;
+  d.querySelector(".dlg-body").scrollTop = 0;
+  if (!d.open) d.showModal();
+}
+const closeModal = () => $("#dlg").open && $("#dlg").close();
+
+function toast(msg, { label, act, type } = {}) {
+  const t = document.createElement("div");
+  t.className = "toast " + (type || "");
+  t.innerHTML = `<span class="t-ico"></span><span>${msg}</span>`;
+  const kill = () => { t.classList.add("out"); setTimeout(() => t.remove(), 300); };
+  if (label) { const b = document.createElement("button"); b.className = "tbtn"; b.textContent = label; b.onclick = () => { act(); kill(); }; t.append(b); }
+  $("#toasts").append(t);
+  setTimeout(kill, label ? 7000 : 4200);
+}
+function later(ms, fn) { setTimeout(() => { if (fn() !== false) { save(); softRefresh(); } }, ms); }
+
+/* ---- shop.js ---- */
+/* ============================================================
+   TIENDA: catálogo de nuestra marca, ficha del café y pedido
+   ============================================================ */
+const FILTROS = [["todos", "Todos"], ["tostado", "Tostado"], ["verde", "Grano verde"], ["alto", "86+ SCA"]];
+
+function pasaFiltro(p) {
+  const f = UI.filtro;
+  if (f === "tostado") return !p.mayorista;
+  if (f === "verde") return !!p.mayorista;
+  if (f === "alto") return p.puntaje >= 86;
+  return true;
+}
+const precioKgProducto = (p) => (p.precio / p.presentacion) * 1000;
+const enCarrito = (id) => UI.carrito.find((i) => i.id === id);
+
+function viewTienda() {
+  const lista = S.productos.filter(pasaFiltro);
+  return `<div class="view-head">
+      <div><p class="eyebrow reveal">Tienda · ${esc(CONFIG.marca)}</p>
+        <h2 class="reveal" style="--i:1">Café de <em>Norte de Santander</em>, tostado por nosotros</h2>
+        <p class="reveal" style="--i:2">Compramos el lote directo en la finca, lo trillamos, lo tostamos y lo vendemos con nuestra marca. Cada bolsa dice de qué finca salió.</p></div>
+      <div class="seg reveal" style="--i:3" role="group" aria-label="Filtros">
+        ${FILTROS.map(([k, t]) => `<button data-act="filtro" data-val="${k}" aria-pressed="${UI.filtro === k}">${t}</button>`).join("")}</div>
+    </div>
+    <div class="grid">${lista.length ? lista.map(prodCard).join("") : `<div class="empty"><h3>Sin café en esa categoría</h3></div>`}</div>`;
+}
+
+function prodCard(p, i = 0) {
+  const c = enCarrito(p.id);
+  return `<article class="lot reveal ${p.destacado ? "hero-prod" : ""}" style="--i:${i}">
+    <div class="lot-art" data-act="ficha" data-id="${p.id}" role="button" tabindex="0" aria-label="Ver ficha de ${esc(p.nombre)}">
+      ${ridge(p)}
+      <span class="state ${p.stock > 0 ? "st-publicado" : "st-vendido"}">${p.stock > 0 ? fmtNum(p.stock) + " disp." : "agotado"}</span>
+      <div class="lot-score"><b>${esc(p.puntaje)}</b><small style="color:${LV[p.nivel].c}">SCA · ${LV[p.nivel].label}</small></div>
+    </div>
+    <div class="lot-body">
+      <p class="kicker">${esc(p.origen)}</p>
+      <h3>${esc(p.nombre)}</h3>
+      <p class="varietal"><em>${esc(p.sub)}</em></p>
+      <ul class="notes">${p.notas.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
+      <div class="pip-meta"><span>${esc(p.tueste)}</span><span>${p.presentacion >= 1000 ? p.presentacion / 1000 + " kg" : p.presentacion + " g"}</span></div>
+      <div class="lot-price"><b>${cop(p.precio)}</b><small>${cop(precioKgProducto(p))}/kg</small></div>
+      <div class="lot-actions">
+        <button class="btn primary sm" data-act="add" data-id="${p.id}" ${p.stock ? "" : "disabled"}>${c ? `En el pedido (${c.n})` : "Agregar al pedido"}</button>
+        <button class="btn sm" data-act="ficha" data-id="${p.id}">Ficha</button>
+      </div>
+    </div></article>`;
+}
+
+function fichaProducto(id) {
+  const p = S.productos.find((x) => x.id === id);
+  const filas = [
+    ["Origen", p.origen], ["Altitud", fmtNum(p.altitud) + " msnm"], ["Variedad", p.variedad], ["Proceso", p.proceso],
+    ["Tueste", p.tueste], ["Puntaje SCA", `${p.puntaje} · ${LV[p.nivel].label.toLowerCase()} (${p.fuente}, ${fmtFecha(p.fecha)})`],
+    ["Perfil", p.notas.join(", ")], ["Presentación", p.presentacion >= 1000 ? p.presentacion / 1000 + " kg" : p.presentacion + " g"],
+    ["Precio", `${cop(p.precio)} · ${cop(precioKgProducto(p))} por kg`], ["Disponible", `${fmtNum(p.stock)} unidades`],
+  ];
+  modal(`${esc(p.nombre)} · <em>${esc(p.sub)}</em>`, `<div class="passport">
+    <div class="pp-cover dark-art">
+      <p class="kicker">${esc(CONFIG.marca)}</p><h3>${esc(p.nombre)}</h3>
+      <p class="varietal"><em>${esc(p.variedad)}</em> — ${esc(p.proceso)}</p>
+      <p class="pp-score">${esc(p.puntaje)}</p>
+      <div class="trust"><span class="lbl" style="color:#bba48f">${esc(p.tueste)} · ${p.presentacion >= 1000 ? p.presentacion / 1000 + " kg" : p.presentacion + " g"}</span></div>
+      <div class="pp-ridge">${ridge(p, { w: 300, h: 120, dark: true })}</div>
+    </div>
+    <div><div class="table-scroll"><table class="cmp-table"><tbody>
+      ${filas.map(([k, v]) => `<tr><th>${k}</th><td>${esc(v)}</td></tr>`).join("")}
+    </tbody></table></div>
+    <p class="hint">Trazabilidad: sabemos a qué productor le compramos este lote, cuánto le pagamos y cuándo se tostó.</p>
+    <div class="dlg-actions"><button class="btn primary" data-act="add" data-id="${p.id}" ${p.stock ? "" : "disabled"}>Agregar al pedido</button></div></div>
+  </div>`);
+}
+
+/* ---------- pedido ---------- */
+function addCarrito(id) {
+  const p = S.productos.find((x) => x.id === id), c = enCarrito(id);
+  if (c) { if (c.n < p.stock) c.n++; } else UI.carrito.push({ id, n: 1 });
+  render(); renderTray();
+  toast(`${esc(p.nombre)} agregado al pedido.`, { label: "Ver pedido", act: abrirPedido });
+}
+const totalCarrito = () => UI.carrito.reduce((s, i) => s + i.n * S.productos.find((p) => p.id === i.id).precio, 0);
+
+function renderTray() {
+  const t = $("#tray");
+  if (UI.view !== "tienda" || !UI.carrito.length) { t.hidden = true; return; }
+  t.hidden = false;
+  const n = UI.carrito.reduce((s, i) => s + i.n, 0);
+  t.innerHTML = `<span>${n} ${n === 1 ? "producto" : "productos"} · <b class="mono">${cop(totalCarrito())}</b></span>
+    <button class="btn sm" data-act="carrito-clear">Vaciar</button>
+    <button class="btn sm primary" data-act="pedido">Hacer pedido</button>`;
+}
+
+function abrirPedido() {
+  const filas = UI.carrito.map((i) => {
+    const p = S.productos.find((x) => x.id === i.id);
+    return `<tr><th>${esc(p.nombre)} <small class="src">${esc(p.sub)} · ${p.presentacion} g</small></th>
+      <td class="qty"><button class="btn sm" data-act="qty" data-id="${p.id}" data-d="-1" aria-label="Quitar uno">−</button>
+      <span class="mono">${i.n}</span>
+      <button class="btn sm" data-act="qty" data-id="${p.id}" data-d="1" aria-label="Agregar uno" ${i.n >= p.stock ? "disabled" : ""}>+</button></td>
+      <td class="mono">${cop(p.precio * i.n)}</td></tr>`;
+  }).join("");
+  modal("Tu <em>pedido</em>", `<div class="table-scroll"><table class="cmp-table"><tbody>${filas}
+    <tr><th>Total</th><td></td><td class="mono"><b>${cop(totalCarrito())}</b></td></tr></tbody></table></div>
+    <div class="form-grid" style="margin-top:16px">
+      <div class="field"><label class="lbl" for="pd-nombre">Nombre o negocio</label><input id="pd-nombre" class="input" placeholder="Cafetería…"></div>
+      <div class="field"><label class="lbl" for="pd-ciudad">Ciudad</label><input id="pd-ciudad" class="input" value="Cúcuta"></div>
+      <div class="field"><label class="lbl" for="pd-tel">WhatsApp</label><input id="pd-tel" class="input" type="tel" placeholder="300 000 0000"></div>
+      <div class="field"><label class="lbl" for="pd-nota">Nota</label><input id="pd-nota" class="input" placeholder="Molido, entrega…"></div>
+    </div>
+    <p class="hint">El pedido llega a nuestro WhatsApp y confirmamos disponibilidad y envío.</p>
+    <div class="dlg-actions"><button class="btn" data-act="close">Seguir viendo</button><button class="btn primary" data-act="pedido-enviar">Enviar pedido</button></div>`, "narrow");
+}
+
+function cambiarCantidad(id, d) {
+  const c = enCarrito(id), p = S.productos.find((x) => x.id === id);
+  if (!c) return;
+  c.n = Math.max(0, Math.min(p.stock, c.n + d));
+  if (!c.n) UI.carrito = UI.carrito.filter((i) => i.id !== id);
+  renderTray();
+  if (UI.carrito.length) abrirPedido(); else { closeModal(); render(); }
+}
+
+function enviarPedido() {
+  const nombre = $("#pd-nombre").value.trim();
+  if (!nombre) return toast("Escribe tu nombre o el del negocio.", { type: "err" });
+  const items = UI.carrito.map((i) => { const p = S.productos.find((x) => x.id === i.id); return { nombre: p.nombre, n: i.n, precio: p.precio }; });
+  const cl = upsertCliente(nombre, $("#pd-ciudad").value.trim(), $("#pd-tel").value.trim());
+  const pedido = { id: nextId("PD"), clienteId: cl.id, canal: "tienda", nombre, ciudad: $("#pd-ciudad").value.trim(), tel: $("#pd-tel").value.trim(), nota: $("#pd-nota").value.trim(),
+    items, total: totalCarrito(), fecha: isoToday() };
+  S.pedidos.unshift(pedido);
+  UI.carrito.forEach((i) => { const p = S.productos.find((x) => x.id === i.id); p.stock = Math.max(0, p.stock - i.n); atribuirVenta(p, i.n); });
+  UI.carrito = []; save(); closeModal(); render();
+  const texto = `Hola ${CONFIG.marca}, quiero pedir:\n${items.map((i) => `· ${i.n} × ${i.nombre}`).join("\n")}\nTotal: ${cop(pedido.total)}\nNombre: ${pedido.nombre}${pedido.ciudad ? " · " + pedido.ciudad : ""}`;
+  if (CONFIG.whatsapp) window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`, "_blank", "noopener");
+  toast(`Pedido ${pedido.id} registrado por ${cop(pedido.total)}.`, CONFIG.whatsapp ? {} : { label: "Ver texto", act: () => modal("Mensaje del pedido", `<pre class="pre">${esc(texto)}</pre><p class="hint">Configura <code>CONFIG.whatsapp</code> para que se envíe solo.</p>`, "narrow") });
+}
+
+/* ---- quote.js ---- */
+/* ============================================================
+   COTIZADOR (uso interno): cuánto podemos pagar en la finca
+   Cadena: cereza → pergamino seco → excelso (trilla) → tostado → bolsas
+   ============================================================ */
+function nuevaCot() {
+  return { estado: "Pergamino seco", kg: 125, factor: 94, humedad: 11, sca: 85,
+    precioCarga: CONFIG.fnc.precioCarga, ...COSTOS, presentacion: 340, precioVenta: 32000 };
+}
+
+function calcCot(d) {
+  const CER = Math.max(1, d.cerezaAPergamino);
+  const kgPerg = d.estado === "Cereza" ? d.kg / CER : d.estado === "Verde" ? (d.kg * d.factor) / 70 : d.kg;
+  const kgPerg12 = pesoSeco12(kgPerg, d.humedad);
+  const kgVerde = d.estado === "Verde" ? d.kg : kgExcelso(kgPerg12, d.factor);
+  const comiteKg = (d.precioCarga * (CONFIG.fnc.factorBase / d.factor)) / 125;
+  const valorComite = comiteKg * kgPerg12;
+
+  const kgTostado = kgVerde * (1 - d.mermaTueste / 100);
+  const bolsas = Math.floor((kgTostado * 1000) / Math.max(1, d.presentacion));
+  const ingresos = bolsas * d.precioVenta;
+
+  const costoProceso = d.transporte * kgPerg + d.trilla * kgPerg + d.tueste * kgVerde + d.empaque * bolsas + (ingresos * d.indirectos) / 100;
+  const maxTotal = ingresos * (1 - d.margenObjetivo / 100) - costoProceso;   // lo máximo que puede costar el café
+  const maxKg = kgPerg12 > 0 ? maxTotal / kgPerg12 : 0;
+  const sugeridoKg = Math.min(comiteKg * (1 + d.primaSugerida / 100), Math.max(maxKg, 0));
+  const sugeridoTope = comiteKg * (1 + d.primaSugerida / 100) > maxKg;
+
+  const compra = sugeridoKg * kgPerg12;
+  const costoTotal = compra + costoProceso;
+  const utilidad = ingresos - costoTotal;
+  const margen = ingresos > 0 ? (utilidad / ingresos) * 100 : 0;
+  const costoBolsa = bolsas ? costoTotal / bolsas : 0;
+  const extraProductor = (sugeridoKg - comiteKg) * kgPerg12;
+
+  return { kgPerg, kgPerg12, kgVerde, kgTostado, bolsas, comiteKg, valorComite, maxKg, sugeridoKg, sugeridoTope,
+    ingresos, costoProceso, compra, costoTotal, utilidad, margen, costoBolsa, extraProductor,
+    equilibrioBolsa: bolsas ? costoTotal / bolsas : 0 };
+}
+
+const fIn = (id, label, val, { step = 1, suf = "", min = 0 } = {}) =>
+  `<div class="field"><label class="lbl" for="q-${id}">${label}${suf ? ` <span class="unit">${suf}</span>` : ""}</label>
+   <input id="q-${id}" class="input mono" type="number" step="${step}" min="${min}" value="${val}" data-q="${id}"></div>`;
+
+function viewCotizador() {
+  const d = (UI.q ||= nuevaCot());
+  return `<div class="view-head">
+      <div><p class="eyebrow reveal">Uso interno · no es parte de la tienda</p>
+        <h2 class="reveal" style="--i:1">Cotizador <em>de finca</em></h2>
+        <p class="reveal" style="--i:2">Antes de ofrecer un precio: qué le pagaría hoy el comité por ese café, cuánto podemos pagar nosotros como máximo y con cuánto margen quedamos.</p></div>
+      <div class="ref-chip reveal" style="--i:3">
+        <span class="lbl">Referencia FNC · ${fmtFecha(CONFIG.fnc.fecha)}</span>
+        <b class="mono">${cop(CONFIG.fnc.precioCarga)}</b><small>carga de 125 kg · factor 94</small>
+        <button class="btn sm" data-act="go" data-to="mercado">Actualizar</button></div>
+    </div>
+    <div class="cot">
+      <form class="cot-form" onsubmit="return false">
+        <section class="wpanel">
+          <h3>1 · El café que ofrecen</h3>
+          <div class="form-grid">
+            <div class="field"><label class="lbl" for="q-estado">Estado</label>
+              <select id="q-estado" class="input" data-q="estado">${["Cereza", "Pergamino seco", "Verde"].map((o) => `<option ${o === d.estado ? "selected" : ""}>${o}</option>`).join("")}</select></div>
+            ${fIn("kg", "Cantidad", d.kg, { suf: "kg" })}
+            ${fIn("factor", "Factor de rendimiento", d.factor, { step: 0.5, suf: "kg cps → 70 kg excelso" })}
+            ${fIn("humedad", "Humedad", d.humedad, { step: 0.5, suf: "%" })}
+            ${fIn("sca", "Puntaje SCA", d.sca, { step: 0.25, suf: "si ya está catado" })}
+            ${fIn("cerezaAPergamino", "Cereza → pergamino", d.cerezaAPergamino, { step: 0.1, suf: "kg : 1 kg" })}
+          </div>
+          <p class="hint">El factor es lo que más mueve el precio: a factor 94, 125 kg de pergamino rinden 93 kg de excelso; a factor 100 solo rinden 87,5 kg.</p>
+        </section>
+        <section class="wpanel">
+          <h3>2 · Costos hasta la bolsa</h3>
+          <div class="form-grid">
+            ${fIn("transporte", "Transporte", d.transporte, { step: 50, suf: "COP/kg pergamino" })}
+            ${fIn("trilla", "Trilla", d.trilla, { step: 50, suf: "COP/kg pergamino" })}
+            ${fIn("tueste", "Tueste (maquila)", d.tueste, { step: 100, suf: "COP/kg verde" })}
+            ${fIn("empaque", "Empaque y etiqueta", d.empaque, { step: 100, suf: "COP/bolsa" })}
+            ${fIn("mermaTueste", "Merma de tueste", d.mermaTueste, { step: 0.5, suf: "%" })}
+            ${fIn("indirectos", "Indirectos y ventas", d.indirectos, { step: 0.5, suf: "% de la venta" })}
+          </div>
+        </section>
+        <section class="wpanel">
+          <h3>3 · Cómo lo vendemos</h3>
+          <div class="form-grid">
+            ${fIn("presentacion", "Presentación", d.presentacion, { step: 10, suf: "gramos" })}
+            ${fIn("precioVenta", "Precio de venta", d.precioVenta, { step: 500, suf: "COP por bolsa" })}
+            ${fIn("margenObjetivo", "Margen objetivo", d.margenObjetivo, { step: 1, suf: "%" })}
+            ${fIn("primaSugerida", "Prima sobre el comité", d.primaSugerida, { step: 1, suf: "% que ofrecemos de entrada" })}
+            ${fIn("precioCarga", "Precio FNC por carga", d.precioCarga, { step: 5000, suf: "COP · factor 94" })}
+          </div>
+        </section>
+      </form>
+      <aside class="cot-res" id="cot-res"></aside>
+    </div>
+    ${comprasHTML()}`;
+}
+
+function cotResHTML() {
+  const d = UI.q, r = calcCot(d);
+  const max = Math.max(r.comiteKg, r.sugeridoKg, r.maxKg, 1);
+  const barra = (label, v, cls) => `<div class="cbar ${cls}"><span>${label}</span><i style="--w:${Math.max(0, (v / max) * 100)}%"></i><b class="mono">${cop(v)}</b></div>`;
+  const alertas = [];
+  if (d.humedad > 12) alertas.push(["warn", `Humedad ${d.humedad} %: el peso se ajusta a base 12 % (${fmtNum(r.kgPerg12)} kg). Pide que lo sequen o descuenta el peso.`]);
+  if (d.humedad < 10) alertas.push(["warn", `Humedad ${d.humedad} %: café sobresecado, pierde calidad en taza.`]);
+  if (d.factor > 96) alertas.push(["warn", `Factor ${d.factor}: mucha pasilla y broca. Rinde poco; ofrece menos o no compres.`]);
+  if (r.sugeridoTope) alertas.push(["bad", `La prima de ${d.primaSugerida} % se pasa del máximo. Ofrece hasta ${cop(r.maxKg)}/kg o sube el precio de venta.`]);
+  if (r.margen < d.margenObjetivo - 0.5) alertas.push(["bad", `Margen ${r.margen.toFixed(1)} %, por debajo del objetivo.`]);
+  if (d.sca >= 86) alertas.push(["good", `${d.sca} SCA: candidato a subasta o a línea especial, no a la mezcla de casa.`]);
+  if (r.utilidad <= 0) alertas.push(["bad", "A este precio de venta el lote pierde plata."]);
+
+  return `<div class="res-card">
+      <span class="lbl">Máximo que podemos pagar</span>
+      <b class="big mono">${cop(r.maxKg)}<small>/kg pergamino</small></b>
+      <p class="hint">Con margen objetivo del ${d.margenObjetivo} %. Por encima de esto, el negocio no da.</p>
+      <div class="cbars">
+        ${barra("Comité hoy", r.comiteKg, "ref")}
+        ${barra("Nuestra oferta", r.sugeridoKg, "hot")}
+        ${barra("Nuestro tope", r.maxKg, "max")}
+      </div>
+      <div class="prow-au"><span>Oferta sugerida por el lote</span><b>${cop(r.sugeridoKg * r.kgPerg12)}</b></div>
+      <div class="prow-au"><span>Le pagarían en el comité</span><b>${cop(r.valorComite)}</b></div>
+      <div class="prow-au total"><span>El productor gana de más</span><b>${cop(r.extraProductor)}</b></div>
+    </div>
+    <div class="res-card">
+      <span class="lbl">De este lote salen</span>
+      <div class="chain">
+        <div><b class="mono">${fmtNum(r.kgPerg12)}</b><small>kg pergamino (12 %)</small></div>
+        <div><b class="mono">${fmtNum(r.kgVerde)}</b><small>kg verde tras trilla</small></div>
+        <div><b class="mono">${fmtNum(r.kgTostado)}</b><small>kg tostado</small></div>
+        <div class="end"><b class="mono">${fmtNum(r.bolsas)}</b><small>bolsas de ${d.presentacion} g</small></div>
+      </div>
+      <div class="prow-au"><span>Venta total</span><b>${cop(r.ingresos)}</b></div>
+      <div class="prow-au"><span>Compra del café</span><b>−${cop(r.compra)}</b></div>
+      <div class="prow-au"><span>Trilla, tueste, empaque, fletes</span><b>−${cop(r.costoProceso)}</b></div>
+      <div class="prow-au total"><span>Utilidad bruta</span><b>${cop(r.utilidad)} · ${r.margen.toFixed(1)} %</b></div>
+      <div class="prow-au"><span>Costo por bolsa</span><b>${cop(r.costoBolsa)}</b></div>
+      <div class="prow-au"><span>Precio mínimo por bolsa</span><b>${cop(r.equilibrioBolsa)}</b></div>
+    </div>
+    ${alertas.length ? `<ul class="alerts">${alertas.map(([k, t]) => `<li class="al-${k}">${t}</li>`).join("")}</ul>` : ""}
+    <div class="res-actions">
+      <button class="btn sm" data-act="cot-reset">Limpiar</button>
+      <button class="btn primary sm" data-act="cot-save">Registrar como compra</button>
+    </div>`;
+}
+
+function renderCot() { const el = $("#cot-res"); if (el) el.innerHTML = cotResHTML(); }
+
+function cotSave() {
+  const d = UI.q, r = calcCot(d);
+  modal("Registrar <em>compra</em>", `<div class="form-grid">
+      <div class="field"><label class="lbl" for="cs-prod">Productor</label><input id="cs-prod" class="input" placeholder="Nombre"></div>
+      <div class="field"><label class="lbl" for="cs-finca">Finca</label><input id="cs-finca" class="input" placeholder="Finca"></div>
+      <div class="field"><label class="lbl" for="cs-mun">Municipio</label><input id="cs-mun" class="input" value="Chinácota"></div>
+      <div class="field"><label class="lbl" for="cs-precio">Precio acordado (COP/kg)</label><input id="cs-precio" class="input mono" type="number" step="100" value="${Math.round(r.sugeridoKg)}"></div>
+      <div class="field"><label class="lbl" for="cs-destino">Destino</label><select id="cs-destino" class="input"><option>Tostado</option><option>Subasta</option><option>Venta en verde</option></select></div>
+    </div>
+    <p class="hint">Queda ${fmtNum(d.kg)} kg de ${d.estado.toLowerCase()}, factor ${d.factor}, humedad ${d.humedad} %.</p>
+    <div class="dlg-actions"><button class="btn" data-act="close">Cancelar</button><button class="btn primary" data-act="cot-save-ok">Guardar</button></div>`, "narrow");
+}
+function cotSaveOk() {
+  const d = UI.q;
+  const c = { id: nextId("C"), productor: $("#cs-prod").value.trim() || "Sin nombre", finca: $("#cs-finca").value.trim() || "—",
+    municipio: $("#cs-mun").value.trim(), fecha: isoToday(), estadoCafe: d.estado, kg: d.kg, factor: d.factor, humedad: d.humedad,
+    precioKg: +$("#cs-precio").value || 0, destino: $("#cs-destino").value, estado: "EN BODEGA" };
+  S.compras.unshift(c); save(); closeModal(); render();
+  toast(`Compra ${c.id} registrada: ${fmtNum(c.kg)} kg a ${cop(c.precioKg)}/kg.`);
+}
+
+function comprasHTML() {
+  if (!S.compras.length) return "";
+  const kg = S.compras.reduce((s, c) => s + c.kg, 0), inv = S.compras.reduce((s, c) => s + c.kg * c.precioKg, 0);
+  return `<section class="section">
+    <div class="view-head"><div><h2>Café <em>comprado</em></h2>
+      <p>${S.compras.length} compras · ${fmtNum(kg)} kg · ${copK(inv)} invertidos</p></div></div>
+    <div class="list">${S.compras.map((c, i) => `<div class="item" style="--i:${i}">
+      <span class="avatar">${esc(c.productor[0] || "?")}</span>
+      <div><p class="kicker">${esc(c.id)} · ${fmtFecha(c.fecha)} · ${esc(c.municipio)}</p>
+        <h4>${esc(c.productor)} <em class="muted">${esc(c.finca)}</em></h4>
+        <p class="mono">${fmtNum(c.kg)} kg ${esc(c.estadoCafe.toLowerCase())} · factor ${c.factor} · ${cop(c.precioKg)}/kg = ${cop(c.kg * c.precioKg)}</p>
+        <p class="hint" style="margin:6px 0 0">Rinde ~${fmtNum(kgExcelso(c.kg, c.factor))} kg verde · destino: ${esc(c.destino.toLowerCase())}</p></div>
+      <div class="item-actions"><span class="status">${esc(c.estado.toLowerCase())}</span></div></div>`).join("")}</div>
+  </section>`;
+}
+
+/* ---- inventory.js ---- */
+/* ============================================================
+   INVENTARIO (uso interno): de la compra a la bolsa vendida.
+   Responde: ¿cuánta plata hay quieta en bodega y cuánto llevamos recuperado?
+   ============================================================ */
+const ETAPAS = ["EN BODEGA", "TRILLADO", "TOSTADO", "EMPACADO", "VENDIDO"];
+
+const costoTotal = (c) => Object.values(c.costos || {}).reduce((s, v) => s + v, 0);
+const costoBolsa = (c) => (c.bolsas ? costoTotal(c) / c.bolsas : 0);
+const recuperado = (c) => c.ingresos || 0;
+const enJuego = (c) => Math.max(0, costoTotal(c) - recuperado(c));      // plata todavía sin recuperar
+const factorReal = (c) => (c.kgVerde ? (c.kg * 70) / c.kgVerde : null);
+const mermaReal = (c) => (c.kgVerde && c.kgTostado ? (1 - c.kgTostado / c.kgVerde) * 100 : null);
+const dias = (iso) => Math.round((Date.now() - new Date(iso + "T00:00:00")) / 86400000);
+const bolsasLibres = (c) => Math.max(0, (c.bolsas || 0) - (c.bolsasVendidas || 0));
+/* Valor de venta de lo que queda, al precio del producto ligado (o al último precio conocido) */
+function valorPendiente(c) {
+  const p = S.productos.find((x) => x.loteId === c.id);
+  const precio = p ? p.precio : c.precioVenta || 0;
+  return bolsasLibres(c) * precio;
+}
+
+function viewInventario() {
+  const abiertas = S.compras.filter((c) => c.estado !== "VENDIDO");
+  const invertido = S.compras.reduce((s, c) => s + costoTotal(c), 0);
+  const quieto = S.compras.reduce((s, c) => s + enJuego(c), 0);
+  const recup = S.compras.reduce((s, c) => s + recuperado(c), 0);
+  const porVender = S.compras.reduce((s, c) => s + valorPendiente(c), 0);
+  const kgBodega = abiertas.reduce((s, c) => s + (c.kgTostado || c.kgVerde || c.kg), 0);
+  return `<div class="view-head">
+      <div><p class="eyebrow reveal">Uso interno</p>
+        <h2 class="reveal" style="--i:1">Inventario <em>y costos reales</em></h2>
+        <p class="reveal" style="--i:2">Cada lote desde que se compra hasta que se vende la última bolsa. Aquí se ve cuánta plata está quieta.</p></div>
+      <div class="ref-chip reveal" style="--i:3"><span class="lbl">Plata sin recuperar</span><b class="mono">${copK(quieto)}</b>
+        <small>${fmtNum(kgBodega)} kg en bodega</small></div>
+    </div>
+    <div class="kpis reveal" style="--i:3">
+      <div class="kpi"><b data-count="${invertido}" data-pre="$">${cop(invertido)}</b><small>invertido en total</small></div>
+      <div class="kpi ${quieto > recup ? "alert" : ""}"><b data-count="${quieto}" data-pre="$">${cop(quieto)}</b><small>sin recuperar</small></div>
+      <div class="kpi"><b data-count="${recup}" data-pre="$">${cop(recup)}</b><small>ya vendido</small></div>
+      <div class="kpi"><b data-count="${porVender}" data-pre="$">${cop(porVender)}</b><small>valor de lo que queda</small></div>
+      <div class="kpi"><b data-count="${recup + porVender - invertido}" data-pre="$">${cop(recup + porVender - invertido)}</b><small>utilidad si se vende todo</small></div>
+    </div>
+    <div class="list">${S.compras.map(loteCard).join("")}</div>
+    <p class="hint">Los costos que no se han registrado todavía (trilla, tueste, empaque) no están sumados: el costo por bolsa sube cuando se registren.</p>`;
+}
+
+function loteCard(c, i) {
+  const idx = ETAPAS.indexOf(c.estado), total = costoTotal(c), rec = recuperado(c), pend = valorPendiente(c);
+  const util = rec + pend - total, margen = rec + pend > 0 ? (util / (rec + pend)) * 100 : 0;
+  const fr = factorReal(c), mm = mermaReal(c), d = dias(c.fecha);
+  const stepper = `<div class="stepper" aria-label="Etapa: ${esc(c.estado)}">${ETAPAS.map((s, k) =>
+    `${k ? `<i class="${k <= idx ? "on" : ""}"></i>` : ""}<b class="${k <= idx ? "on" : ""} ${k === idx ? "now" : ""}" title="${s.toLowerCase()}"></b>`).join("")}</div>
+    <div class="stepper-label">${esc(c.estado.toLowerCase())} · ${d} días en bodega</div>`;
+  const acciones = {
+    "EN BODEGA": `<button class="btn primary sm" data-act="inv-paso" data-id="${c.id}" data-p="trilla">Registrar trilla</button>`,
+    "TRILLADO": `<button class="btn primary sm" data-act="inv-paso" data-id="${c.id}" data-p="tueste">Registrar tueste</button>`,
+    "TOSTADO": `<button class="btn primary sm" data-act="inv-paso" data-id="${c.id}" data-p="empaque">Registrar empaque</button>`,
+    "EMPACADO": `<button class="btn primary sm" data-act="inv-paso" data-id="${c.id}" data-p="venta">Registrar venta directa</button>`,
+    "VENDIDO": `<span class="status">cerrado</span>`,
+  }[c.estado];
+  const detalle = [
+    [`${fmtNum(c.kg)} kg pergamino`, `factor declarado ${c.factor}${fr ? ` · real ${fr.toFixed(1)}` : ""}`],
+    c.kgVerde ? [`${fmtNum(c.kgVerde)} kg verde`, `tras trilla`] : null,
+    c.kgTostado ? [`${fmtNum(c.kgTostado)} kg tostado`, `merma ${mm.toFixed(1)} %`] : null,
+    c.bolsas ? [`${fmtNum(c.bolsas)} bolsas`, `${fmtNum(c.bolsasVendidas || 0)} vendidas · ${fmtNum(bolsasLibres(c))} en stock`] : null,
+  ].filter(Boolean);
+  return `<div class="item lote" style="--i:${i}">
+    <div><p class="kicker">${esc(c.id)} · ${fmtFecha(c.fecha)} · ${esc(c.municipio)}</p>
+      <h4>${esc(c.productor)} <em class="muted">${esc(c.finca)}</em></h4>
+      <div class="chain small">${detalle.map(([a, b], k) => `<div class="${k === detalle.length - 1 ? "end" : ""}"><b class="mono">${a}</b><small>${b}</small></div>`).join("")}</div>
+      ${stepper}</div>
+    <div class="lote-num">
+      <div class="prow-au"><span>Compra a ${cop(c.precioKg)}/kg</span><b>${cop(c.costos.compra)}</b></div>
+      ${["trilla", "tueste", "empaque", "otros"].filter((k) => c.costos[k]).map((k) => `<div class="prow-au"><span>${k[0].toUpperCase() + k.slice(1)}</span><b>${cop(c.costos[k])}</b></div>`).join("")}
+      <div class="prow-au"><span>Costo total${c.bolsas ? ` · ${cop(costoBolsa(c))}/bolsa` : ""}</span><b>${cop(total)}</b></div>
+      <div class="prow-au"><span>Recuperado</span><b>${cop(rec)}</b></div>
+      <div class="prow-au"><span>Queda por vender</span><b>${cop(pend)}</b></div>
+      <div class="prow-au total"><span>Utilidad proyectada</span><b>${cop(util)} · ${margen.toFixed(0)} %</b></div>
+      ${d > 120 && enJuego(c) > 0 ? `<p class="al-warn mini">${d} días en bodega: la catación pierde vigencia y la plata sigue quieta.</p>` : ""}
+      ${fr && fr > c.factor + 1.5 ? `<p class="al-bad mini">El factor real (${fr.toFixed(1)}) salió peor que el declarado (${c.factor}): rindió menos de lo pagado.</p>` : ""}
+      <div class="item-actions">${acciones}</div>
+    </div></div>`;
+}
+
+/* ---------- registrar cada paso ---------- */
+const PASOS = {
+  trilla: { titulo: "Registrar trilla", campos: [["kgVerde", "Café verde obtenido (kg)", (c) => Math.round(kgExcelso(c.kg, c.factor) * 10) / 10], ["costo", "Costo de la trilla (COP)", (c) => Math.round(c.kg * COSTOS.trilla)]], estado: "TRILLADO" },
+  tueste: { titulo: "Registrar tueste", campos: [["kgTostado", "Café tostado obtenido (kg)", (c) => Math.round(c.kgVerde * (1 - COSTOS.mermaTueste / 100) * 10) / 10], ["costo", "Costo del tueste (COP)", (c) => Math.round(c.kgVerde * COSTOS.tueste)]], estado: "TOSTADO" },
+  empaque: { titulo: "Registrar empaque", campos: [["presentacion", "Presentación (gramos)", () => 340], ["precioVenta", "Precio de venta por bolsa (COP)", () => 32000], ["costo", "Costo de empaque y etiquetas (COP)", (c) => Math.round((c.kgTostado * 1000 / 340) * COSTOS.empaque)]], estado: "EMPACADO" },
+  venta: { titulo: "Registrar venta directa", campos: [["bolsas", "Bolsas vendidas", () => 10], ["precio", "Precio por bolsa (COP)", (c) => c.precioVenta || 32000]], estado: "EMPACADO" },
+};
+
+function invPaso(id, paso) {
+  const c = S.compras.find((x) => x.id === id), p = PASOS[paso];
+  UI.paso = { id, paso };
+  modal(`${p.titulo} · <em>${esc(c.id)}</em>`, `<div class="form-grid">
+      ${p.campos.map(([k, label, def]) => `<div class="field"><label class="lbl" for="ip-${k}">${label}</label>
+        <input id="ip-${k}" class="input mono" type="number" step="1" value="${def(c)}"></div>`).join("")}
+    </div>
+    <p class="hint">${paso === "trilla" ? "Con el peso real calculamos el factor verdadero del lote."
+      : paso === "tueste" ? "Con el peso tostado sale la merma real, que casi siempre es distinta a la estimada."
+      : paso === "empaque" ? "Al empacar creamos el café en la tienda y cada venta descuenta de este lote."
+      : "Para ventas de contado, ferias o cafeterías que no pasan por la tienda."}</p>
+    <div class="dlg-actions"><button class="btn" data-act="close">Cancelar</button><button class="btn primary" data-act="inv-paso-ok">Guardar</button></div>`, "narrow");
+}
+
+function invPasoOk() {
+  const { id, paso } = UI.paso, c = S.compras.find((x) => x.id === id);
+  const v = (k) => num("ip-" + k, 0);
+  if (paso === "trilla") { c.kgVerde = v("kgVerde"); c.costos.trilla = v("costo"); c.estado = "TRILLADO"; }
+  if (paso === "tueste") { c.kgTostado = v("kgTostado"); c.costos.tueste = v("costo"); c.estado = "TOSTADO"; }
+  if (paso === "empaque") {
+    const g = v("presentacion") || 340;
+    c.bolsas = Math.floor((c.kgTostado * 1000) / g); c.bolsasVendidas = c.bolsasVendidas || 0;
+    c.precioVenta = v("precioVenta"); c.costos.empaque = v("costo"); c.estado = "EMPACADO";
+    const p = { id: nextId("P"), loteId: c.id, nombre: c.municipio, sub: `Lote ${c.id}`, origen: `${c.finca} · ${c.municipio}`,
+      altitud: 1700, proceso: "Lavado", variedad: "Por definir", puntaje: c.sca || 84, tueste: "Medio", notas: ["Recién empacado"],
+      presentacion: g, precio: c.precioVenta, stock: c.bolsas, nivel: "DECLARADO", fuente: "Nuestra tostión", fecha: isoToday() };
+    S.productos.unshift(p);
+    toast(`${fmtNum(c.bolsas)} bolsas listas. Ya aparecen en la tienda.`, { label: "Ver tienda", act: () => go("tienda") });
+  }
+  if (paso === "venta") {
+    const n = Math.min(v("bolsas"), bolsasLibres(c)), precio = v("precio");
+    c.bolsasVendidas = (c.bolsasVendidas || 0) + n; c.ingresos = (c.ingresos || 0) + n * precio;
+    const p = S.productos.find((x) => x.loteId === c.id); if (p) p.stock = Math.max(0, p.stock - n);
+    if (!bolsasLibres(c)) c.estado = "VENDIDO";
+    toast(`Venta registrada: ${n} bolsas por ${cop(n * precio)}.`);
+  }
+  save(); closeModal(); render();
+}
+
+/* Las ventas de la tienda se descuentan del lote que las produjo */
+function atribuirVenta(producto, n) {
+  const c = S.compras.find((x) => x.id === producto.loteId); if (!c) return;
+  c.bolsasVendidas = (c.bolsasVendidas || 0) + n;
+  c.ingresos = (c.ingresos || 0) + n * producto.precio;
+  if (!bolsasLibres(c)) c.estado = "VENDIDO";
+}
+
+/* ---- clients.js ---- */
+/* ============================================================
+   CLIENTES (uso interno): quién compra, cada cuánto y a quién llamar
+   ============================================================ */
+const TIPOS = ["Cafetería", "Tostador", "Tienda", "Oficina", "Persona"];
+
+const pedidosDe = (id) => S.pedidos.filter((p) => p.clienteId === id).sort((a, b) => b.fecha.localeCompare(a.fecha));
+const totalCliente = (id) => pedidosDe(id).reduce((s, p) => s + p.total, 0);
+
+/* Días promedio entre pedidos: sirve para saber cuándo deberían volver a pedir */
+function frecuencia(id) {
+  const f = pedidosDe(id).map((p) => new Date(p.fecha + "T00:00:00")).sort((a, b) => a - b);
+  if (f.length < 2) return null;
+  let s = 0; for (let i = 1; i < f.length; i++) s += (f[i] - f[i - 1]) / 86400000;
+  return Math.round(s / (f.length - 1));
+}
+function estadoCliente(id) {
+  const ps = pedidosDe(id); if (!ps.length) return { k: "nuevo", label: "sin pedidos" };
+  const d = dias(ps[0].fecha), fr = frecuencia(id);
+  if (d > 120) return { k: "perdido", label: `perdido · ${d} días`, d };
+  if (fr && d > fr * 1.5) return { k: "riesgo", label: `se atrasó · ${d} días`, d, fr };
+  if (!fr && d > 60) return { k: "riesgo", label: `no repite · ${d} días`, d };
+  if (ps.length >= 2) return { k: "fiel", label: `cada ~${fr} días`, d, fr };
+  return { k: "nuevo", label: `nuevo · hace ${d} días`, d };
+}
+function cafePreferido(id) {
+  const c = {};
+  pedidosDe(id).forEach((p) => p.items.forEach((i) => (c[i.nombre] = (c[i.nombre] || 0) + i.n)));
+  const top = Object.entries(c).sort((a, b) => b[1] - a[1])[0];
+  return top ? { nombre: top[0], n: top[1] } : null;
+}
+
+function viewClientes() {
+  const cs = S.clientes.map((c) => ({ ...c, total: totalCliente(c.id), n: pedidosDe(c.id).length, est: estadoCliente(c.id) }))
+    .sort((a, b) => b.total - a.total);
+  const ventas = S.pedidos.reduce((s, p) => s + p.total, 0);
+  const ticket = S.pedidos.length ? ventas / S.pedidos.length : 0;
+  const repiten = cs.filter((c) => c.n >= 2).length;
+  const alerta = cs.filter((c) => ["riesgo", "perdido"].includes(c.est.k));
+  const mes = S.pedidos.filter((p) => dias(p.fecha) <= 30).reduce((s, p) => s + p.total, 0);
+
+  /* Ranking de cafés por unidades vendidas */
+  const porCafe = {};
+  S.pedidos.forEach((p) => p.items.forEach((i) => {
+    porCafe[i.nombre] ||= { n: 0, plata: 0 };
+    porCafe[i.nombre].n += i.n; porCafe[i.nombre].plata += i.n * i.precio;
+  }));
+  const ranking = Object.entries(porCafe).sort((a, b) => b[1].plata - a[1].plata);
+  const maxPlata = Math.max(...ranking.map(([, v]) => v.plata), 1);
+
+  return `<div class="view-head">
+      <div><p class="eyebrow reveal">Uso interno</p>
+        <h2 class="reveal" style="--i:1">Clientes <em>y recompra</em></h2>
+        <p class="reveal" style="--i:2">Conseguir un cliente nuevo cuesta; que el de siempre vuelva a pedir, no. Aquí está a quién llamar esta semana.</p></div>
+      <button class="btn primary reveal" style="--i:3" data-act="cl-nuevo">Registrar venta</button>
+    </div>
+    <div class="kpis reveal" style="--i:3">
+      <div class="kpi"><b data-count="${cs.length}">${cs.length}</b><small>clientes</small></div>
+      <div class="kpi"><b data-count="${ventas}" data-pre="$">${cop(ventas)}</b><small>vendido en total</small></div>
+      <div class="kpi"><b data-count="${mes}" data-pre="$">${cop(mes)}</b><small>últimos 30 días</small></div>
+      <div class="kpi"><b data-count="${ticket}" data-pre="$">${cop(ticket)}</b><small>pedido promedio</small></div>
+      <div class="kpi ${alerta.length ? "alert" : ""}"><b data-count="${alerta.length}">${alerta.length}</b><small>por reactivar</small></div>
+    </div>
+
+    ${alerta.length ? `<div class="llamar reveal"><h3>Para llamar hoy</h3>
+      <div class="chips">${alerta.slice(0, 6).map((c) => `<button class="chip" data-act="cl-wa" data-id="${c.id}">${esc(c.nombre)} · ${c.est.d} días</button>`).join("")}</div></div>` : ""}
+
+    <div class="list">${cs.length ? cs.map(clienteCard).join("") : `<div class="empty"><h3>Sin clientes todavía</h3><p>Los pedidos de la tienda crean el cliente solo.</p></div>`}</div>
+
+    <section class="section">
+      <div class="section-head"><p class="eyebrow">Qué se vende</p><h2>Cafés <em>más pedidos</em></h2></div>
+      <div class="rank">${ranking.map(([nombre, v]) => `<div class="rk">
+        <span class="rk-n">${esc(nombre)}</span>
+        <span class="rk-bar"><i style="--w:${(v.plata / maxPlata) * 100}%"></i></span>
+        <span class="mono">${fmtNum(v.n)} u · ${cop(v.plata)}</span></div>`).join("")}</div>
+    </section>`;
+}
+
+function clienteCard(c, i) {
+  const pref = cafePreferido(c.id), ps = pedidosDe(c.id), ult = ps[0];
+  return `<div class="item cliente" style="--i:${i}">
+    <span class="avatar">${esc(c.nombre[0])}</span>
+    <div><p class="kicker">${esc(c.tipo)} · ${esc(c.ciudad)}${c.tel ? " · " + esc(c.tel) : ""}</p>
+      <h4>${esc(c.nombre)}</h4>
+      <p>${c.n} ${c.n === 1 ? "pedido" : "pedidos"} · ${cop(c.total)} en total${ult ? ` · último ${fmtFecha(ult.fecha)}` : ""}</p>
+      ${pref ? `<p class="hint" style="margin:6px 0 0">Su café: <b>${esc(pref.nombre)}</b> (${pref.n} unidades)</p>` : ""}
+    </div>
+    <div class="item-actions">
+      <span class="est ${c.est.k}">${c.est.label}</span>
+      <button class="btn sm" data-act="cl-ver" data-id="${c.id}">Historial</button>
+      <button class="btn primary sm" data-act="cl-wa" data-id="${c.id}">Escribirle</button>
+    </div></div>`;
+}
+
+function clienteVer(id) {
+  const c = S.clientes.find((x) => x.id === id), ps = pedidosDe(id), est = estadoCliente(id), fr = frecuencia(id);
+  modal(`${esc(c.nombre)} · <em>${esc(c.ciudad)}</em>`, `
+    <div class="offer-sum"><div><span class="lbl">Pedidos</span><b>${ps.length}</b></div>
+      <div><span class="lbl">Total</span><b class="mono">${cop(totalCliente(id))}</b></div>
+      <div><span class="lbl">Cada</span><b>${fr ? fr + " días" : "—"}</b></div></div>
+    <div class="table-scroll"><table class="cmp-table"><tbody>
+      ${ps.map((p) => `<tr><th>${fmtFecha(p.fecha)}<small class="src">${esc(p.id)}</small></th>
+        <td>${p.items.map((i) => `${i.n} × ${esc(i.nombre)}`).join("<br>")}</td>
+        <td class="mono">${cop(p.total)}</td></tr>`).join("")}
+    </tbody></table></div>
+    <p class="hint">${est.k === "fiel" ? `Pide cada ~${fr} días. Escribirle unos días antes evita que se quede sin café.`
+      : est.k === "riesgo" ? `Lleva ${est.d} días sin pedir y suele pedir cada ${fr || "—"}. Vale una llamada.`
+      : est.k === "perdido" ? `Lleva ${est.d} días sin comprar. Ofrécele algo nuevo o pregúntale qué pasó.`
+      : "Cliente nuevo: el segundo pedido es el que define si se queda."}</p>
+    <div class="dlg-actions"><button class="btn" data-act="cl-nuevo" data-id="${id}">Registrar venta</button>
+      <button class="btn primary" data-act="cl-wa" data-id="${id}">Escribirle por WhatsApp</button></div>`, "narrow");
+}
+
+/* Mensaje sugerido según su historia */
+function clienteWa(id) {
+  const c = S.clientes.find((x) => x.id === id), est = estadoCliente(id), pref = cafePreferido(id);
+  const nuevo = S.productos.find((p) => p.stock > 0 && (!pref || p.nombre !== pref.nombre));
+  const msg = est.k === "fiel"
+    ? `Hola ${c.nombre}, ¿cómo van? Ya casi cumplen ${est.fr} días del último pedido de ${pref?.nombre || "café"}. ¿Les preparo otro despacho esta semana?`
+    : est.k === "riesgo" || est.k === "perdido"
+    ? `Hola ${c.nombre}, hace ${est.d} días no hacen pedido. Tenemos ${nuevo ? nuevo.nombre + " " + nuevo.sub : "café fresco"} recién tostado. ¿Les mando una muestra?`
+    : `Hola ${c.nombre}, ¿cómo les fue con el ${pref?.nombre || "café"}? Si les gustó, les separo el siguiente lote.`;
+  if (CONFIG.whatsapp && c.tel) window.open(`https://wa.me/57${c.tel.replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+  else modal(`Mensaje para <em>${esc(c.nombre)}</em>`, `<pre class="pre">${esc(msg)}</pre>
+    <p class="hint">${c.tel ? "Configura tu WhatsApp en CONFIG para abrirlo directo." : "Este cliente no tiene teléfono guardado."}</p>
+    <div class="dlg-actions"><button class="btn primary" data-act="close">Listo</button></div>`, "narrow");
+}
+
+/* Registrar una venta hecha por fuera de la tienda */
+function clienteNuevo(id) {
+  const c = id ? S.clientes.find((x) => x.id === id) : null;
+  const disp = S.productos.filter((p) => p.stock > 0);
+  modal("Registrar <em>venta</em>", `<div class="form-grid">
+      <div class="field"><label class="lbl" for="cn-nombre">Cliente</label>
+        <input id="cn-nombre" class="input" list="clientes-l" value="${esc(c?.nombre || "")}" placeholder="Nombre o negocio">
+        <datalist id="clientes-l">${S.clientes.map((x) => `<option value="${esc(x.nombre)}">`).join("")}</datalist></div>
+      <div class="field"><label class="lbl" for="cn-tipo">Tipo</label><select id="cn-tipo" class="input">${TIPOS.map((t) => `<option ${t === c?.tipo ? "selected" : ""}>${t}</option>`).join("")}</select></div>
+      <div class="field"><label class="lbl" for="cn-ciudad">Ciudad</label><input id="cn-ciudad" class="input" value="${esc(c?.ciudad || "Cúcuta")}"></div>
+      <div class="field"><label class="lbl" for="cn-tel">WhatsApp</label><input id="cn-tel" class="input" type="tel" value="${esc(c?.tel || "")}" placeholder="300 000 0000"></div>
+      <div class="field"><label class="lbl" for="cn-prod">Café</label><select id="cn-prod" class="input">${disp.map((p) => `<option value="${p.id}">${esc(p.nombre)} · ${esc(p.sub)} (${p.stock} disp.)</option>`).join("")}</select></div>
+      <div class="field"><label class="lbl" for="cn-n">Unidades</label><input id="cn-n" class="input mono" type="number" min="1" value="1"></div>
+    </div>
+    <p class="hint">La venta descuenta el stock y se suma al lote que produjo ese café.</p>
+    <div class="dlg-actions"><button class="btn" data-act="close">Cancelar</button><button class="btn primary" data-act="cl-guardar">Guardar venta</button></div>`, "narrow");
+}
+
+function clienteGuardar() {
+  const nombre = $("#cn-nombre").value.trim();
+  if (!nombre) return toast("Falta el nombre del cliente.", { type: "err" });
+  const prod = S.productos.find((p) => p.id === $("#cn-prod").value);
+  const n = Math.max(1, Math.min(prod?.stock || 0, num("cn-n", 1)));
+  if (!prod || !n) return toast("No hay stock de ese café.", { type: "err" });
+  let cl = S.clientes.find((x) => x.nombre.toLowerCase() === nombre.toLowerCase());
+  if (!cl) { cl = { id: nextId("CL"), nombre, tipo: $("#cn-tipo").value, ciudad: $("#cn-ciudad").value.trim(), tel: $("#cn-tel").value.trim() }; S.clientes.unshift(cl); }
+  else { cl.tel = $("#cn-tel").value.trim() || cl.tel; cl.ciudad = $("#cn-ciudad").value.trim() || cl.ciudad; }
+  S.pedidos.unshift({ id: nextId("PD"), clienteId: cl.id, nombre: cl.nombre, ciudad: cl.ciudad, fecha: isoToday(), canal: "directo",
+    items: [{ id: prod.id, nombre: prod.nombre, n, precio: prod.precio }], total: n * prod.precio });
+  prod.stock -= n; atribuirVenta(prod, n);
+  save(); closeModal(); render();
+  toast(`Venta a ${esc(cl.nombre)}: ${n} × ${esc(prod.nombre)} = ${cop(n * prod.precio)}.`);
+}
+
+/* Los pedidos de la tienda crean o actualizan el cliente */
+function upsertCliente(nombre, ciudad, tel) {
+  let cl = S.clientes.find((x) => x.nombre.toLowerCase() === nombre.toLowerCase());
+  if (cl) { cl.tel = tel || cl.tel; cl.ciudad = ciudad || cl.ciudad; return cl; }
+  cl = { id: nextId("CL"), nombre, tipo: "Cafetería", ciudad, tel };
+  S.clientes.unshift(cl);
+  return cl;
+}
+
+/* ---- market.js ---- */
+/* ============================================================
+   MERCADO (uso interno): referencias del día, conversiones y
+   cuándo conviene sacar el café.
+   ============================================================ */
+function aplicarCfgGuardada() {
+  if (S.cfg?.fnc) Object.assign(CONFIG.fnc, S.cfg.fnc);
+  if (S.cfg?.mercado) Object.assign(CONFIG.mercado, S.cfg.mercado);
+}
+function guardarMercado() {
+  CONFIG.fnc.precioCarga = num("m-carga", CONFIG.fnc.precioCarga);
+  CONFIG.fnc.fecha = $("#m-fecha").value || CONFIG.fnc.fecha;
+  CONFIG.mercado.ny = num("m-ny", CONFIG.mercado.ny);
+  CONFIG.mercado.trm = num("m-trm", CONFIG.mercado.trm);
+  if (UI.q) UI.q.precioCarga = CONFIG.fnc.precioCarga;
+  S.cfg = { fnc: { ...CONFIG.fnc }, mercado: { ...CONFIG.mercado } };
+  save(); render();
+  toast("Referencias actualizadas. El cotizador ya usa estos valores.");
+}
+
+/* Precio internacional equivalente: US¢/lb → COP por kg de café verde */
+const nyCopKgVerde = () => (CONFIG.mercado.ny / 100) * CONFIG.mercado.trm / 0.4536;
+
+function viewMercado() {
+  const f = CONFIG.fnc, m = CONFIG.mercado;
+  const factores = [88, 90, 92, 94, 96, 98, 100];
+  const calendario = [
+    ["Norte de Santander", "Cosecha principal", "sep – dic", "Es cuando hay café para comprar y cuando más baja el precio en finca. Confirmar el calendario local del comité."],
+    ["Norte de Santander", "Traviesa o mitaca", "abr – jun", "Menos volumen; buen momento para microlotes y para vender lo guardado."],
+    ["Brasil", "Cosecha", "may – sep", "Marca el precio mundial: cosecha grande en Brasil empuja el contrato C hacia abajo."],
+    ["Mercado", "Trimestre de escasez", "mar – may", "Los inventarios del hemisferio norte están bajos antes de la cosecha brasileña; los cafés diferenciados se pagan mejor."],
+  ];
+  const señales = [
+    ["Vender ya", "El contrato C está alto y el peso débil (TRM alta): el precio interno sube con las dos cosas.", "hot"],
+    ["Guardar", "Café de 86+ puntos en plena cosecha: el mercado está lleno de café corriente y el especial se diluye.", "ref"],
+    ["Guardar con cuidado", "El pergamino bien seco aguanta meses, pero la catación pierde puntos: hay que catar de nuevo a los 6 meses.", "ref"],
+    ["No guardar", "Café con factor alto o humedad por encima de 12 %: se deteriora rápido. Sacarlo pronto.", "max"],
+  ];
+  return `<div class="view-head">
+      <div><p class="eyebrow reveal">Uso interno</p>
+        <h2 class="reveal" style="--i:1">Mercado <em>del día</em></h2>
+        <p class="reveal" style="--i:2">Actualiza estos tres números antes de salir a comprar. De ellos sale todo el cotizador.</p></div>
+    </div>
+    <div class="mkt-grid reveal" style="--i:2">
+      <div class="mkt"><span class="lbl">Precio interno FNC · carga de 125 kg</span>
+        <input id="m-carga" class="mkt-in mono" type="number" step="5000" value="${f.precioCarga}">
+        <small>factor 94 · ${cop(f.precioCarga / 125)} por kg de pergamino</small></div>
+      <div class="mkt"><span class="lbl">Contrato C · Nueva York</span>
+        <input id="m-ny" class="mkt-in mono" type="number" step="1" value="${m.ny}">
+        <small>US¢ por libra · ${cop(nyCopKgVerde())} por kg verde</small></div>
+      <div class="mkt"><span class="lbl">TRM</span>
+        <input id="m-trm" class="mkt-in mono" type="number" step="10" value="${m.trm}">
+        <small>COP por dólar</small></div>
+      <div class="mkt"><span class="lbl">Fecha de la referencia</span>
+        <input id="m-fecha" class="mkt-in" type="date" value="${f.fecha}">
+        <small>Publicado por la FNC cada día hábil</small></div>
+      <div class="mkt act"><button class="btn primary" data-act="mkt-save">Guardar referencias</button>
+        <small>Fuente: federaciondecafeteros.org · preciocafe.com</small></div>
+    </div>
+
+    <section class="section">
+      <div class="section-head"><p class="eyebrow">Tabla rápida</p><h2>Precio según <em>el factor</em></h2>
+        <p>El precio se mueve con lo que rinde la carga: a factor 94 rinde 93,1 kg de excelso; a factor 100 solo 87,5 kg.</p></div>
+      <div class="table-scroll"><table class="cmp-table mkt-table">
+        <thead><tr><th>Factor</th>${factores.map((x) => `<th class="${x === 94 ? "best" : ""}">${x}</th>`).join("")}</tr></thead>
+        <tbody>
+          <tr><th>kg de excelso por carga</th>${factores.map((x) => `<td class="mono">${fmtNum((125 * 70) / x, 1)}</td>`).join("")}</tr>
+          <tr><th>COP por carga</th>${factores.map((x) => `<td class="mono">${cop(f.precioCarga * (94 / x))}</td>`).join("")}</tr>
+          <tr><th>COP por kg pergamino</th>${factores.map((x) => `<td class="mono">${cop(precioComiteKg(x))}</td>`).join("")}</tr>
+          <tr><th>COP por arroba (12,5 kg)</th>${factores.map((x) => `<td class="mono">${cop(precioComiteKg(x) * 12.5)}</td>`).join("")}</tr>
+        </tbody></table></div>
+      <p class="hint">Cálculo propio a partir del precio de referencia. Las cooperativas aplican además castigos por humedad y por taza, así que el pago real puede ser algo menor.</p>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><p class="eyebrow">Equivalencias</p><h2>Las cuentas <em>de bolsillo</em></h2></div>
+      <div class="eqs">
+        ${[["1 carga", "125 kg de pergamino seco = 10 arrobas"], ["1 arroba", "12,5 kg"], ["Factor 94", "94 kg de pergamino → 70 kg de excelso"],
+           ["Trilla", "1 kg de pergamino → " + fmtNum(70 / 94, 3) + " kg de verde a factor 94"], ["Cereza", "~5 kg de cereza → 1 kg de pergamino seco"],
+           ["Tueste", "1 kg de verde → ~0,83 kg tostado (17 % de merma)"], ["Bolsa de 340 g", "~" + fmtNum(1000 / 340, 1) + " bolsas por kg tostado"],
+           ["Humedad", "Base de negociación: 12 %. Más húmedo, menos peso real"]].map(([k, v]) => `<div class="eq"><b>${k}</b><span>${v}</span></div>`).join("")}
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><p class="eyebrow">Calendario</p><h2>Cuándo hay café <em>y cuándo falta</em></h2></div>
+      <div class="table-scroll"><table class="cmp-table"><thead><tr><th>Dónde</th><th>Qué</th><th>Cuándo</th><th>Qué significa para nosotros</th></tr></thead>
+        <tbody>${calendario.map(([a, b, c, d]) => `<tr><th>${a}</th><td>${b}</td><td class="mono">${c}</td><td>${d}</td></tr>`).join("")}</tbody></table></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><p class="eyebrow">Señales</p><h2>Vender <em>o guardar</em></h2></div>
+      <div class="signals">${señales.map(([t, d, k]) => `<div class="sig ${k}"><b>${t}</b><span>${d}</span></div>`).join("")}</div>
+      <p class="hint">Contexto a septiembre de 2026: tras dos años de precios altos por escasez, el mercado espera una cosecha récord en Brasil y más oferta, aunque los inventarios siguen bajos. Revisar antes de decidir si guardamos café esperando mejor precio.</p>
+    </section>`;
+}
+
+/* ---- auction.js ---- */
+/* ============================================================
+   SUBASTA DE LOTES EXCEPCIONALES (simulada)
+   Subastamos café que ya compramos: la reserva protege nuestro costo.
+   ============================================================ */
+const YO = { nombre: "Tostaduría Ejemplo", ciudad: "Bucaramanga" };   // el postor que eres tú en la demo
+const BOTS = [
+  { name: "Tostador #214", city: "Bogotá", cap: 152000 },
+  { name: "Importador #12", city: "Seúl", cap: 171000 },
+  { name: "Cafetería #87", city: "Medellín", cap: 146000 },
+  { name: "Tostador #301", city: "Cúcuta", cap: 160000 },
+];
+const EXT_MS = 20000;
+
+/* El lote en subasta. Reemplazar por el del productor aliado cuando esté confirmado. */
+const AU_LOTE = {
+  id: "S-001", productor: "Productor aliado", finca: "Finca del aliado", municipio: "Chinácota", altitud: 1950,
+  variedad: "Geisha", proceso: "Natural", puntaje: 88.5, factor: 89, nivel: "VERIFICADO",
+  detalle: "Anaeróbico 96 h · Camas africanas 28 días", perfil: ["Jazmín", "Mango", "Vino blanco", "Bergamota"],
+  compraKgVerde: 78000,   // lo que nos costó por kg de café verde
+};
+
+function newAuction() {
+  const now = Date.now();
+  const costo = AU_LOTE.compraKgVerde * 30;
+  const a = { start: 120000, incr: 2000, reserve: 140000, kg: 30, minP: 3, dur: 150000, endsAt: now + 150000,
+    costo, ended: false, result: null, as: "comprador", bids: [], n: 0, seen: 0, rendered: -1, nextBot: now + 4000 };
+  [[0, 120000, -50], [3, 124000, -32], [1, 128000, -11]].forEach(([b, p, s]) =>
+    a.bids.unshift({ id: ++a.n, who: BOTS[b].name, city: BOTS[b].city, p, t: now + s * 1000 }));
+  a.seen = a.n;
+  return a;
+}
+const topBid = (a) => a.bids.find((b) => !b.sys);
+const minBid = (a) => (topBid(a) ? topBid(a).p + a.incr : a.start);
+const participants = (a) => new Set(a.bids.filter((b) => !b.sys).map((b) => b.who)).size;
+const mmss = (ms) => { const s = Math.ceil(ms / 1000); return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`; };
+const ago = (t) => { const s = Math.max(0, Math.round((Date.now() - t) / 1000)); return s < 60 ? `hace ${s} s` : `hace ${Math.floor(s / 60)} min`; };
+
+function placeBid(a, bid) {
+  const now = Date.now();
+  a.bids.unshift({ id: ++a.n, t: now, ...bid });
+  if (a.endsAt - now < EXT_MS) {
+    a.endsAt = now + EXT_MS;
+    a.bids.unshift({ id: ++a.n, sys: true, text: "Puja en los últimos 20 s · cierre extendido", t: now });
+  }
+}
+function botTick(a, now) {
+  if (now < a.nextBot) return;
+  const top = topBid(a), min = minBid(a);
+  const cands = BOTS.filter((b) => b.name !== top?.who && b.cap >= min);
+  if (cands.length) {
+    const b = cands[Math.floor(Math.random() * cands.length)];
+    const steps = Math.random() < 0.7 ? 0 : 1 + Math.floor(Math.random() * 2);
+    placeBid(a, { who: b.name, city: b.city, p: Math.min(b.cap, min + steps * a.incr) });
+  }
+  const left = a.endsAt - now;
+  a.nextBot = now + (left < 30000 ? 2500 + Math.random() * 4000 : 5000 + Math.random() * 7000);
+}
+function endAuction(a) {
+  a.ended = true;
+  const top = topBid(a);
+  const valid = !!top && top.p >= a.reserve && participants(a) >= a.minP;
+  a.result = { valid, top, reason: !top || top.p < a.reserve ? "No se alcanzó el precio de reserva." : "Participaron menos de 3 compradores." };
+  toast(valid ? (top.me ? `¡Ganaste el lote ${AU_LOTE.id} a ${cop(top.p)}/kg!` : `Lote adjudicado a ${esc(top.who)} por ${cop(top.p)}/kg.`) : "La subasta quedó desierta.",
+    UI.view === "subasta" ? {} : { label: "Ver", act: () => go("subasta") });
+}
+function myBid(steps) {
+  const a = UI.au; if (a.ended) return;
+  const p = steps ? minBid(a) + (steps - 1) * a.incr : num("au-custom", 0);
+  if (!(p >= minBid(a))) {
+    const inp = $("#au-custom"); inp.classList.remove("shake"); void inp.offsetWidth; inp.classList.add("shake");
+    return toast(`La puja mínima es ${cop(minBid(a))}.`, { type: "err" });
+  }
+  placeBid(a, { who: "Tú", city: YO.ciudad, p, me: true });
+  $("#au-custom").value = "";
+  a.nextBot = Math.min(a.nextBot, Date.now() + 2500 + Math.random() * 3000);
+  updateAuction();
+}
+function resetAuction() { UI.au = newAuction(); render(); toast("Subasta reiniciada."); }
+
+/* ---------- vista ---------- */
+function viewSubasta() {
+  const a = UI.au, l = AU_LOTE;
+  const rules = [
+    ["¿Cuándo es válida?", "Se adjudica si la puja más alta alcanza el precio de reserva y participan al menos 3 compradores distintos. Si no, el lote vuelve al catálogo."],
+    ["Extensión anti-último-segundo", "Una puja en los últimos 20 segundos extiende el cierre 20 segundos más. Gana quien más valora el lote, no quien puja al final."],
+    ["Identidad y anonimato", "Los postores están verificados por nosotros, pero entre ellos solo ven un código."],
+    ["Muestras previas", "Los inscritos pueden pedir 100 g para catar antes de la subasta."],
+    ["Incumplimiento", "El ganador tiene 48 horas para confirmar el pago. Si no, el lote pasa al segundo postor."],
+  ];
+  const upcoming = [["12", "oct", "Microlotes de Toledo", "6 lotes · 84–87 SCA"], ["26", "oct", "Geisha y Sidra del Norte de Santander", "4 lotes · 86+ SCA"], ["09", "nov", "Procesos experimentales", "5 lotes · anaeróbicos y honey"]];
+  return `<section class="auction">
+    <div class="au-top">
+      <div><p class="eyebrow reveal"><span class="live-dot ${a.ended ? "off" : ""}"></span> Subasta · lote ${esc(l.id)}</p>
+        <p class="au-sub reveal" style="--i:1">Precio de salida ${cop(a.start)}/kg · incremento mínimo ${cop(a.incr)} · ${a.kg} kg de café verde</p></div>
+      <div class="seg dark reveal" style="--i:2" role="group" aria-label="Ver como">
+        <button data-act="au-as" data-as="comprador" aria-pressed="${a.as === "comprador"}">Ver como comprador</button>
+        <button data-act="au-as" data-as="interno" aria-pressed="${a.as === "interno"}">Ver como ${esc(CONFIG.marca)}</button></div>
+    </div>
+    <div class="au-grid">
+      <article class="au-panel au-lot reveal dark-art" style="--i:1">
+        <p class="kicker">${esc(l.finca)} · ${esc(l.municipio)}, Norte de Santander</p>
+        <h2 class="au-title">${esc(l.variedad)} <em>${esc(l.proceso)}</em></h2>
+        <ul class="au-facts">
+          <li><b>${esc(l.puntaje)}</b><small>SCA · ${LV[l.nivel].label}</small></li>
+          <li><b>${fmtNum(l.altitud)}</b><small>msnm · verificado</small></li>
+          <li><b>${a.kg} kg</b><small>verde · lote único</small></li>
+          <li><b>${esc(l.factor)}</b><small>Factor de rendimiento</small></li>
+        </ul>
+        <p class="au-detail">${esc(l.detalle)}</p>
+        <ul class="notes dark">${l.perfil.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
+        <p class="au-note">Comprado por nosotros a ${esc(l.productor)}. Lo subastamos porque es un lote pequeño y excepcional: la subasta le saca más valor que la bolsa de 340 g.</p>
+        <div class="au-ridge">${ridge(l, { w: 420, h: 120, dark: true })}</div>
+      </article>
+      <div class="au-panel au-console reveal" style="--i:2">
+        <div class="clock" id="au-clock"><div><span id="au-time">--:--</span><small id="au-clock-lbl">restante</small></div></div>
+        <div class="au-price"><span class="lbl">Puja más alta · COP/kg</span><b id="au-price">—</b><span class="au-total" id="au-total"></span></div>
+        <div class="au-status" id="au-status"></div>
+        <div id="au-controls"></div>
+      </div>
+      <aside class="au-panel au-feed reveal" style="--i:3">
+        <div class="feed-head"><h3>Pujas en vivo</h3><span class="mono" id="au-part"></span></div>
+        <ol id="au-feed"></ol>
+      </aside>
+    </div>
+    <div class="au-lower">
+      <section class="au-panel reveal" style="--i:4"><h3>Reglas <em>de la sala</em></h3>
+        ${rules.map(([t, p], i) => `<details class="rule" ${i === 0 ? "open" : ""}><summary>${t}</summary><p>${p}</p></details>`).join("")}</section>
+      <section class="au-panel reveal" style="--i:5"><h3>Próximas <em>subastas</em></h3><div class="upcoming">
+        ${upcoming.map(([d, m, t, s]) => `<div class="up"><div class="date"><b>${d}</b><small>${m}</small></div><p>${t}<small>${s}</small></p><button class="btn sm" data-act="remind">Avisarme</button></div>`).join("")}
+        </div><p class="au-note">Fechas de ejemplo.</p>
+        <button class="btn sm" data-act="au-reset" style="margin-top:10px">Reiniciar subasta de demostración</button></section>
+    </div>
+  </section>`;
+}
+
+function controlsHTML() {
+  const a = UI.au;
+  if (a.ended) {
+    const r = a.result;
+    if (!r.valid) return `<div class="au-result lose"><h3>Subasta desierta</h3><p>${r.reason} El lote vuelve al catálogo y lo vendemos tostado.</p><div class="btns"><button class="btn" data-act="au-reset">Reiniciar demo</button></div></div>`;
+    const sobreCosto = ((r.top.p * a.kg) / a.costo - 1) * 100;
+    return r.top.me
+      ? `<div class="au-result"><h3>¡Adjudicado a ti!</h3><p>${a.kg} kg × ${cop(r.top.p)} = <b>${cop(r.top.p * a.kg)}</b>. Tienes 48 h para confirmar el pago.</p>
+         <div class="btns"><button class="btn primary" data-act="go" data-to="tienda">Ver la tienda</button><button class="btn" data-act="au-reset">Reiniciar demo</button></div></div>`
+      : `<div class="au-result"><h3>Adjudicado</h3><p>${esc(r.top.who)} (${esc(r.top.city)}) ganó con ${cop(r.top.p)}/kg: <b>+${Math.round(sobreCosto)} %</b> sobre lo que nos costó el lote.</p><div class="btns"><button class="btn" data-act="au-reset">Reiniciar demo</button></div></div>`;
+  }
+  if (a.as === "interno") {
+    const top = topBid(a), p = top ? top.p : a.start, venta = p * a.kg;
+    const util = venta - a.costo, max = Math.max(venta, a.costo, 1);
+    return `<div class="ppanel"><span class="lbl">Vista interna · ${esc(CONFIG.marca)}</span>
+      <div class="prow-au"><span>Nos costó (${a.kg} kg verde)</span><b>${cop(a.costo)}</b></div>
+      <div class="prow-au"><span>Precio de reserva (privado)</span><b>${cop(a.reserve)}/kg ${p >= a.reserve ? "✓" : ""}</b></div>
+      <div class="prow-au"><span>Participantes distintos</span><b>${participants(a)} / ${a.minP} mín.</b></div>
+      <div class="prow-au"><span>Venta al precio actual</span><b>${cop(venta)}</b></div>
+      <div class="prow-au total"><span>Utilidad del lote</span><b>${cop(util)} · ${((util / venta) * 100 || 0).toFixed(0)} %</b></div>
+      <div class="vs"><div><span>Costo</span><i style="--w:${(a.costo / max) * 100}%"></i></div><div class="hot"><span>Subasta</span><i style="--w:${(venta / max) * 100}%"></i></div></div>
+      <p class="au-note">Si tostáramos estos 30 kg y los vendiéramos en bolsas de 340 g, serían unas ${fmtNum(Math.floor((30 * 0.83 * 1000) / 340))} bolsas. La subasta se justifica solo si supera esa venta.</p></div>`;
+  }
+  return `<div class="bidbox"><span class="lbl">Tu puja · mínimo <span class="mono" id="au-min"></span></span>
+    <div class="quick">${[1, 2, 5].map((s) => `<button class="qbtn" data-act="bid" data-steps="${s}"><span data-q="${s}"></span><small>${s === 1 ? "mínimo" : `+${s - 1} incr.`}</small></button>`).join("")}</div>
+    <div class="bid-row"><input id="au-custom" class="au-input" type="number" step="500" inputmode="numeric" placeholder="Otro monto" aria-label="Monto de la puja"><button class="bidbtn" data-act="bid-custom">Pujar</button></div>
+    <p class="au-note">Pujas como <b>${esc(YO.nombre)}</b>; los demás ven un código. Pujar es un compromiso de compra.</p></div>`;
+}
+
+function updateAuction() {
+  const a = UI.au, clock = $("#au-clock"); if (!clock) return;
+  const left = Math.max(0, a.endsAt - Date.now());
+  clock.style.setProperty("--p", a.ended ? 0 : Math.min(100, (left / a.dur) * 100).toFixed(2));
+  clock.classList.toggle("urgent", !a.ended && left < EXT_MS);
+  clock.classList.toggle("done", a.ended);
+  $("#au-time").textContent = a.ended ? "00:00" : mmss(left);
+  $("#au-clock-lbl").textContent = a.ended ? "cerrada" : "restante";
+
+  const c = $("#au-controls"), mode = a.ended ? "end" : a.as;
+  const changed = a.bids.length !== a.rendered, remount = c.dataset.mode !== mode;
+  if (remount || (mode === "interno" && changed)) { c.innerHTML = controlsHTML(); c.dataset.mode = mode; }
+  if (!changed && !remount) { refreshAgo(); return; }
+  a.rendered = a.bids.length;
+
+  const top = topBid(a), priceEl = $("#au-price"), txt = cop(top ? top.p : a.start);
+  if (priceEl.textContent !== txt) { priceEl.textContent = txt; priceEl.classList.remove("flash"); void priceEl.offsetWidth; priceEl.classList.add("flash"); }
+  $("#au-total").textContent = top ? `${a.kg} kg × ${txt} = ${cop(top.p * a.kg)} · líder: ${top.me ? "tú" : top.who}` : "Sin pujas todavía";
+  const ext = a.bids.filter((b) => b.sys).length;
+  $("#au-status").innerHTML = `<span class="rpill ${top && top.p >= a.reserve ? "ok" : ""}">${top && top.p >= a.reserve ? "Reserva alcanzada" : "Reserva no alcanzada"}</span>
+    ${top?.me && !a.ended ? `<span class="rpill me">Vas ganando</span>` : ""}
+    ${!top?.me && a.bids.some((b) => b.me) && !a.ended ? `<span class="rpill warn">Te superaron</span>` : ""}
+    ${ext ? `<span class="rpill">${ext} extensión${ext > 1 ? "es" : ""}</span>` : ""}`;
+  $("#au-part").textContent = `${participants(a)} participantes`;
+  const min = $("#au-min");
+  if (min) { min.textContent = cop(minBid(a)); document.querySelectorAll("[data-q]").forEach((q) => (q.textContent = cop(minBid(a) + (q.dataset.q - 1) * a.incr))); }
+  const topId = top?.id;
+  $("#au-feed").innerHTML = a.bids.slice(0, 14).map((b) => b.sys
+    ? `<li class="bid sys ${b.id > a.seen ? "new" : ""}">${b.text}</li>`
+    : `<li class="bid ${b.id === topId ? "top" : ""} ${b.me ? "me" : ""} ${b.id > a.seen ? "new" : ""}"><span class="who">${esc(b.who)} <span class="muted">· ${esc(b.city)}</span></span><span class="p">${cop(b.p)}</span><span class="t" data-t="${b.t}">${ago(b.t)}</span></li>`).join("");
+  a.seen = a.n;
+}
+function refreshAgo() { document.querySelectorAll("#au-feed [data-t]").forEach((el) => (el.textContent = ago(+el.dataset.t))); }
+
+/* ---- main.js ---- */
+/* ============================================================
+   INICIO + enrutado, render, eventos y reloj de la subasta
+   ============================================================ */
+function viewInicio() {
+  const a = UI.au, l = AU_LOTE;
+  const stock = S.productos.reduce((s, p) => s + p.stock, 0);
+  const kgComprados = S.compras.reduce((s, c) => s + c.kg, 0);
+  const productores = new Set(S.compras.map((c) => c.productor)).size;
+  const paso = (n, t, s) => `<li><div class="step"><span class="n">${n}</span><div><b>${t}</b><span>${s}</span></div></div></li>`;
+  const herramienta = (to, t, s, interno) => `<button class="tool ${interno ? "int" : ""}" data-act="go" data-to="${to}">
+      <b>${t}</b><span>${s}</span><small>${interno ? "uso interno" : "pública"}</small></button>`;
+  return `
+  <section class="hero">
+    <div>
+      <p class="eyebrow reveal">${esc(CONFIG.marca)} · Chinácota, Norte de Santander</p>
+      <h1 class="reveal" style="--i:1">Compramos el café.<br><em>Le ponemos nombre.</em></h1>
+      <p class="lede reveal" style="--i:2">Le compramos a pequeños productores pagando por encima del comité, trillamos, tostamos y vendemos con nuestra marca. Los lotes excepcionales van a subasta.</p>
+      <div class="cta reveal" style="--i:3">
+        <button class="btn primary lg" data-act="go" data-to="tienda">Ver la tienda →</button>
+        <button class="btn lg" data-act="go" data-to="cotizador">Abrir el cotizador</button>
+      </div>
+      <button class="live-link reveal" style="--i:4" data-act="go" data-to="subasta"><span class="live-dot ${a.ended ? "off" : ""}"></span>
+        <span>Subasta: ${esc(l.variedad)} ${esc(l.proceso)}</span><b class="mono" data-live-price>${cop(topBid(a)?.p || a.start)}</b><span class="mono" data-live-time></span></button>
+    </div>
+    <div class="hero-art reveal" style="--i:2">
+      <div class="hero-card">
+        <div class="hc-top"><span class="kicker">Lote ${esc(l.id)} · ${esc(l.municipio)}</span><span class="state st-en-subasta">en subasta</span></div>
+        <p class="hc-title">${esc(l.variedad)}<br><em>${esc(l.proceso)}</em></p>
+        <p class="hc-score">${esc(l.puntaje)}<small>SCA</small></p>
+        <div class="hc-ridge dark-art">${ridge(l, { w: 420, h: 180, dark: true })}</div>
+      </div>
+      <div class="float-chip" style="--x:-6%;--y:66%;--d:0s"><i style="--c:var(--leaf)"></i><span>Altitud <b>${fmtNum(l.altitud)} m</b></span><small>verificado · GPS</small></div>
+      <div class="float-chip" style="--x:58%;--y:24%;--d:-2s"><i style="--c:var(--leaf)"></i><span>Puntaje <b>${esc(l.puntaje)}</b></span><small>verificado · Q-grader</small></div>
+      <div class="float-chip" style="--x:54%;--y:84%;--d:-4s"><i style="--c:var(--doc)"></i><span>Factor <b>${esc(l.factor)}</b></span><small>informe de trilla</small></div>
+    </div>
+  </section>
+
+  <section class="stats reveal" style="--i:5">
+    <div class="stat"><b data-count="${S.productos.length}">${S.productos.length}</b><small>cafés en la tienda</small></div>
+    <div class="stat"><b data-count="${stock}">${fmtNum(stock)}</b><small>unidades en stock</small></div>
+    <div class="stat"><b data-count="${kgComprados}">${fmtNum(kgComprados)}</b><small>kg comprados</small></div>
+    <div class="stat"><b data-count="${productores}">${productores}</b><small>productores aliados</small></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><p class="eyebrow">Cómo trabajamos</p><h2>Del cafetal <em>a la bolsa</em></h2>
+      <p>Somos el comprador, no un intermediario que solo conecta. El café es nuestro desde que sale de la finca.</p></div>
+    <ol class="track wide">
+      ${paso(1, "Visitamos la finca", "Con el cotizador en la mano: factor, humedad y lo que paga el comité ese día.")}
+      ${paso(2, "Compramos y pagamos mejor", "Ofrecemos por encima del comité cuando el café lo merece, y de contado.")}
+      ${paso(3, "Trilla y tueste", "Llevamos el pergamino a trilla y tostamos por maquila mientras no tengamos tostadora.")}
+      ${paso(4, "Marca y empaque", "Cada bolsa dice de qué finca salió, a qué altura y quién la cultivó.")}
+      ${paso(5, "Vendemos", "Tienda propia, cafeterías y tostadores. Lo excepcional va a subasta.")}
+    </ol>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><p class="eyebrow">Las cuatro partes</p><h2>Qué hace <em>esta plataforma</em></h2></div>
+    <div class="tools">
+      ${herramienta("tienda", "Tienda", "El catálogo de nuestros cafés, con su origen y su puntaje, y pedidos por WhatsApp.")}
+      ${herramienta("subasta", "Subasta", "Para microlotes excepcionales: reserva, pujas en vivo y cierre con extensión.")}
+      ${herramienta("cotizador", "Cotizador de finca", "Cuánto le pagaría el comité, cuánto podemos pagar nosotros y con qué margen quedamos.", true)}
+      ${herramienta("inventario", "Inventario", "Cada lote desde la compra hasta la última bolsa: costos reales, plata quieta y margen.", true)}
+      ${herramienta("clientes", "Clientes", "Quién compra, cada cuánto, qué café prefiere y a quién toca volver a llamar.", true)}
+      ${herramienta("mercado", "Mercado", "Precio FNC, bolsa de Nueva York, TRM, tabla de factores y cuándo conviene vender.", true)}
+    </div>
+  </section>`;
+}
+
+const FOOT = `<footer class="foot"><span><b>${CONFIG.marca}</b> es un nombre provisional. Prototipo con <b>datos de ejemplo</b>: cafés, compras, pujas y costos son simulados.</span>
+  <button class="btn sm" data-act="reset-demo">Reiniciar datos de la demo</button></footer>`;
+
+const VIEWS = { inicio: viewInicio, tienda: viewTienda, subasta: viewSubasta, cotizador: viewCotizador, inventario: viewInventario, clientes: viewClientes, mercado: viewMercado };
+
+function render() {
+  const ae = document.activeElement, fid = ae && ae.id && !ae.closest("dialog") ? ae.id : null;
+  const sel = fid && typeof ae.selectionStart === "number" ? [ae.selectionStart, ae.selectionEnd] : null;
+  document.body.dataset.view = UI.view;
+  renderNav();
+  const v = $("#view");
+  v.classList.toggle("calm", !UI.animate);
+  v.innerHTML = VIEWS[UI.view]() + FOOT;
+  if (UI.view === "subasta") updateAuction();
+  if (UI.view === "cotizador") renderCot();
+  renderTray(); liveBits();
+  if (UI.animate) countUp();
+  UI.animate = false;
+  if (fid) { const n = document.getElementById(fid); if (n) { n.focus({ preventScroll: true }); if (sel) try { n.setSelectionRange(...sel); } catch {} } }
+}
+function softRefresh() { if (UI.view === "subasta") return renderNav(); render(); }
+function go(view, opts = {}) {
+  UI.view = view; UI.animate = true; closeModal();
+  try { if (location.hash !== "#" + view) history.replaceState(null, "", "#" + view); } catch {}
+  render();
+  try { window.scrollTo({ top: 0, behavior: "instant" }); } catch { window.scrollTo(0, 0); }
+}
+function renderNav() {
+  document.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-current", t.dataset.to === UI.view ? "page" : "false"));
+  const n = UI.carrito.reduce((s, i) => s + i.n, 0), b = $("#b-cart");
+  b.hidden = !n; b.textContent = n;
+  $("#nav-live").classList.toggle("off", UI.au.ended);
+}
+function liveBits() {
+  const a = UI.au, top = topBid(a);
+  document.querySelectorAll("[data-live-time]").forEach((el) => (el.textContent = a.ended ? "cerrada" : mmss(Math.max(0, a.endsAt - Date.now()))));
+  document.querySelectorAll("[data-live-price]").forEach((el) => (el.textContent = cop(top ? top.p : a.start)));
+}
+function countUp() {
+  document.querySelectorAll("[data-count]").forEach((el) => {
+    const target = +el.dataset.count, dec = +el.dataset.dec || 0, pre = el.dataset.pre || "", suf = el.dataset.suf || "", t0 = performance.now();
+    const stepFn = (now) => { const k = Math.min(1, (now - t0) / 900), e = 1 - Math.pow(1 - k, 3); el.textContent = pre + fmtNum(target * e, dec) + suf; if (k < 1) requestAnimationFrame(stepFn); };
+    requestAnimationFrame(stepFn);
+  });
+}
+
+/* ---------- eventos ---------- */
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-act]"); if (!el || el.disabled) return;
+  const { act, id } = el.dataset;
+  switch (act) {
+    case "go": return go(el.dataset.to);
+    case "close": return closeModal();
+    /* tienda */
+    case "filtro": UI.filtro = el.dataset.val; UI.animate = true; return render();
+    case "ficha": return fichaProducto(id);
+    case "add": return addCarrito(id);
+    case "qty": return cambiarCantidad(id, +el.dataset.d);
+    case "carrito-clear": UI.carrito = []; render(); return renderTray();
+    case "pedido": return abrirPedido();
+    case "pedido-enviar": return enviarPedido();
+    /* cotizador */
+    case "cot-reset": UI.q = nuevaCot(); UI.animate = false; return render();
+    case "cot-save": return cotSave();
+    case "cot-save-ok": return cotSaveOk();
+    /* mercado */
+    case "mkt-save": return guardarMercado();
+    /* inventario */
+    case "inv-paso": return invPaso(id, el.dataset.p);
+    case "inv-paso-ok": return invPasoOk();
+    /* clientes */
+    case "cl-ver": return clienteVer(id);
+    case "cl-wa": return clienteWa(id);
+    case "cl-nuevo": return clienteNuevo(id);
+    case "cl-guardar": return clienteGuardar();
+    /* subasta */
+    case "bid": return myBid(+el.dataset.steps);
+    case "bid-custom": return myBid(0);
+    case "au-as": UI.au.as = el.dataset.as; UI.animate = false; return render();
+    case "au-reset": return resetAuction();
+    case "remind": el.textContent = "✓ Te avisamos"; el.disabled = true; return;
+    case "reset-demo":
+      try { localStorage.removeItem(CONFIG.storageKey); } catch {}
+      S = seed(); UI.au = newAuction(); UI.carrito = []; UI.q = null; UI.filtro = "todos";
+      return go("inicio");
+  }
+});
+document.addEventListener("keydown", (e) => {
+  const t = e.target;
+  if ((e.key === "Enter" || e.key === " ") && t.getAttribute?.("role") === "button" && t.dataset.act) { e.preventDefault(); t.click(); }
+  if (e.key === "Enter" && t.id === "au-custom") myBid(0);
+});
+document.addEventListener("input", (e) => {
+  const t = e.target;
+  if (t.dataset.q && UI.q) { UI.q[t.dataset.q] = t.type === "number" ? (parseFloat(t.value) || 0) : t.value; renderCot(); }
+});
+$("#dlg").addEventListener("click", (e) => { if (e.target === $("#dlg")) closeModal(); });
+window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (VIEWS[v] && v !== UI.view) go(v); });
+
+/* ---------- arranque ---------- */
+aplicarCfgGuardada();
+UI.au = newAuction();
+const inicial = location.hash.slice(1);
+if (VIEWS[inicial]) UI.view = inicial;
+render();
+setInterval(() => {
+  const a = UI.au, now = Date.now();
+  if (!a.ended) { botTick(a, now); if (now >= a.endsAt) { endAuction(a); renderNav(); } }
+  liveBits();
+  if (UI.view === "subasta") updateAuction();
+}, 250);
+
+</script>
+</body>
+</html>
