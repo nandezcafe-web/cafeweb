@@ -26,8 +26,8 @@ function viewInicio() {
       <p class="eyebrow reveal">${esc(CONFIG.marca)} · ${esc(tx(CONFIG.lugar))}</p>
       <h1 class="reveal" style="--i:1">${en ? "Coffee with<br><em>a first name.</em>" : "Café con<br><em>nombre propio.</em>"}</h1>
       <p class="lede reveal" style="--i:2">${en
-        ? "We buy from farms in Norte de Santander, paying above the day’s reference, and sell each lot with its full data sheet: who grew it, at what altitude, who cupped it and when."
-        : "Le compramos a fincas de Norte de Santander, pagando por encima de la referencia del día, y vendemos cada lote con su ficha completa: quién lo cultivó, a qué altura, quién lo cató y cuándo."}</p>
+        ? "We grow our own coffee in Chinácota and choose, farm by farm, the best these mountains give. Every lot arrives with a name of its own: who grew it, how high it grew, and how it tastes."
+        : "Sembramos nuestro propio café en Chinácota y escogemos, finca por finca, lo mejor que dan estas montañas. Cada lote llega con nombre propio: quién lo cultivó, a qué altura creció y a qué sabe."}</p>
       <div class="cta reveal" style="--i:3">
         <button class="btn primary lg" data-act="go" data-to="cafes">${en ? "See the coffees" : "Ver los cafés"}</button>
         <button class="btn lg" data-act="go" data-to="subasta"><span class="live-dot ${a.ended ? "off" : ""}"></span> ${en ? "Live auction" : "Subasta en vivo"}</button>

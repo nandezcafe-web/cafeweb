@@ -256,9 +256,9 @@ function meta(view, id) {
   const M = {
     inicio: en
       ? { t: marca + " · Single origin Colombian coffee from Norte de Santander",
-          d: "Specialty coffee bought farm by farm in Norte de Santander, Colombia. One farm, one variety, and every figure with its source: altitude, process, cupping score and the farm it came from." }
+          d: "We grow coffee in Chinácota and choose the best lots from farms across Norte de Santander, Colombia. Single origin, one farm per coffee, with altitude, variety, process and cupping score for each lot." }
       : { t: marca + " · Café de origen de Norte de Santander",
-          d: "Café especial comprado finca por finca en Norte de Santander. Una finca, una variedad, y cada dato con su fuente: altura, proceso, puntaje de catación y la finca de donde salió." },
+          d: "Sembramos café en Chinácota y escogemos los mejores lotes de las fincas de Norte de Santander. Un café por finca, con su altura, su variedad, su proceso y su puntaje de catación." },
     cafes: en
       ? { t: "Coffees on sale · " + marca,
           d: "One coffee per farm: Pink Bourbon, Castillo and the Geisha lot going to auction. Colombian specialty coffee roasted in Norte de Santander and shipped countrywide." }
