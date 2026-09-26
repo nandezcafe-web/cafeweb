@@ -2,10 +2,6 @@
    MERCADO (uso interno): referencias del día, conversiones y
    cuándo conviene sacar el café.
    ============================================================ */
-function aplicarCfgGuardada() {
-  if (S.cfg?.fnc) Object.assign(CONFIG.fnc, S.cfg.fnc);
-  if (S.cfg?.mercado) Object.assign(CONFIG.mercado, S.cfg.mercado);
-}
 function guardarMercado() {
   CONFIG.fnc.precioCarga = num("m-carga", CONFIG.fnc.precioCarga);
   CONFIG.fnc.fecha = $("#m-fecha").value || CONFIG.fnc.fecha;

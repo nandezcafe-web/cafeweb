@@ -9,7 +9,7 @@ Compramos café a pequeños productores, le ponemos marca y lo vendemos. Al inic
 2. **El Geisha** — ficha completa: presentaciones (100 g, 250 g, 1 kg), ficha de transparencia con el nivel de verificación de cada dato, lo que le pagamos al productor frente a la referencia del día, receta y lista de espera.
 3. **Subasta** — reserva, pujas en vivo, extensión en los últimos 20 s y vista interna con costo y utilidad.
 
-**Interna (pestaña Admin)**
+**Interna — es otra página, en `admin/`, con correo y contraseña. No se enlaza desde el sitio público.**
 4. **Cotizador** — cuánto paga el comité hoy, cuánto podemos pagar y con qué margen.
 5. **Inventario** — cada lote de la compra a la bolsa vendida, con costos reales y plata quieta.
 6. **Clientes** — quién compra, cada cuánto, qué prefiere y a quién llamar.
@@ -31,7 +31,29 @@ Compramos café a pequeños productores, le ponemos marca y lo vendemos. Al inic
 node tools/serve.js prototipo 5174
 ```
 
-Y abrir `http://localhost:5174`. El archivo `prototipo/altura.html` es la misma página en un solo archivo, para enviar por WhatsApp o correo.
+```bash
+node tools/serve.js admin 5175
+```
+
+La tienda queda en `http://localhost:5174` y el panel en `http://localhost:5175`.
+
+## Armar los archivos
+
+El código vive en `prototipo/js/`. Después de cualquier cambio:
+
+```bash
+node tools/build.js
+```
+
+Eso genera `prototipo/altura.html` (la tienda en un solo archivo, para enviar por WhatsApp) y `admin/index.html` (el panel con login).
+
+## Cambiar la contraseña del panel
+
+```bash
+node tools/clave.js "una clave larga y aleatoria"
+```
+
+Pega las tres líneas que imprime en `AUTH`, dentro de `prototipo/js/admin.js`, y vuelve a correr `node tools/build.js`. En el repositorio nunca queda la contraseña: solo un verificador PBKDF2 con sal.
 
 ## Publicar en Vercel
 
@@ -45,6 +67,10 @@ git push -u origin main
 
 2. En Vercel: **Add New → Project**, importar el repositorio y desplegar. No hay build: `vercel.json` ya indica que el sitio está en `prototipo/`. Si Vercel pide un *Root Directory*, poner `prototipo`.
 3. Cada `git push` vuelve a desplegar solo.
+
+### El panel, en un proyecto aparte
+
+Repite *Add New → Project* con el mismo repositorio, pero en **Root Directory** pon `admin`. Así el panel queda en otro dominio, no enlazado desde la tienda. Si el plan de Vercel lo permite, actívale además *Deployment Protection* con contraseña: el login del panel corre en el navegador y **no reemplaza una protección de servidor**.
 
 ## Configurar antes de publicar de verdad
 

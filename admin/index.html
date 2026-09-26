@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Altura · Café de Norte de Santander</title>
+<title>Panel · Altura</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -681,31 +681,20 @@ details.rule p{color:#bba48f;margin:8px 0 0;font-size:14px}
 @media (max-width:640px){.stats,.kpis{grid-template-columns:1fr 1fr}.stat,.kpi{border-bottom:1px solid var(--line)}.levels,.modes,.form-grid,.au-grid{grid-template-columns:1fr}.level{border-right:0;border-bottom:1px solid var(--line)}.item{grid-template-columns:56px 1fr}.item-actions{grid-column:1/-1;justify-content:flex-start}.tabs{margin-left:0;width:100%;justify-content:space-between}.tab{padding:7px 9px;font-size:12.5px}.brand small{display:none}.offer-sum{grid-template-columns:1fr 1fr}.prow{grid-template-columns:60px minmax(0,1fr)}.prow>*:nth-child(n+3){grid-column:1/-1}}
 
 </style>
+<meta name="robots" content="noindex, nofollow">
 </head>
-<body data-view="inicio">
-<header class="top">
-  <div class="top-inner">
-    <button class="brand" data-act="go" data-to="inicio" aria-label="Altura, ir al inicio">
-      <svg class="mark" viewBox="0 0 28 20" aria-hidden="true"><path d="M1 19 L9 7 L13 12 L19 3 L27 19 Z" fill="currentColor"/></svg>
-      <b>Altura</b><small>café de Norte de Santander</small>
-    </button>
-    <nav class="tabs" aria-label="Secciones">
-      <button class="tab" data-act="go" data-to="inicio">Inicio</button>
-      <button class="tab" data-act="go" data-to="geisha">El Geisha <span class="badge" id="b-cart" hidden></span></button>
-      <button class="tab" data-act="go" data-to="subasta"><span class="live-dot" id="nav-live"></span>Subasta <span class="mono nav-time" data-live-time></span></button>
-    </nav>
-  </div>
-</header>
-
+<body data-view="login">
+<header class="top"><div class="top-inner">
+  <span class="brand"><svg class="mark" viewBox="0 0 28 20" aria-hidden="true"><path d="M1 19 L9 7 L13 12 L19 3 L27 19 Z" fill="currentColor"/></svg>
+  <b>Altura</b><small>panel interno</small></span>
+</div></header>
 <main class="wrap" id="view"></main>
 
-<div class="tray" id="tray" hidden></div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <dialog id="dlg">
   <div class="dlg-head"><h3 id="dlg-title"></h3><button class="x" data-act="close" aria-label="Cerrar">✕</button></div>
   <div class="dlg-body" id="dlg-body"></div>
 </dialog>
-
 <script>
 /* ---- core.js ---- */
 /* ============================================================
@@ -891,497 +880,686 @@ function toast(msg, { label, act, type } = {}) {
 }
 function later(ms, fn) { setTimeout(() => { if (fn() !== false) { save(); softRefresh(); } }, ms); }
 
-/* ---- product.js ---- */
+/* ---- quote.js ---- */
 /* ============================================================
-   PÁGINA PÚBLICA DEL CAFÉ: ficha del Geisha, pedido y lista de espera
+   COTIZADOR (uso interno): cuánto podemos pagar en la finca
+   Cadena: cereza → pergamino seco → excelso (trilla) → tostado → bolsas
    ============================================================ */
-const varSel = (p) => p.variantes.find((v) => v.g === (UI.variante || p.variantes.find((x) => x.principal).g)) || p.variantes[0];
-const enCarrito = (id, g) => UI.carrito.find((i) => i.id === id && i.g === g);
-const totalCarrito = () => UI.carrito.reduce((s, i) => s + i.n * i.precio, 0);
-const unidadesCarrito = () => UI.carrito.reduce((s, i) => s + i.n, 0);
-
-/* Tarjeta corta, para el inicio */
-function cafeCard(p, i = 0) {
-  const v = p.variantes.find((x) => x.principal) || p.variantes[0];
-  const quedan = p.variantes.reduce((s, x) => s + x.stock, 0);
-  return `<article class="card-cafe reveal" style="--i:${i}">
-    <div class="cc-art" data-act="go" data-to="geisha" role="button" tabindex="0" aria-label="Ver ${esc(p.nombre)}">
-      ${ridge(p, { w: 420, h: 200 })}
-      <span class="state st-publicado">${quedan} disponibles</span>
-      <div class="cc-score"><b>${esc(p.puntaje)}</b><small>SCA · ${LV[p.nivel].label}</small></div>
-    </div>
-    <div class="cc-body">
-      <p class="kicker">${esc(p.municipio)} · ${fmtNum(p.altitud)} msnm · ${esc(p.cosecha)}</p>
-      <h3>${esc(p.nombre)}</h3>
-      <p class="notas-linea">${p.notas.join(" · ")}</p>
-      <div class="cc-foot"><b class="mono">${cop(v.precio)}</b><small>${gramos(v.g)}</small>
-        <button class="btn primary sm" data-act="go" data-to="geisha">Ver el café</button></div>
-    </div></article>`;
+function nuevaCot() {
+  return { estado: "Pergamino seco", kg: 125, factor: 94, humedad: 11, sca: 85,
+    precioCarga: CONFIG.fnc.precioCarga, ...COSTOS, presentacion: 340, precioVenta: 32000 };
 }
 
-/* Tarjeta del lote en subasta */
-function subastaCard(i = 0) {
-  const a = UI.au, l = AU_LOTE, top = topBid(a);
-  return `<article class="card-cafe dark reveal dark-art" style="--i:${i}">
-    <div class="cc-art" data-act="go" data-to="subasta" role="button" tabindex="0" aria-label="Ir a la subasta">
-      ${ridge(l, { w: 420, h: 200, dark: true })}
-      <span class="state st-en-subasta">${a.ended ? "cerrada" : "en vivo"}</span>
-      <div class="cc-score"><b>${esc(l.puntaje)}</b><small>SCA · verificado</small></div>
-    </div>
-    <div class="cc-body">
-      <p class="kicker">${esc(l.municipio)} · ${fmtNum(l.altitud)} msnm · ${a.kg} kg</p>
-      <h3>${esc(l.variedad)} <em>${esc(l.proceso)}</em></h3>
-      <p class="notas-linea">${l.perfil.join(" · ")}</p>
-      <div class="cc-foot"><b class="mono" data-live-price>${cop(top ? top.p : a.start)}</b><small>por kg verde</small>
-        <button class="btn primary sm" data-act="go" data-to="subasta"><span class="live-dot ${a.ended ? "off" : ""}"></span> ${a.ended ? "Ver resultado" : "Pujar"}</button></div>
-    </div></article>`;
+function calcCot(d) {
+  const CER = Math.max(1, d.cerezaAPergamino);
+  const kgPerg = d.estado === "Cereza" ? d.kg / CER : d.estado === "Verde" ? (d.kg * d.factor) / 70 : d.kg;
+  const kgPerg12 = pesoSeco12(kgPerg, d.humedad);
+  const kgVerde = d.estado === "Verde" ? d.kg : kgExcelso(kgPerg12, d.factor);
+  const comiteKg = (d.precioCarga * (CONFIG.fnc.factorBase / d.factor)) / 125;
+  const valorComite = comiteKg * kgPerg12;
+
+  const kgTostado = kgVerde * (1 - d.mermaTueste / 100);
+  const bolsas = Math.floor((kgTostado * 1000) / Math.max(1, d.presentacion));
+  const ingresos = bolsas * d.precioVenta;
+
+  const costoProceso = d.transporte * kgPerg + d.trilla * kgPerg + d.tueste * kgVerde + d.empaque * bolsas + (ingresos * d.indirectos) / 100;
+  const maxTotal = ingresos * (1 - d.margenObjetivo / 100) - costoProceso;   // lo máximo que puede costar el café
+  const maxKg = kgPerg12 > 0 ? maxTotal / kgPerg12 : 0;
+  const sugeridoKg = Math.min(comiteKg * (1 + d.primaSugerida / 100), Math.max(maxKg, 0));
+  const sugeridoTope = comiteKg * (1 + d.primaSugerida / 100) > maxKg;
+
+  const compra = sugeridoKg * kgPerg12;
+  const costoTotal = compra + costoProceso;
+  const utilidad = ingresos - costoTotal;
+  const margen = ingresos > 0 ? (utilidad / ingresos) * 100 : 0;
+  const costoBolsa = bolsas ? costoTotal / bolsas : 0;
+  const extraProductor = (sugeridoKg - comiteKg) * kgPerg12;
+
+  return { kgPerg, kgPerg12, kgVerde, kgTostado, bolsas, comiteKg, valorComite, maxKg, sugeridoKg, sugeridoTope,
+    ingresos, costoProceso, compra, costoTotal, utilidad, margen, costoBolsa, extraProductor,
+    equilibrioBolsa: bolsas ? costoTotal / bolsas : 0 };
 }
 
-/* ---------- la ficha completa ---------- */
-function viewGeisha() {
-  const p = geisha(), v = varSel(p), f = p.ficha;
-  const sobre = ((p.pago.pagadoKg / p.pago.referenciaKg - 1) * 100).toFixed(0);
-  const atributo = ([k, a]) => `<div class="attr" style="--c:${LV[a.nivel].c}">
-      <span class="lbl">${k}</span><b>${esc(a.v)}${k === "Altitud" ? " msnm" : ""}</b>
-      <span class="lvtag" style="--c:${LV[a.nivel].c}">${LV[a.nivel].label}</span>
-      <small>${esc(a.fuente)} · ${fmtFecha(a.fecha)}</small>
-      ${a.detalle ? `<small>${esc(a.detalle)}</small>` : ""}</div>`;
-  return `<article class="prod">
-    <div class="prod-art reveal">
-      <div class="prod-card dark-art">
-        <p class="kicker">${esc(CONFIG.marca)} · ${esc(p.municipio)}</p>
-        <h2 class="prod-title">${esc(p.variedad)}<br><em>${esc(p.proceso)}</em></h2>
-        <p class="prod-score">${esc(p.puntaje)}<small>SCA</small></p>
-        <div class="hc-ridge">${ridge(p, { w: 460, h: 200, dark: true })}</div>
-      </div>
-      <ul class="notas-chips">${p.notas.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
+const fIn = (id, label, val, { step = 1, suf = "", min = 0 } = {}) =>
+  `<div class="field"><label class="lbl" for="q-${id}">${label}${suf ? ` <span class="unit">${suf}</span>` : ""}</label>
+   <input id="q-${id}" class="input mono" type="number" step="${step}" min="${min}" value="${val}" data-q="${id}"></div>`;
+
+function viewCotizador() {
+  const d = (UI.q ||= nuevaCot());
+  return `<div class="view-head">
+      <div><p class="eyebrow reveal">Uso interno · no es parte de la tienda</p>
+        <h2 class="reveal" style="--i:1">Cotizador <em>de finca</em></h2>
+        <p class="reveal" style="--i:2">Antes de ofrecer un precio: qué le pagaría hoy el comité por ese café, cuánto podemos pagar nosotros como máximo y con cuánto margen quedamos.</p></div>
+      <div class="ref-chip reveal" style="--i:3">
+        <span class="lbl">Referencia FNC · ${fmtFecha(CONFIG.fnc.fecha)}</span>
+        <b class="mono">${cop(CONFIG.fnc.precioCarga)}</b><small>carga de 125 kg · factor 94</small>
+        <button class="btn sm" data-act="go" data-to="mercado">Actualizar</button></div>
     </div>
-
-    <div class="prod-buy reveal" style="--i:1">
-      <p class="eyebrow">Cosecha ${esc(p.cosecha)} · ${p.variantes.reduce((s, x) => s + x.stock, 0)} unidades</p>
-      <h1>${esc(p.nombre)}</h1>
-      <p class="lede">${esc(p.historia)}</p>
-
-      <div class="vars" role="radiogroup" aria-label="Presentación">
-        ${p.variantes.map((x) => `<button class="var ${x.g === v.g ? "on" : ""}" data-act="var" data-g="${x.g}" aria-pressed="${x.g === v.g}" ${x.stock ? "" : "disabled"}>
-          <b>${gramos(x.g)}</b><span>${esc(x.label)}</span><small>${x.stock ? esc(x.nota) : "agotado"}</small>
-          <span class="mono precio">${cop(x.precio)}</span></button>`).join("")}
-      </div>
-
-      <div class="buy-row">
-        <div><b class="precio-grande mono">${cop(v.precio)}</b><small>${gramos(v.g)} · ${cop((v.precio / v.g) * 1000)} por kg</small></div>
-        <button class="btn primary lg" data-act="add" data-g="${v.g}" ${v.stock ? "" : "disabled"}>Agregar al pedido</button>
-      </div>
-      <p class="hint">${v.stock} disponibles de esta presentación · molienda a elegir al confirmar · envíos desde Cúcuta.</p>
-
-      <div class="pago">
-        <div><span class="lbl">Le pagamos al productor</span><b class="mono">${cop(p.pago.pagadoKg)}</b><small>por kg de pergamino</small></div>
-        <div><span class="lbl">Precio de referencia ese día</span><b class="mono">${cop(p.pago.referenciaKg)}</b><small>FNC · ${fmtFecha(p.pago.fecha)}</small></div>
-        <div class="mas"><b>+${sobre} %</b><small>por encima de la referencia</small></div>
-      </div>
-    </div>
-
-    <section class="prod-ficha reveal" style="--i:2">
-      <div class="section-head"><p class="eyebrow">La ficha</p><h2>Cada dato dice <em>quién lo comprobó</em></h2>
-        <p>Casi todas las marcas cuentan la historia. Nosotros además decimos de dónde sale cada número y cuándo se midió.</p></div>
-      <div class="attrs-grid">
-        ${atributo(["Variedad", f.variedad])}${atributo(["Altitud", f.altitud])}${atributo(["Proceso", f.proceso])}
-        ${atributo(["Puntaje SCA", f.puntaje])}${atributo(["Factor de rendimiento", f.factor])}${atributo(["Cosecha", f.cosecha])}
-      </div>
-      <div class="leyenda">${Object.values(LV).map((o) => `<span><i style="--c:${o.c}"></i><b>${o.label}:</b> ${o.desc}</span>`).join("")}</div>
-    </section>
-
-    <section class="prod-receta reveal" style="--i:3">
-      <div class="section-head"><p class="eyebrow">Cómo prepararlo</p><h2>La receta <em>de la casa</em></h2>
-        <p>Un café así no se debe improvisar. Empieza por aquí y ajusta a tu gusto.</p></div>
-      <div class="receta">${Object.entries({ Método: p.receta.metodo, Café: p.receta.dosis, Agua: p.receta.agua, Temperatura: p.receta.temp, Tiempo: p.receta.tiempo, Molienda: p.receta.molienda })
-        .map(([k, val]) => `<div><span class="lbl">${k}</span><b>${esc(val)}</b></div>`).join("")}</div>
-      <p class="hint">Si te queda amargo, muele más grueso. Si queda aguado, muele más fino.</p>
-    </section>
-
-    <section class="espera reveal" style="--i:4">
-      <div><h3>Cuando se acabe, se acabó</h3>
-        <p>Son 60 kilos de una sola cosecha. Déjanos tu correo y te avisamos antes de que salga el próximo lote.</p></div>
-      <form class="espera-form" onsubmit="return false">
-        <input id="esp-mail" class="input" type="email" placeholder="tu@correo.com" aria-label="Correo">
-        <button class="btn primary" data-act="espera">Avisarme</button>
+    <div class="cot">
+      <form class="cot-form" onsubmit="return false">
+        <section class="wpanel">
+          <h3>1 · El café que ofrecen</h3>
+          <div class="form-grid">
+            <div class="field"><label class="lbl" for="q-estado">Estado</label>
+              <select id="q-estado" class="input" data-q="estado">${["Cereza", "Pergamino seco", "Verde"].map((o) => `<option ${o === d.estado ? "selected" : ""}>${o}</option>`).join("")}</select></div>
+            ${fIn("kg", "Cantidad", d.kg, { suf: "kg" })}
+            ${fIn("factor", "Factor de rendimiento", d.factor, { step: 0.5, suf: "kg cps → 70 kg excelso" })}
+            ${fIn("humedad", "Humedad", d.humedad, { step: 0.5, suf: "%" })}
+            ${fIn("sca", "Puntaje SCA", d.sca, { step: 0.25, suf: "si ya está catado" })}
+            ${fIn("cerezaAPergamino", "Cereza → pergamino", d.cerezaAPergamino, { step: 0.1, suf: "kg : 1 kg" })}
+          </div>
+          <p class="hint">El factor es lo que más mueve el precio: a factor 94, 125 kg de pergamino rinden 93 kg de excelso; a factor 100 solo rinden 87,5 kg.</p>
+        </section>
+        <section class="wpanel">
+          <h3>2 · Costos hasta la bolsa</h3>
+          <div class="form-grid">
+            ${fIn("transporte", "Transporte", d.transporte, { step: 50, suf: "COP/kg pergamino" })}
+            ${fIn("trilla", "Trilla", d.trilla, { step: 50, suf: "COP/kg pergamino" })}
+            ${fIn("tueste", "Tueste (maquila)", d.tueste, { step: 100, suf: "COP/kg verde" })}
+            ${fIn("empaque", "Empaque y etiqueta", d.empaque, { step: 100, suf: "COP/bolsa" })}
+            ${fIn("mermaTueste", "Merma de tueste", d.mermaTueste, { step: 0.5, suf: "%" })}
+            ${fIn("indirectos", "Indirectos y ventas", d.indirectos, { step: 0.5, suf: "% de la venta" })}
+          </div>
+        </section>
+        <section class="wpanel">
+          <h3>3 · Cómo lo vendemos</h3>
+          <div class="form-grid">
+            ${fIn("presentacion", "Presentación", d.presentacion, { step: 10, suf: "gramos" })}
+            ${fIn("precioVenta", "Precio de venta", d.precioVenta, { step: 500, suf: "COP por bolsa" })}
+            ${fIn("margenObjetivo", "Margen objetivo", d.margenObjetivo, { step: 1, suf: "%" })}
+            ${fIn("primaSugerida", "Prima sobre el comité", d.primaSugerida, { step: 1, suf: "% que ofrecemos de entrada" })}
+            ${fIn("precioCarga", "Precio FNC por carga", d.precioCarga, { step: 5000, suf: "COP · factor 94" })}
+          </div>
+        </section>
       </form>
-    </section>
-  </article>`;
-}
-
-/* ---------- pedido ---------- */
-function addCarrito(g) {
-  const p = geisha(), v = p.variantes.find((x) => x.g === +g);
-  const c = enCarrito(p.id, v.g);
-  if (c) { if (c.n < v.stock) c.n++; else return toast("No queda más de esa presentación.", { type: "err" }); }
-  else UI.carrito.push({ id: p.id, g: v.g, n: 1, precio: v.precio, nombre: `${p.nombre} ${gramos(v.g)}` });
-  render();
-  toast(`${esc(p.nombre)} ${gramos(v.g)} agregado.`, { label: "Ver pedido", act: abrirPedido });
-}
-
-function renderTray() {
-  const t = $("#tray");
-  if (!UI.carrito.length || UI.view === "admin") { t.hidden = true; return; }
-  t.hidden = false;
-  t.innerHTML = `<span>${unidadesCarrito()} ${unidadesCarrito() === 1 ? "bolsa" : "bolsas"} · <b class="mono">${cop(totalCarrito())}</b></span>
-    <button class="btn sm" data-act="carrito-clear">Vaciar</button>
-    <button class="btn sm primary" data-act="pedido">Hacer pedido</button>`;
-}
-
-function abrirPedido() {
-  const filas = UI.carrito.map((i) => `<tr><th>${esc(i.nombre)}</th>
-      <td class="qty"><button class="btn sm" data-act="qty" data-g="${i.g}" data-d="-1" aria-label="Quitar uno">−</button>
-      <span class="mono">${i.n}</span>
-      <button class="btn sm" data-act="qty" data-g="${i.g}" data-d="1" aria-label="Agregar uno">+</button></td>
-      <td class="mono">${cop(i.precio * i.n)}</td></tr>`).join("");
-  modal("Tu <em>pedido</em>", `<div class="table-scroll"><table class="cmp-table"><tbody>${filas}
-    <tr><th>Total</th><td></td><td class="mono"><b>${cop(totalCarrito())}</b></td></tr></tbody></table></div>
-    <div class="form-grid" style="margin-top:16px">
-      <div class="field"><label class="lbl" for="pd-nombre">Nombre o negocio</label><input id="pd-nombre" class="input" placeholder="Tu nombre"></div>
-      <div class="field"><label class="lbl" for="pd-ciudad">Ciudad</label><input id="pd-ciudad" class="input" value="Cúcuta"></div>
-      <div class="field"><label class="lbl" for="pd-tel">WhatsApp</label><input id="pd-tel" class="input" type="tel" placeholder="300 000 0000"></div>
-      <div class="field"><label class="lbl" for="pd-molienda">Molienda</label><select id="pd-molienda" class="input"><option>En grano</option><option>Filtro / V60</option><option>Prensa francesa</option><option>Espresso</option></select></div>
+      <aside class="cot-res" id="cot-res"></aside>
     </div>
-    <p class="hint">Confirmamos por WhatsApp disponibilidad, envío y forma de pago.</p>
-    <div class="dlg-actions"><button class="btn" data-act="close">Seguir viendo</button><button class="btn primary" data-act="pedido-enviar">Enviar pedido</button></div>`, "narrow");
+    ${comprasHTML()}`;
 }
 
-function cambiarCantidad(g, d) {
-  const p = geisha(), v = p.variantes.find((x) => x.g === +g), c = enCarrito(p.id, +g);
-  if (!c) return;
-  c.n = Math.max(0, Math.min(v.stock, c.n + d));
-  if (!c.n) UI.carrito = UI.carrito.filter((i) => !(i.id === p.id && i.g === +g));
-  renderTray();
-  if (UI.carrito.length) abrirPedido(); else { closeModal(); render(); }
+function cotResHTML() {
+  const d = UI.q, r = calcCot(d);
+  const max = Math.max(r.comiteKg, r.sugeridoKg, r.maxKg, 1);
+  const barra = (label, v, cls) => `<div class="cbar ${cls}"><span>${label}</span><i style="--w:${Math.max(0, (v / max) * 100)}%"></i><b class="mono">${cop(v)}</b></div>`;
+  const alertas = [];
+  if (d.humedad > 12) alertas.push(["warn", `Humedad ${d.humedad} %: el peso se ajusta a base 12 % (${fmtNum(r.kgPerg12)} kg). Pide que lo sequen o descuenta el peso.`]);
+  if (d.humedad < 10) alertas.push(["warn", `Humedad ${d.humedad} %: café sobresecado, pierde calidad en taza.`]);
+  if (d.factor > 96) alertas.push(["warn", `Factor ${d.factor}: mucha pasilla y broca. Rinde poco; ofrece menos o no compres.`]);
+  if (r.sugeridoTope) alertas.push(["bad", `La prima de ${d.primaSugerida} % se pasa del máximo. Ofrece hasta ${cop(r.maxKg)}/kg o sube el precio de venta.`]);
+  if (r.margen < d.margenObjetivo - 0.5) alertas.push(["bad", `Margen ${r.margen.toFixed(1)} %, por debajo del objetivo.`]);
+  if (d.sca >= 86) alertas.push(["good", `${d.sca} SCA: candidato a subasta o a línea especial, no a la mezcla de casa.`]);
+  if (r.utilidad <= 0) alertas.push(["bad", "A este precio de venta el lote pierde plata."]);
+
+  return `<div class="res-card">
+      <span class="lbl">Máximo que podemos pagar</span>
+      <b class="big mono">${cop(r.maxKg)}<small>/kg pergamino</small></b>
+      <p class="hint">Con margen objetivo del ${d.margenObjetivo} %. Por encima de esto, el negocio no da.</p>
+      <div class="cbars">
+        ${barra("Comité hoy", r.comiteKg, "ref")}
+        ${barra("Nuestra oferta", r.sugeridoKg, "hot")}
+        ${barra("Nuestro tope", r.maxKg, "max")}
+      </div>
+      <div class="prow-au"><span>Oferta sugerida por el lote</span><b>${cop(r.sugeridoKg * r.kgPerg12)}</b></div>
+      <div class="prow-au"><span>Le pagarían en el comité</span><b>${cop(r.valorComite)}</b></div>
+      <div class="prow-au total"><span>El productor gana de más</span><b>${cop(r.extraProductor)}</b></div>
+    </div>
+    <div class="res-card">
+      <span class="lbl">De este lote salen</span>
+      <div class="chain">
+        <div><b class="mono">${fmtNum(r.kgPerg12)}</b><small>kg pergamino (12 %)</small></div>
+        <div><b class="mono">${fmtNum(r.kgVerde)}</b><small>kg verde tras trilla</small></div>
+        <div><b class="mono">${fmtNum(r.kgTostado)}</b><small>kg tostado</small></div>
+        <div class="end"><b class="mono">${fmtNum(r.bolsas)}</b><small>bolsas de ${d.presentacion} g</small></div>
+      </div>
+      <div class="prow-au"><span>Venta total</span><b>${cop(r.ingresos)}</b></div>
+      <div class="prow-au"><span>Compra del café</span><b>−${cop(r.compra)}</b></div>
+      <div class="prow-au"><span>Trilla, tueste, empaque, fletes</span><b>−${cop(r.costoProceso)}</b></div>
+      <div class="prow-au total"><span>Utilidad bruta</span><b>${cop(r.utilidad)} · ${r.margen.toFixed(1)} %</b></div>
+      <div class="prow-au"><span>Costo por bolsa</span><b>${cop(r.costoBolsa)}</b></div>
+      <div class="prow-au"><span>Precio mínimo por bolsa</span><b>${cop(r.equilibrioBolsa)}</b></div>
+    </div>
+    ${alertas.length ? `<ul class="alerts">${alertas.map(([k, t]) => `<li class="al-${k}">${t}</li>`).join("")}</ul>` : ""}
+    <div class="res-actions">
+      <button class="btn sm" data-act="cot-reset">Limpiar</button>
+      <button class="btn primary sm" data-act="cot-save">Registrar como compra</button>
+    </div>`;
 }
 
-function enviarPedido() {
-  const nombre = $("#pd-nombre").value.trim();
-  if (!nombre) return toast("Escribe tu nombre.", { type: "err" });
-  const p = geisha(), molienda = $("#pd-molienda").value;
-  const cl = upsertCliente(nombre, $("#pd-ciudad").value.trim(), $("#pd-tel").value.trim());
-  const items = UI.carrito.map((i) => ({ id: p.id, nombre: i.nombre, n: i.n, precio: i.precio }));
-  const pedido = { id: nextId("PD"), clienteId: cl.id, canal: "tienda", nombre, ciudad: cl.ciudad, tel: cl.tel, molienda,
-    items, total: totalCarrito(), fecha: isoToday() };
-  S.pedidos.unshift(pedido);
-  /* descuenta stock de cada presentación y lo atribuye al lote */
-  UI.carrito.forEach((i) => {
-    const v = p.variantes.find((x) => x.g === i.g); v.stock = Math.max(0, v.stock - i.n);
-    atribuirVenta(p, (i.n * i.g) / p.presentacion, i.precio * i.n);   // en bolsas equivalentes de la presentación principal
-  });
-  p.stock = p.variantes.find((x) => x.principal).stock;
-  UI.carrito = []; save(); closeModal(); render();
-  const texto = `Hola ${CONFIG.marca}, quiero pedir:\n${items.map((i) => `· ${i.n} × ${i.nombre}`).join("\n")}\nMolienda: ${molienda}\nTotal: ${cop(pedido.total)}\nNombre: ${nombre}${pedido.ciudad ? " · " + pedido.ciudad : ""}`;
-  if (CONFIG.whatsapp) window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`, "_blank", "noopener");
-  toast(`Pedido ${pedido.id} por ${cop(pedido.total)}.`, CONFIG.whatsapp ? {} : { label: "Ver mensaje", act: () => modal("Mensaje del pedido", `<pre class="pre">${esc(texto)}</pre><p class="hint">Pon tu número en <code>CONFIG.whatsapp</code> para que se envíe solo.</p>`, "narrow") });
+function renderCot() { const el = $("#cot-res"); if (el) el.innerHTML = cotResHTML(); }
+
+function cotSave() {
+  const d = UI.q, r = calcCot(d);
+  modal("Registrar <em>compra</em>", `<div class="form-grid">
+      <div class="field"><label class="lbl" for="cs-prod">Productor</label><input id="cs-prod" class="input" placeholder="Nombre"></div>
+      <div class="field"><label class="lbl" for="cs-finca">Finca</label><input id="cs-finca" class="input" placeholder="Finca"></div>
+      <div class="field"><label class="lbl" for="cs-mun">Municipio</label><input id="cs-mun" class="input" value="Chinácota"></div>
+      <div class="field"><label class="lbl" for="cs-precio">Precio acordado (COP/kg)</label><input id="cs-precio" class="input mono" type="number" step="100" value="${Math.round(r.sugeridoKg)}"></div>
+      <div class="field"><label class="lbl" for="cs-destino">Destino</label><select id="cs-destino" class="input"><option>Tostado</option><option>Subasta</option><option>Venta en verde</option></select></div>
+    </div>
+    <p class="hint">Queda ${fmtNum(d.kg)} kg de ${d.estado.toLowerCase()}, factor ${d.factor}, humedad ${d.humedad} %.</p>
+    <div class="dlg-actions"><button class="btn" data-act="close">Cancelar</button><button class="btn primary" data-act="cot-save-ok">Guardar</button></div>`, "narrow");
+}
+function cotSaveOk() {
+  const d = UI.q;
+  const c = { id: nextId("C"), productor: $("#cs-prod").value.trim() || "Sin nombre", finca: $("#cs-finca").value.trim() || "—",
+    municipio: $("#cs-mun").value.trim(), fecha: isoToday(), estadoCafe: d.estado, kg: d.kg, factor: d.factor, humedad: d.humedad,
+    precioKg: +$("#cs-precio").value || 0, destino: $("#cs-destino").value, estado: "EN BODEGA" };
+  S.compras.unshift(c); save(); closeModal(); render();
+  toast(`Compra ${c.id} registrada: ${fmtNum(c.kg)} kg a ${cop(c.precioKg)}/kg.`);
 }
 
-function listaEspera() {
-  const mail = $("#esp-mail").value.trim();
-  if (!/^\S+@\S+\.\S+$/.test(mail)) return toast("Escribe un correo válido.", { type: "err" });
-  S.espera.unshift({ mail, fecha: isoToday() }); save();
-  $("#esp-mail").value = "";
-  toast("Listo, te avisamos antes de que salga el próximo lote.");
+function comprasHTML() {
+  if (!S.compras.length) return "";
+  const kg = S.compras.reduce((s, c) => s + c.kg, 0), inv = S.compras.reduce((s, c) => s + c.kg * c.precioKg, 0);
+  return `<section class="section">
+    <div class="view-head"><div><h2>Café <em>comprado</em></h2>
+      <p>${S.compras.length} compras · ${fmtNum(kg)} kg · ${copK(inv)} invertidos</p></div></div>
+    <div class="list">${S.compras.map((c, i) => `<div class="item" style="--i:${i}">
+      <span class="avatar">${esc(c.productor[0] || "?")}</span>
+      <div><p class="kicker">${esc(c.id)} · ${fmtFecha(c.fecha)} · ${esc(c.municipio)}</p>
+        <h4>${esc(c.productor)} <em class="muted">${esc(c.finca)}</em></h4>
+        <p class="mono">${fmtNum(c.kg)} kg ${esc(c.estadoCafe.toLowerCase())} · factor ${c.factor} · ${cop(c.precioKg)}/kg = ${cop(c.kg * c.precioKg)}</p>
+        <p class="hint" style="margin:6px 0 0">Rinde ~${fmtNum(kgExcelso(c.kg, c.factor))} kg verde · destino: ${esc(c.destino.toLowerCase())}</p></div>
+      <div class="item-actions"><span class="status">${esc(c.estado.toLowerCase())}</span></div></div>`).join("")}</div>
+  </section>`;
 }
 
-/* ---- auction.js ---- */
+/* ---- inventory.js ---- */
 /* ============================================================
-   SUBASTA DE LOTES EXCEPCIONALES (simulada)
-   Subastamos café que ya compramos: la reserva protege nuestro costo.
+   INVENTARIO (uso interno): de la compra a la bolsa vendida.
+   Responde: ¿cuánta plata hay quieta en bodega y cuánto llevamos recuperado?
    ============================================================ */
-const YO = { nombre: "Tostaduría Ejemplo", ciudad: "Bucaramanga" };   // el postor que eres tú en la demo
-const BOTS = [
-  { name: "Tostador #214", city: "Bogotá", cap: 152000 },
-  { name: "Importador #12", city: "Seúl", cap: 171000 },
-  { name: "Cafetería #87", city: "Medellín", cap: 146000 },
-  { name: "Tostador #301", city: "Cúcuta", cap: 160000 },
-];
-const EXT_MS = 20000;
+const ETAPAS = ["EN BODEGA", "TRILLADO", "TOSTADO", "EMPACADO", "VENDIDO"];
 
-/* El lote en subasta. Reemplazar por el del productor aliado cuando esté confirmado. */
-const AU_LOTE = {
-  id: "S-001", productor: "Productor aliado", finca: "Finca del aliado", municipio: "Toledo", altitud: 1950,
-  variedad: "Geisha", proceso: "Natural", puntaje: 88.5, factor: 89, nivel: "VERIFICADO",
-  detalle: "Anaeróbico 96 h · Camas africanas 28 días", perfil: ["Jazmín", "Mango", "Vino blanco", "Bergamota"],
-  compraKgVerde: 43900,   // lo que nos costó por kg de café verde
+const costoTotal = (c) => Object.values(c.costos || {}).reduce((s, v) => s + v, 0);
+const costoBolsa = (c) => (c.bolsas ? costoTotal(c) / c.bolsas : 0);
+const recuperado = (c) => c.ingresos || 0;
+const enJuego = (c) => Math.max(0, costoTotal(c) - recuperado(c));      // plata todavía sin recuperar
+const factorReal = (c) => (c.kgVerde ? (c.kg * 70) / c.kgVerde : null);
+const mermaReal = (c) => (c.kgVerde && c.kgTostado ? (1 - c.kgTostado / c.kgVerde) * 100 : null);
+const dias = (iso) => Math.round((Date.now() - new Date(iso + "T00:00:00")) / 86400000);
+const bolsasLibres = (c) => Math.max(0, Math.round((c.bolsas || 0) - (c.bolsasVendidas || 0)));
+/* Valor de venta de lo que queda, al precio del producto ligado (o al último precio conocido) */
+function valorPendiente(c) {
+  const p = S.productos.find((x) => x.loteId === c.id);
+  const precio = p ? p.precio : c.precioVenta || 0;
+  return bolsasLibres(c) * precio;
+}
+
+function viewInventario() {
+  const abiertas = S.compras.filter((c) => c.estado !== "VENDIDO");
+  const invertido = S.compras.reduce((s, c) => s + costoTotal(c), 0);
+  const quieto = S.compras.reduce((s, c) => s + enJuego(c), 0);
+  const recup = S.compras.reduce((s, c) => s + recuperado(c), 0);
+  const porVender = S.compras.reduce((s, c) => s + valorPendiente(c), 0);
+  const kgBodega = abiertas.reduce((s, c) => s + (c.kgTostado || c.kgVerde || c.kg), 0);
+  return `<div class="view-head">
+      <div><p class="eyebrow reveal">Uso interno</p>
+        <h2 class="reveal" style="--i:1">Inventario <em>y costos reales</em></h2>
+        <p class="reveal" style="--i:2">Cada lote desde que se compra hasta que se vende la última bolsa. Aquí se ve cuánta plata está quieta.</p></div>
+      <div class="ref-chip reveal" style="--i:3"><span class="lbl">Plata sin recuperar</span><b class="mono">${copK(quieto)}</b>
+        <small>${fmtNum(kgBodega)} kg en bodega</small></div>
+    </div>
+    <div class="kpis reveal" style="--i:3">
+      <div class="kpi"><b data-count="${invertido}" data-pre="$">${cop(invertido)}</b><small>invertido en total</small></div>
+      <div class="kpi ${quieto > recup ? "alert" : ""}"><b data-count="${quieto}" data-pre="$">${cop(quieto)}</b><small>sin recuperar</small></div>
+      <div class="kpi"><b data-count="${recup}" data-pre="$">${cop(recup)}</b><small>ya vendido</small></div>
+      <div class="kpi"><b data-count="${porVender}" data-pre="$">${cop(porVender)}</b><small>valor de lo que queda</small></div>
+      <div class="kpi"><b data-count="${recup + porVender - invertido}" data-pre="$">${cop(recup + porVender - invertido)}</b><small>utilidad si se vende todo</small></div>
+    </div>
+    <div class="list">${S.compras.map(loteCard).join("")}</div>
+    <p class="hint">Los costos que no se han registrado todavía (trilla, tueste, empaque) no están sumados: el costo por bolsa sube cuando se registren.</p>`;
+}
+
+function loteCard(c, i) {
+  const idx = ETAPAS.indexOf(c.estado), total = costoTotal(c), rec = recuperado(c), pend = valorPendiente(c);
+  const util = rec + pend - total, margen = rec + pend > 0 ? (util / (rec + pend)) * 100 : 0;
+  const fr = factorReal(c), mm = mermaReal(c), d = dias(c.fecha);
+  const stepper = `<div class="stepper" aria-label="Etapa: ${esc(c.estado)}">${ETAPAS.map((s, k) =>
+    `${k ? `<i class="${k <= idx ? "on" : ""}"></i>` : ""}<b class="${k <= idx ? "on" : ""} ${k === idx ? "now" : ""}" title="${s.toLowerCase()}"></b>`).join("")}</div>
+    <div class="stepper-label">${esc(c.estado.toLowerCase())} · ${d} días en bodega</div>`;
+  const acciones = {
+    "EN BODEGA": `<button class="btn primary sm" data-act="inv-paso" data-id="${c.id}" data-p="trilla">Registrar trilla</button>`,
+    "TRILLADO": `<button class="btn primary sm" data-act="inv-paso" data-id="${c.id}" data-p="tueste">Registrar tueste</button>`,
+    "TOSTADO": `<button class="btn primary sm" data-act="inv-paso" data-id="${c.id}" data-p="empaque">Registrar empaque</button>`,
+    "EMPACADO": `<button class="btn primary sm" data-act="inv-paso" data-id="${c.id}" data-p="venta">Registrar venta directa</button>`,
+    "VENDIDO": `<span class="status">cerrado</span>`,
+  }[c.estado];
+  const detalle = [
+    [`${fmtNum(c.kg)} kg pergamino`, `factor declarado ${c.factor}${fr ? ` · real ${fr.toFixed(1)}` : ""}`],
+    c.kgVerde ? [`${fmtNum(c.kgVerde)} kg verde`, `tras trilla`] : null,
+    c.kgTostado ? [`${fmtNum(c.kgTostado)} kg tostado`, `merma ${mm.toFixed(1)} %`] : null,
+    c.bolsas ? [`${fmtNum(c.bolsas)} bolsas`, `${fmtNum(Math.round(c.bolsasVendidas || 0))} vendidas · ${fmtNum(bolsasLibres(c))} en stock`] : null,
+  ].filter(Boolean);
+  return `<div class="item lote" style="--i:${i}">
+    <div><p class="kicker">${esc(c.id)} · ${fmtFecha(c.fecha)} · ${esc(c.municipio)}</p>
+      <h4>${esc(c.productor)} <em class="muted">${esc(c.finca)}</em></h4>
+      <div class="chain small">${detalle.map(([a, b], k) => `<div class="${k === detalle.length - 1 ? "end" : ""}"><b class="mono">${a}</b><small>${b}</small></div>`).join("")}</div>
+      ${stepper}</div>
+    <div class="lote-num">
+      <div class="prow-au"><span>Compra a ${cop(c.precioKg)}/kg</span><b>${cop(c.costos.compra)}</b></div>
+      ${["trilla", "tueste", "empaque", "otros"].filter((k) => c.costos[k]).map((k) => `<div class="prow-au"><span>${k[0].toUpperCase() + k.slice(1)}</span><b>${cop(c.costos[k])}</b></div>`).join("")}
+      <div class="prow-au"><span>Costo total${c.bolsas ? ` · ${cop(costoBolsa(c))}/bolsa` : ""}</span><b>${cop(total)}</b></div>
+      <div class="prow-au"><span>Recuperado</span><b>${cop(rec)}</b></div>
+      <div class="prow-au"><span>Queda por vender</span><b>${cop(pend)}</b></div>
+      <div class="prow-au total"><span>Utilidad proyectada</span><b>${cop(util)} · ${margen.toFixed(0)} %</b></div>
+      ${d > 120 && enJuego(c) > 0 ? `<p class="al-warn mini">${d} días en bodega: la catación pierde vigencia y la plata sigue quieta.</p>` : ""}
+      ${fr && fr > c.factor + 1.5 ? `<p class="al-bad mini">El factor real (${fr.toFixed(1)}) salió peor que el declarado (${c.factor}): rindió menos de lo pagado.</p>` : ""}
+      <div class="item-actions">${acciones}</div>
+    </div></div>`;
+}
+
+/* ---------- registrar cada paso ---------- */
+const PASOS = {
+  trilla: { titulo: "Registrar trilla", campos: [["kgVerde", "Café verde obtenido (kg)", (c) => Math.round(kgExcelso(c.kg, c.factor) * 10) / 10], ["costo", "Costo de la trilla (COP)", (c) => Math.round(c.kg * COSTOS.trilla)]], estado: "TRILLADO" },
+  tueste: { titulo: "Registrar tueste", campos: [["kgTostado", "Café tostado obtenido (kg)", (c) => Math.round(c.kgVerde * (1 - COSTOS.mermaTueste / 100) * 10) / 10], ["costo", "Costo del tueste (COP)", (c) => Math.round(c.kgVerde * COSTOS.tueste)]], estado: "TOSTADO" },
+  empaque: { titulo: "Registrar empaque", campos: [["presentacion", "Presentación (gramos)", () => 340], ["precioVenta", "Precio de venta por bolsa (COP)", () => 32000], ["costo", "Costo de empaque y etiquetas (COP)", (c) => Math.round((c.kgTostado * 1000 / 340) * COSTOS.empaque)]], estado: "EMPACADO" },
+  venta: { titulo: "Registrar venta directa", campos: [["bolsas", "Bolsas vendidas", () => 10], ["precio", "Precio por bolsa (COP)", (c) => c.precioVenta || 32000]], estado: "EMPACADO" },
 };
 
-function newAuction() {
-  const now = Date.now();
-  const costo = AU_LOTE.compraKgVerde * 30;
-  const a = { start: 120000, incr: 2000, reserve: 140000, kg: 30, minP: 3, dur: 150000, endsAt: now + 150000,
-    costo, ended: false, result: null, as: "comprador", bids: [], n: 0, seen: 0, rendered: -1, nextBot: now + 4000 };
-  [[0, 120000, -50], [3, 124000, -32], [1, 128000, -11]].forEach(([b, p, s]) =>
-    a.bids.unshift({ id: ++a.n, who: BOTS[b].name, city: BOTS[b].city, p, t: now + s * 1000 }));
-  a.seen = a.n;
-  return a;
-}
-const topBid = (a) => a.bids.find((b) => !b.sys);
-const minBid = (a) => (topBid(a) ? topBid(a).p + a.incr : a.start);
-const participants = (a) => new Set(a.bids.filter((b) => !b.sys).map((b) => b.who)).size;
-const mmss = (ms) => { const s = Math.ceil(ms / 1000); return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`; };
-const ago = (t) => { const s = Math.max(0, Math.round((Date.now() - t) / 1000)); return s < 60 ? `hace ${s} s` : `hace ${Math.floor(s / 60)} min`; };
-
-function placeBid(a, bid) {
-  const now = Date.now();
-  a.bids.unshift({ id: ++a.n, t: now, ...bid });
-  if (a.endsAt - now < EXT_MS) {
-    a.endsAt = now + EXT_MS;
-    a.bids.unshift({ id: ++a.n, sys: true, text: "Puja en los últimos 20 s · cierre extendido", t: now });
-  }
-}
-function botTick(a, now) {
-  if (now < a.nextBot) return;
-  const top = topBid(a), min = minBid(a);
-  const cands = BOTS.filter((b) => b.name !== top?.who && b.cap >= min);
-  if (cands.length) {
-    const b = cands[Math.floor(Math.random() * cands.length)];
-    const steps = Math.random() < 0.7 ? 0 : 1 + Math.floor(Math.random() * 2);
-    placeBid(a, { who: b.name, city: b.city, p: Math.min(b.cap, min + steps * a.incr) });
-  }
-  const left = a.endsAt - now;
-  a.nextBot = now + (left < 30000 ? 2500 + Math.random() * 4000 : 5000 + Math.random() * 7000);
-}
-function endAuction(a) {
-  a.ended = true;
-  const top = topBid(a);
-  const valid = !!top && top.p >= a.reserve && participants(a) >= a.minP;
-  a.result = { valid, top, reason: !top || top.p < a.reserve ? "No se alcanzó el precio de reserva." : "Participaron menos de 3 compradores." };
-  toast(valid ? (top.me ? `¡Ganaste el lote ${AU_LOTE.id} a ${cop(top.p)}/kg!` : `Lote adjudicado a ${esc(top.who)} por ${cop(top.p)}/kg.`) : "La subasta quedó desierta.",
-    UI.view === "subasta" ? {} : { label: "Ver", act: () => go("subasta") });
-}
-function myBid(steps) {
-  const a = UI.au; if (a.ended) return;
-  const p = steps ? minBid(a) + (steps - 1) * a.incr : num("au-custom", 0);
-  if (!(p >= minBid(a))) {
-    const inp = $("#au-custom"); inp.classList.remove("shake"); void inp.offsetWidth; inp.classList.add("shake");
-    return toast(`La puja mínima es ${cop(minBid(a))}.`, { type: "err" });
-  }
-  placeBid(a, { who: "Tú", city: YO.ciudad, p, me: true });
-  $("#au-custom").value = "";
-  a.nextBot = Math.min(a.nextBot, Date.now() + 2500 + Math.random() * 3000);
-  updateAuction();
-}
-function resetAuction() { UI.au = newAuction(); render(); toast("Subasta reiniciada."); }
-
-/* ---------- vista ---------- */
-function viewSubasta() {
-  const a = UI.au, l = AU_LOTE;
-  const rules = [
-    ["¿Cuándo es válida?", "Se adjudica si la puja más alta alcanza el precio de reserva y participan al menos 3 compradores distintos. Si no, el lote vuelve al catálogo."],
-    ["Extensión anti-último-segundo", "Una puja en los últimos 20 segundos extiende el cierre 20 segundos más. Gana quien más valora el lote, no quien puja al final."],
-    ["Identidad y anonimato", "Los postores están verificados por nosotros, pero entre ellos solo ven un código."],
-    ["Muestras previas", "Los inscritos pueden pedir 100 g para catar antes de la subasta."],
-    ["Incumplimiento", "El ganador tiene 48 horas para confirmar el pago. Si no, el lote pasa al segundo postor."],
-  ];
-  const upcoming = [["12", "oct", "Microlotes de Toledo", "6 lotes · 84–87 SCA"], ["26", "oct", "Geisha y Sidra del Norte de Santander", "4 lotes · 86+ SCA"], ["09", "nov", "Procesos experimentales", "5 lotes · anaeróbicos y honey"]];
-  return `<section class="auction">
-    <div class="au-top">
-      <div><p class="eyebrow reveal"><span class="live-dot ${a.ended ? "off" : ""}"></span> Subasta · lote ${esc(l.id)}</p>
-        <p class="au-sub reveal" style="--i:1">Precio de salida ${cop(a.start)}/kg · incremento mínimo ${cop(a.incr)} · ${a.kg} kg de café verde</p></div>
-      <div class="seg dark reveal" style="--i:2" role="group" aria-label="Ver como">
-        <button data-act="au-as" data-as="comprador" aria-pressed="${a.as === "comprador"}">Ver como comprador</button>
-        <button data-act="au-as" data-as="interno" aria-pressed="${a.as === "interno"}">Ver como ${esc(CONFIG.marca)}</button></div>
+function invPaso(id, paso) {
+  const c = S.compras.find((x) => x.id === id), p = PASOS[paso];
+  UI.paso = { id, paso };
+  modal(`${p.titulo} · <em>${esc(c.id)}</em>`, `<div class="form-grid">
+      ${p.campos.map(([k, label, def]) => `<div class="field"><label class="lbl" for="ip-${k}">${label}</label>
+        <input id="ip-${k}" class="input mono" type="number" step="1" value="${def(c)}"></div>`).join("")}
     </div>
-    <div class="au-grid">
-      <article class="au-panel au-lot reveal dark-art" style="--i:1">
-        <p class="kicker">${esc(l.finca)} · ${esc(l.municipio)}, Norte de Santander</p>
-        <h2 class="au-title">${esc(l.variedad)} <em>${esc(l.proceso)}</em></h2>
-        <ul class="au-facts">
-          <li><b>${esc(l.puntaje)}</b><small>SCA · ${LV[l.nivel].label}</small></li>
-          <li><b>${fmtNum(l.altitud)}</b><small>msnm · verificado</small></li>
-          <li><b>${a.kg} kg</b><small>verde · lote único</small></li>
-          <li><b>${esc(l.factor)}</b><small>Factor de rendimiento</small></li>
-        </ul>
-        <p class="au-detail">${esc(l.detalle)}</p>
-        <ul class="notes dark">${l.perfil.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
-        <p class="au-note">Comprado por nosotros a ${esc(l.productor)}. Lo subastamos porque es un lote pequeño y excepcional: la subasta le saca más valor que la bolsa de 340 g.</p>
-        <div class="au-ridge">${ridge(l, { w: 420, h: 120, dark: true })}</div>
-      </article>
-      <div class="au-panel au-console reveal" style="--i:2">
-        <div class="clock" id="au-clock"><div><span id="au-time">--:--</span><small id="au-clock-lbl">restante</small></div></div>
-        <div class="au-price"><span class="lbl">Puja más alta · COP/kg</span><b id="au-price">—</b><span class="au-total" id="au-total"></span></div>
-        <div class="au-status" id="au-status"></div>
-        <div id="au-controls"></div>
-      </div>
-      <aside class="au-panel au-feed reveal" style="--i:3">
-        <div class="feed-head"><h3>Pujas en vivo</h3><span class="mono" id="au-part"></span></div>
-        <ol id="au-feed"></ol>
-      </aside>
-    </div>
-    <div class="au-lower">
-      <section class="au-panel reveal" style="--i:4"><h3>Reglas <em>de la sala</em></h3>
-        ${rules.map(([t, p], i) => `<details class="rule" ${i === 0 ? "open" : ""}><summary>${t}</summary><p>${p}</p></details>`).join("")}</section>
-      <section class="au-panel reveal" style="--i:5"><h3>Próximas <em>subastas</em></h3><div class="upcoming">
-        ${upcoming.map(([d, m, t, s]) => `<div class="up"><div class="date"><b>${d}</b><small>${m}</small></div><p>${t}<small>${s}</small></p><button class="btn sm" data-act="remind">Avisarme</button></div>`).join("")}
-        </div><p class="au-note">Fechas de ejemplo.</p>
-        <button class="btn sm" data-act="au-reset" style="margin-top:10px">Reiniciar subasta de demostración</button></section>
-    </div>
-  </section>`;
+    <p class="hint">${paso === "trilla" ? "Con el peso real calculamos el factor verdadero del lote."
+      : paso === "tueste" ? "Con el peso tostado sale la merma real, que casi siempre es distinta a la estimada."
+      : paso === "empaque" ? "Al empacar creamos el café en la tienda y cada venta descuenta de este lote."
+      : "Para ventas de contado, ferias o cafeterías que no pasan por la tienda."}</p>
+    <div class="dlg-actions"><button class="btn" data-act="close">Cancelar</button><button class="btn primary" data-act="inv-paso-ok">Guardar</button></div>`, "narrow");
 }
 
-function controlsHTML() {
-  const a = UI.au;
-  if (a.ended) {
-    const r = a.result;
-    if (!r.valid) return `<div class="au-result lose"><h3>Subasta desierta</h3><p>${r.reason} El lote vuelve al catálogo y lo vendemos tostado.</p><div class="btns"><button class="btn" data-act="au-reset">Reiniciar demo</button></div></div>`;
-    const sobreCosto = ((r.top.p * a.kg) / a.costo - 1) * 100;
-    return r.top.me
-      ? `<div class="au-result"><h3>¡Adjudicado a ti!</h3><p>${a.kg} kg × ${cop(r.top.p)} = <b>${cop(r.top.p * a.kg)}</b>. Tienes 48 h para confirmar el pago.</p>
-         <div class="btns"><button class="btn primary" data-act="go" data-to="tienda">Ver la tienda</button><button class="btn" data-act="au-reset">Reiniciar demo</button></div></div>`
-      : `<div class="au-result"><h3>Adjudicado</h3><p>${esc(r.top.who)} (${esc(r.top.city)}) ganó con ${cop(r.top.p)}/kg: <b>+${Math.round(sobreCosto)} %</b> sobre lo que nos costó el lote.</p><div class="btns"><button class="btn" data-act="au-reset">Reiniciar demo</button></div></div>`;
+function invPasoOk() {
+  const { id, paso } = UI.paso, c = S.compras.find((x) => x.id === id);
+  const v = (k) => num("ip-" + k, 0);
+  if (paso === "trilla") { c.kgVerde = v("kgVerde"); c.costos.trilla = v("costo"); c.estado = "TRILLADO"; }
+  if (paso === "tueste") { c.kgTostado = v("kgTostado"); c.costos.tueste = v("costo"); c.estado = "TOSTADO"; }
+  if (paso === "empaque") {
+    const g = v("presentacion") || 340;
+    c.bolsas = Math.floor((c.kgTostado * 1000) / g); c.bolsasVendidas = c.bolsasVendidas || 0;
+    c.precioVenta = v("precioVenta"); c.costos.empaque = v("costo"); c.estado = "EMPACADO";
+    const p = { id: nextId("P"), loteId: c.id, nombre: c.municipio, sub: `Lote ${c.id}`, origen: `${c.finca} · ${c.municipio}`,
+      altitud: 1700, proceso: "Lavado", variedad: "Por definir", puntaje: c.sca || 84, tueste: "Medio", notas: ["Recién empacado"],
+      presentacion: g, precio: c.precioVenta, stock: c.bolsas, nivel: "DECLARADO", fuente: "Nuestra tostión", fecha: isoToday() };
+    S.productos.unshift(p);
+    toast(`${fmtNum(c.bolsas)} bolsas listas. Ya aparecen en la tienda.`, { label: "Ver tienda", act: () => go("tienda") });
   }
-  if (a.as === "interno") {
-    const top = topBid(a), p = top ? top.p : a.start, venta = p * a.kg;
-    const util = venta - a.costo, max = Math.max(venta, a.costo, 1);
-    return `<div class="ppanel"><span class="lbl">Vista interna · ${esc(CONFIG.marca)}</span>
-      <div class="prow-au"><span>Nos costó (${a.kg} kg verde)</span><b>${cop(a.costo)}</b></div>
-      <div class="prow-au"><span>Precio de reserva (privado)</span><b>${cop(a.reserve)}/kg ${p >= a.reserve ? "✓" : ""}</b></div>
-      <div class="prow-au"><span>Participantes distintos</span><b>${participants(a)} / ${a.minP} mín.</b></div>
-      <div class="prow-au"><span>Venta al precio actual</span><b>${cop(venta)}</b></div>
-      <div class="prow-au total"><span>Utilidad del lote</span><b>${cop(util)} · ${((util / venta) * 100 || 0).toFixed(0)} %</b></div>
-      <div class="vs"><div><span>Costo</span><i style="--w:${(a.costo / max) * 100}%"></i></div><div class="hot"><span>Subasta</span><i style="--w:${(venta / max) * 100}%"></i></div></div>
-      <p class="au-note">Si tostáramos estos 30 kg y los vendiéramos en bolsas de 340 g, serían unas ${fmtNum(Math.floor((30 * 0.83 * 1000) / 340))} bolsas. La subasta se justifica solo si supera esa venta.</p></div>`;
+  if (paso === "venta") {
+    const n = Math.min(v("bolsas"), bolsasLibres(c)), precio = v("precio");
+    c.bolsasVendidas = (c.bolsasVendidas || 0) + n; c.ingresos = (c.ingresos || 0) + n * precio;
+    const p = S.productos.find((x) => x.loteId === c.id); if (p) p.stock = Math.max(0, p.stock - n);
+    if (!bolsasLibres(c)) c.estado = "VENDIDO";
+    toast(`Venta registrada: ${n} bolsas por ${cop(n * precio)}.`);
   }
-  return `<div class="bidbox"><span class="lbl">Tu puja · mínimo <span class="mono" id="au-min"></span></span>
-    <div class="quick">${[1, 2, 5].map((s) => `<button class="qbtn" data-act="bid" data-steps="${s}"><span data-q="${s}"></span><small>${s === 1 ? "mínimo" : `+${s - 1} incr.`}</small></button>`).join("")}</div>
-    <div class="bid-row"><input id="au-custom" class="au-input" type="number" step="500" inputmode="numeric" placeholder="Otro monto" aria-label="Monto de la puja"><button class="bidbtn" data-act="bid-custom">Pujar</button></div>
-    <p class="au-note">Pujas como <b>${esc(YO.nombre)}</b>; los demás ven un código. Pujar es un compromiso de compra.</p></div>`;
+  save(); closeModal(); render();
 }
 
-function updateAuction() {
-  const a = UI.au, clock = $("#au-clock"); if (!clock) return;
-  const left = Math.max(0, a.endsAt - Date.now());
-  clock.style.setProperty("--p", a.ended ? 0 : Math.min(100, (left / a.dur) * 100).toFixed(2));
-  clock.classList.toggle("urgent", !a.ended && left < EXT_MS);
-  clock.classList.toggle("done", a.ended);
-  $("#au-time").textContent = a.ended ? "00:00" : mmss(left);
-  $("#au-clock-lbl").textContent = a.ended ? "cerrada" : "restante";
-
-  const c = $("#au-controls"), mode = a.ended ? "end" : a.as;
-  const changed = a.bids.length !== a.rendered, remount = c.dataset.mode !== mode;
-  if (remount || (mode === "interno" && changed)) { c.innerHTML = controlsHTML(); c.dataset.mode = mode; }
-  if (!changed && !remount) { refreshAgo(); return; }
-  a.rendered = a.bids.length;
-
-  const top = topBid(a), priceEl = $("#au-price"), txt = cop(top ? top.p : a.start);
-  if (priceEl.textContent !== txt) { priceEl.textContent = txt; priceEl.classList.remove("flash"); void priceEl.offsetWidth; priceEl.classList.add("flash"); }
-  $("#au-total").textContent = top ? `${a.kg} kg × ${txt} = ${cop(top.p * a.kg)} · líder: ${top.me ? "tú" : top.who}` : "Sin pujas todavía";
-  const ext = a.bids.filter((b) => b.sys).length;
-  $("#au-status").innerHTML = `<span class="rpill ${top && top.p >= a.reserve ? "ok" : ""}">${top && top.p >= a.reserve ? "Reserva alcanzada" : "Reserva no alcanzada"}</span>
-    ${top?.me && !a.ended ? `<span class="rpill me">Vas ganando</span>` : ""}
-    ${!top?.me && a.bids.some((b) => b.me) && !a.ended ? `<span class="rpill warn">Te superaron</span>` : ""}
-    ${ext ? `<span class="rpill">${ext} extensión${ext > 1 ? "es" : ""}</span>` : ""}`;
-  $("#au-part").textContent = `${participants(a)} participantes`;
-  const min = $("#au-min");
-  if (min) { min.textContent = cop(minBid(a)); document.querySelectorAll("[data-q]").forEach((q) => (q.textContent = cop(minBid(a) + (q.dataset.q - 1) * a.incr))); }
-  const topId = top?.id;
-  $("#au-feed").innerHTML = a.bids.slice(0, 14).map((b) => b.sys
-    ? `<li class="bid sys ${b.id > a.seen ? "new" : ""}">${b.text}</li>`
-    : `<li class="bid ${b.id === topId ? "top" : ""} ${b.me ? "me" : ""} ${b.id > a.seen ? "new" : ""}"><span class="who">${esc(b.who)} <span class="muted">· ${esc(b.city)}</span></span><span class="p">${cop(b.p)}</span><span class="t" data-t="${b.t}">${ago(b.t)}</span></li>`).join("");
-  a.seen = a.n;
+/* Las ventas de la tienda se descuentan del lote que las produjo */
+function atribuirVenta(producto, unidades, valor) {
+  const c = S.compras.find((x) => x.id === producto.loteId); if (!c || !unidades) return;
+  c.bolsasVendidas = (c.bolsasVendidas || 0) + unidades;            // admite fracciones (muestras de 100 g)
+  c.ingresos = (c.ingresos || 0) + (valor != null ? valor : unidades * producto.precio);
+  if (bolsasLibres(c) < 1) c.estado = "VENDIDO";
 }
-function refreshAgo() { document.querySelectorAll("#au-feed [data-t]").forEach((el) => (el.textContent = ago(+el.dataset.t))); }
 
-/* ---- main.js ---- */
+/* ---- clients.js ---- */
 /* ============================================================
-   INICIO, ADMIN, enrutado, render y eventos
+   CLIENTES (uso interno): quién compra, cada cuánto y a quién llamar
    ============================================================ */
-function viewInicio() {
-  const p = geisha(), a = UI.au, l = AU_LOTE;
-  const v = p.variantes.find((x) => x.principal);
-  const sobre = ((p.pago.pagadoKg / p.pago.referenciaKg - 1) * 100).toFixed(0);
-  const valor = [
-    ["Un nombre, no un país", "No vendemos “café colombiano”. Vendemos el lote de una finca, de una cosecha, con el nombre de quien lo cultivó."],
-    ["Cada dato con su fuente", "Altura, variedad, proceso y puntaje llevan quién lo comprobó y cuándo. Lo que no está verificado, lo decimos."],
-    ["Lo que le pagamos", `Pagamos ${cop(p.pago.pagadoKg)} por kilo de pergamino cuando la referencia del día era ${cop(p.pago.referenciaKg)}: <b>+${sobre} %</b>.`],
-    ["Se acaba y ya", "Son 60 kilos de una cosecha. Cuando se acaben, hay que esperar a la siguiente."],
+const TIPOS = ["Cafetería", "Tostador", "Tienda", "Oficina", "Persona"];
+
+const pedidosDe = (id) => S.pedidos.filter((p) => p.clienteId === id).sort((a, b) => b.fecha.localeCompare(a.fecha));
+const totalCliente = (id) => pedidosDe(id).reduce((s, p) => s + p.total, 0);
+
+/* Días promedio entre pedidos: sirve para saber cuándo deberían volver a pedir */
+function frecuencia(id) {
+  const f = pedidosDe(id).map((p) => new Date(p.fecha + "T00:00:00")).sort((a, b) => a - b);
+  if (f.length < 2) return null;
+  let s = 0; for (let i = 1; i < f.length; i++) s += (f[i] - f[i - 1]) / 86400000;
+  return Math.round(s / (f.length - 1));
+}
+function estadoCliente(id) {
+  const ps = pedidosDe(id); if (!ps.length) return { k: "nuevo", label: "sin pedidos" };
+  const d = dias(ps[0].fecha), fr = frecuencia(id);
+  if (d > 120) return { k: "perdido", label: `perdido · ${d} días`, d };
+  if (fr && d > fr * 1.5) return { k: "riesgo", label: `se atrasó · ${d} días`, d, fr };
+  if (!fr && d > 60) return { k: "riesgo", label: `no repite · ${d} días`, d };
+  if (ps.length >= 2) return { k: "fiel", label: `cada ~${fr} días`, d, fr };
+  return { k: "nuevo", label: `nuevo · hace ${d} días`, d };
+}
+function cafePreferido(id) {
+  const c = {};
+  pedidosDe(id).forEach((p) => p.items.forEach((i) => (c[i.nombre] = (c[i.nombre] || 0) + i.n)));
+  const top = Object.entries(c).sort((a, b) => b[1] - a[1])[0];
+  return top ? { nombre: top[0], n: top[1] } : null;
+}
+
+function viewClientes() {
+  const cs = S.clientes.map((c) => ({ ...c, total: totalCliente(c.id), n: pedidosDe(c.id).length, est: estadoCliente(c.id) }))
+    .sort((a, b) => b.total - a.total);
+  const ventas = S.pedidos.reduce((s, p) => s + p.total, 0);
+  const ticket = S.pedidos.length ? ventas / S.pedidos.length : 0;
+  const repiten = cs.filter((c) => c.n >= 2).length;
+  const alerta = cs.filter((c) => ["riesgo", "perdido"].includes(c.est.k));
+  const mes = S.pedidos.filter((p) => dias(p.fecha) <= 30).reduce((s, p) => s + p.total, 0);
+
+  /* Ranking de cafés por unidades vendidas */
+  const porCafe = {};
+  S.pedidos.forEach((p) => p.items.forEach((i) => {
+    porCafe[i.nombre] ||= { n: 0, plata: 0 };
+    porCafe[i.nombre].n += i.n; porCafe[i.nombre].plata += i.n * i.precio;
+  }));
+  const ranking = Object.entries(porCafe).sort((a, b) => b[1].plata - a[1].plata);
+  const maxPlata = Math.max(...ranking.map(([, v]) => v.plata), 1);
+
+  return `<div class="view-head">
+      <div><p class="eyebrow reveal">Uso interno</p>
+        <h2 class="reveal" style="--i:1">Clientes <em>y recompra</em></h2>
+        <p class="reveal" style="--i:2">Conseguir un cliente nuevo cuesta; que el de siempre vuelva a pedir, no. Aquí está a quién llamar esta semana.</p></div>
+      <button class="btn primary reveal" style="--i:3" data-act="cl-nuevo">Registrar venta</button>
+    </div>
+    <div class="kpis reveal" style="--i:3">
+      <div class="kpi"><b data-count="${cs.length}">${cs.length}</b><small>clientes</small></div>
+      <div class="kpi"><b data-count="${ventas}" data-pre="$">${cop(ventas)}</b><small>vendido en total</small></div>
+      <div class="kpi"><b data-count="${mes}" data-pre="$">${cop(mes)}</b><small>últimos 30 días</small></div>
+      <div class="kpi"><b data-count="${ticket}" data-pre="$">${cop(ticket)}</b><small>pedido promedio</small></div>
+      <div class="kpi ${alerta.length ? "alert" : ""}"><b data-count="${alerta.length}">${alerta.length}</b><small>por reactivar</small></div>
+    </div>
+
+    ${alerta.length ? `<div class="llamar reveal"><h3>Para llamar hoy</h3>
+      <div class="chips">${alerta.slice(0, 6).map((c) => `<button class="chip" data-act="cl-wa" data-id="${c.id}">${esc(c.nombre)} · ${c.est.d} días</button>`).join("")}</div></div>` : ""}
+
+    <div class="list">${cs.length ? cs.map(clienteCard).join("") : `<div class="empty"><h3>Sin clientes todavía</h3><p>Los pedidos de la tienda crean el cliente solo.</p></div>`}</div>
+
+    <section class="section">
+      <div class="section-head"><p class="eyebrow">Qué se vende</p><h2>Cafés <em>más pedidos</em></h2></div>
+      <div class="rank">${ranking.map(([nombre, v]) => `<div class="rk">
+        <span class="rk-n">${esc(nombre)}</span>
+        <span class="rk-bar"><i style="--w:${(v.plata / maxPlata) * 100}%"></i></span>
+        <span class="mono">${fmtNum(v.n)} u · ${cop(v.plata)}</span></div>`).join("")}</div>
+    </section>`;
+}
+
+function clienteCard(c, i) {
+  const pref = cafePreferido(c.id), ps = pedidosDe(c.id), ult = ps[0];
+  return `<div class="item cliente" style="--i:${i}">
+    <span class="avatar">${esc(c.nombre[0])}</span>
+    <div><p class="kicker">${esc(c.tipo)} · ${esc(c.ciudad)}${c.tel ? " · " + esc(c.tel) : ""}</p>
+      <h4>${esc(c.nombre)}</h4>
+      <p>${c.n} ${c.n === 1 ? "pedido" : "pedidos"} · ${cop(c.total)} en total${ult ? ` · último ${fmtFecha(ult.fecha)}` : ""}</p>
+      ${pref ? `<p class="hint" style="margin:6px 0 0">Su café: <b>${esc(pref.nombre)}</b> (${pref.n} unidades)</p>` : ""}
+    </div>
+    <div class="item-actions">
+      <span class="est ${c.est.k}">${c.est.label}</span>
+      <button class="btn sm" data-act="cl-ver" data-id="${c.id}">Historial</button>
+      <button class="btn primary sm" data-act="cl-wa" data-id="${c.id}">Escribirle</button>
+    </div></div>`;
+}
+
+function clienteVer(id) {
+  const c = S.clientes.find((x) => x.id === id), ps = pedidosDe(id), est = estadoCliente(id), fr = frecuencia(id);
+  modal(`${esc(c.nombre)} · <em>${esc(c.ciudad)}</em>`, `
+    <div class="offer-sum"><div><span class="lbl">Pedidos</span><b>${ps.length}</b></div>
+      <div><span class="lbl">Total</span><b class="mono">${cop(totalCliente(id))}</b></div>
+      <div><span class="lbl">Cada</span><b>${fr ? fr + " días" : "—"}</b></div></div>
+    <div class="table-scroll"><table class="cmp-table"><tbody>
+      ${ps.map((p) => `<tr><th>${fmtFecha(p.fecha)}<small class="src">${esc(p.id)}</small></th>
+        <td>${p.items.map((i) => `${i.n} × ${esc(i.nombre)}`).join("<br>")}</td>
+        <td class="mono">${cop(p.total)}</td></tr>`).join("")}
+    </tbody></table></div>
+    <p class="hint">${est.k === "fiel" ? `Pide cada ~${fr} días. Escribirle unos días antes evita que se quede sin café.`
+      : est.k === "riesgo" ? `Lleva ${est.d} días sin pedir y suele pedir cada ${fr || "—"}. Vale una llamada.`
+      : est.k === "perdido" ? `Lleva ${est.d} días sin comprar. Ofrécele algo nuevo o pregúntale qué pasó.`
+      : "Cliente nuevo: el segundo pedido es el que define si se queda."}</p>
+    <div class="dlg-actions"><button class="btn" data-act="cl-nuevo" data-id="${id}">Registrar venta</button>
+      <button class="btn primary" data-act="cl-wa" data-id="${id}">Escribirle por WhatsApp</button></div>`, "narrow");
+}
+
+/* Mensaje sugerido según su historia */
+function clienteWa(id) {
+  const c = S.clientes.find((x) => x.id === id), est = estadoCliente(id), pref = cafePreferido(id);
+  const nuevo = S.productos.find((p) => p.stock > 0 && (!pref || p.nombre !== pref.nombre));
+  const msg = est.k === "fiel"
+    ? `Hola ${c.nombre}, ¿cómo van? Ya casi cumplen ${est.fr} días del último pedido de ${pref?.nombre || "café"}. ¿Les preparo otro despacho esta semana?`
+    : est.k === "riesgo" || est.k === "perdido"
+    ? `Hola ${c.nombre}, hace ${est.d} días no hacen pedido. Tenemos ${nuevo ? nuevo.nombre + " " + nuevo.sub : "café fresco"} recién tostado. ¿Les mando una muestra?`
+    : `Hola ${c.nombre}, ¿cómo les fue con el ${pref?.nombre || "café"}? Si les gustó, les separo el siguiente lote.`;
+  if (CONFIG.whatsapp && c.tel) window.open(`https://wa.me/57${c.tel.replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+  else modal(`Mensaje para <em>${esc(c.nombre)}</em>`, `<pre class="pre">${esc(msg)}</pre>
+    <p class="hint">${c.tel ? "Configura tu WhatsApp en CONFIG para abrirlo directo." : "Este cliente no tiene teléfono guardado."}</p>
+    <div class="dlg-actions"><button class="btn primary" data-act="close">Listo</button></div>`, "narrow");
+}
+
+/* Registrar una venta hecha por fuera de la tienda */
+function clienteNuevo(id) {
+  const c = id ? S.clientes.find((x) => x.id === id) : null;
+  const disp = S.productos.filter((p) => p.stock > 0);
+  modal("Registrar <em>venta</em>", `<div class="form-grid">
+      <div class="field"><label class="lbl" for="cn-nombre">Cliente</label>
+        <input id="cn-nombre" class="input" list="clientes-l" value="${esc(c?.nombre || "")}" placeholder="Nombre o negocio">
+        <datalist id="clientes-l">${S.clientes.map((x) => `<option value="${esc(x.nombre)}">`).join("")}</datalist></div>
+      <div class="field"><label class="lbl" for="cn-tipo">Tipo</label><select id="cn-tipo" class="input">${TIPOS.map((t) => `<option ${t === c?.tipo ? "selected" : ""}>${t}</option>`).join("")}</select></div>
+      <div class="field"><label class="lbl" for="cn-ciudad">Ciudad</label><input id="cn-ciudad" class="input" value="${esc(c?.ciudad || "Cúcuta")}"></div>
+      <div class="field"><label class="lbl" for="cn-tel">WhatsApp</label><input id="cn-tel" class="input" type="tel" value="${esc(c?.tel || "")}" placeholder="300 000 0000"></div>
+      <div class="field"><label class="lbl" for="cn-prod">Café</label><select id="cn-prod" class="input">${disp.map((p) => `<option value="${p.id}">${esc(p.nombre)} · ${esc(p.sub)} (${p.stock} disp.)</option>`).join("")}</select></div>
+      <div class="field"><label class="lbl" for="cn-n">Unidades</label><input id="cn-n" class="input mono" type="number" min="1" value="1"></div>
+    </div>
+    <p class="hint">La venta descuenta el stock y se suma al lote que produjo ese café.</p>
+    <div class="dlg-actions"><button class="btn" data-act="close">Cancelar</button><button class="btn primary" data-act="cl-guardar">Guardar venta</button></div>`, "narrow");
+}
+
+function clienteGuardar() {
+  const nombre = $("#cn-nombre").value.trim();
+  if (!nombre) return toast("Falta el nombre del cliente.", { type: "err" });
+  const prod = S.productos.find((p) => p.id === $("#cn-prod").value);
+  const n = Math.max(1, Math.min(prod?.stock || 0, num("cn-n", 1)));
+  if (!prod || !n) return toast("No hay stock de ese café.", { type: "err" });
+  let cl = S.clientes.find((x) => x.nombre.toLowerCase() === nombre.toLowerCase());
+  if (!cl) { cl = { id: nextId("CL"), nombre, tipo: $("#cn-tipo").value, ciudad: $("#cn-ciudad").value.trim(), tel: $("#cn-tel").value.trim() }; S.clientes.unshift(cl); }
+  else { cl.tel = $("#cn-tel").value.trim() || cl.tel; cl.ciudad = $("#cn-ciudad").value.trim() || cl.ciudad; }
+  S.pedidos.unshift({ id: nextId("PD"), clienteId: cl.id, nombre: cl.nombre, ciudad: cl.ciudad, fecha: isoToday(), canal: "directo",
+    items: [{ id: prod.id, nombre: prod.nombre, n, precio: prod.precio }], total: n * prod.precio });
+  prod.stock -= n; atribuirVenta(prod, n);
+  save(); closeModal(); render();
+  toast(`Venta a ${esc(cl.nombre)}: ${n} × ${esc(prod.nombre)} = ${cop(n * prod.precio)}.`);
+}
+
+/* Los pedidos de la tienda crean o actualizan el cliente */
+function upsertCliente(nombre, ciudad, tel) {
+  let cl = S.clientes.find((x) => x.nombre.toLowerCase() === nombre.toLowerCase());
+  if (cl) { cl.tel = tel || cl.tel; cl.ciudad = ciudad || cl.ciudad; return cl; }
+  cl = { id: nextId("CL"), nombre, tipo: "Cafetería", ciudad, tel };
+  S.clientes.unshift(cl);
+  return cl;
+}
+
+/* ---- market.js ---- */
+/* ============================================================
+   MERCADO (uso interno): referencias del día, conversiones y
+   cuándo conviene sacar el café.
+   ============================================================ */
+function guardarMercado() {
+  CONFIG.fnc.precioCarga = num("m-carga", CONFIG.fnc.precioCarga);
+  CONFIG.fnc.fecha = $("#m-fecha").value || CONFIG.fnc.fecha;
+  CONFIG.mercado.ny = num("m-ny", CONFIG.mercado.ny);
+  CONFIG.mercado.trm = num("m-trm", CONFIG.mercado.trm);
+  if (UI.q) UI.q.precioCarga = CONFIG.fnc.precioCarga;
+  S.cfg = { fnc: { ...CONFIG.fnc }, mercado: { ...CONFIG.mercado } };
+  save(); render();
+  toast("Referencias actualizadas. El cotizador ya usa estos valores.");
+}
+
+/* Precio internacional equivalente: US¢/lb → COP por kg de café verde */
+const nyCopKgVerde = () => (CONFIG.mercado.ny / 100) * CONFIG.mercado.trm / 0.4536;
+
+function viewMercado() {
+  const f = CONFIG.fnc, m = CONFIG.mercado;
+  const factores = [88, 90, 92, 94, 96, 98, 100];
+  const calendario = [
+    ["Norte de Santander", "Cosecha principal", "sep – dic", "Es cuando hay café para comprar y cuando más baja el precio en finca. Confirmar el calendario local del comité."],
+    ["Norte de Santander", "Traviesa o mitaca", "abr – jun", "Menos volumen; buen momento para microlotes y para vender lo guardado."],
+    ["Brasil", "Cosecha", "may – sep", "Marca el precio mundial: cosecha grande en Brasil empuja el contrato C hacia abajo."],
+    ["Mercado", "Trimestre de escasez", "mar – may", "Los inventarios del hemisferio norte están bajos antes de la cosecha brasileña; los cafés diferenciados se pagan mejor."],
   ];
-  return `
-  <section class="hero">
-    <div>
-      <p class="eyebrow reveal">${esc(CONFIG.marca)} · ${esc(CONFIG.lugar)}</p>
-      <h1 class="reveal" style="--i:1">Un café.<br><em>Toda su historia.</em></h1>
-      <p class="lede reveal" style="--i:2">Compramos el lote directo en la finca, pagando por encima de la referencia del día, y lo vendemos con su ficha completa: quién lo cultivó, a qué altura, quién lo cató y cuándo.</p>
-      <div class="cta reveal" style="--i:3">
-        <button class="btn primary lg" data-act="go" data-to="geisha">Ver el Geisha · ${cop(v.precio)}</button>
-        <button class="btn lg" data-act="go" data-to="subasta"><span class="live-dot ${a.ended ? "off" : ""}"></span> Subasta en vivo</button>
-      </div>
+  const señales = [
+    ["Vender ya", "El contrato C está alto y el peso débil (TRM alta): el precio interno sube con las dos cosas.", "hot"],
+    ["Guardar", "Café de 86+ puntos en plena cosecha: el mercado está lleno de café corriente y el especial se diluye.", "ref"],
+    ["Guardar con cuidado", "El pergamino bien seco aguanta meses, pero la catación pierde puntos: hay que catar de nuevo a los 6 meses.", "ref"],
+    ["No guardar", "Café con factor alto o humedad por encima de 12 %: se deteriora rápido. Sacarlo pronto.", "max"],
+  ];
+  return `<div class="view-head">
+      <div><p class="eyebrow reveal">Uso interno</p>
+        <h2 class="reveal" style="--i:1">Mercado <em>del día</em></h2>
+        <p class="reveal" style="--i:2">Actualiza estos tres números antes de salir a comprar. De ellos sale todo el cotizador.</p></div>
     </div>
-    <div class="hero-art reveal" style="--i:2">
-      <div class="hero-card">
-        <div class="hc-top"><span class="kicker">${esc(p.municipio)} · ${esc(p.cosecha)}</span><span class="state st-publicado">${v.stock} bolsas</span></div>
-        <p class="hc-title">${esc(p.variedad)}<br><em>${esc(p.proceso)}</em></p>
-        <p class="hc-score">${esc(p.puntaje)}<small>SCA</small></p>
-        <div class="hc-ridge dark-art">${ridge(p, { w: 420, h: 180, dark: true })}</div>
-      </div>
-      <div class="float-chip" style="--x:-6%;--y:66%;--d:0s"><i style="--c:var(--leaf)"></i><span>Altitud <b>${fmtNum(p.altitud)} m</b></span><small>verificado · GPS</small></div>
-      <div class="float-chip" style="--x:58%;--y:24%;--d:-2s"><i style="--c:var(--leaf)"></i><span>Puntaje <b>${esc(p.puntaje)}</b></span><small>verificado · Q-grader</small></div>
-      <div class="float-chip" style="--x:54%;--y:84%;--d:-4s"><i style="--c:var(--doc)"></i><span>Lavado <b>36 h</b></span><small>documentado · bitácora</small></div>
+    <div class="mkt-grid reveal" style="--i:2">
+      <div class="mkt"><span class="lbl">Precio interno FNC · carga de 125 kg</span>
+        <input id="m-carga" class="mkt-in mono" type="number" step="5000" value="${f.precioCarga}">
+        <small>factor 94 · ${cop(f.precioCarga / 125)} por kg de pergamino</small></div>
+      <div class="mkt"><span class="lbl">Contrato C · Nueva York</span>
+        <input id="m-ny" class="mkt-in mono" type="number" step="1" value="${m.ny}">
+        <small>US¢ por libra · ${cop(nyCopKgVerde())} por kg verde</small></div>
+      <div class="mkt"><span class="lbl">TRM</span>
+        <input id="m-trm" class="mkt-in mono" type="number" step="10" value="${m.trm}">
+        <small>COP por dólar</small></div>
+      <div class="mkt"><span class="lbl">Fecha de la referencia</span>
+        <input id="m-fecha" class="mkt-in" type="date" value="${f.fecha}">
+        <small>Publicado por la FNC cada día hábil</small></div>
+      <div class="mkt act"><button class="btn primary" data-act="mkt-save">Guardar referencias</button>
+        <small>Fuente: federaciondecafeteros.org · preciocafe.com</small></div>
     </div>
-  </section>
 
-  <section class="section">
-    <div class="section-head"><p class="eyebrow">Lo que hay ahora</p><h2>Dos cafés, <em>nada más</em></h2>
-      <p>Uno para llevar a casa y uno que se remata al mejor postor. Cuando se acaban, se acaban.</p></div>
-    <div class="dos">${cafeCard(p, 0)}${subastaCard(1)}</div>
-  </section>
+    <section class="section">
+      <div class="section-head"><p class="eyebrow">Tabla rápida</p><h2>Precio según <em>el factor</em></h2>
+        <p>El precio se mueve con lo que rinde la carga: a factor 94 rinde 93,1 kg de excelso; a factor 100 solo 87,5 kg.</p></div>
+      <div class="table-scroll"><table class="cmp-table mkt-table">
+        <thead><tr><th>Factor</th>${factores.map((x) => `<th class="${x === 94 ? "best" : ""}">${x}</th>`).join("")}</tr></thead>
+        <tbody>
+          <tr><th>kg de excelso por carga</th>${factores.map((x) => `<td class="mono">${fmtNum((125 * 70) / x, 1)}</td>`).join("")}</tr>
+          <tr><th>COP por carga</th>${factores.map((x) => `<td class="mono">${cop(f.precioCarga * (94 / x))}</td>`).join("")}</tr>
+          <tr><th>COP por kg pergamino</th>${factores.map((x) => `<td class="mono">${cop(precioComiteKg(x))}</td>`).join("")}</tr>
+          <tr><th>COP por arroba (12,5 kg)</th>${factores.map((x) => `<td class="mono">${cop(precioComiteKg(x) * 12.5)}</td>`).join("")}</tr>
+        </tbody></table></div>
+      <p class="hint">Cálculo propio a partir del precio de referencia. Las cooperativas aplican además castigos por humedad y por taza, así que el pago real puede ser algo menor.</p>
+    </section>
 
-  <section class="section">
-    <div class="section-head"><p class="eyebrow">Por qué cuesta lo que cuesta</p><h2>La transparencia <em>no es un adorno</em></h2></div>
-    <div class="valor">${valor.map(([t, d], i) => `<div class="val" style="--i:${i}"><b>${t}</b><span>${d}</span></div>`).join("")}</div>
-  </section>
+    <section class="section">
+      <div class="section-head"><p class="eyebrow">Equivalencias</p><h2>Las cuentas <em>de bolsillo</em></h2></div>
+      <div class="eqs">
+        ${[["1 carga", "125 kg de pergamino seco = 10 arrobas"], ["1 arroba", "12,5 kg"], ["Factor 94", "94 kg de pergamino → 70 kg de excelso"],
+           ["Trilla", "1 kg de pergamino → " + fmtNum(70 / 94, 3) + " kg de verde a factor 94"], ["Cereza", "~5 kg de cereza → 1 kg de pergamino seco"],
+           ["Tueste", "1 kg de verde → ~0,83 kg tostado (17 % de merma)"], ["Bolsa de 340 g", "~" + fmtNum(1000 / 340, 1) + " bolsas por kg tostado"],
+           ["Humedad", "Base de negociación: 12 %. Más húmedo, menos peso real"]].map(([k, v]) => `<div class="eq"><b>${k}</b><span>${v}</span></div>`).join("")}
+      </div>
+    </section>
 
-  <section class="section cinta">
-    <p class="eyebrow">De la finca a la bolsa</p>
-    <div class="cinta-pasos">${[
-      ["Compra", `${cop(p.pago.pagadoKg)}/kg de pergamino en la finca`],
-      ["Trilla", "60 kg de pergamino → 46 kg de café verde"],
-      ["Tueste", "medio-claro, para que se sienta el origen"],
-      ["Empaque", "153 bolsas con válvula y fecha de tueste"],
-      ["Tu taza", "15 g, 250 ml, 93 °C"],
-    ].map(([t, d], i) => `<div class="cp"><span class="n">${i + 1}</span><b>${t}</b><small>${d}</small></div>`).join("")}</div>
+    <section class="section">
+      <div class="section-head"><p class="eyebrow">Calendario</p><h2>Cuándo hay café <em>y cuándo falta</em></h2></div>
+      <div class="table-scroll"><table class="cmp-table"><thead><tr><th>Dónde</th><th>Qué</th><th>Cuándo</th><th>Qué significa para nosotros</th></tr></thead>
+        <tbody>${calendario.map(([a, b, c, d]) => `<tr><th>${a}</th><td>${b}</td><td class="mono">${c}</td><td>${d}</td></tr>`).join("")}</tbody></table></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><p class="eyebrow">Señales</p><h2>Vender <em>o guardar</em></h2></div>
+      <div class="signals">${señales.map(([t, d, k]) => `<div class="sig ${k}"><b>${t}</b><span>${d}</span></div>`).join("")}</div>
+      <p class="hint">Contexto a septiembre de 2026: tras dos años de precios altos por escasez, el mercado espera una cosecha récord en Brasil y más oferta, aunque los inventarios siguen bajos. Revisar antes de decidir si guardamos café esperando mejor precio.</p>
+    </section>`;
+}
+
+/* ---- admin.js ---- */
+/* ============================================================
+   PANEL INTERNO · aplicación aparte, no va en la página pública
+   Entrada con correo y contraseña. No se guarda la contraseña:
+   solo un verificador PBKDF2 (310.000 vueltas) con sal aleatoria.
+   Para cambiarla:  node tools/clave.js "nueva contraseña"
+   ============================================================ */
+const AUTH = {
+  correo: "9cbdfca2c4a1d804c916b1c3c55cc6b4",                                   // sha256(correo), primeros 32
+  sal: "181eaf41d155f3402939f88bdc9c998b",
+  clave: "2f08f481bccf330d4c0d3d211a847298420f96a7210b77ff9a6697f0a646ce8f",
+  vueltas: 310000,
+  sesion: "altura-admin-ok",
+};
+
+const hex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+const bytes = (h) => new Uint8Array(h.match(/../g).map((x) => parseInt(x, 16)));
+
+async function verificar(correo, clave) {
+  const mailHash = hex(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(correo.trim().toLowerCase()))).slice(0, 32);
+  if (mailHash !== AUTH.correo) return false;
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(clave), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt: bytes(AUTH.sal), iterations: AUTH.vueltas, hash: "SHA-256" }, key, 256);
+  return hex(bits) === AUTH.clave;
+}
+
+const sesionActiva = () => { try { return sessionStorage.getItem(AUTH.sesion) === "1"; } catch { return false; } };
+
+function viewLogin() {
+  return `<section class="login">
+    <div class="login-card reveal">
+      <svg class="mark" viewBox="0 0 28 20" aria-hidden="true"><path d="M1 19 L9 7 L13 12 L19 3 L27 19 Z" fill="currentColor"/></svg>
+      <p class="eyebrow">${esc(CONFIG.marca)} · panel interno</p>
+      <h1>Entrar</h1>
+      <p class="hint">Cotizador, inventario, clientes y mercado. Esta parte no aparece en la página pública.</p>
+      <form class="login-form" onsubmit="return false">
+        <div class="field"><label class="lbl" for="lg-mail">Correo</label>
+          <input id="lg-mail" class="input" type="email" autocomplete="username" placeholder="correo@dominio.com"></div>
+        <div class="field"><label class="lbl" for="lg-pass">Contraseña</label>
+          <input id="lg-pass" class="input" type="password" autocomplete="current-password"></div>
+        <p class="err" id="lg-err" hidden>Correo o contraseña incorrectos.</p>
+        <button class="btn primary lg" data-act="login" id="lg-btn">Entrar</button>
+      </form>
+    </div>
   </section>`;
 }
 
-const FOOT = `<footer class="foot"><span><b>${CONFIG.marca}</b> · ${CONFIG.lugar} · nombre provisional. Prototipo con <b>datos de ejemplo</b>.</span>
-  <button class="btn sm" data-act="reset-demo">Reiniciar datos de la demo</button></footer>`;
+async function entrar() {
+  const b = $("#lg-btn"), err = $("#lg-err");
+  b.disabled = true; b.textContent = "Comprobando…"; err.hidden = true;
+  const ok = await verificar($("#lg-mail").value, $("#lg-pass").value);
+  if (!ok) { b.disabled = false; b.textContent = "Entrar"; err.hidden = false; $("#lg-pass").select(); return; }
+  try { sessionStorage.setItem(AUTH.sesion, "1"); } catch {}
+  UI.animate = true; render();
+}
+function salir() { try { sessionStorage.removeItem(AUTH.sesion); } catch {} UI.animate = true; render(); }
 
-const VIEWS = { inicio: viewInicio, geisha: viewGeisha, subasta: viewSubasta };
+/* ---------- panel ---------- */
+const ATABS = [["cotizador", "Cotizador"], ["inventario", "Inventario"], ["clientes", "Clientes"], ["mercado", "Mercado"]];
+const APANELS = { cotizador: viewCotizador, inventario: viewInventario, clientes: viewClientes, mercado: viewMercado };
+
+function viewPanel() {
+  const quieto = S.compras.reduce((s, c) => s + enJuego(c), 0);
+  return `<div class="admin-bar reveal">
+      <div><span class="lbl">${esc(CONFIG.marca)} · interno</span><b>Panel de administración</b></div>
+      <div class="seg" role="group" aria-label="Secciones">
+        ${ATABS.map(([k, t]) => `<button data-act="atab" data-tab="${k}" aria-pressed="${UI.atab === k}">${t}</button>`).join("")}
+      </div>
+      <div class="admin-side"><span class="mono" title="Plata sin recuperar">${copK(quieto)} en bodega</span>
+        <button class="btn sm" data-act="salir">Salir</button></div>
+    </div>
+    <div class="admin-body">${APANELS[UI.atab]()}</div>`;
+}
+
+const FOOT = `<footer class="foot"><span>Panel interno de <b>${CONFIG.marca}</b>. Datos de ejemplo mientras no se carguen los reales.</span>
+  <button class="btn sm" data-act="reset-demo">Reiniciar datos de la demo</button></footer>`;
 
 function render() {
   const ae = document.activeElement, fid = ae && ae.id && !ae.closest("dialog") ? ae.id : null;
   const sel = fid && typeof ae.selectionStart === "number" ? [ae.selectionStart, ae.selectionEnd] : null;
-  document.body.dataset.view = UI.view;
-  renderNav();
+  const dentro = sesionActiva();
+  document.body.dataset.view = dentro ? "panel" : "login";
   const v = $("#view");
   v.classList.toggle("calm", !UI.animate);
-  v.innerHTML = VIEWS[UI.view]() + FOOT;
-  if (UI.view === "subasta") updateAuction();
-  renderTray(); liveBits();
+  v.innerHTML = dentro ? viewPanel() + FOOT : viewLogin();
+  if (dentro && UI.atab === "cotizador") renderCot();
   if (UI.animate) countUp();
   UI.animate = false;
   if (fid) { const n = document.getElementById(fid); if (n) { n.focus({ preventScroll: true }); if (sel) try { n.setSelectionRange(...sel); } catch {} } }
 }
-function softRefresh() { if (UI.view === "subasta") return renderNav(); render(); }
-function go(view) {
-  UI.view = view; UI.animate = true; closeModal();
-  try { if (location.hash !== "#" + view) history.replaceState(null, "", "#" + view); } catch {}
-  render();
-  try { window.scrollTo({ top: 0, behavior: "instant" }); } catch { window.scrollTo(0, 0); }
-}
-function renderNav() {
-  document.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-current", t.dataset.to === UI.view ? "page" : "false"));
-  const n = unidadesCarrito(), b = $("#b-cart");
-  b.hidden = !n; b.textContent = n;
-  $("#nav-live").classList.toggle("off", UI.au.ended);
-}
-function liveBits() {
-  const a = UI.au, top = topBid(a);
-  document.querySelectorAll("[data-live-time]").forEach((el) => (el.textContent = a.ended ? "cerrada" : mmss(Math.max(0, a.endsAt - Date.now()))));
-  document.querySelectorAll("[data-live-price]").forEach((el) => (el.textContent = cop(top ? top.p : a.start)));
-}
+const softRefresh = () => render();
+const go = () => {};            // el panel no navega a la página pública
 function countUp() {
   document.querySelectorAll("[data-count]").forEach((el) => {
     const target = +el.dataset.count, dec = +el.dataset.dec || 0, pre = el.dataset.pre || "", suf = el.dataset.suf || "", t0 = performance.now();
@@ -1390,54 +1568,40 @@ function countUp() {
   });
 }
 
-/* ---------- eventos ---------- */
 document.addEventListener("click", (e) => {
   const el = e.target.closest("[data-act]"); if (!el || el.disabled) return;
   const { act, id } = el.dataset;
   switch (act) {
-    case "go": return go(el.dataset.to);
+    case "login": return entrar();
+    case "salir": return salir();
     case "close": return closeModal();
-    /* tienda */
-    case "var": UI.variante = +el.dataset.g; UI.animate = false; return render();
-    case "add": return addCarrito(el.dataset.g);
-    case "qty": return cambiarCantidad(el.dataset.g, +el.dataset.d);
-    case "carrito-clear": UI.carrito = []; return render();
-    case "pedido": return abrirPedido();
-    case "pedido-enviar": return enviarPedido();
-    case "espera": return listaEspera();
-    /* subasta */
-    case "bid": return myBid(+el.dataset.steps);
-    case "bid-custom": return myBid(0);
-    case "au-as": UI.au.as = el.dataset.as; UI.animate = false; return render();
-    case "au-reset": return resetAuction();
-    case "remind": el.textContent = "✓ Te avisamos"; el.disabled = true; return;
+    case "atab": UI.atab = el.dataset.tab; UI.animate = true; return render();
+    case "cot-reset": UI.q = nuevaCot(); UI.animate = false; return render();
+    case "cot-save": return cotSave();
+    case "cot-save-ok": return cotSaveOk();
+    case "mkt-save": return guardarMercado();
+    case "inv-paso": return invPaso(id, el.dataset.p);
+    case "inv-paso-ok": return invPasoOk();
+    case "cl-ver": return clienteVer(id);
+    case "cl-wa": return clienteWa(id);
+    case "cl-nuevo": return clienteNuevo(id);
+    case "cl-guardar": return clienteGuardar();
     case "reset-demo":
       try { localStorage.removeItem(CONFIG.storageKey); } catch {}
-      S = seed(); UI.au = newAuction(); UI.carrito = []; UI.q = null; UI.variante = null;
-      return go("inicio");
+      S = seed(); UI.q = null; UI.animate = true; return render();
   }
 });
 document.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && (e.target.id === "lg-mail" || e.target.id === "lg-pass")) { e.preventDefault(); entrar(); }
+});
+document.addEventListener("input", (e) => {
   const t = e.target;
-  if ((e.key === "Enter" || e.key === " ") && t.getAttribute?.("role") === "button" && t.dataset.act) { e.preventDefault(); t.click(); }
-  if (e.key === "Enter" && t.id === "au-custom") myBid(0);
-  if (e.key === "Enter" && t.id === "esp-mail") { e.preventDefault(); listaEspera(); }
+  if (t.dataset.q && UI.q) { UI.q[t.dataset.q] = t.type === "number" ? (parseFloat(t.value) || 0) : t.value; renderCot(); }
 });
 $("#dlg").addEventListener("click", (e) => { if (e.target === $("#dlg")) closeModal(); });
-window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (VIEWS[v] && v !== UI.view) go(v); });
 
-/* ---------- arranque ---------- */
 aplicarCfgGuardada();
-UI.au = newAuction();
-const inicial = location.hash.slice(1);
-if (VIEWS[inicial]) UI.view = inicial;
 render();
-setInterval(() => {
-  const a = UI.au, now = Date.now();
-  if (!a.ended) { botTick(a, now); if (now >= a.endsAt) { endAuction(a); renderNav(); } }
-  liveBits();
-  if (UI.view === "subasta") updateAuction();
-}, 250);
 
 </script>
 </body>

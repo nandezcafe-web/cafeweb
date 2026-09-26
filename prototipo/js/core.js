@@ -127,6 +127,12 @@ function precioComiteKg(factor = CONFIG.fnc.factorBase) {
 const pesoSeco12 = (kg, humedad) => (humedad > 12 ? kg * ((100 - humedad) / 88) : kg);
 const kgExcelso = (kgPergamino, factor) => kgPergamino * (70 / factor);
 
+/* Referencias del día guardadas en el navegador */
+function aplicarCfgGuardada() {
+  if (S.cfg?.fnc) Object.assign(CONFIG.fnc, S.cfg.fnc);
+  if (S.cfg?.mercado) Object.assign(CONFIG.mercado, S.cfg.mercado);
+}
+
 /* ---------- montaña: la altitud como firma visual ---------- */
 function rng(seedStr) {
   let a = 0; for (const ch of String(seedStr)) a = (a * 31 + ch.charCodeAt(0)) >>> 0;

@@ -58,24 +58,10 @@ function viewInicio() {
   </section>`;
 }
 
-/* ---------- área interna ---------- */
-const ATABS = [["cotizador", "Cotizador"], ["inventario", "Inventario"], ["clientes", "Clientes"], ["mercado", "Mercado"]];
-const APANELS = { cotizador: viewCotizador, inventario: viewInventario, clientes: viewClientes, mercado: viewMercado };
-
-function viewAdmin() {
-  return `<div class="admin-bar reveal">
-      <div><span class="lbl">Administración</span><b>Solo para nosotros</b></div>
-      <div class="seg" role="group" aria-label="Secciones internas">
-        ${ATABS.map(([k, t]) => `<button data-act="atab" data-tab="${k}" aria-pressed="${UI.atab === k}">${t}</button>`).join("")}
-      </div>
-    </div>
-    <div class="admin-body">${APANELS[UI.atab]()}</div>`;
-}
-
 const FOOT = `<footer class="foot"><span><b>${CONFIG.marca}</b> · ${CONFIG.lugar} · nombre provisional. Prototipo con <b>datos de ejemplo</b>.</span>
   <button class="btn sm" data-act="reset-demo">Reiniciar datos de la demo</button></footer>`;
 
-const VIEWS = { inicio: viewInicio, geisha: viewGeisha, subasta: viewSubasta, admin: viewAdmin };
+const VIEWS = { inicio: viewInicio, geisha: viewGeisha, subasta: viewSubasta };
 
 function render() {
   const ae = document.activeElement, fid = ae && ae.id && !ae.closest("dialog") ? ae.id : null;
@@ -86,7 +72,6 @@ function render() {
   v.classList.toggle("calm", !UI.animate);
   v.innerHTML = VIEWS[UI.view]() + FOOT;
   if (UI.view === "subasta") updateAuction();
-  if (UI.view === "admin" && UI.atab === "cotizador") renderCot();
   renderTray(); liveBits();
   if (UI.animate) countUp();
   UI.animate = false;
@@ -133,18 +118,6 @@ document.addEventListener("click", (e) => {
     case "pedido": return abrirPedido();
     case "pedido-enviar": return enviarPedido();
     case "espera": return listaEspera();
-    /* admin */
-    case "atab": UI.atab = el.dataset.tab; UI.animate = true; return render();
-    case "cot-reset": UI.q = nuevaCot(); UI.animate = false; return render();
-    case "cot-save": return cotSave();
-    case "cot-save-ok": return cotSaveOk();
-    case "mkt-save": return guardarMercado();
-    case "inv-paso": return invPaso(id, el.dataset.p);
-    case "inv-paso-ok": return invPasoOk();
-    case "cl-ver": return clienteVer(id);
-    case "cl-wa": return clienteWa(id);
-    case "cl-nuevo": return clienteNuevo(id);
-    case "cl-guardar": return clienteGuardar();
     /* subasta */
     case "bid": return myBid(+el.dataset.steps);
     case "bid-custom": return myBid(0);
@@ -162,10 +135,6 @@ document.addEventListener("keydown", (e) => {
   if ((e.key === "Enter" || e.key === " ") && t.getAttribute?.("role") === "button" && t.dataset.act) { e.preventDefault(); t.click(); }
   if (e.key === "Enter" && t.id === "au-custom") myBid(0);
   if (e.key === "Enter" && t.id === "esp-mail") { e.preventDefault(); listaEspera(); }
-});
-document.addEventListener("input", (e) => {
-  const t = e.target;
-  if (t.dataset.q && UI.q) { UI.q[t.dataset.q] = t.type === "number" ? (parseFloat(t.value) || 0) : t.value; renderCot(); }
 });
 $("#dlg").addEventListener("click", (e) => { if (e.target === $("#dlg")) closeModal(); });
 window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (VIEWS[v] && v !== UI.view) go(v); });
