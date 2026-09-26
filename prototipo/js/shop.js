@@ -20,7 +20,7 @@ function cafeCard(p, i = 0) {
       <p class="kicker">${esc(f.finca || "")}<br>${esc(p.altitud ? fmtNum(p.altitud) + " msnm" : "")}</p>
       <h3>${esc(tx(p.nombre))}</h3>
       <p class="notas-linea">${tx(p.notas).join(" · ")}</p>
-      <div class="cc-foot"><b class="mono">${cop(v.precio)}</b><small>${gramos(v.g)}</small>
+      <div class="cc-foot"><b class="mono">${cop(v.precio)}</b><small>${gramos(v.g)} · ${esc(tx(p.sale)).toLowerCase()}</small>
         <button class="btn primary sm" data-act="cafe" data-id="${p.id}">${t("ver_cafe")}</button></div>
     </div></article>`;
 }
@@ -110,11 +110,13 @@ function viewCafe() {
           <span class="mono precio">${cop(x.precio)}</span></button>`).join("")}
       </div>
 
+      <p class="sale"><span class="sale-tag">${esc(tx(p.sale))}</span> ${esc(tx(p.saleNota))}</p>
+
       <div class="buy-row">
         <div><b class="precio-grande mono">${cop(v.precio)}</b><small>${gramos(v.g)} · ${cop((v.precio / v.g) * 1000)} ${t("por_kg")}</small></div>
         <button class="btn primary lg" data-act="add" data-p="${p.id}" data-g="${v.g}" ${v.stock ? "" : "disabled"}>${t("agregar")}</button>
       </div>
-      <p class="hint">${v.stock} ${t("disponibles")} · ${UI.lang === "en" ? "grind chosen at checkout · ships from Cúcuta" : "molienda a elegir al confirmar · envíos desde Cúcuta"}</p>
+      <p class="hint">${v.stock} ${t("disponibles")} · ${UI.lang === "en" ? "ships from Cúcuta" : "envíos desde Cúcuta"}</p>
 
     </div>
 
@@ -196,7 +198,7 @@ function renderCarrito() {
       const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
       return `<li class="cart-item">
         <div class="cart-art">${ridge(p, { w: 120, h: 90, label: false })}</div>
-        <div class="cart-txt"><b>${esc(tx(p.nombre))}</b><small>${gramos(i.g)} · ${esc(tx(v.label))}</small>
+        <div class="cart-txt"><b>${esc(tx(p.nombre))}</b><small>${gramos(i.g)} · ${esc(tx(p.sale)).toLowerCase()}</small>
           <div class="cart-qty">
             <button class="btn sm" data-act="qty" data-p="${i.id}" data-g="${i.g}" data-d="-1" aria-label="${en ? "Remove one" : "Quitar uno"}">−</button>
             <span class="mono">${i.n}</span>
@@ -219,8 +221,6 @@ function renderCarrito() {
       <div class="field"><label class="lbl" for="pd-nombre">${en ? "Name" : "Nombre o negocio"}</label><input id="pd-nombre" class="input" autocomplete="name" enterkeyhint="next"></div>
       <div class="field"><label class="lbl" for="pd-ciudad">${en ? "City" : "Ciudad"}</label><input id="pd-ciudad" class="input" value="Cúcuta" autocomplete="address-level2"></div>
       <div class="field"><label class="lbl" for="pd-tel">WhatsApp</label><input id="pd-tel" class="input" type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="done" placeholder="300 000 0000"></div>
-      <div class="field"><label class="lbl" for="pd-molienda">${en ? "Grind" : "Molienda"}</label>
-        <select id="pd-molienda" class="input">${(en ? ["Whole bean", "Filter / V60", "French press", "Espresso"] : ["En grano", "Filtro / V60", "Prensa francesa", "Espresso"]).map((o) => `<option>${o}</option>`).join("")}</select></div>
     </div>`;
   const pie = $("#cart-foot");
   if (pie) pie.innerHTML = UI.carrito.length
@@ -247,14 +247,14 @@ function quitarDelCarrito(pid, g) {
 function datosPedido() {
   const nombre = $("#pd-nombre").value.trim();
   if (!nombre) { toast(UI.lang === "en" ? "Write your name." : "Escribe tu nombre.", { type: "err" }); return null; }
-  return { nombre, ciudad: $("#pd-ciudad").value.trim(), tel: $("#pd-tel").value.trim(), molienda: $("#pd-molienda").value };
+  return { nombre, ciudad: $("#pd-ciudad").value.trim(), tel: $("#pd-tel").value.trim() };
 }
 
 function registrarPedido(d, canal) {
   const cl = upsertCliente(d.nombre, d.ciudad, d.tel);
   const items = UI.carrito.map((i) => ({ id: i.id, nombre: i.nombre, n: i.n, precio: i.precio }));
   const pedido = { id: nextId("PD"), clienteId: cl.id, canal, nombre: d.nombre, ciudad: d.ciudad, tel: d.tel,
-    molienda: d.molienda, items, total: totalCarrito(), fecha: isoToday() };
+    items, total: totalCarrito(), fecha: isoToday() };
   S.pedidos.unshift(pedido);
   UI.carrito.forEach((i) => {
     const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
@@ -262,7 +262,7 @@ function registrarPedido(d, canal) {
     p.stock = (p.variantes.find((x) => x.principal) || p.variantes[0]).stock;
     atribuirVenta(p, (i.n * i.g) / p.presentacion, i.precio * i.n);
   });
-  const texto = `Hola ${CONFIG.marca}, quiero pedir:\n${items.map((i) => `· ${i.n} × ${i.nombre}`).join("\n")}\n${UI.lang === "en" ? "Grind" : "Molienda"}: ${d.molienda}\nTotal: ${cop(pedido.total)}\n${d.nombre}${d.ciudad ? " · " + d.ciudad : ""}`;
+  const texto = `Hola ${CONFIG.marca}, quiero pedir:\n${items.map((i) => `· ${i.n} × ${i.nombre}`).join("\n")}\nTotal: ${cop(pedido.total)}\n${d.nombre}${d.ciudad ? " · " + d.ciudad : ""}`;
   UI.carrito = []; guardarCarrito(); save(); cerrarCarrito(); closeModal(); render();
   return { pedido, texto };
 }

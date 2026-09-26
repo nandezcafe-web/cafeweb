@@ -46,6 +46,9 @@ function suscribir(id) {
     <div class="form-grid">
       <div class="field"><label class="lbl" for="sub-mail">${en ? "Email" : "Correo"}</label><input id="sub-mail" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none" autocorrect="off" enterkeyhint="send"></div>
       <div class="field"><label class="lbl" for="sub-ciudad">${en ? "City" : "Ciudad"}</label><input id="sub-ciudad" class="input" value="Cúcuta"></div>
+      <div class="field" style="grid-column:1/-1"><label class="lbl" for="sub-molienda">${en ? "How do you want it ground?" : "¿Cómo quieres la molienda?"}</label>
+        <select id="sub-molienda" class="input">${MOLIENDAS.map((o) => `<option value="${o.id}" ${o.id === "grano" ? "selected" : ""}>${tx(o)}</option>`).join("")}</select>
+        <small class="hint" style="margin:0">${en ? "Only subscribers choose the grind: each shipment is ground to order." : "Solo en la suscripción eliges la molienda: cada envío se muele a tu gusto."}</small></div>
     </div>
     <div class="dlg-actions"><button class="btn" data-act="close">${en ? "Cancel" : "Cancelar"}</button>
       <button class="btn primary" data-act="sub-ok" data-id="${id}">${en ? "Notify me" : "Avisarme"}</button></div>`, "narrow");
@@ -53,7 +56,7 @@ function suscribir(id) {
 function suscribirOk(id) {
   const mail = $("#sub-mail").value.trim(), en = UI.lang === "en";
   if (!/^\S+@\S+\.\S+$/.test(mail)) return toast(en ? "Write a valid email." : "Escribe un correo válido.", { type: "err" });
-  S.suscriptores.unshift({ mail, plan: id, ciudad: $("#sub-ciudad").value.trim(), fecha: isoToday() });
+  S.suscriptores.unshift({ mail, plan: id, ciudad: $("#sub-ciudad").value.trim(), molienda: $("#sub-molienda")?.value || "grano", fecha: isoToday() });
   save(); closeModal(); render();
   toast(en ? "Saved. We will write to you." : "Listo, te escribimos.");
 }
