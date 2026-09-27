@@ -58,7 +58,7 @@ La base de negociación es **12 %**. Si el café viene al 15 %, estamos pagando 
 
 ## 3. Cómo negociar en la finca (orden de los pasos)
 
-1. **Antes de salir:** abrir el **Mercado** en la plataforma y actualizar el precio FNC, la bolsa y la TRM del día.
+1. **Antes de salir:** abrir el **Mercado** en el panel. El precio FNC, la bolsa de Nueva York y la TRM se actualizan solos (función `api/mercado.js`); revisar que la fecha sea la del último día hábil. Si dice "sin conexión con la FNC", escribirlos a mano.
 2. **Pesar** y revisar el bulto (que no venga húmedo por debajo ni mezclado).
 3. **Medir humedad** con el medidor. Anotar.
 4. **Sacar muestra de 250 g** de varios puntos, trillarla y calcular el factor.

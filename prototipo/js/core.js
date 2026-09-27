@@ -8,8 +8,10 @@
 const CONFIG = {
   marca: "Nandez Café",
   lugar: { es: "Norte de Santander, Colombia", en: "Norte de Santander, Colombia" },
-  fnc: { precioCarga: 2005000, factorBase: 94, fecha: "2026-09-16" },
-  mercado: { ny: 282, trm: 3128 },
+  /* Referencias del mercado. El panel las actualiza solo desde /api/mercado (FNC y Banco de la República);
+     estos valores son el punto de partida si no hay conexión. */
+  fnc: { precioCarga: 2105000, factorBase: 94, fecha: "2026-09-25" },
+  mercado: { ny: 278.6, trm: 3306.86 },
   storageKey: "nandez-v7",
   whatsapp: "",                 // 573001234567 · mientras esté vacío, pedidos y avisos salen por correo
   correo: "nandezcafe@gmail.com",
@@ -220,6 +222,11 @@ function seed() {
         items: [{ id: "P-CAS", nombre: "Castillo 250 g", n: 8, precio: 38000 }], total: 304000 },
     ],
     espera: [], suscriptores: [],
+    /* historial de referencias: una fila por día en que la FNC publicó precio */
+    mercado: { historial: [
+      { fecha: "2026-09-16", precioCarga: 2005000, ny: 282, trm: 3128, fuente: "manual" },
+      { fecha: "2026-09-25", precioCarga: 2105000, ny: 278.6, trm: 3306.86, fuente: "FNC" },
+    ], leido: null, error: null },
   };
 }
 

@@ -28,7 +28,7 @@ const sesionActiva = () => { try { return sessionStorage.getItem(AUTH.sesion) ==
 function viewLogin() {
   return `<section class="login">
     <div class="login-card reveal">
-      <svg class="mark" viewBox="0 0 28 20" aria-hidden="true"><path d="M1 19 L9 7 L13 12 L19 3 L27 19 Z" fill="currentColor"/></svg>
+      <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor">${[0, 72, 144, 216, 288].map((r) => `<ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(${r} 12 12)"/>`).join("")}</g><circle cx="12" cy="12" r="1.3" fill="var(--paper)"/></svg>
       <p class="eyebrow">${esc(CONFIG.marca)} · panel interno</p>
       <h1>Entrar</h1>
       <p class="hint">Cotizador, inventario, clientes y mercado. Esta parte no aparece en la página pública.</p>
@@ -50,7 +50,7 @@ async function entrar() {
   const ok = await verificar($("#lg-mail").value, $("#lg-pass").value);
   if (!ok) { b.disabled = false; b.textContent = "Entrar"; err.hidden = false; $("#lg-pass").select(); return; }
   try { sessionStorage.setItem(AUTH.sesion, "1"); } catch {}
-  UI.animate = true; render();
+  UI.animate = true; render(); vigilarMercado();
 }
 function salir() { try { sessionStorage.removeItem(AUTH.sesion); } catch {} UI.animate = true; render(); }
 
@@ -68,6 +68,7 @@ function viewPanel() {
       <div class="admin-side"><span class="mono" title="Plata sin recuperar">${copK(quieto)} en bodega</span>
         <button class="btn sm" data-act="salir">Salir</button></div>
     </div>
+    ${avisoMercado()}
     <div class="admin-body">${APANELS[UI.atab]()}</div>`;
 }
 
@@ -109,6 +110,7 @@ document.addEventListener("click", (e) => {
     case "cot-save": return cotSave();
     case "cot-save-ok": return cotSaveOk();
     case "mkt-save": return guardarMercado();
+    case "mkt-auto": return actualizarMercado({ avisar: "siempre" });
     case "inv-paso": return invPaso(id, el.dataset.p);
     case "inv-paso-ok": return invPasoOk();
     case "cl-ver": return clienteVer(id);
@@ -131,3 +133,4 @@ $("#dlg").addEventListener("click", (e) => { if (e.target === $("#dlg")) closeMo
 
 aplicarCfgGuardada();
 render();
+if (sesionActiva()) vigilarMercado();

@@ -920,6 +920,20 @@ body[data-view=subasta] .menu-btn{background:#3f2717;border-color:#6a4630;color:
   .leyenda{grid-template-columns:1fr 1fr}
 }
 
+/* panel: precio del día y su movimiento */
+.mkt-aviso{display:flex;align-items:center;gap:8px 18px;flex-wrap:wrap;border:1px solid var(--line);border-left:3px solid var(--ink-3);border-radius:12px;background:var(--card);padding:12px 16px;margin:-8px 0 24px}
+.mkt-aviso.sube{border-left-color:var(--leaf)}
+.mkt-aviso.baja{border-left-color:var(--cherry)}
+.mkt-aviso b.mono{font-size:1.2rem;margin-left:6px}
+.mkt-aviso .hint{margin:0}
+.mkt-aviso .btn{margin-left:auto}
+.mkt-delta{font:600 13px var(--mono)}
+.mkt-aviso.sube .mkt-delta{color:var(--leaf)}
+.mkt-aviso.baja .mkt-delta{color:var(--cherry)}
+.mkt.act{gap:8px}
+.mkt-linea{display:block;width:100%;height:60px;margin:22px 0 6px;color:var(--leaf)}
+.pos{color:var(--leaf)}
+
 /* sala de subasta */
 .auction{color:#E6D7C3}
 .auction .kicker{color:#c9b497}
@@ -1067,8 +1081,10 @@ details.rule p{color:#d3c0a5;margin:8px 0 0;font-size:14px}
 const CONFIG = {
   marca: "Nandez Café",
   lugar: { es: "Norte de Santander, Colombia", en: "Norte de Santander, Colombia" },
-  fnc: { precioCarga: 2005000, factorBase: 94, fecha: "2026-09-16" },
-  mercado: { ny: 282, trm: 3128 },
+  /* Referencias del mercado. El panel las actualiza solo desde /api/mercado (FNC y Banco de la República);
+     estos valores son el punto de partida si no hay conexión. */
+  fnc: { precioCarga: 2105000, factorBase: 94, fecha: "2026-09-25" },
+  mercado: { ny: 278.6, trm: 3306.86 },
   storageKey: "nandez-v7",
   whatsapp: "",                 // 573001234567 · mientras esté vacío, pedidos y avisos salen por correo
   correo: "nandezcafe@gmail.com",
@@ -1279,6 +1295,11 @@ function seed() {
         items: [{ id: "P-CAS", nombre: "Castillo 250 g", n: 8, precio: 38000 }], total: 304000 },
     ],
     espera: [], suscriptores: [],
+    /* historial de referencias: una fila por día en que la FNC publicó precio */
+    mercado: { historial: [
+      { fecha: "2026-09-16", precioCarga: 2005000, ny: 282, trm: 3128, fuente: "manual" },
+      { fecha: "2026-09-25", precioCarga: 2105000, ny: 278.6, trm: 3306.86, fuente: "FNC" },
+    ], leido: null, error: null },
   };
 }
 
@@ -2007,15 +2028,97 @@ function clienteGuardar() {
    MERCADO (uso interno): referencias del día, conversiones y
    cuándo conviene sacar el café.
    ============================================================ */
-function guardarMercado() {
-  CONFIG.fnc.precioCarga = num("m-carga", CONFIG.fnc.precioCarga);
-  CONFIG.fnc.fecha = $("#m-fecha").value || CONFIG.fnc.fecha;
-  CONFIG.mercado.ny = num("m-ny", CONFIG.mercado.ny);
-  CONFIG.mercado.trm = num("m-trm", CONFIG.mercado.trm);
-  if (UI.q) UI.q.precioCarga = CONFIG.fnc.precioCarga;
+/* ---------- referencias automáticas: FNC y Banco de la República ---------- */
+const MERCADO_API = CONFIG.sitio + "/api/mercado";
+const CADA_MS = 30 * 60 * 1000;                     // el panel vuelve a mirar cada 30 minutos
+const M = () => (S.mercado ||= { historial: [], leido: null, error: null });
+
+/* anota el día en el historial (una fila por fecha) y aplica los valores al cotizador */
+function aplicarReferencias({ precioCarga, fecha, ny, trm }, fuente) {
+  const h = M().historial, previo = h.find((x) => x.fecha < fecha) || null;
+  const fila = { fecha, precioCarga, ny, trm, fuente };
+  const i = h.findIndex((x) => x.fecha === fecha);
+  if (i >= 0) h[i] = fila; else h.push(fila);
+  h.sort((a, b) => (a.fecha < b.fecha ? 1 : -1));
+  if (h.length > 120) h.length = 120;
+  const antes = CONFIG.fnc.precioCarga;
+  Object.assign(CONFIG.fnc, { precioCarga, fecha });
+  Object.assign(CONFIG.mercado, { ny, trm });
+  if (UI.q) UI.q.precioCarga = precioCarga;
   S.cfg = { fnc: { ...CONFIG.fnc }, mercado: { ...CONFIG.mercado } };
-  save(); render();
-  toast("Referencias actualizadas. El cotizador ya usa estos valores.");
+  save();
+  return { antes, previo };
+}
+
+const cambio = (a, b) => (a && b ? { d: b - a, pct: ((b - a) / a) * 100 } : null);
+const flecha = (d) => (d > 0 ? "sube" : d < 0 ? "baja" : "igual");
+
+async function actualizarMercado({ avisar = true } = {}) {
+  const m = M();
+  try {
+    const r = await fetch(MERCADO_API, { cache: "no-store" });
+    const d = await r.json();
+    if (!d.precioCarga || !d.fecha) throw new Error(d.error || "La FNC no respondió");
+    const nuevo = d.fecha !== CONFIG.fnc.fecha || d.precioCarga !== CONFIG.fnc.precioCarga;
+    const { antes } = aplicarReferencias({ precioCarga: d.precioCarga, fecha: d.fecha, ny: d.ny ?? CONFIG.mercado.ny, trm: d.trm ?? d.tasaFnc ?? CONFIG.mercado.trm }, "FNC");
+    m.leido = d.leido; m.error = null; m.trmFecha = d.trmFecha; m.tasaFnc = d.tasaFnc; save();
+    const c = cambio(antes, d.precioCarga);
+    if (nuevo && avisar && c && c.d) toast(`La FNC ${c.d > 0 ? "subió" : "bajó"} el precio: ${cop(antes)} → ${cop(d.precioCarga)} (${c.d > 0 ? "+" : ""}${fmtNum(c.pct, 1)} %). El cotizador ya lo usa.`);
+    else if (avisar === "siempre") toast("Referencias al día.");
+  } catch (e) {
+    m.error = String(e.message || e); save();
+    if (avisar) toast("No se pudo leer el precio de la FNC. Puedes escribirlo a mano en Mercado.", { type: "err" });
+  }
+  if (sesionActiva()) { UI.animate = false; render(); }
+}
+
+let relojMercado = null;
+function vigilarMercado() {
+  if (relojMercado) return;
+  actualizarMercado();
+  relojMercado = setInterval(() => sesionActiva() && actualizarMercado(), CADA_MS);
+  /* al volver a la pestaña después de un rato, mira de una vez */
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && sesionActiva() && Date.now() - Date.parse(M().leido || 0) > CADA_MS) actualizarMercado();
+  });
+}
+
+/* franja del panel: el precio de hoy y cuánto se movió frente al día anterior publicado */
+function avisoMercado() {
+  const m = M(), h = m.historial, hoy = h[0], ayer = h[1], c = hoy && ayer ? cambio(ayer.precioCarga, hoy.precioCarga) : null;
+  const hora = m.leido ? new Date(m.leido).toLocaleTimeString("es-CO", { hour: "numeric", minute: "2-digit" }) : null;
+  return `<div class="mkt-aviso ${c ? flecha(c.d) : ""}">
+    <span><span class="lbl">Precio FNC · carga</span> <b class="mono">${cop(CONFIG.fnc.precioCarga)}</b></span>
+    ${c && c.d ? `<span class="mkt-delta">${c.d > 0 ? "▲" : "▼"} ${cop(Math.abs(c.d))} · ${c.d > 0 ? "+" : ""}${fmtNum(c.pct, 1)} % desde el ${fmtFecha(ayer.fecha)}</span>` : ""}
+    <span class="hint">Publicado el ${fmtFecha(CONFIG.fnc.fecha)} · ${m.error ? `<b class="neg">sin conexión con la FNC</b>` : hora ? `revisado a las ${hora}` : "sin revisar todavía"}</span>
+    <button class="btn sm" data-act="mkt-auto">Revisar ahora</button></div>`;
+}
+
+function guardarMercado() {
+  aplicarReferencias({ precioCarga: num("m-carga", CONFIG.fnc.precioCarga), fecha: $("#m-fecha").value || CONFIG.fnc.fecha,
+    ny: num("m-ny", CONFIG.mercado.ny), trm: num("m-trm", CONFIG.mercado.trm) }, "manual");
+  render();
+  toast("Referencias guardadas a mano. El cotizador ya usa estos valores.");
+}
+
+function historialMercado() {
+  const h = M().historial.slice(0, 30);
+  if (!h.length) return "";
+  const vals = [...h].reverse().map((x) => x.precioCarga), min = Math.min(...vals), max = Math.max(...vals), rango = max - min || 1;
+  const linea = vals.length > 1 ? `<svg class="mkt-linea" viewBox="0 0 300 60" preserveAspectRatio="none" aria-hidden="true">
+      <polyline fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke"
+        points="${vals.map((v, i) => `${((i / (vals.length - 1)) * 300).toFixed(1)},${(56 - ((v - min) / rango) * 52).toFixed(1)}`).join(" ")}"/></svg>` : "";
+  return `<section class="section">
+    <div class="section-head"><p class="eyebrow">Historial</p><h2>Cómo se ha movido <em>el precio</em></h2>
+      <p>Una fila por día en que la FNC publicó precio. Se llena sola cada vez que se abre el panel.</p></div>
+    ${linea}
+    <div class="table-scroll"><table class="cmp-table mkt-table">
+      <thead><tr><th>Fecha</th><th>Carga FNC</th><th>Cambio</th><th>Por kg pergamino</th><th>Bolsa NY (US¢/lb)</th><th>TRM</th><th>Fuente</th></tr></thead>
+      <tbody>${h.map((x, i) => { const c = h[i + 1] ? cambio(h[i + 1].precioCarga, x.precioCarga) : null;
+        return `<tr><th>${fmtFecha(x.fecha)}</th><td class="mono">${cop(x.precioCarga)}</td>
+          <td class="mono ${c && c.d > 0 ? "pos" : c && c.d < 0 ? "neg" : ""}">${c && c.d ? `${c.d > 0 ? "+" : "−"}${cop(Math.abs(c.d))} (${c.d > 0 ? "+" : ""}${fmtNum(c.pct, 1)} %)` : "—"}</td>
+          <td class="mono">${cop(x.precioCarga / 125)}</td><td class="mono">${fmtNum(x.ny, 2)}</td><td class="mono">${cop(x.trm)}</td><td>${esc(x.fuente)}</td></tr>`; }).join("")}</tbody>
+    </table></div></section>`;
 }
 
 /* Precio internacional equivalente: US¢/lb → COP por kg de café verde */
@@ -2039,7 +2142,7 @@ function viewMercado() {
   return `<div class="view-head">
       <div><p class="eyebrow reveal">Uso interno</p>
         <h2 class="reveal" style="--i:1">Mercado <em>del día</em></h2>
-        <p class="reveal" style="--i:2">Actualiza estos tres números antes de salir a comprar. De ellos sale todo el cotizador.</p></div>
+        <p class="reveal" style="--i:2">Se actualizan solos desde la FNC y el Banco de la República cada vez que abres el panel y cada 30 minutos. De ellos sale todo el cotizador. Si la FNC no responde, escríbelos a mano.</p></div>
     </div>
     <div class="mkt-grid reveal" style="--i:2">
       <div class="mkt"><span class="lbl">Precio interno FNC · carga de 125 kg</span>
@@ -2048,15 +2151,17 @@ function viewMercado() {
       <div class="mkt"><span class="lbl">Contrato C · Nueva York</span>
         <input id="m-ny" class="mkt-in mono" type="number" step="1" value="${m.ny}">
         <small>US¢ por libra · ${cop(nyCopKgVerde())} por kg verde</small></div>
-      <div class="mkt"><span class="lbl">TRM</span>
-        <input id="m-trm" class="mkt-in mono" type="number" step="10" value="${m.trm}">
-        <small>COP por dólar</small></div>
+      <div class="mkt"><span class="lbl">TRM oficial</span>
+        <input id="m-trm" class="mkt-in mono" type="number" step="0.01" value="${m.trm}">
+        <small>COP por dólar${S.mercado?.trmFecha ? " · vigente el " + fmtFecha(S.mercado.trmFecha) : ""}${S.mercado?.tasaFnc ? " · la FNC usó " + fmtNum(S.mercado.tasaFnc) : ""}</small></div>
       <div class="mkt"><span class="lbl">Fecha de la referencia</span>
         <input id="m-fecha" class="mkt-in" type="date" value="${f.fecha}">
         <small>Publicado por la FNC cada día hábil</small></div>
-      <div class="mkt act"><button class="btn primary" data-act="mkt-save">Guardar referencias</button>
-        <small>Fuente: federaciondecafeteros.org · preciocafe.com</small></div>
+      <div class="mkt act"><button class="btn primary" data-act="mkt-auto">Revisar ahora</button>
+        <button class="btn sm" data-act="mkt-save">Guardar a mano</button>
+        <small>Fuente: federaciondecafeteros.org · datos.gov.co (TRM)</small></div>
     </div>
+    ${historialMercado()}
 
     <section class="section">
       <div class="section-head"><p class="eyebrow">Tabla rápida</p><h2>Precio según <em>el factor</em></h2>
@@ -2126,7 +2231,7 @@ const sesionActiva = () => { try { return sessionStorage.getItem(AUTH.sesion) ==
 function viewLogin() {
   return `<section class="login">
     <div class="login-card reveal">
-      <svg class="mark" viewBox="0 0 28 20" aria-hidden="true"><path d="M1 19 L9 7 L13 12 L19 3 L27 19 Z" fill="currentColor"/></svg>
+      <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor">${[0, 72, 144, 216, 288].map((r) => `<ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(${r} 12 12)"/>`).join("")}</g><circle cx="12" cy="12" r="1.3" fill="var(--paper)"/></svg>
       <p class="eyebrow">${esc(CONFIG.marca)} · panel interno</p>
       <h1>Entrar</h1>
       <p class="hint">Cotizador, inventario, clientes y mercado. Esta parte no aparece en la página pública.</p>
@@ -2148,7 +2253,7 @@ async function entrar() {
   const ok = await verificar($("#lg-mail").value, $("#lg-pass").value);
   if (!ok) { b.disabled = false; b.textContent = "Entrar"; err.hidden = false; $("#lg-pass").select(); return; }
   try { sessionStorage.setItem(AUTH.sesion, "1"); } catch {}
-  UI.animate = true; render();
+  UI.animate = true; render(); vigilarMercado();
 }
 function salir() { try { sessionStorage.removeItem(AUTH.sesion); } catch {} UI.animate = true; render(); }
 
@@ -2166,6 +2271,7 @@ function viewPanel() {
       <div class="admin-side"><span class="mono" title="Plata sin recuperar">${copK(quieto)} en bodega</span>
         <button class="btn sm" data-act="salir">Salir</button></div>
     </div>
+    ${avisoMercado()}
     <div class="admin-body">${APANELS[UI.atab]()}</div>`;
 }
 
@@ -2207,6 +2313,7 @@ document.addEventListener("click", (e) => {
     case "cot-save": return cotSave();
     case "cot-save-ok": return cotSaveOk();
     case "mkt-save": return guardarMercado();
+    case "mkt-auto": return actualizarMercado({ avisar: "siempre" });
     case "inv-paso": return invPaso(id, el.dataset.p);
     case "inv-paso-ok": return invPasoOk();
     case "cl-ver": return clienteVer(id);
@@ -2229,6 +2336,7 @@ $("#dlg").addEventListener("click", (e) => { if (e.target === $("#dlg")) closeMo
 
 aplicarCfgGuardada();
 render();
+if (sesionActiva()) vigilarMercado();
 
 </script>
 </body>
