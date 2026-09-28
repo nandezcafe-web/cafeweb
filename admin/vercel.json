@@ -1,6 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "echo 'El panel ya viene armado: lo genera tools/build.js en la raiz del repositorio'",
+  "buildCommand": "mkdir -p publicar && cp index.html robots.txt publicar/ && echo 'Panel listo: lo genera tools/build.js en la raiz del repositorio'",
+  "outputDirectory": "publicar",
   "cleanUrls": true,
   "headers": [
     {
