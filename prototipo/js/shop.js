@@ -216,6 +216,11 @@ function viewCafe() {
         </tbody>
       </table>
       <dl class="leyenda">${Object.values(LV).map((o) => `<div style="--c:${o.c}"><dt><i></i>${tx(o.label)}</dt><dd>${tx(o.desc)}</dd></div>`).join("")}</dl>
+      ${p.pago ? `<div class="pago-finca">
+        <div><span class="lbl">${en ? "We paid the farm" : "Le pagamos a la finca"}</span><b class="mono">${cop(p.pago.pagadoKg)}</b><small>${en ? "per kg of parchment" : "por kg de pergamino"} · ${fmtFecha(p.pago.fecha)}</small></div>
+        <div><span class="lbl">${en ? "Federation reference that day" : "Referencia de la Federación ese día"}</span><b class="mono">${cop(p.pago.referenciaKg)}</b><small>${en ? "what a cooperative would pay" : "lo que pagaría la cooperativa"}</small></div>
+        <div class="pf-mas"><b>+${fmtNum((p.pago.pagadoKg / p.pago.referenciaKg - 1) * 100)} %</b><small>${en ? "more for the grower" : "más para quien lo cultivó"}</small></div>
+      </div>` : ""}
     </section>
 
     <section class="prod-receta reveal" style="--i:3">

@@ -52,7 +52,18 @@ El código vive en `prototipo/js/`. Después de cualquier cambio:
 node tools/build.js
 ```
 
-Eso genera **20 páginas HTML reales** (10 en español y 10 en inglés), `sitemap.xml`, `robots.txt`, `llms.txt`, la tienda en un solo archivo (`prototipo/nandez.html`) y el panel (`admin/index.html`).
+Eso genera **28 páginas HTML reales** (14 en español y 14 en inglés), la página `404.html`, `sitemap.xml`, `robots.txt`, `llms.txt`, la tienda en un solo archivo (`prototipo/nandez.html`) y el panel (`admin/index.html`). Vercel también lo corre en cada publicación (`buildCommand` en `vercel.json`), así que una página nunca queda desactualizada frente al código.
+
+### Lo que corre solo
+
+| Qué | Cuándo | Dónde |
+|---|---|---|
+| Precio FNC, bolsa de NY y TRM en el panel | Al abrir el panel y cada 30 min | `api/mercado.js` + `prototipo/js/market.js` |
+| Historial del precio, igual en todos los equipos | Días hábiles, 10 a. m. y 3 p. m. | `.github/workflows/precio-fnc.yml` → `prototipo/data/mercado.json` |
+| Aviso por correo cuando la FNC cambia el precio | Con la tarea anterior: abre un *issue* en GitHub | Llega al correo de quien administra el repositorio |
+| Equivalente en pesos de la subasta en dólares | Al abrir la subasta en español | TRM de `api/mercado.js` |
+
+Para correr la revisión a mano: `node tools/precio-fnc.mjs`, o en GitHub → *Actions* → *Precio FNC* → *Run workflow*.
 
 Las páginas traen el contenido ya escrito en el HTML —porque los crawlers de IA no ejecutan JavaScript— y encima el mismo JavaScript toma el control en el navegador. Detalles en [docs/07_seo.md](docs/07_seo.md).
 

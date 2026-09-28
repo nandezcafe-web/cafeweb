@@ -172,6 +172,9 @@ const urls = [];
   });
 });
 
+/* página 404 propia (Vercel la sirve sola para cualquier dirección que no exista); no va en el sitemap */
+escribir("404.html", pagina(mundo("es"), { view: "noencontrada" }, "es").replace("<head>", '<head>\n<meta name="robots" content="noindex">'));
+
 const sitio = ev(mundo("es"), "CONFIG.sitio");
 escribir("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.w3.org/1999/xhtml/sitemap" xmlns:xhtml="http://www.w3.org/1999/xhtml">

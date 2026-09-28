@@ -302,13 +302,13 @@ function ruta(view, id, lang) {
 }
 function vistaDeRuta(path) {
   const p = String(path).replace(/^\/(en\/)?/, "").replace(/\.html$/, "").replace(/\/$/, "");
-  if (!p) return { view: "inicio" };
+  if (!p || p === "index" || p.endsWith("nandez")) return { view: "inicio" };   // nandez.html: la tienda en un archivo
   const pre = ["cafe-", "coffee-"].find((x) => p.startsWith(x));
   if (pre) { const s = p.slice(pre.length), pr = S.productos.find((x) => slug(x.nombre.es) === s || slug(x.nombre.en) === s); return pr ? { view: "cafe", id: pr.id } : { view: "cafes" }; }
   const preE = ["diario-", "journal-"].find((x) => p.startsWith(x));
   if (preE) { const s = p.slice(preE.length), e = S.entradas.find((x) => slug(x.titulo.es).slice(0, 60) === s || slug(x.titulo.en).slice(0, 60) === s); return e ? { view: "entrada", id: e.id } : { view: "diario" }; }
   for (const R of [RUTAS.es, RUTAS.en]) { const v = Object.keys(R).find((k) => R[k] === p && k !== "cafe" && k !== "entrada"); if (v) return { view: v }; }
-  return { view: "inicio" };
+  return { view: "noencontrada" };
 }
 
 /* Título y descripción por página, escritos para buscar "café de origen",
@@ -363,6 +363,7 @@ function meta(view, id) {
       : { t: "Diario: comprar café en Norte de Santander · " + marca,
           d: "Visitas a fincas, precios, factor de rendimiento, beneficio y preparación: lo que aprendemos comprando café directo a los productores de Norte de Santander." },
     entrada: { t: tx(e.titulo) + " · " + marca, d: limpio(tx(e.resumen)).slice(0, 155) },
+    noencontrada: { t: (en ? "Page not found · " : "Página no encontrada · ") + marca, d: en ? "This page does not exist." : "Esta página no existe." },
   };
   return M[view] || M.inicio;
 }

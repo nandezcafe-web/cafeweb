@@ -1,0 +1,49 @@
+# Revisa el precio interno de la FNC, la bolsa de NY y la TRM cada día hábil,
+# lo anota en prototipo/data/mercado.json (el panel lo lee) y, si el precio de la
+# carga cambió, abre un aviso en GitHub, que llega por correo a quien administra el repositorio.
+name: Precio FNC
+
+on:
+  schedule:
+    - cron: "0 15 * * 1-5"   # 10:00 a. m. Colombia
+    - cron: "0 20 * * 1-5"   # 3:00 p. m. Colombia (la FNC a veces publica tarde)
+  workflow_dispatch:          # para correrla a mano desde la pestaña Actions
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: precio-fnc
+  cancel-in-progress: false
+
+jobs:
+  revisar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - id: precio
+        run: node tools/precio-fnc.mjs
+      - name: Guardar el historial si cambió
+        run: |
+          if git diff --quiet -- prototipo/data/mercado.json; then
+            echo "Sin datos nuevos."
+          else
+            git config user.name "precio-fnc"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add prototipo/data/mercado.json
+            git commit -m "Precio FNC: ${{ steps.precio.outputs.resumen }}"
+            git push
+          fi
+      - name: Avisar si el precio cambió
+        if: steps.precio.outputs.cambio == 'si'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESUMEN: ${{ steps.precio.outputs.resumen }}
+        run: |
+          gh issue create --title "$RESUMEN" --body "El panel ya usa el precio nuevo en el cotizador.
+
+          Revísalo en la pestaña Mercado del panel. Fuente: https://federaciondecafeteros.org/"

@@ -4,6 +4,9 @@
    ============================================================ */
 /* ---------- referencias automáticas: FNC y Banco de la República ---------- */
 const MERCADO_API = CONFIG.sitio + "/api/mercado";
+/* historial que guarda la tarea diaria de GitHub (.github/workflows/precio-fnc.yml): el mismo en todos los equipos */
+const MERCADO_HISTORIAL = CONFIG.sitio + "/data/mercado.json";
+let consultando = false;
 const CADA_MS = 30 * 60 * 1000;                     // el panel vuelve a mirar cada 30 minutos
 const M = () => (S.mercado ||= { historial: [], leido: null, error: null });
 
@@ -27,8 +30,22 @@ function aplicarReferencias({ precioCarga, fecha, ny, trm }, fuente) {
 const cambio = (a, b) => (a && b ? { d: b - a, pct: ((b - a) / a) * 100 } : null);
 const flecha = (d) => (d > 0 ? "sube" : d < 0 ? "baja" : "igual");
 
+/* suma al historial local las fechas que registró la tarea diaria y no estén aquí */
+async function traerHistorialCompartido() {
+  try {
+    const r = await fetch(MERCADO_HISTORIAL, { cache: "no-store" });
+    if (!r.ok) return;
+    const { historial = [] } = await r.json(), h = M().historial;
+    historial.forEach((x) => { if (x.fecha && x.precioCarga && !h.some((y) => y.fecha === x.fecha)) h.push({ ...x, fuente: "FNC" }); });
+    h.sort((a, b) => (a.fecha < b.fecha ? 1 : -1));
+    save();
+  } catch {}
+}
+
 async function actualizarMercado({ avisar = true } = {}) {
   const m = M();
+  if (consultando) return;                         // un clic a la vez: no apila avisos
+  consultando = true; if (sesionActiva()) { UI.animate = false; render(); }
   try {
     const r = await fetch(MERCADO_API, { cache: "no-store" });
     const d = await r.json();
@@ -43,13 +60,14 @@ async function actualizarMercado({ avisar = true } = {}) {
     m.error = String(e.message || e); save();
     if (avisar) toast("No se pudo leer el precio de la FNC. Puedes escribirlo a mano en Mercado.", { type: "err" });
   }
+  consultando = false;
   if (sesionActiva()) { UI.animate = false; render(); }
 }
 
 let relojMercado = null;
 function vigilarMercado() {
   if (relojMercado) return;
-  actualizarMercado();
+  traerHistorialCompartido().then(() => actualizarMercado());
   relojMercado = setInterval(() => sesionActiva() && actualizarMercado(), CADA_MS);
   /* al volver a la pestaña después de un rato, mira de una vez */
   document.addEventListener("visibilitychange", () => {
@@ -65,7 +83,7 @@ function avisoMercado() {
     <span><span class="lbl">Precio FNC · carga</span> <b class="mono">${cop(CONFIG.fnc.precioCarga)}</b></span>
     ${c && c.d ? `<span class="mkt-delta">${c.d > 0 ? "▲" : "▼"} ${cop(Math.abs(c.d))} · ${c.d > 0 ? "+" : ""}${fmtNum(c.pct, 1)} % desde el ${fmtFecha(ayer.fecha)}</span>` : ""}
     <span class="hint">Publicado el ${fmtFecha(CONFIG.fnc.fecha)} · ${m.error ? `<b class="neg">sin conexión con la FNC</b>` : hora ? `revisado a las ${hora}` : "sin revisar todavía"}</span>
-    <button class="btn sm" data-act="mkt-auto">Revisar ahora</button></div>`;
+    <button class="btn sm" data-act="mkt-auto" ${consultando ? "disabled" : ""}>${consultando ? "Revisando…" : "Revisar ahora"}</button></div>`;
 }
 
 function guardarMercado() {
@@ -84,7 +102,7 @@ function historialMercado() {
         points="${vals.map((v, i) => `${((i / (vals.length - 1)) * 300).toFixed(1)},${(56 - ((v - min) / rango) * 52).toFixed(1)}`).join(" ")}"/></svg>` : "";
   return `<section class="section">
     <div class="section-head"><p class="eyebrow">Historial</p><h2>Cómo se ha movido <em>el precio</em></h2>
-      <p>Una fila por día en que la FNC publicó precio. Se llena sola cada vez que se abre el panel.</p></div>
+      <p>Una fila por día en que la FNC publicó precio. Se llena sola: una tarea la revisa cada día hábil aunque nadie abra el panel.</p></div>
     ${linea}
     <div class="table-scroll"><table class="cmp-table mkt-table">
       <thead><tr><th>Fecha</th><th>Carga FNC</th><th>Cambio</th><th>Por kg pergamino</th><th>Bolsa NY (US¢/lb)</th><th>TRM</th><th>Fuente</th></tr></thead>
@@ -131,7 +149,7 @@ function viewMercado() {
       <div class="mkt"><span class="lbl">Fecha de la referencia</span>
         <input id="m-fecha" class="mkt-in" type="date" value="${f.fecha}">
         <small>Publicado por la FNC cada día hábil</small></div>
-      <div class="mkt act"><button class="btn primary" data-act="mkt-auto">Revisar ahora</button>
+      <div class="mkt act"><button class="btn primary" data-act="mkt-auto" ${consultando ? "disabled" : ""}>${consultando ? "Revisando…" : "Revisar ahora"}</button>
         <button class="btn sm" data-act="mkt-save">Guardar a mano</button>
         <small>Fuente: federaciondecafeteros.org · datos.gov.co (TRM)</small></div>
     </div>

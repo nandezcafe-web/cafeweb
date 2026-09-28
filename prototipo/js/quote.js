@@ -50,7 +50,7 @@ function viewCotizador() {
       <div class="ref-chip reveal" style="--i:3">
         <span class="lbl">Referencia FNC · ${fmtFecha(CONFIG.fnc.fecha)}</span>
         <b class="mono">${cop(CONFIG.fnc.precioCarga)}</b><small>carga de 125 kg · factor 94</small>
-        <button class="btn sm" data-act="go" data-to="mercado">Actualizar</button></div>
+        <button class="btn sm" data-act="atab" data-tab="mercado">Actualizar</button></div>
     </div>
     <div class="cot">
       <form class="cot-form" onsubmit="return false">

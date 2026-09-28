@@ -934,6 +934,17 @@ body[data-view=subasta] .menu-btn{background:#3f2717;border-color:#6a4630;color:
 .mkt-linea{display:block;width:100%;height:60px;margin:22px 0 6px;color:var(--leaf)}
 .pos{color:var(--leaf)}
 
+/* ficha: lo que le pagamos a la finca */
+.pago-finca{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:26px}
+.pago-finca>div{background:var(--card);padding:16px 18px;display:grid;gap:4px;align-content:start}
+.pago-finca b{font-size:1.4rem}
+.pago-finca small{color:var(--ink-2);font-size:12.5px}
+.pago-finca .pf-mas{text-align:center;min-width:130px}
+.pago-finca .pf-mas b{font:400 2.1rem/1 var(--serif);color:var(--leaf)}
+@media (max-width:640px){.pago-finca{grid-template-columns:1fr 1fr}.pago-finca .pf-mas{grid-column:1/-1}}
+.no-encontrada .cta{margin-top:28px}
+.prod-receta,.prod-ficha{margin-top:64px}
+
 /* sala de subasta */
 .auction{color:#E6D7C3}
 .auction .kicker{color:#c9b497}
@@ -1375,13 +1386,13 @@ function ruta(view, id, lang) {
 }
 function vistaDeRuta(path) {
   const p = String(path).replace(/^\/(en\/)?/, "").replace(/\.html$/, "").replace(/\/$/, "");
-  if (!p) return { view: "inicio" };
+  if (!p || p === "index" || p.endsWith("nandez")) return { view: "inicio" };   // nandez.html: la tienda en un archivo
   const pre = ["cafe-", "coffee-"].find((x) => p.startsWith(x));
   if (pre) { const s = p.slice(pre.length), pr = S.productos.find((x) => slug(x.nombre.es) === s || slug(x.nombre.en) === s); return pr ? { view: "cafe", id: pr.id } : { view: "cafes" }; }
   const preE = ["diario-", "journal-"].find((x) => p.startsWith(x));
   if (preE) { const s = p.slice(preE.length), e = S.entradas.find((x) => slug(x.titulo.es).slice(0, 60) === s || slug(x.titulo.en).slice(0, 60) === s); return e ? { view: "entrada", id: e.id } : { view: "diario" }; }
   for (const R of [RUTAS.es, RUTAS.en]) { const v = Object.keys(R).find((k) => R[k] === p && k !== "cafe" && k !== "entrada"); if (v) return { view: v }; }
-  return { view: "inicio" };
+  return { view: "noencontrada" };
 }
 
 /* Título y descripción por página, escritos para buscar "café de origen",
@@ -1436,6 +1447,7 @@ function meta(view, id) {
       : { t: "Diario: comprar café en Norte de Santander · " + marca,
           d: "Visitas a fincas, precios, factor de rendimiento, beneficio y preparación: lo que aprendemos comprando café directo a los productores de Norte de Santander." },
     entrada: { t: tx(e.titulo) + " · " + marca, d: limpio(tx(e.resumen)).slice(0, 155) },
+    noencontrada: { t: (en ? "Page not found · " : "Página no encontrada · ") + marca, d: en ? "This page does not exist." : "Esta página no existe." },
   };
   return M[view] || M.inicio;
 }
@@ -1596,7 +1608,7 @@ function viewCotizador() {
       <div class="ref-chip reveal" style="--i:3">
         <span class="lbl">Referencia FNC · ${fmtFecha(CONFIG.fnc.fecha)}</span>
         <b class="mono">${cop(CONFIG.fnc.precioCarga)}</b><small>carga de 125 kg · factor 94</small>
-        <button class="btn sm" data-act="go" data-to="mercado">Actualizar</button></div>
+        <button class="btn sm" data-act="atab" data-tab="mercado">Actualizar</button></div>
     </div>
     <div class="cot">
       <form class="cot-form" onsubmit="return false">
@@ -2030,6 +2042,9 @@ function clienteGuardar() {
    ============================================================ */
 /* ---------- referencias automáticas: FNC y Banco de la República ---------- */
 const MERCADO_API = CONFIG.sitio + "/api/mercado";
+/* historial que guarda la tarea diaria de GitHub (.github/workflows/precio-fnc.yml): el mismo en todos los equipos */
+const MERCADO_HISTORIAL = CONFIG.sitio + "/data/mercado.json";
+let consultando = false;
 const CADA_MS = 30 * 60 * 1000;                     // el panel vuelve a mirar cada 30 minutos
 const M = () => (S.mercado ||= { historial: [], leido: null, error: null });
 
@@ -2053,8 +2068,22 @@ function aplicarReferencias({ precioCarga, fecha, ny, trm }, fuente) {
 const cambio = (a, b) => (a && b ? { d: b - a, pct: ((b - a) / a) * 100 } : null);
 const flecha = (d) => (d > 0 ? "sube" : d < 0 ? "baja" : "igual");
 
+/* suma al historial local las fechas que registró la tarea diaria y no estén aquí */
+async function traerHistorialCompartido() {
+  try {
+    const r = await fetch(MERCADO_HISTORIAL, { cache: "no-store" });
+    if (!r.ok) return;
+    const { historial = [] } = await r.json(), h = M().historial;
+    historial.forEach((x) => { if (x.fecha && x.precioCarga && !h.some((y) => y.fecha === x.fecha)) h.push({ ...x, fuente: "FNC" }); });
+    h.sort((a, b) => (a.fecha < b.fecha ? 1 : -1));
+    save();
+  } catch {}
+}
+
 async function actualizarMercado({ avisar = true } = {}) {
   const m = M();
+  if (consultando) return;                         // un clic a la vez: no apila avisos
+  consultando = true; if (sesionActiva()) { UI.animate = false; render(); }
   try {
     const r = await fetch(MERCADO_API, { cache: "no-store" });
     const d = await r.json();
@@ -2069,13 +2098,14 @@ async function actualizarMercado({ avisar = true } = {}) {
     m.error = String(e.message || e); save();
     if (avisar) toast("No se pudo leer el precio de la FNC. Puedes escribirlo a mano en Mercado.", { type: "err" });
   }
+  consultando = false;
   if (sesionActiva()) { UI.animate = false; render(); }
 }
 
 let relojMercado = null;
 function vigilarMercado() {
   if (relojMercado) return;
-  actualizarMercado();
+  traerHistorialCompartido().then(() => actualizarMercado());
   relojMercado = setInterval(() => sesionActiva() && actualizarMercado(), CADA_MS);
   /* al volver a la pestaña después de un rato, mira de una vez */
   document.addEventListener("visibilitychange", () => {
@@ -2091,7 +2121,7 @@ function avisoMercado() {
     <span><span class="lbl">Precio FNC · carga</span> <b class="mono">${cop(CONFIG.fnc.precioCarga)}</b></span>
     ${c && c.d ? `<span class="mkt-delta">${c.d > 0 ? "▲" : "▼"} ${cop(Math.abs(c.d))} · ${c.d > 0 ? "+" : ""}${fmtNum(c.pct, 1)} % desde el ${fmtFecha(ayer.fecha)}</span>` : ""}
     <span class="hint">Publicado el ${fmtFecha(CONFIG.fnc.fecha)} · ${m.error ? `<b class="neg">sin conexión con la FNC</b>` : hora ? `revisado a las ${hora}` : "sin revisar todavía"}</span>
-    <button class="btn sm" data-act="mkt-auto">Revisar ahora</button></div>`;
+    <button class="btn sm" data-act="mkt-auto" ${consultando ? "disabled" : ""}>${consultando ? "Revisando…" : "Revisar ahora"}</button></div>`;
 }
 
 function guardarMercado() {
@@ -2110,7 +2140,7 @@ function historialMercado() {
         points="${vals.map((v, i) => `${((i / (vals.length - 1)) * 300).toFixed(1)},${(56 - ((v - min) / rango) * 52).toFixed(1)}`).join(" ")}"/></svg>` : "";
   return `<section class="section">
     <div class="section-head"><p class="eyebrow">Historial</p><h2>Cómo se ha movido <em>el precio</em></h2>
-      <p>Una fila por día en que la FNC publicó precio. Se llena sola cada vez que se abre el panel.</p></div>
+      <p>Una fila por día en que la FNC publicó precio. Se llena sola: una tarea la revisa cada día hábil aunque nadie abra el panel.</p></div>
     ${linea}
     <div class="table-scroll"><table class="cmp-table mkt-table">
       <thead><tr><th>Fecha</th><th>Carga FNC</th><th>Cambio</th><th>Por kg pergamino</th><th>Bolsa NY (US¢/lb)</th><th>TRM</th><th>Fuente</th></tr></thead>
@@ -2157,7 +2187,7 @@ function viewMercado() {
       <div class="mkt"><span class="lbl">Fecha de la referencia</span>
         <input id="m-fecha" class="mkt-in" type="date" value="${f.fecha}">
         <small>Publicado por la FNC cada día hábil</small></div>
-      <div class="mkt act"><button class="btn primary" data-act="mkt-auto">Revisar ahora</button>
+      <div class="mkt act"><button class="btn primary" data-act="mkt-auto" ${consultando ? "disabled" : ""}>${consultando ? "Revisando…" : "Revisar ahora"}</button>
         <button class="btn sm" data-act="mkt-save">Guardar a mano</button>
         <small>Fuente: federaciondecafeteros.org · datos.gov.co (TRM)</small></div>
     </div>

@@ -182,3 +182,17 @@ function viewPrivacidad() {
         : `Puedes pedirnos conocer, corregir o borrar tus datos cuando quieras, escribiendo a ${CONFIG.correo}. Respondemos en máximo 15 días hábiles.`}</p>`],
      [en ? "Who is responsible" : "Responsable", `<p>${esc(CONFIG.marca)} · Chinácota, Norte de Santander · ${CONFIG.correo}. ${en ? "PENDING: tax ID (NIT) and address." : "PENDIENTE: NIT y dirección."}</p>`]]);
 }
+
+/* ---------- página no encontrada (404.html) ---------- */
+function viewNoEncontrada() {
+  const en = UI.lang === "en";
+  return `<article class="legal no-encontrada">
+    <div class="view-head"><div><p class="eyebrow reveal">404</p>
+      <h2 class="reveal" style="--i:1">${en ? "This page <em>is not here</em>" : "Esta página <em>no está</em>"}</h2>
+      <p class="reveal" style="--i:2">${en ? "Maybe the link is old or a letter is missing. The coffee is still where it was."
+        : "Puede que el enlace sea viejo o le falte una letra. El café sigue donde estaba."}</p></div></div>
+    <div class="cta"><button class="btn primary" data-act="go" data-to="cafes">${en ? "See the coffees" : "Ver los cafés"}</button>
+      <button class="btn" data-act="go" data-to="inicio">${en ? "Home" : "Inicio"}</button>
+      <button class="btn" data-act="go" data-to="contacto">${en ? "Write to us" : "Escríbenos"}</button></div>
+  </article>`;
+}

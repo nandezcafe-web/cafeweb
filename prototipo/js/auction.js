@@ -150,11 +150,22 @@ function avisarmeOk(fecha) {
     `Hola ${CONFIG.marca}, avísenme de la subasta del ${fecha}. Mi correo: ${mail}`, `Aviso subasta ${fecha}`);
 }
 
+/* la TRM del día para mostrar el equivalente en pesos; misma función que usa el panel */
+let trmLeida = false;
+function traerTRM() {
+  if (trmLeida || typeof fetch !== "function") return;
+  trmLeida = true;
+  fetch("/api/mercado").then((r) => r.json()).then((d) => {
+    if (d.trm > 1500) { CONFIG.mercado.trm = d.trm; UI.au.rendered = -1; if (UI.view === "subasta") updateAuction(); }
+  }).catch(() => {});
+}
+
 function resetAuction() { UI.au = newAuction(); render(); toast(UI.lang === "en" ? "Auction reset." : "Subasta reiniciada."); }
 
 /* ---------- vista ---------- */
 function viewSubasta() {
   const a = UI.au, l = AU_LOTE, en = UI.lang === "en", yo = postor();
+  if (!en && typeof window !== "undefined" && window.location?.protocol?.startsWith("http")) traerTRM();
   const quien = en
     ? [["For collectors and roasters abroad", "One lot of 30 kg of green (unroasted) Geisha from a single farm in Toledo. There will not be another one like it this year."],
        ["In US dollars, per kilo", `It opens at ${usd(a.start)}/kg (${usdLb(a.start)}). Whoever bids highest when the clock runs out takes all 30 kg.`],
@@ -203,7 +214,7 @@ function viewSubasta() {
       </article>
       <div class="au-panel au-console reveal" style="--i:2">
         <div class="clock" id="au-clock"><div><span id="au-time">--:--</span><small id="au-clock-lbl">${en ? "left" : "restante"}</small></div></div>
-        <div class="au-price"><span class="lbl">${en ? "Top bid · USD/kg" : "Puja más alta · USD/kg"}</span><b id="au-price">—</b><span class="au-total" id="au-total"></span></div>
+        <div class="au-price"><span class="lbl">${en ? "Top bid · USD/kg" : "Puja más alta · USD/kg"}</span><b id="au-price">—</b><span class="au-total" id="au-total"></span>${en ? "" : `<span class="au-total" id="au-cop"></span>`}</div>
         <div class="au-status" id="au-status"></div>
         <div id="au-controls"></div>
       </div>
@@ -264,6 +275,8 @@ function updateAuction() {
 
   const top = topBid(a), priceEl = $("#au-price"), txt = usd(top ? top.p : a.start);
   if (priceEl.textContent !== txt) { priceEl.textContent = txt; priceEl.classList.remove("flash"); void priceEl.offsetWidth; priceEl.classList.add("flash"); }
+  const copEl = $("#au-cop");
+  if (copEl) copEl.textContent = `≈ ${cop((top ? top.p : a.start) * CONFIG.mercado.trm)} por kg con la TRM de hoy (${cop(CONFIG.mercado.trm)})`;
   $("#au-total").textContent = top ? `${usdLb(top.p)} · ${a.kg} kg × ${txt} = ${usd(top.p * a.kg)} · ${en ? "leader" : "líder"}: ${top.me ? (en ? "you" : "tú") : top.who}` : (en ? "No bids yet" : "Sin pujas todavía");
   const ext = a.bids.filter((b) => b.sys).length, ok = top && top.p >= a.reserve;
   $("#au-status").innerHTML = `<span class="rpill ${ok ? "ok" : ""}">${ok ? (en ? "Reserve met" : "Reserva alcanzada") : (en ? "Reserve not met" : "Reserva no alcanzada")}</span>

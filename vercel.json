@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "node tools/build.js",
   "outputDirectory": "prototipo",
   "cleanUrls": true,
   "trailingSlash": false,

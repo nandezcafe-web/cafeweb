@@ -947,6 +947,17 @@ body[data-view=subasta] .menu-btn{background:#3f2717;border-color:#6a4630;color:
 .mkt-linea{display:block;width:100%;height:60px;margin:22px 0 6px;color:var(--leaf)}
 .pos{color:var(--leaf)}
 
+/* ficha: lo que le pagamos a la finca */
+.pago-finca{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:26px}
+.pago-finca>div{background:var(--card);padding:16px 18px;display:grid;gap:4px;align-content:start}
+.pago-finca b{font-size:1.4rem}
+.pago-finca small{color:var(--ink-2);font-size:12.5px}
+.pago-finca .pf-mas{text-align:center;min-width:130px}
+.pago-finca .pf-mas b{font:400 2.1rem/1 var(--serif);color:var(--leaf)}
+@media (max-width:640px){.pago-finca{grid-template-columns:1fr 1fr}.pago-finca .pf-mas{grid-column:1/-1}}
+.no-encontrada .cta{margin-top:28px}
+.prod-receta,.prod-ficha{margin-top:64px}
+
 /* sala de subasta */
 .auction{color:#E6D7C3}
 .auction .kicker{color:#c9b497}
@@ -1600,13 +1611,13 @@ function ruta(view, id, lang) {
 }
 function vistaDeRuta(path) {
   const p = String(path).replace(/^\/(en\/)?/, "").replace(/\.html$/, "").replace(/\/$/, "");
-  if (!p) return { view: "inicio" };
+  if (!p || p === "index" || p.endsWith("nandez")) return { view: "inicio" };   // nandez.html: la tienda en un archivo
   const pre = ["cafe-", "coffee-"].find((x) => p.startsWith(x));
   if (pre) { const s = p.slice(pre.length), pr = S.productos.find((x) => slug(x.nombre.es) === s || slug(x.nombre.en) === s); return pr ? { view: "cafe", id: pr.id } : { view: "cafes" }; }
   const preE = ["diario-", "journal-"].find((x) => p.startsWith(x));
   if (preE) { const s = p.slice(preE.length), e = S.entradas.find((x) => slug(x.titulo.es).slice(0, 60) === s || slug(x.titulo.en).slice(0, 60) === s); return e ? { view: "entrada", id: e.id } : { view: "diario" }; }
   for (const R of [RUTAS.es, RUTAS.en]) { const v = Object.keys(R).find((k) => R[k] === p && k !== "cafe" && k !== "entrada"); if (v) return { view: v }; }
-  return { view: "inicio" };
+  return { view: "noencontrada" };
 }
 
 /* Título y descripción por página, escritos para buscar "café de origen",
@@ -1661,6 +1672,7 @@ function meta(view, id) {
       : { t: "Diario: comprar café en Norte de Santander · " + marca,
           d: "Visitas a fincas, precios, factor de rendimiento, beneficio y preparación: lo que aprendemos comprando café directo a los productores de Norte de Santander." },
     entrada: { t: tx(e.titulo) + " · " + marca, d: limpio(tx(e.resumen)).slice(0, 155) },
+    noencontrada: { t: (en ? "Page not found · " : "Página no encontrada · ") + marca, d: en ? "This page does not exist." : "Esta página no existe." },
   };
   return M[view] || M.inicio;
 }
@@ -1987,6 +1999,11 @@ function viewCafe() {
         </tbody>
       </table>
       <dl class="leyenda">${Object.values(LV).map((o) => `<div style="--c:${o.c}"><dt><i></i>${tx(o.label)}</dt><dd>${tx(o.desc)}</dd></div>`).join("")}</dl>
+      ${p.pago ? `<div class="pago-finca">
+        <div><span class="lbl">${en ? "We paid the farm" : "Le pagamos a la finca"}</span><b class="mono">${cop(p.pago.pagadoKg)}</b><small>${en ? "per kg of parchment" : "por kg de pergamino"} · ${fmtFecha(p.pago.fecha)}</small></div>
+        <div><span class="lbl">${en ? "Federation reference that day" : "Referencia de la Federación ese día"}</span><b class="mono">${cop(p.pago.referenciaKg)}</b><small>${en ? "what a cooperative would pay" : "lo que pagaría la cooperativa"}</small></div>
+        <div class="pf-mas"><b>+${fmtNum((p.pago.pagadoKg / p.pago.referenciaKg - 1) * 100)} %</b><small>${en ? "more for the grower" : "más para quien lo cultivó"}</small></div>
+      </div>` : ""}
     </section>
 
     <section class="prod-receta reveal" style="--i:3">
@@ -2385,6 +2402,20 @@ function viewPrivacidad() {
      [en ? "Who is responsible" : "Responsable", `<p>${esc(CONFIG.marca)} · Chinácota, Norte de Santander · ${CONFIG.correo}. ${en ? "PENDING: tax ID (NIT) and address." : "PENDIENTE: NIT y dirección."}</p>`]]);
 }
 
+/* ---------- página no encontrada (404.html) ---------- */
+function viewNoEncontrada() {
+  const en = UI.lang === "en";
+  return `<article class="legal no-encontrada">
+    <div class="view-head"><div><p class="eyebrow reveal">404</p>
+      <h2 class="reveal" style="--i:1">${en ? "This page <em>is not here</em>" : "Esta página <em>no está</em>"}</h2>
+      <p class="reveal" style="--i:2">${en ? "Maybe the link is old or a letter is missing. The coffee is still where it was."
+        : "Puede que el enlace sea viejo o le falte una letra. El café sigue donde estaba."}</p></div></div>
+    <div class="cta"><button class="btn primary" data-act="go" data-to="cafes">${en ? "See the coffees" : "Ver los cafés"}</button>
+      <button class="btn" data-act="go" data-to="inicio">${en ? "Home" : "Inicio"}</button>
+      <button class="btn" data-act="go" data-to="contacto">${en ? "Write to us" : "Escríbenos"}</button></div>
+  </article>`;
+}
+
 /* ---- auction.js ---- */
 /* ============================================================
    SUBASTA DE LOTES EXCEPCIONALES (simulada)
@@ -2538,11 +2569,22 @@ function avisarmeOk(fecha) {
     `Hola ${CONFIG.marca}, avísenme de la subasta del ${fecha}. Mi correo: ${mail}`, `Aviso subasta ${fecha}`);
 }
 
+/* la TRM del día para mostrar el equivalente en pesos; misma función que usa el panel */
+let trmLeida = false;
+function traerTRM() {
+  if (trmLeida || typeof fetch !== "function") return;
+  trmLeida = true;
+  fetch("/api/mercado").then((r) => r.json()).then((d) => {
+    if (d.trm > 1500) { CONFIG.mercado.trm = d.trm; UI.au.rendered = -1; if (UI.view === "subasta") updateAuction(); }
+  }).catch(() => {});
+}
+
 function resetAuction() { UI.au = newAuction(); render(); toast(UI.lang === "en" ? "Auction reset." : "Subasta reiniciada."); }
 
 /* ---------- vista ---------- */
 function viewSubasta() {
   const a = UI.au, l = AU_LOTE, en = UI.lang === "en", yo = postor();
+  if (!en && typeof window !== "undefined" && window.location?.protocol?.startsWith("http")) traerTRM();
   const quien = en
     ? [["For collectors and roasters abroad", "One lot of 30 kg of green (unroasted) Geisha from a single farm in Toledo. There will not be another one like it this year."],
        ["In US dollars, per kilo", `It opens at ${usd(a.start)}/kg (${usdLb(a.start)}). Whoever bids highest when the clock runs out takes all 30 kg.`],
@@ -2591,7 +2633,7 @@ function viewSubasta() {
       </article>
       <div class="au-panel au-console reveal" style="--i:2">
         <div class="clock" id="au-clock"><div><span id="au-time">--:--</span><small id="au-clock-lbl">${en ? "left" : "restante"}</small></div></div>
-        <div class="au-price"><span class="lbl">${en ? "Top bid · USD/kg" : "Puja más alta · USD/kg"}</span><b id="au-price">—</b><span class="au-total" id="au-total"></span></div>
+        <div class="au-price"><span class="lbl">${en ? "Top bid · USD/kg" : "Puja más alta · USD/kg"}</span><b id="au-price">—</b><span class="au-total" id="au-total"></span>${en ? "" : `<span class="au-total" id="au-cop"></span>`}</div>
         <div class="au-status" id="au-status"></div>
         <div id="au-controls"></div>
       </div>
@@ -2652,6 +2694,8 @@ function updateAuction() {
 
   const top = topBid(a), priceEl = $("#au-price"), txt = usd(top ? top.p : a.start);
   if (priceEl.textContent !== txt) { priceEl.textContent = txt; priceEl.classList.remove("flash"); void priceEl.offsetWidth; priceEl.classList.add("flash"); }
+  const copEl = $("#au-cop");
+  if (copEl) copEl.textContent = `≈ ${cop((top ? top.p : a.start) * CONFIG.mercado.trm)} por kg con la TRM de hoy (${cop(CONFIG.mercado.trm)})`;
   $("#au-total").textContent = top ? `${usdLb(top.p)} · ${a.kg} kg × ${txt} = ${usd(top.p * a.kg)} · ${en ? "leader" : "líder"}: ${top.me ? (en ? "you" : "tú") : top.who}` : (en ? "No bids yet" : "Sin pujas todavía");
   const ext = a.bids.filter((b) => b.sys).length, ok = top && top.p >= a.reserve;
   $("#au-status").innerHTML = `<span class="rpill ${ok ? "ok" : ""}">${ok ? (en ? "Reserve met" : "Reserva alcanzada") : (en ? "Reserve not met" : "Reserva no alcanzada")}</span>
@@ -2774,7 +2818,7 @@ const FOOT = () => {
 };
 
 const VIEWS = { inicio: viewInicio, cafes: viewCafes, cafe: viewCafe, subasta: viewSubasta, suscripcion: viewSuscripcion, diario: viewDiario, entrada: viewEntrada,
-  contacto: viewContacto, envios: viewEnvios, terminos: viewTerminos, privacidad: viewPrivacidad };
+  contacto: viewContacto, envios: viewEnvios, terminos: viewTerminos, privacidad: viewPrivacidad, noencontrada: viewNoEncontrada };
 
 function actualizarMeta() {
   const id = UI.view === "cafe" ? UI.cafe : UI.view === "entrada" ? UI.entrada : null;
@@ -2826,6 +2870,7 @@ function datosEstructurados(view, id) {
       dateModified: e.fecha, author: { "@id": org["@id"] }, publisher: { "@id": org["@id"] }, inLanguage: UI.lang });
   }
   if (view === "subasta") grafo.push({ "@type": "Event", name: (UI.lang === "en" ? "Geisha coffee auction · " : "Subasta de café Geisha · ") + AU_LOTE.productor, startDate: new Date(UI.au.endsAt - 7 * 24 * 3600 * 1000).toISOString(), endDate: new Date(UI.au.endsAt).toISOString(),
+    offers: { "@type": "Offer", price: UI.au.start, priceCurrency: "USD", description: UI.lang === "en" ? "Starting price per kg of green coffee" : "Precio de salida por kg de café verde" },
     description: meta("subasta").d, eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
     location: { "@type": "VirtualLocation", url: CONFIG.sitio + ruta("subasta") }, organizer: { "@id": org["@id"] } });
   return { "@context": "https://schema.org", "@graph": grafo };
