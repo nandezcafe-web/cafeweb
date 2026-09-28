@@ -73,7 +73,7 @@ Las páginas traen el contenido ya escrito en el HTML —porque los crawlers de 
 node tools/clave.js "una clave larga y aleatoria"
 ```
 
-Pega las tres líneas que imprime en `AUTH`, dentro de `prototipo/js/admin.js`, y vuelve a correr `node tools/build.js`. En el repositorio nunca queda la contraseña: solo un verificador PBKDF2 con sal.
+El correo del panel es `nandezcafe@gmail.com` (se cambia con un segundo argumento). El comando guarda el verificador en `AUTH`, dentro de `prototipo/js/admin.js`, y vuelve a armar el sitio; después solo falta hacer commit y subir. En el repositorio nunca queda la contraseña: solo un verificador PBKDF2 con sal.
 
 ## Publicar en Vercel
 
