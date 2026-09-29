@@ -21,8 +21,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=8e84be7c">
-<link rel="stylesheet" href="/auction.css?v=8e84be7c">
+<link rel="stylesheet" href="/styles.css?v=14fce874">
+<link rel="stylesheet" href="/auction.css?v=14fce874">
 <script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Café","url":"https://cafeweb-five.vercel.app","email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"A coffee-growing family from Chinácota, Colombia. We buy the best lots from farms across Norte de Santander and roast them under our name: one farm per coffee, with altitude, variety, process and cupping score for each lot."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Café","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"en"},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is single origin coffee and how is it different?","acceptedAnswer":{"@type":"Answer","text":"Single origin coffee comes from one farm and one harvest, not from a blend of many growers. That is why you can know who grew it, at what altitude and with which process, and why one cup tastes different from another."}},{"@type":"Question","name":"How much does Colombian specialty coffee cost?","acceptedAnswer":{"@type":"Answer","text":"In 2026 a 250 g bag of specialty coffee in Colombia runs between COP 35,000 and 70,000, depending on variety and cupping score. A Geisha or an auction lot costs more because very little of it exists."}},{"@type":"Question","name":"What does the SCA score mean?","acceptedAnswer":{"@type":"Answer","text":"It is a certified cupper's score out of 100. From 80 it counts as specialty and from 86 it is exceptional. We publish who cupped it and when, because the score ages along with the coffee."}},{"@type":"Question","name":"Why is good coffee grown in Norte de Santander?","acceptedAnswer":{"@type":"Answer","text":"Farms in Chinácota, Toledo and Arboledas sit between 1,500 and 1,950 metres, with cold nights that ripen the cherry slowly. It is a lesser known region than Huila or Nariño, so exceptional microlots can still be found at sensible prices."}},{"@type":"Question","name":"How does a coffee auction work?","acceptedAnswer":{"@type":"Answer","text":"A small lot is published with its score and data sheet, opens at a starting price and buyers bid in US dollars per kilo of green coffee. It is awarded only if the reserve price is met and at least three different buyers take part."}},{"@type":"Question","name":"Do you buy directly from the grower?","acceptedAnswer":{"@type":"Answer","text":"Yes. We go to the farm, measure yield factor and moisture in front of the grower, and pay cash above the day's reference price. No middlemen between the farm and the bag."}}]}]}</script>
 </head>
 <body data-view="inicio">
@@ -65,61 +65,25 @@
       </div>
       <p class="hint hero-b2b reveal" style="--i:4">Café or roaster? <a href="/en/coffees#cafeterias" data-act="go" data-to="cafes">Prices by the kilo</a> · <a href="/en/auction" data-act="go" data-to="subasta"><span class="live-dot "></span> Green coffee auction</a></p>
     </div>
-    <div class="hero-art reveal" style="--i:2">
-      <div class="hero-card" data-act="cafe" data-id="P-GEI" role="button" tabindex="0" aria-label="Pink Bourbon">
-        <div class="hc-top"><span class="kicker">Lote Chinácota, Chinácota</span><span class="state st-publicado">250 g</span></div>
-        <p class="hc-title">Pink Bourbon<br><em>Washed</em></p>
-        <p class="hc-score">87.5<small>SCA</small></p>
-        <div class="hc-ridge dark-art"><svg viewBox="0 0 420 180" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0 180 L0.0 179.1 L30.0 171.1 L60.0 168.9 L90.0 156.9 L120.0 155.3 L150.0 149.8 L180.0 142.9 L210.0 138.0 L240.0 120.1 L270.0 119.7 L300.0 119.7 L330.0 136.4 L360.0 141.4 L390.0 140.6 L420.0 157.0 L420 180 Z" fill="#2E4732" opacity="0.35"/>
-    <path class="front" d="M0 180 L0.0 180.0 L30.0 180.0 L60.0 180.0 L90.0 180.0 L120.0 165.1 L150.0 157.4 L180.0 139.4 L210.0 129.1 L240.0 112.3 L270.0 98.1 L300.0 112.3 L330.0 128.2 L360.0 141.2 L390.0 153.3 L420.0 164.5 L420 180 Z" fill="#2E4732" opacity="0.9"/>
-    <line x1="0" x2="420" y1="98.10000000000001" y2="98.10000000000001" stroke="rgba(230,215,195,.55)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
-  </svg><span class="alt-label" style="top:54.5%">1,750 m a.s.l.</span></div>
-      </div>
-      <div class="float-chip" style="--x:-6%;--y:66%;--d:0s"><i style="--c:var(--leaf)"></i><span>Altitude <b>1,750 m a.s.l.</b></span><small>verified · GPS</small></div>
-      <div class="float-chip" style="--x:58%;--y:24%;--d:-2s"><i style="--c:var(--leaf)"></i><span>Score <b>87.5</b></span><small>verified · Q-grader</small></div>
-      <div class="float-chip" style="--x:54%;--y:84%;--d:-4s"><i style="--c:var(--cherry)"></i><span>Bag <b>COP 68,000</b></span><small>250 g · whole bean</small></div>
+    <div class="hero-art reveal" style="--i:2"><figure class="cereza" data-cereza>
+    <div class="cereza-lente">
+      <span class="cereza-halo" aria-hidden="true"></span>
+      <span class="cereza-vidrio" aria-hidden="true"></span>
+      <img class="cereza-piel" src="/img/grano/cereza.webp" srcset="/img/grano/cereza@0.5x.webp 320w, /img/grano/cereza.webp 640w" sizes="(min-width:900px) 34vw, 62vw" width="640" height="640" alt="Ripe coffee cherry, glossy red"
+    fetchpriority="high" decoding="async">
+      <img class="cereza-pulpa" src="/img/grano/capa-pulpa.webp" srcset="/img/grano/capa-pulpa@0.5x.webp 320w, /img/grano/capa-pulpa.webp 640w" sizes="(min-width:900px) 34vw, 62vw" width="640" height="640" alt="The flesh inside, with the two beans in their parchment"
+    aria-hidden="true" decoding="async">
+      <img class="cereza-grano" src="/img/grano/capa-grano.webp" srcset="/img/grano/capa-grano@0.5x.webp 320w, /img/grano/capa-grano.webp 640w" sizes="(min-width:900px) 34vw, 62vw" width="640" height="640" alt="The same bean, roasted"
+    aria-hidden="true" decoding="async">
+      <span class="cereza-aro" aria-hidden="true"></span>
     </div>
-  </section>
-
-  <section class="grano" aria-label="Backwards from the bean to the flower">
-    <div class="grano-marco">
-      <div class="grano-cabeza">
-        <p class="eyebrow">The journey, backwards</p>
-        <h2>It starts with <em>the bean</em></h2>
-        <p>You begin with what you drink. Scroll, and the coffee takes back everything it had to lose.</p>
-      </div>
-      <div class="grano-linea"><figure class="pieza p1" style="--esc:1">
-      <div class="pieza-art"><img src="/img/grano/flor.webp" srcset="/img/grano/flor@0.5x.webp 320w, /img/grano/flor.webp 640w" sizes="(min-width:900px) 14vw, 30vw" width="640" height="640" alt="White coffee blossom, five petals open in a star"
-    loading="lazy" decoding="async"></div>
-      <figcaption><span class="pieza-n">1 / 7</span><b>Flower</b><span>Eight months before the cup, the tree blossoms white for three days.</span></figcaption>
-    </figure><figure class="pieza p2" style="--esc:0.98">
-      <div class="pieza-art"><img src="/img/grano/cereza-verde.webp" srcset="/img/grano/cereza-verde@0.5x.webp 320w, /img/grano/cereza-verde.webp 640w" sizes="(min-width:900px) 14vw, 30vw" width="640" height="640" alt="Unripe green coffee cherry"
-    loading="lazy" decoding="async"></div>
-      <figcaption><span class="pieza-n">2 / 7</span><b>Green fruit</b><span>The bean forms inside. Seven months still to go.</span></figcaption>
-    </figure><figure class="pieza p3" style="--esc:0.98">
-      <div class="pieza-art"><img src="/img/grano/cereza.webp" srcset="/img/grano/cereza@0.5x.webp 320w, /img/grano/cereza.webp 640w" sizes="(min-width:900px) 14vw, 30vw" width="640" height="640" alt="Ripe coffee cherry, glossy red"
-    loading="lazy" decoding="async"><img class="pieza-dentro" src="/img/grano/corte.webp" srcset="/img/grano/corte@0.5x.webp 320w, /img/grano/corte.webp 640w" sizes="(min-width:900px) 14vw, 30vw" width="640" height="640" alt="The cherry inside: skin, pulp, mucilage, parchment and the two beans"
-    loading="lazy" decoding="async"></div>
-      <figcaption><span class="pieza-n">3 / 7</span><b>Ripe cherry</b><span>Picked by hand, one by one. Five kilos of cherry make one of parchment. <i class="pista">Move the cursor over it: the bean is already inside.</i></span></figcaption>
-    </figure><figure class="pieza p4" style="--esc:1.04">
-      <div class="pieza-art"><img src="/img/grano/abierta.webp" srcset="/img/grano/abierta@0.5x.webp 320w, /img/grano/abierta.webp 640w" sizes="(min-width:900px) 14vw, 30vw" width="640" height="640" alt="Cherry split open: the two halves reveal the beans in mucilage"
-    loading="lazy" decoding="async"></div>
-      <figcaption><span class="pieza-n">4 / 7</span><b>Pulping</b><span>36 hours of fermentation, then 18 days drying on the marquee.</span></figcaption>
-    </figure><figure class="pieza p5" style="--esc:0.82">
-      <div class="pieza-art"><img src="/img/grano/pergamino.webp" srcset="/img/grano/pergamino@0.5x.webp 320w, /img/grano/pergamino.webp 640w" sizes="(min-width:900px) 14vw, 30vw" width="640" height="640" alt="Dry bean inside its parchment husk"
-    loading="lazy" decoding="async"></div>
-      <figcaption><span class="pieza-n">5 / 7</span><b>Dry parchment</b><span>This is what we buy at the farm. This is where the yield factor is measured.</span></figcaption>
-    </figure><figure class="pieza p6" style="--esc:0.74">
-      <div class="pieza-art"><img src="/img/grano/verde.webp" srcset="/img/grano/verde@0.5x.webp 320w, /img/grano/verde.webp 640w" sizes="(min-width:900px) 14vw, 30vw" width="640" height="640" alt="Milled green coffee bean, centre crease visible"
-    loading="lazy" decoding="async"></div>
-      <figcaption><span class="pieza-n">6 / 7</span><b>Green coffee</b><span>Sixty kilos of parchment leave forty six. The rest is husk.</span></figcaption>
-    </figure><figure class="pieza p7" style="--esc:0.74">
-      <div class="pieza-art"><img src="/img/grano/tostado.webp" srcset="/img/grano/tostado@0.5x.webp 320w, /img/grano/tostado.webp 640w" sizes="(min-width:900px) 14vw, 30vw" width="640" height="640" alt="Roasted coffee bean, dark brown with an oily sheen"
-    loading="eager" fetchpriority="high" decoding="async"></div>
-      <figcaption><span class="pieza-n">7 / 7</span><b>Roast</b><span>It loses 17 % of its weight. What is left fills 153 bags.</span></figcaption>
-    </figure></div>
-    </div>
+    <figcaption>
+      <button class="cereza-btn" type="button" aria-pressed="false"><span
+        class="con-mouse">Move over the cherry</span><span
+        class="con-dedo">Tap the cherry</span></button>
+      <span>The coffee you are going to drink is already inside.</span>
+    </figcaption>
+  </figure></div>
   </section>
 
   <section class="section">
@@ -283,11 +247,11 @@
   <div class="dlg-body" id="dlg-body"></div>
 </dialog>
 
-<script src="/js/core.js?v=8e84be7c"></script>
-<script src="/js/fases.js?v=8e84be7c"></script>
-<script src="/js/shop.js?v=8e84be7c"></script>
-<script src="/js/pages.js?v=8e84be7c"></script>
-<script src="/js/auction.js?v=8e84be7c"></script>
-<script src="/js/main.js?v=8e84be7c"></script>
+<script src="/js/core.js?v=14fce874"></script>
+<script src="/js/fases.js?v=14fce874"></script>
+<script src="/js/shop.js?v=14fce874"></script>
+<script src="/js/pages.js?v=14fce874"></script>
+<script src="/js/auction.js?v=14fce874"></script>
+<script src="/js/main.js?v=14fce874"></script>
 </body>
 </html>

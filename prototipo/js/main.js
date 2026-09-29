@@ -27,20 +27,8 @@ function viewInicio() {
       </div>
       <p class="hint hero-b2b reveal" style="--i:4">${en ? "Café or roaster?" : "¿Cafetería o tostador?"} <a href="${ruta("cafes")}#cafeterias" data-act="go" data-to="cafes">${en ? "Prices by the kilo" : "Precios por kilo"}</a> · <a href="${ruta("subasta")}" data-act="go" data-to="subasta"><span class="live-dot ${a.ended ? "off" : ""}"></span> ${en ? "Green coffee auction" : "Subasta de café verde"}</a></p>
     </div>
-    <div class="hero-art reveal" style="--i:2">
-      <div class="hero-card" data-act="cafe" data-id="${p.id}" role="button" tabindex="0" aria-label="${esc(tx(p.nombre))}">
-        <div class="hc-top"><span class="kicker">${esc(tr(fincaDe(p).finca || ""))}, ${esc(fincaDe(p).municipio || "")}</span><span class="state st-publicado">${gramos(principal(p).g)}</span></div>
-        <p class="hc-title">${esc(tr(p.variedad))}<br><em>${esc(tr(p.proceso))}</em></p>
-        <p class="hc-score">${esc(p.puntaje)}<small>SCA</small></p>
-        <div class="hc-ridge dark-art">${ridge(p, { w: 420, h: 180, dark: true })}</div>
-      </div>
-      <div class="float-chip" style="--x:-6%;--y:66%;--d:0s"><i style="--c:var(--leaf)"></i><span>${en ? "Altitude" : "Altitud"} <b>${msnm(p.altitud)}</b></span><small>${en ? "verified · GPS" : "verificado · GPS"}</small></div>
-      <div class="float-chip" style="--x:58%;--y:24%;--d:-2s"><i style="--c:var(--leaf)"></i><span>${en ? "Score" : "Puntaje"} <b>${esc(p.puntaje)}</b></span><small>${en ? "verified · Q-grader" : "verificado · Q-grader"}</small></div>
-      <div class="float-chip" style="--x:54%;--y:84%;--d:-4s"><i style="--c:var(--cherry)"></i><span>${en ? "Bag" : "Bolsa"} <b>${cop(principal(p).precio)}</b></span><small>${gramos(principal(p).g)} · ${esc(tx(saleDe(p, principal(p)))).toLowerCase()}</small></div>
-    </div>
+    <div class="hero-art reveal" style="--i:2">${heroCereza(en)}</div>
   </section>
-
-  ${fasesSeccion(en)}
 
   <section class="section">
     <div class="section-head"><p class="eyebrow">${en ? "This harvest" : "Esta cosecha"}</p>
@@ -163,7 +151,7 @@ function render() {
   v.innerHTML = VIEWS[UI.view]() + FOOT();
   if (UI.view === "subasta") updateAuction();
   renderTray(); liveBits();
-  try { montarFases(); } catch {}   // si falla la profundidad, la secuencia sigue viéndose
+  try { montarCereza(); } catch {}   // si falla la profundidad, la secuencia sigue viéndose
   UI.animate = false;
   if (fid) { const n = document.getElementById(fid); if (n) { n.focus({ preventScroll: true }); if (sel) try { n.setSelectionRange(...sel); } catch {} } }
 }
