@@ -66,9 +66,6 @@ const T = {
   seguir: { es: "Seguir viendo", en: "Keep browsing" },
   disponibles: { es: "disponibles", en: "available" }, por_kg: { es: "por kg", en: "per kg" },
   ficha: { es: "La ficha", en: "The data" }, receta: { es: "Cómo prepararlo", en: "How to brew it" },
-  pagado: { es: "Le pagamos al productor", en: "We paid the producer" },
-  referencia: { es: "Precio de referencia ese día", en: "Reference price that day" },
-  sobre_ref: { es: "por encima de la referencia", en: "above the reference" },
   pendiente: { es: "Contenido por confirmar", en: "Content to be confirmed" },
   leer: { es: "Leer", en: "Read" }, volver: { es: "Volver", en: "Back" },
   en_vivo: { es: "en vivo", en: "live" }, cerrada: { es: "cerrada", en: "closed" },
@@ -386,8 +383,8 @@ const FAQ = [
     a: { es: "Se publica un lote pequeño con su puntaje y su ficha, se abre con un precio de salida y los compradores pujan en dólares por kilo de café verde. Se adjudica solo si se alcanza el precio de reserva y participan al menos tres compradores distintos.",
          en: "A small lot is published with its score and data sheet, opens at a starting price and buyers bid in US dollars per kilo of green coffee. It is awarded only if the reserve price is met and at least three different buyers take part." } },
   { q: { es: "¿Le compran directo al productor?", en: "Do you buy directly from the grower?" },
-    a: { es: "Sí. Vamos a la finca, medimos el factor de rendimiento y la humedad delante del productor, y pagamos de contado por encima del precio de referencia del día. Sin intermediarios entre la finca y la bolsa.",
-         en: "Yes. We go to the farm, measure yield factor and moisture in front of the grower, and pay cash above the day's reference price. No middlemen between the farm and the bag." } },
+    a: { es: "Sí. Vamos a la finca y medimos el factor de rendimiento y la humedad delante del productor. No hay intermediarios entre la finca y la bolsa.",
+         en: "Yes. We go to the farm and measure yield factor and moisture in front of the grower. There are no middlemen between the farm and the bag." } },
 ];
 
 /* ---------- montaña: la altitud como firma visual ---------- */

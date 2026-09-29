@@ -1,23 +1,25 @@
 /* ============================================================
    INICIO, navegación, idioma y eventos de la página pública
    ============================================================ */
+/* Cada palabra del titular entra por su cuenta. El espacio queda fuera del
+   span: para un buscador o un lector de pantalla sigue siendo una frase. */
+const pal = (txt, desde = 0) => txt.split(" ").map((p, i) => `<span class="pal" style="--w:${desde + i}">${p}</span>`).join(" ");
+
 function viewInicio() {
   const en = UI.lang === "en", a = UI.au;
   const p = S.productos.find((x) => x.destacado) || S.productos[0];
   const valor = en
     ? [["Every coffee has a grower", "Not just “Colombian coffee”: the coffee of one farm and one harvest, and we tell you who planted it."],
        ["We tell you what we know", "Altitude, variety, process and score say who checked them and when. What we could not check, we tell you too."],
-       ["We pay our neighbours well", "We go to the farm, pay cash and above the price the Coffee Growers Federation publishes that day."],
        ["The best is kept apart", "Each neighbouring farm grows its own variety. When a lot comes out truly special, it goes to the auction instead of a bag."]]
     : [["Cada café tiene quién lo sembró", "No es “café colombiano” sin más: es el café de una finca y de una cosecha, y te decimos quién lo sembró."],
        ["Te contamos lo que sabemos", "La altura, la variedad, el proceso y el puntaje dicen quién los revisó y cuándo. Lo que no hemos podido comprobar, también te lo decimos."],
-       ["Le pagamos bien al vecino", "Vamos a la finca, pagamos de contado y por encima del precio que publica ese día la Federación de Cafeteros."],
        ["Lo mejor se guarda aparte", "Cada finca vecina tiene su variedad. Cuando un lote sale especial de verdad, no va a la bolsa: va a la subasta."]];
   return `
   <section class="hero">
     <div>
       <p class="eyebrow reveal">${esc(CONFIG.marca)} · ${esc(tx(CONFIG.lugar))}</p>
-      <h1 class="reveal" style="--i:1">${en ? "Coffee with<br><em>a first name.</em>" : "Café con<br><em>nombre propio.</em>"}</h1>
+      <h1>${pal(en ? "Coffee with" : "Café con")}<br><em>${pal(en ? "a first name." : "nombre propio.", 2)}</em></h1>
       <p class="lede reveal" style="--i:2">${en
         ? "We are a coffee-growing family from Chinácota. Farm by farm, we choose the best lots in Norte de Santander and roast them under our name: every bag says who grew it, how high it grew and how it tastes."
         : "Somos una familia cafetera de Chinácota. Escogemos, finca por finca, los mejores lotes de Norte de Santander y los tostamos con nuestra marca: cada bolsa dice quién lo cultivó, a qué altura creció y a qué sabe."}</p>
@@ -139,7 +141,7 @@ function datosEstructurados(view, id) {
   return { "@context": "https://schema.org", "@graph": grafo };
 }
 
-function render() {
+function render(arranque) {
   const ae = document.activeElement, fid = ae && ae.id && !ae.closest("dialog") ? ae.id : null;
   const sel = fid && typeof ae.selectionStart === "number" ? [ae.selectionStart, ae.selectionEnd] : null;
   document.body.dataset.view = UI.view;
@@ -147,8 +149,13 @@ function render() {
   renderNav();
   actualizarMeta();
   const v = $("#view");
-  v.classList.toggle("calm", !UI.animate);
-  v.innerHTML = VIEWS[UI.view]() + FOOT();
+  /* La portada ya viene escrita en el HTML. Al arrancar no se reescribe:
+     así la entrada se ve una sola vez y no parpadea al cargar el JavaScript. */
+  const yaEscrita = arranque === true && UI.view === "inicio" && !v.classList.contains("calm") && v.querySelector(".hero");
+  if (!yaEscrita) {
+    v.classList.toggle("calm", !UI.animate);
+    v.innerHTML = VIEWS[UI.view]() + FOOT();
+  }
   if (UI.view === "subasta") updateAuction();
   renderTray(); liveBits();
   try { montarCereza(); } catch {}   // si falla la profundidad, la secuencia sigue viéndose
@@ -255,7 +262,7 @@ UI.lang = location.pathname.startsWith("/en") ? "en" : "es";   // manda la URL, 
 const r0 = vistaDeRuta(location.pathname);
 UI.view = VIEWS[r0.view] ? r0.view : "inicio";
 if (r0.id) { UI.cafe = r0.id; UI.entrada = r0.id; }
-render();
+render(true);
 setInterval(() => {
   const a = UI.au, now = Date.now();
   if (!a.ended) { botTick(a, now); if (now >= a.endsAt) { endAuction(a); renderNav(); } }

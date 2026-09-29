@@ -1,6 +1,6 @@
 # Nandez Café
 
-> Familia cafetera de Chinácota, Norte de Santander (Colombia). Compramos lote por lote a fincas de Chinácota, Toledo y Arboledas, pagando por encima del precio de referencia del día, y vendemos cada café tostado con su ficha verificable. Nuestra propia finca (5.000 plantas de Geisha) da su primera cosecha en 2027.
+> Familia cafetera de Chinácota, Norte de Santander (Colombia). Compramos lote por lote a fincas de Chinácota, Toledo y Arboledas, y vendemos cada café tostado con su ficha verificable. Nuestra propia finca (5.000 plantas de Geisha) da su primera cosecha en 2027.
 
 ## Qué vendemos
 - Bourbon rosado: variedad Bourbon rosado, proceso Lavado, 1750 msnm, 87.5 puntos SCA, desde $32.000 (https://cafeweb-five.vercel.app/cafe-bourbon-rosado)
@@ -10,7 +10,6 @@
 
 ## Cómo trabajamos
 - Una finca, una variedad. Cada dato (altura, variedad, proceso, puntaje) dice quién lo comprobó y cuándo.
-- Publicamos lo que le pagamos al productor frente al precio de referencia de la Federación Nacional de Cafeteros ese día.
 - Los lotes excepcionales se venden en subasta, con precio de reserva y mínimo de participantes.
 
 ## Preguntas frecuentes
@@ -25,7 +24,7 @@ Las fincas de Chinácota, Toledo y Arboledas están entre 1.500 y 1.950 metros, 
 ### ¿Cómo funciona una subasta de café?
 Se publica un lote pequeño con su puntaje y su ficha, se abre con un precio de salida y los compradores pujan en dólares por kilo de café verde. Se adjudica solo si se alcanza el precio de reserva y participan al menos tres compradores distintos.
 ### ¿Le compran directo al productor?
-Sí. Vamos a la finca, medimos el factor de rendimiento y la humedad delante del productor, y pagamos de contado por encima del precio de referencia del día. Sin intermediarios entre la finca y la bolsa.
+Sí. Vamos a la finca y medimos el factor de rendimiento y la humedad delante del productor. No hay intermediarios entre la finca y la bolsa.
 
 ## Páginas
 - https://cafeweb-five.vercel.app/

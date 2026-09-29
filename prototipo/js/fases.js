@@ -2,7 +2,7 @@
    LA CEREZA DEL HERO.
    Un fruto sobre un disco de vidrio. Donde la persona pasa el cursor
    —o el dedo— la piel se vuelve transparente y aparece el corte real:
-   pulpa, pergamino y los DOS granos verdes que trae cada cereza.
+   pulpa, pergamino y los dos granos verdes.
    El grano tostado no va aquí: el tueste pasa meses después, en la ciudad.
    ============================================================ */
 
@@ -45,12 +45,10 @@ function heroCereza(en) {
                                           "Ripe coffee cherry, glossy red"], en, true)}
       ${imgCapa("capa-corte", "cereza-corte", ["Corte de la cereza: piel, pulpa, pergamino y los dos granos verdes",
                                                "Cherry in section: skin, pulp, parchment and the two green beans"], en, false)}
-      <span class="cereza-aro" aria-hidden="true"></span>
     </div>
     <figcaption>
       <p class="cereza-pista"><span class="con-mouse">${en ? "Move the cursor over the cherry." : "Pasa el cursor por la cereza."}</span><span
-        class="con-dedo">${en ? "Drag your finger over the cherry." : "Arrastra el dedo sobre la cereza."}</span>
-        ${en ? "Every fruit carries two beans." : "Cada fruto trae dos granos."}</p>
+        class="con-dedo">${en ? "Drag your finger over the cherry." : "Arrastra el dedo sobre la cereza."}</span></p>
       <button class="cereza-btn" type="button" aria-expanded="false" aria-controls="capas-cereza">${
         en ? "See the six layers" : "Ver las seis capas"}</button>
       <ol class="cereza-capas" id="capas-cereza" hidden>${capas}</ol>
@@ -86,14 +84,13 @@ function montarCereza() {
     x = ((e.clientX - c.left) / c.width) * 100;
     y = ((e.clientY - c.top) / c.height) * 100;
     r = 46;
-    lente.classList.add("mirando");
     pedir();
   }
   lente.addEventListener("pointermove", seguir);
   lente.addEventListener("pointerdown", seguir);
   lente.addEventListener("pointerleave", () => {
     if (abierta) return;
-    r = 0; lente.classList.remove("mirando"); pedir();
+    r = 0; pedir();
   });
 
   fig.querySelector(".cereza-btn").addEventListener("click", (e) => {
@@ -102,7 +99,7 @@ function montarCereza() {
     lista.hidden = !abierta;
     x = y = 50; r = abierta ? 130 : 0;
     lente.classList.toggle("abierta", abierta);
-    lente.classList.remove("mirando");
+   
     pedir();
   });
 }

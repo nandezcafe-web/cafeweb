@@ -952,8 +952,9 @@ body[data-view=subasta] .menu-btn{background:#3f2717;border-color:#6a4630;color:
 @property --r { syntax: "<percentage>"; inherits: true; initial-value: 0%; }
 
 .hero-art{aspect-ratio:auto;display:grid;align-content:center}
-.cereza{margin:0;display:grid;gap:20px;justify-items:center}
-.cereza-lente{--x:50%;--y:50%;--r:0%;position:relative;width:min(400px,72vw);aspect-ratio:1;
+/* el disco sobresale un 9 % de la fruta: el ancho y la separación lo descuentan */
+.cereza{margin:0;display:grid;gap:58px;justify-items:center;padding-top:9%}
+.cereza-lente{--x:50%;--y:50%;--r:0%;position:relative;width:min(380px,82%);aspect-ratio:1;
   transition:--r .45s var(--ease-out);touch-action:none;cursor:crosshair}
 
 /* la luz cálida detrás: dos manchas de la propia marca, muy bajas */
@@ -962,13 +963,6 @@ body[data-view=subasta] .menu-btn{background:#3f2717;border-color:#6a4630;color:
              radial-gradient(46% 46% at 72% 70%,rgba(92,122,74,.2),transparent 72%);
   filter:blur(28px)}
 
-/* el disco de vidrio donde se apoya la fruta */
-.cereza-vidrio{position:absolute;inset:-9%;border-radius:50%;pointer-events:none;
-  background:linear-gradient(150deg,rgba(255,255,255,.34),rgba(255,255,255,.08) 58%,rgba(255,255,255,.2));
-  border:1px solid rgba(255,255,255,.7);
-  box-shadow:inset 0 6px 12px rgba(255,255,255,.55), inset 0 -3px 14px rgba(74,46,27,.09),
-             0 44px 80px -38px rgba(74,46,27,.52);
-  backdrop-filter:blur(14px) saturate(1.08);-webkit-backdrop-filter:blur(14px) saturate(1.08)}
 
 .cereza-lente img{position:absolute;inset:7%;width:86%;height:86%;object-fit:contain}
 /* la ventana por donde se ve el corte */
@@ -976,13 +970,6 @@ body[data-view=subasta] .menu-btn{background:#3f2717;border-color:#6a4630;color:
   -webkit-mask-image:radial-gradient(circle at var(--x) var(--y),#000 calc(var(--r) * .72),transparent var(--r));
   mask-image:radial-gradient(circle at var(--x) var(--y),#000 calc(var(--r) * .72),transparent var(--r))}
 
-/* el canto de la lente: un aro de vidrio, para saber dónde está mirando */
-.cereza-aro{position:absolute;left:var(--x);top:var(--y);pointer-events:none;
-  width:calc(var(--r) * 2);aspect-ratio:1;translate:-50% -50%;border-radius:50%;
-  border:1px solid rgba(255,255,255,.6);
-  box-shadow:inset 0 1px 6px rgba(255,255,255,.5), 0 2px 14px rgba(74,46,27,.16);
-  opacity:0;transition:opacity .3s var(--ease-out)}
-.cereza-lente.mirando .cereza-aro{opacity:1}
 
 .cereza figcaption{display:grid;gap:10px;justify-items:center;text-align:center;max-width:42ch}
 .cereza-pista{color:var(--ink-2);font-size:15px;margin:0}
@@ -1004,6 +991,155 @@ body[data-view=subasta] .menu-btn{background:#3f2717;border-color:#6a4630;color:
 .con-dedo{display:none}
 @media (hover:none),(pointer:coarse){.con-mouse{display:none}.con-dedo{display:inline}}
 @media (prefers-reduced-motion:reduce){.cereza-lente{transition-duration:.01ms}}
+
+/* ============================================================
+   VIDRIO.
+   Una capa encima de todo lo anterior: el papel y sus colores siguen
+   siendo los de la marca, lo que cambia es el material de lo que flota
+   sobre él. Tres piezas hacen el efecto y ninguna sirve sola:
+     1. algo de color detrás, porque el vidrio sin nada que refractar es gris;
+     2. el desenfoque con saturación, que es lo que se ve a través;
+     3. el canto de luz arriba y abajo, que es lo que lo vuelve un objeto.
+   ============================================================ */
+:root{
+  --v-fondo:rgba(255,255,255,.30);
+  --v-fondo-2:rgba(255,255,255,.50);
+  --v-luz:rgba(255,255,255,.95);
+  --v-luz-2:rgba(255,255,255,.32);
+  --v-canto:rgba(255,255,255,.6);
+  --v-sombra:0 1px 1px rgba(74,46,27,.04),0 24px 46px -28px rgba(74,46,27,.45);
+  --v-brillo:inset 0 1px 1px rgba(255,255,255,.8),inset 0 -1px 1px rgba(74,46,27,.05);
+  --v-lente:blur(18px) saturate(1.5);
+  --v-lente-2:blur(34px) saturate(1.7);
+}
+body[data-view=subasta]{
+  --v-fondo:rgba(255,255,255,.05);
+  --v-fondo-2:rgba(40,24,14,.55);
+  --v-luz:rgba(255,255,255,.45);
+  --v-luz-2:rgba(255,255,255,.14);
+  --v-canto:rgba(255,255,255,.13);
+  --v-sombra:0 24px 46px -28px rgba(0,0,0,.75);
+  --v-brillo:inset 0 1px 1px rgba(255,255,255,.12);
+}
+
+/* 1. el color de atrás: tres manchas de la propia marca, que derivan despacio */
+body::before{inset:-14%;
+  background:
+    radial-gradient(34vmax 34vmax at 16% 14%,rgba(192,90,62,.24),transparent 70%),
+    radial-gradient(40vmax 40vmax at 86% 36%,rgba(46,71,50,.19),transparent 70%),
+    radial-gradient(38vmax 38vmax at 36% 84%,rgba(214,160,84,.26),transparent 70%),
+    repeating-radial-gradient(ellipse at 12% 18%,transparent 0 26px,rgba(29,20,15,.045) 26px 27px),
+    repeating-radial-gradient(ellipse at 88% 72%,transparent 0 34px,rgba(29,20,15,.04) 34px 35px)}
+body[data-view=subasta]::before{
+  background:
+    radial-gradient(34vmax 34vmax at 16% 14%,rgba(192,90,62,.30),transparent 70%),
+    radial-gradient(40vmax 40vmax at 86% 40%,rgba(214,160,84,.14),transparent 70%),
+    repeating-radial-gradient(ellipse at 15% 20%,transparent 0 26px,rgba(255,200,150,.03) 26px 27px),
+    repeating-radial-gradient(ellipse at 85% 80%,transparent 0 34px,rgba(255,200,150,.025) 34px 35px)}
+/* solo con mouse: en un celular, mover el fondo obliga a recalcular cada vidrio en cada cuadro */
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+  body::before{animation:deriva 46s ease-in-out infinite alternate}
+}
+@keyframes deriva{to{transform:translate3d(3%,-2.5%,0) rotate(2deg)}}
+
+/* los resplandores se salen de su caja a propósito; lo que no pueden es ensanchar la página.
+   clip y no hidden: hidden volvería el cuerpo un contenedor de scroll y soltaría el menú fijo */
+html,body{overflow-x:clip}
+
+/* 3. el canto de luz, compartido */
+.top-inner::before,.btn::before,.cereza-vidrio::before,.tray::before{content:"";position:absolute;inset:0;
+  border-radius:inherit;padding:1.4px;pointer-events:none;
+  background:linear-gradient(180deg,var(--v-luz) 0%,var(--v-luz-2) 22%,transparent 42%,transparent 60%,var(--v-luz-2) 82%,var(--v-luz) 100%);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude}
+
+/* ---- el menú: una píldora que flota ---- */
+.top,body[data-view=subasta] .top{position:sticky;top:0;z-index:50;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 0;
+  background:none;border:0;backdrop-filter:none;-webkit-backdrop-filter:none;pointer-events:none}
+.top-inner{pointer-events:auto;position:relative;max-width:1180px;flex-wrap:nowrap;gap:10px 14px;
+  padding:7px 9px 7px 20px;border-radius:999px;
+  background:var(--v-fondo-2);backdrop-filter:var(--v-lente-2);-webkit-backdrop-filter:var(--v-lente-2);
+  box-shadow:var(--v-brillo),var(--v-sombra)}
+.tabs,body[data-view=subasta] .tabs{background:transparent;margin-inline:auto;flex-wrap:nowrap;padding:0}
+.tab{transition:background .2s var(--ease-out),color .2s var(--ease-out);white-space:nowrap}
+@media (hover:hover) and (pointer:fine){.tab:not([aria-current=page]):hover{background:rgba(74,46,27,.08)}}
+.brand b{font-size:27px}
+.lang,body[data-view=subasta] .lang{background:rgba(74,46,27,.08)}
+body[data-view=subasta] .lang{background:rgba(255,255,255,.08)}
+.cart-btn{background:var(--v-fondo);border-color:var(--v-canto);box-shadow:var(--v-brillo)}
+@media (max-width:1080px){.brand small{display:none}}
+@media (max-width:900px){.tab{padding:8px 10px;font-size:13px}.nav-time{display:none}}
+@media (max-width:760px){
+  .top{padding-inline:10px}
+  .top-inner{flex-wrap:wrap;border-radius:26px;padding:7px 8px 7px 16px}
+  .menu-btn{border-radius:999px;background:var(--v-fondo);border-color:var(--v-canto)}
+  body.menu-abierto .top-inner{padding-bottom:12px}
+  body.menu-abierto .tabs{border-top-color:rgba(74,46,27,.12)}
+  body.menu-abierto .tab{border-bottom-color:rgba(74,46,27,.1)}
+}
+
+/* ---- botones ---- */
+.btn{position:relative;border:0;background:var(--v-fondo);color:var(--ink);
+  backdrop-filter:var(--v-lente);-webkit-backdrop-filter:var(--v-lente);
+  box-shadow:var(--v-brillo),0 10px 22px -16px rgba(74,46,27,.5);
+  transition:transform .16s var(--ease-out),background .2s var(--ease-out),box-shadow .2s var(--ease-out)}
+.btn:hover{background:var(--v-fondo-2);color:var(--ink)}
+.btn.primary{background:rgba(74,46,27,.88);color:var(--paper);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.28),inset 0 -1px 1px rgba(0,0,0,.2),0 14px 26px -16px rgba(74,46,27,.75)}
+.btn.primary::before{opacity:.5}
+.btn.primary:hover{background:rgba(58,36,21,.94);color:var(--paper)}
+body[data-view=subasta] .btn.primary{background:rgba(230,215,195,.92);color:var(--ink)}
+@media (hover:hover) and (pointer:fine){.btn:not(:disabled):hover{transform:scale(1.02)}}
+.btn:not(:disabled):active{transform:scale(.97)}
+.btn:disabled:hover{background:var(--v-fondo)}
+.btn.primary:disabled:hover{background:rgba(74,46,27,.88)}
+
+/* ---- superficies ---- */
+.card-cafe,.finca,.plan,.entrada,.faq,.val,.var,.item,.lot,.mode,.step,.wpanel,.levels,.receta div{
+  background:var(--v-fondo);border:1px solid var(--v-canto);
+  backdrop-filter:var(--v-lente);-webkit-backdrop-filter:var(--v-lente);
+  box-shadow:var(--v-brillo),var(--v-sombra)}
+/* la ficha conserva su filo de color: ese color dice quién comprobó el dato */
+.attr{background:var(--v-fondo);border-left-color:var(--v-canto);border-right-color:var(--v-canto);border-bottom-color:var(--v-canto);
+  backdrop-filter:var(--v-lente);-webkit-backdrop-filter:var(--v-lente);box-shadow:var(--v-sombra)}
+.card-cafe,.finca,.plan,.entrada,.lot,.mode,.wpanel{border-radius:26px}
+.faq,.val,.item,.var{border-radius:20px}
+.chip,.chip-radio span,.notas-chips li,.input,.search{background:var(--v-fondo-2);border-color:var(--v-canto)}
+.card-cafe,.finca,.entrada,.plan{transition:transform .35s var(--ease-out),box-shadow .35s var(--ease-out)}
+@media (hover:hover) and (pointer:fine){
+  .card-cafe:hover,.finca:hover,.entrada:hover{transform:translateY(-5px);
+    box-shadow:var(--v-brillo),0 1px 1px rgba(74,46,27,.04),0 38px 60px -30px rgba(74,46,27,.55)}
+}
+
+/* ---- lo que se abre encima: más opaco, porque ahí se lee y se decide ---- */
+dialog{background:rgba(239,229,215,.84);backdrop-filter:var(--v-lente-2);-webkit-backdrop-filter:var(--v-lente-2);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.8),0 50px 100px -40px rgba(29,20,15,.6)}
+.dlg-head,.cart-foot{background:rgba(239,229,215,.7);backdrop-filter:var(--v-lente);-webkit-backdrop-filter:var(--v-lente)}
+.tray{background:rgba(74,46,27,.84);backdrop-filter:var(--v-lente-2);-webkit-backdrop-filter:var(--v-lente-2);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.22),0 24px 50px -22px rgba(29,20,15,.7);--v-luz:rgba(255,255,255,.4);--v-luz-2:rgba(255,255,255,.12)}
+.tray .btn:not(.primary){background:rgba(255,255,255,.12);color:var(--paper)}
+
+/* ---- entradas: el contenido está visible de base y la animación solo lo trae.
+        Si algo falla, se lee igual; y al terminar no deja nada pegado encima. ---- */
+.reveal{opacity:1;transform:none;animation:entra .8s var(--ease-out) backwards;animation-delay:calc(var(--i,0)*90ms + 120ms)}
+.calm .reveal,.calm .pal{animation:none}
+@keyframes entra{from{opacity:0;filter:blur(10px);transform:translateY(20px)}}
+/* el titular llega palabra por palabra */
+.pal{display:inline-block;animation:palabra .7s var(--ease-out) backwards;animation-delay:calc(var(--w,0)*100ms + 150ms)}
+@keyframes palabra{
+  0%{opacity:0;filter:blur(10px);transform:translateY(50px)}
+  50%{opacity:.5;filter:blur(5px);transform:translateY(-5px)}
+  100%{opacity:1;filter:none;transform:none}}
+
+/* ---- el disco de la cereza ---- */
+.cereza-vidrio{position:absolute;inset:-9%;border-radius:50%;pointer-events:none;
+  background:linear-gradient(160deg,rgba(255,255,255,.38),rgba(255,255,255,.1) 55%,rgba(255,255,255,.22));
+  backdrop-filter:blur(22px) saturate(1.6);-webkit-backdrop-filter:blur(22px) saturate(1.6);
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.85),inset 0 22px 40px -24px rgba(255,255,255,.7),
+             inset 0 -18px 34px -22px rgba(74,46,27,.2),0 54px 90px -46px rgba(74,46,27,.6)}
+/* el reflejo de arriba: sin él es un círculo; con él es una lente */
+.cereza-vidrio::after{content:"";position:absolute;inset:3% 16% auto 16%;height:30%;border-radius:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,.5),transparent);filter:blur(7px)}
 
 /* sala de subasta */
 .auction{color:#E6D7C3}
@@ -1210,9 +1346,6 @@ const T = {
   seguir: { es: "Seguir viendo", en: "Keep browsing" },
   disponibles: { es: "disponibles", en: "available" }, por_kg: { es: "por kg", en: "per kg" },
   ficha: { es: "La ficha", en: "The data" }, receta: { es: "Cómo prepararlo", en: "How to brew it" },
-  pagado: { es: "Le pagamos al productor", en: "We paid the producer" },
-  referencia: { es: "Precio de referencia ese día", en: "Reference price that day" },
-  sobre_ref: { es: "por encima de la referencia", en: "above the reference" },
   pendiente: { es: "Contenido por confirmar", en: "Content to be confirmed" },
   leer: { es: "Leer", en: "Read" }, volver: { es: "Volver", en: "Back" },
   en_vivo: { es: "en vivo", en: "live" }, cerrada: { es: "cerrada", en: "closed" },
@@ -1530,8 +1663,8 @@ const FAQ = [
     a: { es: "Se publica un lote pequeño con su puntaje y su ficha, se abre con un precio de salida y los compradores pujan en dólares por kilo de café verde. Se adjudica solo si se alcanza el precio de reserva y participan al menos tres compradores distintos.",
          en: "A small lot is published with its score and data sheet, opens at a starting price and buyers bid in US dollars per kilo of green coffee. It is awarded only if the reserve price is met and at least three different buyers take part." } },
   { q: { es: "¿Le compran directo al productor?", en: "Do you buy directly from the grower?" },
-    a: { es: "Sí. Vamos a la finca, medimos el factor de rendimiento y la humedad delante del productor, y pagamos de contado por encima del precio de referencia del día. Sin intermediarios entre la finca y la bolsa.",
-         en: "Yes. We go to the farm, measure yield factor and moisture in front of the grower, and pay cash above the day's reference price. No middlemen between the farm and the bag." } },
+    a: { es: "Sí. Vamos a la finca y medimos el factor de rendimiento y la humedad delante del productor. No hay intermediarios entre la finca y la bolsa.",
+         en: "Yes. We go to the farm and measure yield factor and moisture in front of the grower. There are no middlemen between the farm and the bag." } },
 ];
 
 /* ---------- montaña: la altitud como firma visual ---------- */

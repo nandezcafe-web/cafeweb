@@ -131,8 +131,8 @@ function viewContacto() {
       `<p>${en ? "Email" : "Correo"}: ${mail}${wa ? `<br>WhatsApp: ${wa}` : ""}<br>${en ? "We ship from Cúcuta to all of Colombia." : "Despachamos desde Cúcuta a toda Colombia."}</p>
        <p class="hint">${en ? "PENDING: phone, address and tax ID (NIT)." : "PENDIENTE: teléfono, dirección y NIT."}</p>`],
      [en ? "Who we are" : "Quiénes somos",
-      `<p>${en ? "We grow coffee in Chinácota: 5,000 Geisha plants whose first harvest comes in 2027. Meanwhile we buy the best lots from neighbouring farms in Chinácota, Toledo and Arboledas, above the day’s reference price, and roast them under our name."
-        : "Sembramos café en Chinácota: 5.000 plantas de Geisha que dan su primera cosecha en 2027. Mientras tanto le compramos los mejores lotes a fincas vecinas de Chinácota, Toledo y Arboledas, por encima del precio de referencia del día, y los tostamos con nuestra marca."}</p>`],
+      `<p>${en ? "We grow coffee in Chinácota: 5,000 Geisha plants whose first harvest comes in 2027. Meanwhile we buy the best lots from neighbouring farms in Chinácota, Toledo and Arboledas and roast them under our name."
+        : "Sembramos café en Chinácota: 5.000 plantas de Geisha que dan su primera cosecha en 2027. Mientras tanto le compramos los mejores lotes a fincas vecinas de Chinácota, Toledo y Arboledas y los tostamos con nuestra marca."}</p>`],
      [en ? "Cafés and roasters" : "Cafeterías y tostadores",
       `<p>${en ? "Coffee by the kilo, volume prices and roasting to your profile." : "Café por kilos, precio por volumen y tueste a tu perfil."} ${enlace("cafes", en ? "See prices by the kilo" : "Ver precios por kilo")}.</p>`],
      [en ? "Your order" : "Tu pedido",
