@@ -162,6 +162,7 @@ function render() {
   v.innerHTML = VIEWS[UI.view]() + FOOT();
   if (UI.view === "subasta") updateAuction();
   renderTray(); liveBits();
+  try { montarFases(); } catch {}   // si falla la profundidad, la secuencia sigue viéndose
   UI.animate = false;
   if (fid) { const n = document.getElementById(fid); if (n) { n.focus({ preventScroll: true }); if (sel) try { n.setSelectionRange(...sel); } catch {} } }
 }

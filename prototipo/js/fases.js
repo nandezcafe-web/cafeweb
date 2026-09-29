@@ -1,51 +1,35 @@
 /* ============================================================
    DE LA CEREZA AL GRANO: la transformación, ligada al scroll.
-   Cada fase es un dibujo propio, así el respaldo puede ponerlas en fila
-   cuando el navegador no sabe ligar animación y scroll.
+   Cinco macros reales del mismo grano, con el mismo fondo y la misma luz,
+   para que al encadenarlas se lea como una sola cosa que cambia.
    ============================================================ */
-const GRANO = {
-  cereza: `<svg viewBox="0 0 220 260" aria-hidden="true">
-    <defs><radialGradient id="gCereza" cx=".35" cy=".3" r=".8">
-      <stop offset="0" stop-color="#e2674a" stop-opacity=".9"/><stop offset="1" stop-color="#7d1f10" stop-opacity=".55"/></radialGradient></defs>
-    <path d="M110 62c0-16 8-30 24-36" stroke="#5c7a4a" stroke-width="7" fill="none" stroke-linecap="round"/>
-    <path d="M134 26c14-8 30-4 36 6-10 13-28 16-40 7z" fill="#5c7a4a"/>
-    <ellipse cx="110" cy="156" rx="80" ry="90" fill="#a8321f"/>
-    <ellipse cx="110" cy="156" rx="80" ry="90" fill="url(#gCereza)"/>
-    <ellipse cx="82" cy="120" rx="17" ry="25" fill="#fff" opacity=".2" transform="rotate(-18 82 120)"/></svg>`,
 
-  abierta: `<svg viewBox="0 0 220 260" aria-hidden="true">
-    <path d="M26 152c0-50 27-92 60-92v184c-33 0-60-42-60-92z" fill="#8f2a19"/>
-    <path d="M194 152c0-50-27-92-60-92v184c33 0 60-42 60-92z" fill="#a8321f"/>
-    <ellipse cx="110" cy="152" rx="45" ry="64" fill="#e7d7a8"/>
-    <ellipse cx="110" cy="152" rx="45" ry="64" fill="#c9b27c" opacity=".3"/>
-    <path d="M110 90c-14 26-14 98 0 124" stroke="#8a7550" stroke-width="6" fill="none" stroke-linecap="round"/>
-    <ellipse cx="88" cy="150" rx="9" ry="15" fill="#fff" opacity=".18"/></svg>`,
-
-  pergamino: `<svg viewBox="0 0 220 260" aria-hidden="true">
-    <defs><radialGradient id="gPerg" cx=".35" cy=".28" r=".85">
-      <stop offset="0" stop-color="#f0e4bf" stop-opacity=".85"/><stop offset="1" stop-color="#b9a472" stop-opacity=".5"/></radialGradient></defs>
-    <ellipse cx="110" cy="152" rx="65" ry="88" fill="#d8c79a"/>
-    <ellipse cx="110" cy="152" rx="65" ry="88" fill="url(#gPerg)"/>
-    <path d="M110 70c-16 30-16 134 0 164" stroke="#a8925f" stroke-width="7" fill="none" stroke-linecap="round"/>
-    <path d="M64 100c8 34 8 72 0 104M156 100c-8 34-8 72 0 104" stroke="#c0ab78" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/></svg>`,
-
-  verde: `<svg viewBox="0 0 220 260" aria-hidden="true">
-    <defs><radialGradient id="gVerde" cx=".34" cy=".28" r=".85">
-      <stop offset="0" stop-color="#a9b78c" stop-opacity=".9"/><stop offset="1" stop-color="#5f6c48" stop-opacity=".55"/></radialGradient></defs>
-    <ellipse cx="110" cy="152" rx="59" ry="82" fill="#7f8f63"/>
-    <ellipse cx="110" cy="152" rx="59" ry="82" fill="url(#gVerde)"/>
-    <path d="M110 76c-18 28-18 124 0 152" stroke="#4f5c3c" stroke-width="8" fill="none" stroke-linecap="round"/>
-    <path d="M94 100c-10 32-10 72 0 104" stroke="#9aa87e" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/></svg>`,
-
-  tostado: `<svg viewBox="0 0 220 260" aria-hidden="true">
-    <defs><radialGradient id="gTos" cx=".34" cy=".26" r=".85">
-      <stop offset="0" stop-color="#7c4a2e" stop-opacity=".95"/><stop offset="1" stop-color="#2a1610" stop-opacity=".7"/></radialGradient></defs>
-    <path d="M150 54c10-10 2-20 10-30M170 60c8-8 2-16 8-24" stroke="#c9b27c" stroke-width="4" fill="none" stroke-linecap="round" opacity=".5"/>
-    <ellipse cx="110" cy="154" rx="57" ry="79" fill="#3f2216"/>
-    <ellipse cx="110" cy="154" rx="57" ry="79" fill="url(#gTos)"/>
-    <path d="M110 82c-20 26-20 118 0 144" stroke="#1d0f09" stroke-width="9" fill="none" stroke-linecap="round"/>
-    <path d="M92 106c-10 30-10 64 0 94" stroke="#7a4a30" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/></svg>`,
+/* nombre del archivo, alto/ancho reales, y qué se ve (para lector de pantalla) */
+const FOTOS = {
+  cereza:    { alt_es: "Cereza de café madura, roja y brillante, con su rama y dos hojas",
+               alt_en: "Ripe coffee cherry, glossy red, on its branch with two leaves" },
+  abierta:   { alt_es: "Cereza abierta: la pulpa roja retirada deja ver los dos granos con mucílago",
+               alt_en: "Cherry pulped open: the red skin peeled back over two beans in mucilage" },
+  pergamino: { alt_es: "Granos secos dentro de su cáscara de pergamino, con hojuelas sueltas al lado",
+               alt_en: "Dry beans inside their parchment husk, with loose flakes beside them" },
+  verde:     { alt_es: "Dos granos de café verde ya trillados, con el surco y la película plateada",
+               alt_en: "Two milled green coffee beans, centre crease and silverskin visible" },
+  tostado:   { alt_es: "Dos granos tostados, café oscuro con brillo de aceite y el surco abierto",
+               alt_en: "Two roasted beans, dark brown with an oily sheen and an open crease" },
 };
+
+function fotoFase(k, en, primera) {
+  const f = FOTOS[k], base = `/img/fases/${k}`;
+  /* la primera entra con la página; las demás esperan a que la persona baje */
+  const carga = primera ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
+  /* en el archivo de un solo HTML las fotos viajan dentro, no hay de dónde pedirlas */
+  const dentro = typeof FASES_EMBEBIDAS !== "undefined" && FASES_EMBEBIDAS[k];
+  const fuente = dentro
+    ? `src="${dentro}"`
+    : `src="${base}.webp" srcset="${base}@0.5x.webp 600w, ${base}.webp 1200w" sizes="(min-width:900px) 340px, 44vw"`;
+  return `<img ${fuente} width="1200" height="1200"
+    alt="${esc(en ? f.alt_en : f.alt_es)}" ${carga} decoding="async">`;
+}
 
 /* La transformación contada con nuestros propios números */
 function fasesSeccion(en) {
@@ -61,6 +45,7 @@ function fasesSeccion(en) {
        ["verde", "Trilla: café verde", "Sesenta kilos de pergamino dejan cuarenta y seis de café verde. Lo demás es cáscara."],
        ["tostado", "Tueste", "Pierde 17 % de su peso en el tostador. Lo que queda llena 153 bolsas."]];
   return `<section class="fases" aria-label="${en ? "From cherry to roasted bean" : "De la cereza al grano tostado"}">
+    <div class="fases-marco">
     <div class="fases-cabeza">
       <p class="eyebrow">${en ? "The journey" : "El recorrido"}</p>
       <h2>${en ? "One cherry, <em>four changes</em>" : "Una cereza, <em>cuatro cambios</em>"}</h2>
@@ -69,9 +54,52 @@ function fasesSeccion(en) {
     </div>
     <div class="fases-escena">
       ${F.map(([k, titulo, texto], i) => `<figure class="fase f${i + 1}">
-        <div class="fase-art">${GRANO[k]}</div>
+        <div class="fase-art">${fotoFase(k, en, i === 0)}</div>
         <figcaption><span class="fase-n">${i + 1} / ${F.length}</span><b>${esc(titulo)}</b><span>${esc(texto)}</span></figcaption>
       </figure>`).join("")}
     </div>
+    </div>
   </section>`;
+}
+
+/* ------------------------------------------------------------
+   Profundidad: el grano se inclina hacia donde está el cursor y la foto
+   se mueve un poco menos que su marco. Esa diferencia es la que hace que
+   el ojo lea volumen en lugar de una lámina.
+   Solo con mouse: en pantalla táctil no hay hacia dónde inclinarse.
+   ------------------------------------------------------------ */
+function montarFases() {
+  const escena = document.querySelector(".fases-escena");
+  if (!escena || escena.dataset.montada) return;
+  if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+  escena.dataset.montada = "1";
+
+  const GIRO = 8, DESLIZ = 14;            // grados de inclinación y px de parallax
+  let pedido = null, rx = 0, ry = 0, px = 0, py = 0;
+
+  function pintar() {
+    pedido = null;
+    escena.querySelectorAll(".fase-art").forEach((a) => {
+      a.style.setProperty("--rx", rx.toFixed(2) + "deg");
+      a.style.setProperty("--ry", ry.toFixed(2) + "deg");
+      a.style.setProperty("--px", px.toFixed(1) + "px");
+      a.style.setProperty("--py", py.toFixed(1) + "px");
+    });
+  }
+  function mover(e) {
+    const r = escena.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    rx = -y * GIRO; ry = x * GIRO; px = -x * DESLIZ; py = -y * DESLIZ;
+    escena.classList.add("sigue");
+    if (!pedido) pedido = requestAnimationFrame(pintar);
+  }
+  function soltar() {
+    rx = ry = px = py = 0;
+    escena.classList.remove("sigue");
+    if (!pedido) pedido = requestAnimationFrame(pintar);
+  }
+  escena.addEventListener("pointermove", mover);
+  escena.addEventListener("pointerleave", soltar);
 }

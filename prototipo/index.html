@@ -21,8 +21,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=e57e9064">
-<link rel="stylesheet" href="/auction.css?v=e57e9064">
+<link rel="stylesheet" href="/styles.css?v=b57451a7">
+<link rel="stylesheet" href="/auction.css?v=b57451a7">
 <script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Café","url":"https://cafeweb-five.vercel.app","email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"Familia cafetera de Chinácota. Le compramos los mejores lotes a fincas de Norte de Santander y los tostamos con nuestra marca: un café por finca, con su altura, su variedad, su proceso y su puntaje de catación."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Café","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"es"},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es el café de origen y en qué se diferencia del café común?","acceptedAnswer":{"@type":"Answer","text":"El café de origen viene de una sola finca y una sola cosecha, no de la mezcla de muchos productores. Por eso se puede saber quién lo cultivó, a qué altura y con qué proceso, y por eso una taza sabe distinta de otra."}},{"@type":"Question","name":"¿Cuánto cuesta un café especial colombiano?","acceptedAnswer":{"@type":"Answer","text":"En 2026 una bolsa de 250 g de café especial en Colombia va entre $35.000 y $70.000, según la variedad y el puntaje de catación. Un Geisha o un lote de subasta cuesta más porque se produce en cantidades muy pequeñas."}},{"@type":"Question","name":"¿Qué significa el puntaje SCA de un café?","acceptedAnswer":{"@type":"Answer","text":"Es la calificación de un catador certificado sobre 100 puntos. Desde 80 se considera café especial y desde 86 es excepcional. Publicamos quién hizo la catación y en qué fecha, porque el puntaje envejece junto con el café."}},{"@type":"Question","name":"¿Por qué se cultiva buen café en Norte de Santander?","acceptedAnswer":{"@type":"Answer","text":"Las fincas de Chinácota, Toledo y Arboledas están entre 1.500 y 1.950 metros, con noches frías que maduran el grano despacio. Es una región menos conocida que Huila o Nariño, y por eso todavía se consiguen microlotes excepcionales a precios sensatos."}},{"@type":"Question","name":"¿Cómo funciona una subasta de café?","acceptedAnswer":{"@type":"Answer","text":"Se publica un lote pequeño con su puntaje y su ficha, se abre con un precio de salida y los compradores pujan en dólares por kilo de café verde. Se adjudica solo si se alcanza el precio de reserva y participan al menos tres compradores distintos."}},{"@type":"Question","name":"¿Le compran directo al productor?","acceptedAnswer":{"@type":"Answer","text":"Sí. Vamos a la finca, medimos el factor de rendimiento y la humedad delante del productor, y pagamos de contado por encima del precio de referencia del día. Sin intermediarios entre la finca y la bolsa."}}]}]}</script>
 </head>
 <body data-view="inicio">
@@ -211,6 +211,7 @@
   </section>
 
   <section class="fases" aria-label="De la cereza al grano tostado">
+    <div class="fases-marco">
     <div class="fases-cabeza">
       <p class="eyebrow">El recorrido</p>
       <h2>Una cereza, <em>cuatro cambios</em></h2>
@@ -218,53 +219,27 @@
     </div>
     <div class="fases-escena">
       <figure class="fase f1">
-        <div class="fase-art"><svg viewBox="0 0 220 260" aria-hidden="true">
-    <defs><radialGradient id="gCereza" cx=".35" cy=".3" r=".8">
-      <stop offset="0" stop-color="#e2674a" stop-opacity=".9"/><stop offset="1" stop-color="#7d1f10" stop-opacity=".55"/></radialGradient></defs>
-    <path d="M110 62c0-16 8-30 24-36" stroke="#5c7a4a" stroke-width="7" fill="none" stroke-linecap="round"/>
-    <path d="M134 26c14-8 30-4 36 6-10 13-28 16-40 7z" fill="#5c7a4a"/>
-    <ellipse cx="110" cy="156" rx="80" ry="90" fill="#a8321f"/>
-    <ellipse cx="110" cy="156" rx="80" ry="90" fill="url(#gCereza)"/>
-    <ellipse cx="82" cy="120" rx="17" ry="25" fill="#fff" opacity=".2" transform="rotate(-18 82 120)"/></svg></div>
+        <div class="fase-art"><img src="/img/fases/cereza.webp" srcset="/img/fases/cereza@0.5x.webp 600w, /img/fases/cereza.webp 1200w" sizes="(min-width:900px) 340px, 44vw" width="1200" height="1200"
+    alt="Cereza de café madura, roja y brillante, con su rama y dos hojas" loading="eager" fetchpriority="high" decoding="async"></div>
         <figcaption><span class="fase-n">1 / 5</span><b>Cereza</b><span>Se recoge madura, una por una. Cinco kilos de cereza dan un kilo de pergamino.</span></figcaption>
       </figure><figure class="fase f2">
-        <div class="fase-art"><svg viewBox="0 0 220 260" aria-hidden="true">
-    <path d="M26 152c0-50 27-92 60-92v184c-33 0-60-42-60-92z" fill="#8f2a19"/>
-    <path d="M194 152c0-50-27-92-60-92v184c33 0 60-42 60-92z" fill="#a8321f"/>
-    <ellipse cx="110" cy="152" rx="45" ry="64" fill="#e7d7a8"/>
-    <ellipse cx="110" cy="152" rx="45" ry="64" fill="#c9b27c" opacity=".3"/>
-    <path d="M110 90c-14 26-14 98 0 124" stroke="#8a7550" stroke-width="6" fill="none" stroke-linecap="round"/>
-    <ellipse cx="88" cy="150" rx="9" ry="15" fill="#fff" opacity=".18"/></svg></div>
+        <div class="fase-art"><img src="/img/fases/abierta.webp" srcset="/img/fases/abierta@0.5x.webp 600w, /img/fases/abierta.webp 1200w" sizes="(min-width:900px) 340px, 44vw" width="1200" height="1200"
+    alt="Cereza abierta: la pulpa roja retirada deja ver los dos granos con mucílago" loading="lazy" decoding="async"></div>
         <figcaption><span class="fase-n">2 / 5</span><b>Despulpado y fermentación</b><span>36 horas de fermentación y 18 días de secado en marquesina.</span></figcaption>
       </figure><figure class="fase f3">
-        <div class="fase-art"><svg viewBox="0 0 220 260" aria-hidden="true">
-    <defs><radialGradient id="gPerg" cx=".35" cy=".28" r=".85">
-      <stop offset="0" stop-color="#f0e4bf" stop-opacity=".85"/><stop offset="1" stop-color="#b9a472" stop-opacity=".5"/></radialGradient></defs>
-    <ellipse cx="110" cy="152" rx="65" ry="88" fill="#d8c79a"/>
-    <ellipse cx="110" cy="152" rx="65" ry="88" fill="url(#gPerg)"/>
-    <path d="M110 70c-16 30-16 134 0 164" stroke="#a8925f" stroke-width="7" fill="none" stroke-linecap="round"/>
-    <path d="M64 100c8 34 8 72 0 104M156 100c-8 34-8 72 0 104" stroke="#c0ab78" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/></svg></div>
+        <div class="fase-art"><img src="/img/fases/pergamino.webp" srcset="/img/fases/pergamino@0.5x.webp 600w, /img/fases/pergamino.webp 1200w" sizes="(min-width:900px) 340px, 44vw" width="1200" height="1200"
+    alt="Granos secos dentro de su cáscara de pergamino, con hojuelas sueltas al lado" loading="lazy" decoding="async"></div>
         <figcaption><span class="fase-n">3 / 5</span><b>Pergamino seco</b><span>Así lo compramos en la finca, y así se mide el factor de rendimiento.</span></figcaption>
       </figure><figure class="fase f4">
-        <div class="fase-art"><svg viewBox="0 0 220 260" aria-hidden="true">
-    <defs><radialGradient id="gVerde" cx=".34" cy=".28" r=".85">
-      <stop offset="0" stop-color="#a9b78c" stop-opacity=".9"/><stop offset="1" stop-color="#5f6c48" stop-opacity=".55"/></radialGradient></defs>
-    <ellipse cx="110" cy="152" rx="59" ry="82" fill="#7f8f63"/>
-    <ellipse cx="110" cy="152" rx="59" ry="82" fill="url(#gVerde)"/>
-    <path d="M110 76c-18 28-18 124 0 152" stroke="#4f5c3c" stroke-width="8" fill="none" stroke-linecap="round"/>
-    <path d="M94 100c-10 32-10 72 0 104" stroke="#9aa87e" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/></svg></div>
+        <div class="fase-art"><img src="/img/fases/verde.webp" srcset="/img/fases/verde@0.5x.webp 600w, /img/fases/verde.webp 1200w" sizes="(min-width:900px) 340px, 44vw" width="1200" height="1200"
+    alt="Dos granos de café verde ya trillados, con el surco y la película plateada" loading="lazy" decoding="async"></div>
         <figcaption><span class="fase-n">4 / 5</span><b>Trilla: café verde</b><span>Sesenta kilos de pergamino dejan cuarenta y seis de café verde. Lo demás es cáscara.</span></figcaption>
       </figure><figure class="fase f5">
-        <div class="fase-art"><svg viewBox="0 0 220 260" aria-hidden="true">
-    <defs><radialGradient id="gTos" cx=".34" cy=".26" r=".85">
-      <stop offset="0" stop-color="#7c4a2e" stop-opacity=".95"/><stop offset="1" stop-color="#2a1610" stop-opacity=".7"/></radialGradient></defs>
-    <path d="M150 54c10-10 2-20 10-30M170 60c8-8 2-16 8-24" stroke="#c9b27c" stroke-width="4" fill="none" stroke-linecap="round" opacity=".5"/>
-    <ellipse cx="110" cy="154" rx="57" ry="79" fill="#3f2216"/>
-    <ellipse cx="110" cy="154" rx="57" ry="79" fill="url(#gTos)"/>
-    <path d="M110 82c-20 26-20 118 0 144" stroke="#1d0f09" stroke-width="9" fill="none" stroke-linecap="round"/>
-    <path d="M92 106c-10 30-10 64 0 94" stroke="#7a4a30" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/></svg></div>
+        <div class="fase-art"><img src="/img/fases/tostado.webp" srcset="/img/fases/tostado@0.5x.webp 600w, /img/fases/tostado.webp 1200w" sizes="(min-width:900px) 340px, 44vw" width="1200" height="1200"
+    alt="Dos granos tostados, café oscuro con brillo de aceite y el surco abierto" loading="lazy" decoding="async"></div>
         <figcaption><span class="fase-n">5 / 5</span><b>Tueste</b><span>Pierde 17 % de su peso en el tostador. Lo que queda llena 153 bolsas.</span></figcaption>
       </figure>
+    </div>
     </div>
   </section>
 
@@ -300,11 +275,11 @@
   <div class="dlg-body" id="dlg-body"></div>
 </dialog>
 
-<script src="/js/core.js?v=e57e9064"></script>
-<script src="/js/fases.js?v=e57e9064"></script>
-<script src="/js/shop.js?v=e57e9064"></script>
-<script src="/js/pages.js?v=e57e9064"></script>
-<script src="/js/auction.js?v=e57e9064"></script>
-<script src="/js/main.js?v=e57e9064"></script>
+<script src="/js/core.js?v=b57451a7"></script>
+<script src="/js/fases.js?v=b57451a7"></script>
+<script src="/js/shop.js?v=b57451a7"></script>
+<script src="/js/pages.js?v=b57451a7"></script>
+<script src="/js/auction.js?v=b57451a7"></script>
+<script src="/js/main.js?v=b57451a7"></script>
 </body>
 </html>
