@@ -220,7 +220,7 @@ escribir("llms.txt", llms);
 
 /* ---------- 4. la tienda en un solo archivo (para enviar por WhatsApp) ---------- */
 /* las piezas del grano, en texto, para que el archivo funcione sin conexión */
-const PIEZAS = ["cereza", "capa-pulpa", "capa-grano"];
+const PIEZAS = ["cereza", "capa-corte"];
 const pieza64 = (k) => "data:image/webp;base64," +
   fs.readFileSync(path.join(SRC, "img", "grano", `${k}@0.5x.webp`)).toString("base64");
 const GRANO_DENTRO = `const GRANO_EMBEBIDO = ${JSON.stringify(Object.fromEntries(PIEZAS.map((k) => [k, pieza64(k)])))};`;
