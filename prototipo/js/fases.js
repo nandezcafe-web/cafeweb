@@ -8,10 +8,12 @@
 
 function imgCapa(k, clase, alt, en, primera) {
   const base = `/img/grano/${k}`;
+  /* la huella la pone el armado: foto nueva, dirección nueva */
+  const v = typeof IMG_V !== "undefined" && IMG_V ? `?v=${IMG_V}` : "";
   const dentro = typeof GRANO_EMBEBIDO !== "undefined" && GRANO_EMBEBIDO[k];
   const fuente = dentro
     ? `src="${dentro}"`
-    : `src="${base}.webp" srcset="${base}@0.5x.webp 320w, ${base}.webp 640w" sizes="(min-width:900px) 34vw, 62vw"`;
+    : `src="${base}.webp${v}" srcset="${base}@0.5x.webp${v} 320w, ${base}.webp${v} 640w" sizes="(min-width:900px) 34vw, 62vw"`;
   return `<img class="${clase}" ${fuente} width="640" height="640" alt="${esc(alt[en ? 1 : 0])}"
     ${primera ? 'fetchpriority="high"' : 'aria-hidden="true"'} decoding="async">`;
 }

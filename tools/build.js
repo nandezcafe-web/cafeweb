@@ -19,7 +19,12 @@ const mod = (f) => `/* ---- ${f}.js ---- */\n` + read(`js/${f}.js`);
 const MODS = ["core", "fases", "shop", "pages", "auction", "main"];
 /* huella de los archivos: obliga al navegador a bajar la versión nueva tras cada despliegue */
 const TODOS = ["core", "fases", "shop", "pages", "auction", "main", "quote", "inventory", "clients", "market", "admin"];
-const VERSION = require("crypto").createHash("md5").update(css + TODOS.map((f) => read("js/" + f + ".js")).join("")).digest("hex").slice(0, 8);
+/* huella de las imágenes: si una foto cambia, cambia su dirección y ningún navegador sirve la vieja */
+const IMG_DIR = path.join(SRC, "img", "grano");
+const IMG_V = require("crypto").createHash("md5")
+  .update(Buffer.concat(fs.readdirSync(IMG_DIR).sort().map((f) => fs.readFileSync(path.join(IMG_DIR, f)))))
+  .digest("hex").slice(0, 8);
+const VERSION = require("crypto").createHash("md5").update(css + TODOS.map((f) => read("js/" + f + ".js")).join("") + IMG_V).digest("hex").slice(0, 8);
 const FUENTES = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">`;
@@ -32,6 +37,7 @@ function mundo(lang) {
     title: "", activeElement: null, getElementById: nodo, querySelector: nodo, querySelectorAll: () => [],
     createElement: nodo, addEventListener() {} };
   const ctx = {
+    IMG_V,
     console, Date, Math, JSON, String, Number, Array, Object, Set, Map, Intl, isNaN, parseInt, parseFloat, encodeURIComponent,
     document: doc, window: { addEventListener() {}, scrollTo() {}, open() {} },
     navigator: { language: lang }, location: { pathname: "/", hash: "", href: "/", search: "" },
@@ -148,6 +154,7 @@ ${FUENTES}
   <div class="dlg-body" id="dlg-body"></div>
 </dialog>
 
+<script>window.IMG_V = "${IMG_V}";</script>
 ${MODS.map((f) => `<script src="/js/${f}.js?v=${VERSION}"></script>`).join("\n")}
 </body>
 </html>
@@ -229,7 +236,7 @@ const unSolo = pagina(ctxEs, { view: "inicio" }, "es")
   .replace(new RegExp(MODS.map((f) => `<script src="/js/${f}.js\\?v=${VERSION}"></script>`).join("\\s*")), `<script>\n${GRANO_DENTRO}\n${MODS.map(mod).join("\n")}\n</script>`)
   /* el archivo suelto viaja sin servidor: las fotos de las fases van dentro */
   .replace(/\s*srcset="[^"]*"\s*sizes="[^"]*"/g, "")
-  .replace(/src="\/img\/grano\/([a-z-]+)\.webp"/g, (_, k) => `src="${pieza64(k)}"`);
+  .replace(/src="\/img\/grano\/([a-z-]+)\.webp(?:\?v=\w+)?"/g, (_, k) => `src="${pieza64(k)}"`);
 escribir("nandez.html", unSolo);
 
 /* ---------- 5. panel interno ---------- */
