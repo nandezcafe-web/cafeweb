@@ -945,6 +945,58 @@ body[data-view=subasta] .menu-btn{background:#3f2717;border-color:#6a4630;color:
 .no-encontrada .cta{margin-top:28px}
 .prod-receta,.prod-ficha{margin-top:64px}
 
+
+/* ---- de la cereza al grano: secuencia ligada al scroll ---- */
+.fases{margin:70px 0 0;padding-top:40px;border-top:1px solid var(--line)}
+.fases-cabeza{max-width:620px}
+.fases-cabeza h2{font-size:clamp(2rem,4.4vw,3.4rem);line-height:1}
+.fases-cabeza p{color:var(--ink-2)}
+.fases-escena{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:22px;margin-top:34px}
+.fase{margin:0;display:grid;gap:12px}
+.fase-art{aspect-ratio:1;display:grid;place-items:center;background:var(--paper-2);border-radius:20px;padding:18px}
+.fase-art svg{width:100%;height:100%;max-height:200px}
+.fase figcaption{display:grid;gap:4px}
+.fase-n{font:600 10.5px var(--mono);letter-spacing:.12em;color:var(--ink-3)}
+.fase b{font:400 1.35rem/1.1 var(--serif)}
+.fase figcaption span:last-child{color:var(--ink-2);font-size:13.5px}
+
+/* Donde el navegador sabe ligar animación y scroll, las fases se apilan y
+   el grano se transforma mientras la persona baja. */
+@supports (animation-timeline: view()) {
+  @media (min-width:900px) and (prefers-reduced-motion:no-preference){
+    .fases{height:340vh;border-top:0;padding-top:0;view-timeline:--fases block}
+    .fases-cabeza{position:sticky;top:110px;padding-top:40px;border-top:1px solid var(--line)}
+    .fases-escena{display:block;position:sticky;top:180px;height:min(60vh,520px);margin-top:30px}
+    .fase{position:absolute;inset:0;display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:40px;align-items:center;opacity:0;
+      animation:faseEntra linear both;animation-timeline:--fases}
+    .fase-art{width:min(320px,34vw);aspect-ratio:1;border-radius:28px;padding:26px}
+    .fase-art svg{max-height:none}
+    .fase figcaption{gap:10px;max-width:38ch}
+    .fase b{font-size:clamp(1.8rem,3vw,2.6rem)}
+    .fase figcaption span:last-child{font-size:1.05rem}
+    .f1{animation-name:fasePrimera;animation-range:cover 0% cover 26%}
+    .f2{animation-range:cover 22% cover 44%}
+    .f3{animation-range:cover 40% cover 62%}
+    .f4{animation-range:cover 58% cover 80%}
+    .f5{animation-name:faseUltima;animation-range:cover 74% cover 94%}
+    @keyframes faseEntra{
+      0%{opacity:0;transform:translateY(26px) scale(.94)}
+      16%,84%{opacity:1;transform:none}
+      100%{opacity:0;transform:translateY(-18px) scale(1.04)}
+    }
+    /* la primera ya está cuando la persona llega */
+    @keyframes fasePrimera{
+      0%,84%{opacity:1;transform:none}
+      100%{opacity:0;transform:translateY(-18px) scale(1.04)}
+    }
+    /* la última se queda: es el café que van a comprar */
+    @keyframes faseUltima{
+      0%{opacity:0;transform:translateY(26px) scale(.94)}
+      30%,100%{opacity:1;transform:none}
+    }
+  }
+}
+
 /* sala de subasta */
 .auction{color:#E6D7C3}
 .auction .kicker{color:#c9b497}

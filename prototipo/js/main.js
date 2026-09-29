@@ -13,13 +13,6 @@ function viewInicio() {
        ["Te contamos lo que sabemos", "La altura, la variedad, el proceso y el puntaje dicen quién los revisó y cuándo. Lo que no hemos podido comprobar, también te lo decimos."],
        ["Le pagamos bien al vecino", "Vamos a la finca, pagamos de contado y por encima del precio que publica ese día la Federación de Cafeteros."],
        ["Lo mejor se guarda aparte", "Cada finca vecina tiene su variedad. Cuando un lote sale especial de verdad, no va a la bolsa: va a la subasta."]];
-  const pasos = en
-    ? [["We visit", "Yield factor, moisture and the day’s price, in hand."], ["We buy above the reference", "Cash, at the farm."],
-       ["Milling and roasting", "Parchment to green, then roasted to taste of its origin."], ["Name and bag", "Each bag says which farm it came from."],
-       ["Your cup", "15 g, 250 ml, 93 °C."]]
-    : [["Visitamos", "Con el factor, la humedad y el precio del día en la mano."], ["Compramos por encima de la referencia", "De contado, en la finca."],
-       ["Trilla y tueste", "De pergamino a verde, y tostado para que sepa a su origen."], ["Nombre y empaque", "Cada bolsa dice de qué finca salió."],
-       ["Tu taza", "15 g, 250 ml, 93 °C."]];
   return `
   <section class="hero">
     <div>
@@ -69,10 +62,7 @@ function viewInicio() {
     <div class="fincas">${S.fincas.map((f, i) => fincaCard(f, i)).join("")}</div>
   </section>
 
-  <section class="section cinta">
-    <p class="eyebrow">${en ? "From the farm to the bag" : "De la finca a la bolsa"}</p>
-    <div class="cinta-pasos">${pasos.map(([tt, d], i) => `<div class="cp"><span class="n">${i + 1}</span><b>${esc(tt)}</b><small>${esc(d)}</small></div>`).join("")}</div>
-  </section>
+  ${fasesSeccion(en)}
 
   <section class="section faqs">
     <div class="section-head"><p class="eyebrow">${en ? "Questions" : "Preguntas"}</p>

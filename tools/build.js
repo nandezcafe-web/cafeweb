@@ -16,9 +16,9 @@ const read = (f) => fs.readFileSync(path.join(SRC, f), "utf8");
 const escribir = (rel, txt) => { const f = path.join(SRC, rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, txt); };
 const css = ["styles.css", "auction.css"].map(read).join("\n");
 const mod = (f) => `/* ---- ${f}.js ---- */\n` + read(`js/${f}.js`);
-const MODS = ["core", "shop", "pages", "auction", "main"];
+const MODS = ["core", "fases", "shop", "pages", "auction", "main"];
 /* huella de los archivos: obliga al navegador a bajar la versión nueva tras cada despliegue */
-const TODOS = ["core", "shop", "pages", "auction", "main", "quote", "inventory", "clients", "market", "admin"];
+const TODOS = ["core", "fases", "shop", "pages", "auction", "main", "quote", "inventory", "clients", "market", "admin"];
 const VERSION = require("crypto").createHash("md5").update(css + TODOS.map((f) => read("js/" + f + ".js")).join("")).digest("hex").slice(0, 8);
 const FUENTES = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
