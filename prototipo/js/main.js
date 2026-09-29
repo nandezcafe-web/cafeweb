@@ -40,6 +40,8 @@ function viewInicio() {
     </div>
   </section>
 
+  ${fasesSeccion(en)}
+
   <section class="section">
     <div class="section-head"><p class="eyebrow">${en ? "This harvest" : "Esta cosecha"}</p>
       <h2>${en ? "What we have <em>at home</em>" : "Lo que tenemos <em>en casa</em>"}</h2>
@@ -62,7 +64,6 @@ function viewInicio() {
     <div class="fincas">${S.fincas.map((f, i) => fincaCard(f, i)).join("")}</div>
   </section>
 
-  ${fasesSeccion(en)}
 
   <section class="section faqs">
     <div class="section-head"><p class="eyebrow">${en ? "Questions" : "Preguntas"}</p>

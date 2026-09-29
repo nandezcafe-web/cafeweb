@@ -1,105 +1,126 @@
 /* ============================================================
-   DE LA CEREZA AL GRANO: la transformación, ligada al scroll.
-   Cinco macros reales del mismo grano, con el mismo fondo y la misma luz,
-   para que al encadenarlas se lea como una sola cosa que cambia.
+   EL GRANO, HACIA ATRÁS.
+   Empieza por lo que la persona se toma —el grano tostado, grande y en el
+   centro— y al bajar le va devolviendo cada etapa hacia la izquierda, hasta
+   la flor. Siete piezas recortadas, misma luz, flotando sobre el papel.
    ============================================================ */
 
-/* nombre del archivo, alto/ancho reales, y qué se ve (para lector de pantalla) */
-const FOTOS = {
-  cereza:    { alt_es: "Cereza de café madura, roja y brillante, con su rama y dos hojas",
-               alt_en: "Ripe coffee cherry, glossy red, on its branch with two leaves" },
-  abierta:   { alt_es: "Cereza abierta: la pulpa roja retirada deja ver los dos granos con mucílago",
-               alt_en: "Cherry pulped open: the red skin peeled back over two beans in mucilage" },
-  pergamino: { alt_es: "Granos secos dentro de su cáscara de pergamino, con hojuelas sueltas al lado",
-               alt_en: "Dry beans inside their parchment husk, with loose flakes beside them" },
-  verde:     { alt_es: "Dos granos de café verde ya trillados, con el surco y la película plateada",
-               alt_en: "Two milled green coffee beans, centre crease and silverskin visible" },
-  tostado:   { alt_es: "Dos granos tostados, café oscuro con brillo de aceite y el surco abierto",
-               alt_en: "Two roasted beans, dark brown with an oily sheen and an open crease" },
+const PIEZAS = ["flor", "cereza-verde", "cereza", "abierta", "pergamino", "verde", "tostado"];
+
+/* escala propia de cada pieza: una flor y una cereza no miden lo que un grano */
+const ESCALA = { flor: 1, "cereza-verde": .98, cereza: .98, abierta: 1.04, pergamino: .82, verde: .74, tostado: .74 };
+
+const ALT = {
+  flor:           ["Flor blanca del cafeto, cinco pétalos abiertos en estrella",
+                   "White coffee blossom, five petals open in a star"],
+  "cereza-verde": ["Fruto verde del café, todavía sin madurar",
+                   "Unripe green coffee cherry"],
+  cereza:         ["Cereza de café madura, roja y brillante",
+                   "Ripe coffee cherry, glossy red"],
+  abierta:        ["Cereza partida: las dos mitades dejan ver los granos con mucílago",
+                   "Cherry split open: the two halves reveal the beans in mucilage"],
+  pergamino:      ["Grano seco dentro de su cáscara de pergamino",
+                   "Dry bean inside its parchment husk"],
+  verde:          ["Grano de café verde ya trillado, con el surco central",
+                   "Milled green coffee bean, centre crease visible"],
+  tostado:        ["Grano de café tostado, café oscuro con brillo de aceite",
+                   "Roasted coffee bean, dark brown with an oily sheen"],
+  corte:          ["La cereza por dentro: cáscara, pulpa, mucílago, pergamino y los dos granos",
+                   "The cherry inside: skin, pulp, mucilage, parchment and the two beans"],
 };
 
-function fotoFase(k, en, primera) {
-  const f = FOTOS[k], base = `/img/fases/${k}`;
-  /* la primera entra con la página; las demás esperan a que la persona baje */
-  const carga = primera ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
-  /* en el archivo de un solo HTML las fotos viajan dentro, no hay de dónde pedirlas */
-  const dentro = typeof FASES_EMBEBIDAS !== "undefined" && FASES_EMBEBIDAS[k];
+function imgPieza(k, en, primera, clase) {
+  const base = `/img/grano/${k}`;
+  const dentro = typeof GRANO_EMBEBIDO !== "undefined" && GRANO_EMBEBIDO[k];
   const fuente = dentro
     ? `src="${dentro}"`
-    : `src="${base}.webp" srcset="${base}@0.5x.webp 600w, ${base}.webp 1200w" sizes="(min-width:900px) 340px, 44vw"`;
-  return `<img ${fuente} width="1200" height="1200"
-    alt="${esc(en ? f.alt_en : f.alt_es)}" ${carga} decoding="async">`;
+    : `src="${base}.webp" srcset="${base}@0.5x.webp 320w, ${base}.webp 640w" sizes="(min-width:900px) 14vw, 30vw"`;
+  return `<img${clase ? ` class="${clase}"` : ""} ${fuente} width="640" height="640" alt="${esc(ALT[k][en ? 1 : 0])}"
+    ${primera ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'} decoding="async">`;
 }
 
-/* La transformación contada con nuestros propios números */
 function fasesSeccion(en) {
-  const F = en
-    ? [["cereza", "Cherry", "Picked ripe, one by one. Five kilos of cherry become one kilo of parchment."],
-       ["abierta", "Pulping and fermentation", "36 hours of fermentation, then 18 days drying on the marquee."],
-       ["pergamino", "Dry parchment", "This is what we buy at the farm, and what the yield factor measures."],
-       ["verde", "Milled: green coffee", "Sixty kilos of parchment leave forty six of green coffee. The rest is husk."],
-       ["tostado", "Roast", "It loses 17 % of its weight in the roaster. What is left fills 153 bags."]]
-    : [["cereza", "Cereza", "Se recoge madura, una por una. Cinco kilos de cereza dan un kilo de pergamino."],
-       ["abierta", "Despulpado y fermentación", "36 horas de fermentación y 18 días de secado en marquesina."],
-       ["pergamino", "Pergamino seco", "Así lo compramos en la finca, y así se mide el factor de rendimiento."],
-       ["verde", "Trilla: café verde", "Sesenta kilos de pergamino dejan cuarenta y seis de café verde. Lo demás es cáscara."],
-       ["tostado", "Tueste", "Pierde 17 % de su peso en el tostador. Lo que queda llena 153 bolsas."]];
-  return `<section class="fases" aria-label="${en ? "From cherry to roasted bean" : "De la cereza al grano tostado"}">
-    <div class="fases-marco">
-    <div class="fases-cabeza">
-      <p class="eyebrow">${en ? "The journey" : "El recorrido"}</p>
-      <h2>${en ? "One cherry, <em>four changes</em>" : "Una cereza, <em>cuatro cambios</em>"}</h2>
-      <p>${en ? "Everything that happens between the branch and your cup, and what is lost on the way."
-              : "Todo lo que pasa entre la rama y tu taza, y lo que se pierde por el camino."}</p>
-    </div>
-    <div class="fases-escena">
-      ${F.map(([k, titulo, texto], i) => `<figure class="fase f${i + 1}">
-        <div class="fase-art">${fotoFase(k, en, i === 0)}</div>
-        <figcaption><span class="fase-n">${i + 1} / ${F.length}</span><b>${esc(titulo)}</b><span>${esc(texto)}</span></figcaption>
-      </figure>`).join("")}
-    </div>
+  const T = en
+    ? [["Flower", "Eight months before the cup, the tree blossoms white for three days."],
+       ["Green fruit", "The bean forms inside. Seven months still to go."],
+       ["Ripe cherry", "Picked by hand, one by one. Five kilos of cherry make one of parchment."],
+       ["Pulping", "36 hours of fermentation, then 18 days drying on the marquee."],
+       ["Dry parchment", "This is what we buy at the farm. This is where the yield factor is measured."],
+       ["Green coffee", "Sixty kilos of parchment leave forty six. The rest is husk."],
+       ["Roast", "It loses 17 % of its weight. What is left fills 153 bags."]]
+    : [["Flor", "Ocho meses antes de la taza, el cafeto florece blanco durante tres días."],
+       ["Fruto verde", "El grano se forma adentro. Todavía faltan siete meses."],
+       ["Cereza madura", "Se recoge a mano, una por una. Cinco kilos de cereza hacen uno de pergamino."],
+       ["Despulpado", "36 horas de fermentación y 18 días de secado en marquesina."],
+       ["Pergamino seco", "Así lo compramos en la finca. Aquí se mide el factor de rendimiento."],
+       ["Café verde", "Sesenta kilos de pergamino dejan cuarenta y seis. Lo demás es cáscara."],
+       ["Tueste", "Pierde 17 % de su peso. Lo que queda llena 153 bolsas."]];
+
+  /* solo la cereza se abre bajo el cursor: es la única que esconde algo */
+  const pista = en ? "Move the cursor over it: the bean is already inside."
+                   : "Pásale el cursor: el grano ya está adentro.";
+  const piezas = PIEZAS.map((k, i) => `<figure class="pieza p${i + 1}" style="--esc:${ESCALA[k]}">
+      <div class="pieza-art">${imgPieza(k, en, k === "tostado")}${k === "cereza" ? imgPieza("corte", en, false, "pieza-dentro") : ""}</div>
+      <figcaption><span class="pieza-n">${i + 1} / ${PIEZAS.length}</span><b>${esc(T[i][0])}</b><span>${esc(T[i][1])}${k === "cereza" ? ` <i class="pista">${esc(pista)}</i>` : ""}</span></figcaption>
+    </figure>`).join("");
+
+  return `<section class="grano" aria-label="${en ? "Backwards from the bean to the flower" : "Del grano tostado hasta la flor"}">
+    <div class="grano-marco">
+      <div class="grano-cabeza">
+        <p class="eyebrow">${en ? "The journey, backwards" : "El recorrido, al revés"}</p>
+        <h2>${en ? "It starts with <em>the bean</em>" : "Empieza por <em>el grano</em>"}</h2>
+        <p>${en ? "You begin with what you drink. Scroll, and the coffee takes back everything it had to lose."
+                : "Empiezas por lo que te tomas. Al bajar, el café recupera todo lo que tuvo que perder."}</p>
+      </div>
+      <div class="grano-linea">${piezas}</div>
     </div>
   </section>`;
 }
 
 /* ------------------------------------------------------------
-   Profundidad: el grano se inclina hacia donde está el cursor y la foto
-   se mueve un poco menos que su marco. Esa diferencia es la que hace que
-   el ojo lea volumen en lugar de una lámina.
-   Solo con mouse: en pantalla táctil no hay hacia dónde inclinarse.
+   Dos cosas en el navegador, ninguna imprescindible:
+   1. la luz del cursor, que deja ver la cereza por dentro;
+   2. la inclinación, que hace que las piezas se lean con volumen.
+   Ambas solo con mouse: en pantalla táctil no hay a dónde apuntar.
    ------------------------------------------------------------ */
 function montarFases() {
-  const escena = document.querySelector(".fases-escena");
-  if (!escena || escena.dataset.montada) return;
+  const linea = document.querySelector(".grano-linea");
+  if (!linea || linea.dataset.montada) return;
   if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-  escena.dataset.montada = "1";
+  linea.dataset.montada = "1";
 
-  const GIRO = 8, DESLIZ = 14;            // grados de inclinación y px de parallax
-  let pedido = null, rx = 0, ry = 0, px = 0, py = 0;
+  const GIRO = 7;                       // grados; más que esto y parece un juguete
+  let pedido = null, rx = 0, ry = 0, mx = 50, my = 50, radio = 0;
 
   function pintar() {
     pedido = null;
-    escena.querySelectorAll(".fase-art").forEach((a) => {
-      a.style.setProperty("--rx", rx.toFixed(2) + "deg");
-      a.style.setProperty("--ry", ry.toFixed(2) + "deg");
-      a.style.setProperty("--px", px.toFixed(1) + "px");
-      a.style.setProperty("--py", py.toFixed(1) + "px");
-    });
+    linea.style.setProperty("--rx", rx.toFixed(2) + "deg");
+    linea.style.setProperty("--ry", ry.toFixed(2) + "deg");
+    linea.style.setProperty("--mx", mx.toFixed(1) + "%");
+    linea.style.setProperty("--my", my.toFixed(1) + "%");
+    linea.style.setProperty("--mr", radio.toFixed(0) + "px");
   }
-  function mover(e) {
-    const r = escena.getBoundingClientRect();
+  function pedir() { if (!pedido) pedido = requestAnimationFrame(pintar); }
+
+  linea.addEventListener("pointermove", (e) => {
+    const r = linea.getBoundingClientRect();
     if (!r.width || !r.height) return;
-    const x = (e.clientX - r.left) / r.width - 0.5;
-    const y = (e.clientY - r.top) / r.height - 0.5;
-    rx = -y * GIRO; ry = x * GIRO; px = -x * DESLIZ; py = -y * DESLIZ;
-    escena.classList.add("sigue");
-    if (!pedido) pedido = requestAnimationFrame(pintar);
-  }
-  function soltar() {
-    rx = ry = px = py = 0;
-    escena.classList.remove("sigue");
-    if (!pedido) pedido = requestAnimationFrame(pintar);
-  }
-  escena.addEventListener("pointermove", mover);
-  escena.addEventListener("pointerleave", soltar);
+    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    rx = -(y - .5) * GIRO; ry = (x - .5) * GIRO;
+    /* la luz se mide sobre la cereza, que es la que se abre por dentro */
+    const c = linea.querySelector(".p3");
+    if (c) {
+      const rc = c.getBoundingClientRect();
+      mx = ((e.clientX - rc.left) / rc.width) * 100;
+      my = ((e.clientY - rc.top) / rc.height) * 100;
+      radio = Math.round(Math.min(140, Math.max(44, rc.width * .5)));
+    }
+    linea.classList.add("sigue");
+    pedir();
+  });
+  linea.addEventListener("pointerleave", () => {
+    rx = ry = 0; radio = 0;
+    linea.classList.remove("sigue");
+    pedir();
+  });
 }

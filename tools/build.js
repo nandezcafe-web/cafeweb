@@ -219,18 +219,18 @@ const llms = ev(c0, [
 escribir("llms.txt", llms);
 
 /* ---------- 4. la tienda en un solo archivo (para enviar por WhatsApp) ---------- */
-/* las fotos de las fases, en texto, para que el archivo funcione sin conexión */
-const FASES = ["cereza", "abierta", "pergamino", "verde", "tostado"];
-const fase64 = (k) => "data:image/webp;base64," +
-  fs.readFileSync(path.join(SRC, "img", "fases", `${k}@0.5x.webp`)).toString("base64");
-const FASES_DENTRO = `const FASES_EMBEBIDAS = ${JSON.stringify(Object.fromEntries(FASES.map((k) => [k, fase64(k)])))};`;
+/* las piezas del grano, en texto, para que el archivo funcione sin conexión */
+const PIEZAS = ["flor", "cereza-verde", "cereza", "abierta", "pergamino", "verde", "tostado", "corte"];
+const pieza64 = (k) => "data:image/webp;base64," +
+  fs.readFileSync(path.join(SRC, "img", "grano", `${k}@0.5x.webp`)).toString("base64");
+const GRANO_DENTRO = `const GRANO_EMBEBIDO = ${JSON.stringify(Object.fromEntries(PIEZAS.map((k) => [k, pieza64(k)])))};`;
 const ctxEs = mundo("es");
 const unSolo = pagina(ctxEs, { view: "inicio" }, "es")
   .replace(/<link rel="stylesheet" href="\/styles\.css\?v=\w+">\s*<link rel="stylesheet" href="\/auction\.css\?v=\w+">/, `<style>\n${css}\n</style>`)
-  .replace(new RegExp(MODS.map((f) => `<script src="/js/${f}.js\\?v=${VERSION}"></script>`).join("\\s*")), `<script>\n${FASES_DENTRO}\n${MODS.map(mod).join("\n")}\n</script>`)
+  .replace(new RegExp(MODS.map((f) => `<script src="/js/${f}.js\\?v=${VERSION}"></script>`).join("\\s*")), `<script>\n${GRANO_DENTRO}\n${MODS.map(mod).join("\n")}\n</script>`)
   /* el archivo suelto viaja sin servidor: las fotos de las fases van dentro */
   .replace(/\s*srcset="[^"]*"\s*sizes="[^"]*"/g, "")
-  .replace(/src="\/img\/fases\/([a-z]+)\.webp"/g, (_, k) => `src="${fase64(k)}"`);
+  .replace(/src="\/img\/grano\/([a-z-]+)\.webp"/g, (_, k) => `src="${pieza64(k)}"`);
 escribir("nandez.html", unSolo);
 
 /* ---------- 5. panel interno ---------- */
