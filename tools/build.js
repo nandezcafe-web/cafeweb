@@ -20,7 +20,7 @@ const MODS = ["core", "fases", "shop", "pages", "auction", "main"];
 /* huella de los archivos: obliga al navegador a bajar la versión nueva tras cada despliegue */
 const TODOS = ["core", "fases", "shop", "pages", "auction", "main", "quote", "inventory", "clients", "market", "admin"];
 /* huella de las imágenes: si una foto cambia, cambia su dirección y ningún navegador sirve la vieja */
-const IMG_DIRS = ["grano", "portada"].map((d) => path.join(SRC, "img", d));
+const IMG_DIRS = ["grano", "portada", "productos"].map((d) => path.join(SRC, "img", d));
 const IMG_V = require("crypto").createHash("md5")
   .update(Buffer.concat(IMG_DIRS.flatMap((d) => fs.readdirSync(d).sort().map((f) => fs.readFileSync(path.join(d, f))))))
   .digest("hex").slice(0, 8);
@@ -228,7 +228,8 @@ escribir("llms.txt", llms);
 /* las piezas del grano, en texto, para que el archivo funcione sin conexión */
 /* en el archivo suelto cada foto va dentro, en su tamaño chico */
 const EMBEBER = { "cereza": "grano/cereza@0.5x", "capa-corte": "grano/capa-corte@0.5x",
-                  "portada-ancho@0.5x": "portada/portada-ancho@0.5x", "portada-alto@0.5x": "portada/portada-alto@0.5x" };
+                  "portada-ancho@0.5x": "portada/portada-ancho@0.5x", "portada-alto@0.5x": "portada/portada-alto@0.5x",
+                  "p-gei@0.5x": "productos/p-gei@0.5x", "p-cas@0.5x": "productos/p-cas@0.5x" };
 const pieza64 = (k) => "data:image/webp;base64," +
   fs.readFileSync(path.join(SRC, "img", `${EMBEBER[k]}.webp`)).toString("base64");
 const GRANO_DENTRO = `const GRANO_EMBEBIDO = ${JSON.stringify(Object.fromEntries(Object.keys(EMBEBER).map((k) => [k, pieza64(k)])))};`;

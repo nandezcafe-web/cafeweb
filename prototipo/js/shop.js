@@ -12,11 +12,25 @@ const saleNotaDe = (p, v) => (v && v.saleNota) || p.saleNota;
 const envioDe = (subtotal) => (subtotal >= CONFIG.envio.gratisDesde ? 0 : CONFIG.envio.costo);
 
 /* ---------- tarjetas ---------- */
+/* ---------- la foto de cada café ----------
+   Convención: /img/productos/<id del café en minúsculas>.webp y su versión
+   @0.5x. Por ahora son pruebas hechas con el empaque en diseño; cuando lleguen
+   las fotos reales se reemplazan con el mismo nombre y nada más cambia.
+   Si un café todavía no tiene foto, se muestra el dibujo de su montaña. */
+const CON_FOTO = new Set(["P-GEI", "P-CAS"]);
+function fotoProducto(p, { sizes = "(min-width:900px) 360px, 70vw", clase = "prod-foto", prioridad = false } = {}) {
+  if (!CON_FOTO.has(p.id)) return ridge(p, { w: 420, h: 200 });
+  const base = `/img/productos/${p.id.toLowerCase()}`;
+  return `<img class="${clase}" src="${foto(base + ".webp")}" srcset="${foto(base + "@0.5x.webp")} 452w, ${foto(base + ".webp")} 904w"
+    sizes="${sizes}" width="904" height="827" alt="${esc(UI.lang === "en" ? `Bag of ${tx(p.nombre)}` : `Bolsa de ${tx(p.nombre)}`)}"
+    ${prioridad ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`;
+}
+
 function cafeCard(p, i = 0) {
   const f = fincaDe(p), v = principal(p);
   return `<article class="card-cafe reveal" style="--i:${i}">
-    <div class="cc-art" data-act="cafe" data-id="${p.id}" role="button" tabindex="0" aria-label="${esc(tx(p.nombre))}">
-      ${ridge(p, { w: 420, h: 200 })}
+    <div class="cc-art${CON_FOTO.has(p.id) ? " con-foto" : ""}" data-act="cafe" data-id="${p.id}" role="button" tabindex="0" aria-label="${esc(tx(p.nombre))}">
+      ${fotoProducto(p)}
       <span class="state st-publicado">${v.stock} ${t("disponibles")}</span>
       <div class="cc-score"><b>${esc(p.puntaje)}</b><small style="color:${LV[p.nivel].c}">SCA · ${lvl(p.nivel)}</small></div>
     </div>
@@ -193,11 +207,9 @@ function viewCafe() {
     </div>
 
     <div class="prod-art reveal" style="--i:1">
-      <div class="prod-card dark-art">
-        <p class="kicker">${esc(CONFIG.marca)} · ${esc(f.municipio || "")}</p>
-        <h2 class="prod-title">${esc(tr(p.variedad))}<br><em>${esc(tr(p.proceso))}</em></h2>
-        <p class="prod-score">${esc(p.puntaje)}<small>SCA</small></p>
-        <div class="hc-ridge">${ridge(p, { w: 460, h: 200, dark: true })}</div>
+      <div class="prod-escena">
+        ${fotoProducto(p, { sizes: "(min-width:900px) 560px, 90vw", prioridad: true })}
+        <p class="prod-sello"><b>${esc(p.puntaje)}</b><small>SCA</small></p>
       </div>
       <ul class="notas-chips">${tx(p.notas).map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
       <div class="foto-pend">${en ? "Photo of the farm and the producer" : "Foto de la finca y del productor"}</div>
@@ -285,7 +297,7 @@ function renderCarrito() {
     <ul class="cart-items">${UI.carrito.map((i) => {
       const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
       return `<li class="cart-item">
-        <div class="cart-art">${ridge(p, { w: 120, h: 90, label: false })}</div>
+        <div class="cart-art">${CON_FOTO.has(p.id) ? fotoProducto(p, { sizes: "72px", clase: "" }) : ridge(p, { w: 120, h: 90, label: false })}</div>
         <div class="cart-txt"><b>${esc(tx(p.nombre))}</b><small>${gramos(i.g)} · ${esc(tx(saleDe(p, v))).toLowerCase()}</small>
           <div class="cart-qty">
             <button class="btn sm" data-act="qty" data-p="${i.id}" data-g="${i.g}" data-d="-1" aria-label="${en ? "Remove one" : "Quitar uno"}">−</button>

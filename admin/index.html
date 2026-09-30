@@ -1174,6 +1174,36 @@ dialog{background:rgba(239,229,215,.84);backdrop-filter:var(--v-lente-2);-webkit
 @media (min-width:1000px){.por-dentro .cereza-capas{grid-template-columns:1fr 1fr;column-gap:30px}}
 @media (max-width:860px){.por-dentro{grid-template-columns:1fr}.por-dentro .cereza{order:2}}
 
+/* ============================================================
+   LA BOLSA DE CADA CAFÉ.
+   Se para sobre una luz cálida y una sombra suelta, como en la portada.
+   ============================================================ */
+.cc-art.con-foto{height:300px;display:grid;place-items:end center;padding-top:26px;
+  background:radial-gradient(70% 60% at 50% 72%,rgba(255,255,255,.5),transparent 70%),
+             linear-gradient(180deg,rgba(221,203,178,.55),rgba(230,215,195,.2))}
+.cc-art.con-foto::after{content:"";position:absolute;left:30%;right:30%;bottom:16px;height:18px;border-radius:50%;
+  background:rgba(74,46,27,.28);filter:blur(10px);z-index:0}
+.prod-foto{position:relative;z-index:1;display:block;height:88%;width:auto;max-width:100%;object-fit:contain;
+  transition:transform .45s var(--ease-out)}
+.cc-art.con-foto .prod-foto{height:260px;margin-bottom:6px}
+@media (hover:hover) and (pointer:fine){.card-cafe:hover .cc-art.con-foto .prod-foto{transform:translateY(-6px) scale(1.02)}}
+.cc-art.con-foto .cc-score,.cc-art.con-foto .state{z-index:2}
+
+.prod-escena{position:relative;display:grid;place-items:end center;min-height:clamp(380px,46vw,560px);
+  padding:40px 24px 30px;border-radius:26px;overflow:hidden;border:1px solid var(--v-canto);
+  background:radial-gradient(60% 55% at 50% 70%,rgba(255,255,255,.6),transparent 72%),
+             linear-gradient(180deg,rgba(221,203,178,.6),rgba(239,229,215,.4));
+  box-shadow:var(--v-brillo),var(--v-sombra)}
+.prod-escena::after{content:"";position:absolute;left:28%;right:28%;bottom:28px;height:24px;border-radius:50%;
+  background:rgba(74,46,27,.3);filter:blur(12px)}
+.prod-escena .prod-foto{height:min(470px,40vw);min-height:320px}
+.prod-sello{position:absolute;left:22px;top:18px;margin:0;z-index:2;display:flex;align-items:baseline;gap:6px}
+.prod-sello b{font:400 clamp(2.6rem,4vw,3.4rem)/1 var(--serif);color:var(--ink)}
+.prod-sello small{font:600 11px var(--mono);letter-spacing:.1em;color:var(--ink-2)}
+.prod-escena + .notas-chips{margin-top:14px}
+
+.cart-art img{position:absolute;inset:4px;width:calc(100% - 8px);height:calc(100% - 8px);object-fit:contain}
+
 /* sala de subasta */
 .auction{color:#E6D7C3}
 .auction .kicker{color:#c9b497}
