@@ -1326,3 +1326,40 @@ body[data-view=subasta] .tab-luz{background:var(--crema)}
   .remate-foto{object-position:88% 30%}
   .remate::before{background:linear-gradient(180deg,rgba(16,24,18,.55),rgba(16,24,18,.9))}
 }
+
+/* ============================================================
+   PREGUNTAS: una lista editorial, no una pila de cajas.
+   Una línea fina separa cada pregunta; el botón redondo pasa de + a −;
+   la respuesta tiene un ancho que se lee sin perder la línea.
+   ============================================================ */
+.faq-lista{gap:0;border-bottom:1px solid var(--line)}
+.faq-lista .faq{padding:0;border:0;border-top:1px solid var(--line);border-radius:0;background:none;box-shadow:none;
+  backdrop-filter:none;-webkit-backdrop-filter:none}
+.faq-lista .faq summary{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px 4px;cursor:pointer}
+.faq-lista .faq h3{font-size:clamp(1.12rem,1.7vw,1.36rem);line-height:1.3;transition:color .2s var(--ease-out)}
+.faq-lista .faq summary::after{content:"";flex:0 0 38px;height:38px;border-radius:50%;color:var(--ink);
+  border:1px solid var(--v-canto);box-shadow:var(--v-brillo),0 6px 14px -10px rgba(74,46,27,.5);
+  background:linear-gradient(currentColor,currentColor) center/13px 1.5px no-repeat,
+             linear-gradient(currentColor,currentColor) center/1.5px 13px no-repeat,var(--v-fondo-2);
+  transition:transform .4s var(--ease-out),background-size .3s var(--ease-out),background-color .25s var(--ease-out),color .25s}
+.faq-lista .faq[open] summary::after{transform:rotate(180deg);color:var(--paper);background-color:var(--ink);
+  background-size:13px 1.5px,1.5px 0,auto}
+.faq-lista .faq[open] h3{color:var(--ink)}
+.faq-lista .faq p{margin:0;padding:0 70px 28px 4px;max-width:64ch;color:var(--ink-2);font-size:15.5px;line-height:1.7}
+.faq-lista .faq[open] p{animation:respuesta .45s var(--ease-out)}
+@keyframes respuesta{from{opacity:0;transform:translateY(-6px)}}
+@media (hover:hover) and (pointer:fine){
+  .faq-lista .faq summary:hover h3{color:var(--cherry)}
+  .faq-lista .faq:not([open]) summary:hover::after{background-color:rgba(255,255,255,.75)}
+}
+.faq-lista .faq summary:focus-visible{outline:2px solid var(--cherry);outline-offset:4px;border-radius:10px}
+.faq-ayuda{margin:22px 0 0;color:var(--ink-2);font-size:15px}
+.faq-ayuda a{color:var(--ink);font-weight:600;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--line)}
+.faq-ayuda a:hover{text-decoration-color:var(--ink)}
+@media (max-width:760px){
+  .faq-lista{margin-top:26px}
+  .faq-lista .faq summary{padding:20px 0;gap:16px}
+  .faq-lista .faq p{padding:0 0 22px}
+  .faq-lista .faq summary::after{flex-basis:34px;height:34px}
+}
+@media (prefers-reduced-motion:reduce){.faq-lista .faq summary::after{transition:none}.faq-lista .faq[open] p{animation:none}}

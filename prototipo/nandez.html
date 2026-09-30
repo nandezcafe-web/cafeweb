@@ -1351,6 +1351,43 @@ body[data-view=subasta] .tab-luz{background:var(--crema)}
   .remate::before{background:linear-gradient(180deg,rgba(16,24,18,.55),rgba(16,24,18,.9))}
 }
 
+/* ============================================================
+   PREGUNTAS: una lista editorial, no una pila de cajas.
+   Una línea fina separa cada pregunta; el botón redondo pasa de + a −;
+   la respuesta tiene un ancho que se lee sin perder la línea.
+   ============================================================ */
+.faq-lista{gap:0;border-bottom:1px solid var(--line)}
+.faq-lista .faq{padding:0;border:0;border-top:1px solid var(--line);border-radius:0;background:none;box-shadow:none;
+  backdrop-filter:none;-webkit-backdrop-filter:none}
+.faq-lista .faq summary{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px 4px;cursor:pointer}
+.faq-lista .faq h3{font-size:clamp(1.12rem,1.7vw,1.36rem);line-height:1.3;transition:color .2s var(--ease-out)}
+.faq-lista .faq summary::after{content:"";flex:0 0 38px;height:38px;border-radius:50%;color:var(--ink);
+  border:1px solid var(--v-canto);box-shadow:var(--v-brillo),0 6px 14px -10px rgba(74,46,27,.5);
+  background:linear-gradient(currentColor,currentColor) center/13px 1.5px no-repeat,
+             linear-gradient(currentColor,currentColor) center/1.5px 13px no-repeat,var(--v-fondo-2);
+  transition:transform .4s var(--ease-out),background-size .3s var(--ease-out),background-color .25s var(--ease-out),color .25s}
+.faq-lista .faq[open] summary::after{transform:rotate(180deg);color:var(--paper);background-color:var(--ink);
+  background-size:13px 1.5px,1.5px 0,auto}
+.faq-lista .faq[open] h3{color:var(--ink)}
+.faq-lista .faq p{margin:0;padding:0 70px 28px 4px;max-width:64ch;color:var(--ink-2);font-size:15.5px;line-height:1.7}
+.faq-lista .faq[open] p{animation:respuesta .45s var(--ease-out)}
+@keyframes respuesta{from{opacity:0;transform:translateY(-6px)}}
+@media (hover:hover) and (pointer:fine){
+  .faq-lista .faq summary:hover h3{color:var(--cherry)}
+  .faq-lista .faq:not([open]) summary:hover::after{background-color:rgba(255,255,255,.75)}
+}
+.faq-lista .faq summary:focus-visible{outline:2px solid var(--cherry);outline-offset:4px;border-radius:10px}
+.faq-ayuda{margin:22px 0 0;color:var(--ink-2);font-size:15px}
+.faq-ayuda a{color:var(--ink);font-weight:600;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--line)}
+.faq-ayuda a:hover{text-decoration-color:var(--ink)}
+@media (max-width:760px){
+  .faq-lista{margin-top:26px}
+  .faq-lista .faq summary{padding:20px 0;gap:16px}
+  .faq-lista .faq p{padding:0 0 22px}
+  .faq-lista .faq summary::after{flex-basis:34px;height:34px}
+}
+@media (prefers-reduced-motion:reduce){.faq-lista .faq summary::after{transition:none}.faq-lista .faq[open] p{animation:none}}
+
 /* sala de subasta */
 .auction{color:#E6D7C3}
 .auction .kicker{color:#c9b497}
@@ -1687,7 +1724,8 @@ details.rule p{color:#d3c0a5;margin:8px 0 0;font-size:14px}
 
   <section class="section faqs">
     <div class="section-head"><p class="eyebrow">Preguntas</p>
-      <h2>Lo que <em>nos preguntan</em></h2></div>
+      <h2>Lo que <em>nos preguntan</em></h2>
+      <p class="faq-ayuda">¿No está tu pregunta? <a href="/contacto" data-act="go" data-to="contacto">Escríbenos</a></p></div>
     <div class="faq-lista"><details class="faq" open><summary><h3>¿Qué es el café de origen y en qué se diferencia del café común?</h3></summary><p>El café de origen viene de una sola finca y una sola cosecha, no de la mezcla de muchos productores. Por eso se puede saber quién lo cultivó, a qué altura y con qué proceso, y por eso una taza sabe distinta de otra.</p></details><details class="faq" ><summary><h3>¿Cuánto cuesta un café especial colombiano?</h3></summary><p>En 2026 una bolsa de 250 g de café especial en Colombia va entre $35.000 y $70.000, según la variedad y el puntaje de catación. Un Geisha o un lote de subasta cuesta más porque se produce en cantidades muy pequeñas.</p></details><details class="faq" ><summary><h3>¿Qué significa el puntaje SCA de un café?</h3></summary><p>Es la calificación de un catador certificado sobre 100 puntos. Desde 80 se considera café especial y desde 86 es excepcional. Publicamos quién hizo la catación y en qué fecha, porque el puntaje envejece junto con el café.</p></details><details class="faq" ><summary><h3>¿Por qué se cultiva buen café en Norte de Santander?</h3></summary><p>Las fincas de Chinácota, Toledo y Arboledas están entre 1.500 y 1.950 metros, con noches frías que maduran el grano despacio. Es una región menos conocida que Huila o Nariño, y por eso todavía se consiguen microlotes excepcionales a precios sensatos.</p></details><details class="faq" ><summary><h3>¿Cómo funciona una subasta de café?</h3></summary><p>Se publica un lote pequeño con su puntaje y su ficha, se abre con un precio de salida y los compradores pujan en dólares por kilo de café verde. Se adjudica solo si se alcanza el precio de reserva y participan al menos tres compradores distintos.</p></details><details class="faq" ><summary><h3>¿Le compran directo al productor?</h3></summary><p>Sí. Vamos a la finca y medimos el factor de rendimiento y la humedad delante del productor. No hay intermediarios entre la finca y la bolsa.</p></details></div>
   </section>
 
@@ -3339,7 +3377,8 @@ function viewInicio() {
 
   <section class="section faqs">
     <div class="section-head"><p class="eyebrow">${en ? "Questions" : "Preguntas"}</p>
-      <h2>${en ? "What people <em>ask us</em>" : "Lo que <em>nos preguntan</em>"}</h2></div>
+      <h2>${en ? "What people <em>ask us</em>" : "Lo que <em>nos preguntan</em>"}</h2>
+      <p class="faq-ayuda">${en ? "Is your question not here?" : "¿No está tu pregunta?"} <a href="${ruta("contacto")}" data-act="go" data-to="contacto">${en ? "Write to us" : "Escríbenos"}</a></p></div>
     <div class="faq-lista">${FAQ.map((f, i) => `<details class="faq" ${i === 0 ? "open" : ""}><summary><h3>${esc(tx(f.q))}</h3></summary><p>${esc(tx(f.a))}</p></details>`).join("")}</div>
   </section>
 

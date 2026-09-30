@@ -44,7 +44,8 @@ function viewInicio() {
 
   <section class="section faqs">
     <div class="section-head"><p class="eyebrow">${en ? "Questions" : "Preguntas"}</p>
-      <h2>${en ? "What people <em>ask us</em>" : "Lo que <em>nos preguntan</em>"}</h2></div>
+      <h2>${en ? "What people <em>ask us</em>" : "Lo que <em>nos preguntan</em>"}</h2>
+      <p class="faq-ayuda">${en ? "Is your question not here?" : "¿No está tu pregunta?"} <a href="${ruta("contacto")}" data-act="go" data-to="contacto">${en ? "Write to us" : "Escríbenos"}</a></p></div>
     <div class="faq-lista">${FAQ.map((f, i) => `<details class="faq" ${i === 0 ? "open" : ""}><summary><h3>${esc(tx(f.q))}</h3></summary><p>${esc(tx(f.a))}</p></details>`).join("")}</div>
   </section>
 
