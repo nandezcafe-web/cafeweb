@@ -20,9 +20,9 @@
 <meta name="color-scheme" content="light">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=558a0da3">
-<link rel="stylesheet" href="/auction.css?v=558a0da3">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css?v=0b99426a">
+<link rel="stylesheet" href="/auction.css?v=0b99426a">
 <script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Café","url":"https://cafeweb-five.vercel.app","email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"Familia cafetera de Chinácota. Le compramos los mejores lotes a fincas de Norte de Santander y los tostamos con nuestra marca: un café por finca, con su altura, su variedad, su proceso y su puntaje de catación."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Café","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"es"},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es el café de origen y en qué se diferencia del café común?","acceptedAnswer":{"@type":"Answer","text":"El café de origen viene de una sola finca y una sola cosecha, no de la mezcla de muchos productores. Por eso se puede saber quién lo cultivó, a qué altura y con qué proceso, y por eso una taza sabe distinta de otra."}},{"@type":"Question","name":"¿Cuánto cuesta un café especial colombiano?","acceptedAnswer":{"@type":"Answer","text":"En 2026 una bolsa de 250 g de café especial en Colombia va entre $35.000 y $70.000, según la variedad y el puntaje de catación. Un Geisha o un lote de subasta cuesta más porque se produce en cantidades muy pequeñas."}},{"@type":"Question","name":"¿Qué significa el puntaje SCA de un café?","acceptedAnswer":{"@type":"Answer","text":"Es la calificación de un catador certificado sobre 100 puntos. Desde 80 se considera café especial y desde 86 es excepcional. Publicamos quién hizo la catación y en qué fecha, porque el puntaje envejece junto con el café."}},{"@type":"Question","name":"¿Por qué se cultiva buen café en Norte de Santander?","acceptedAnswer":{"@type":"Answer","text":"Las fincas de Chinácota, Toledo y Arboledas están entre 1.500 y 1.950 metros, con noches frías que maduran el grano despacio. Es una región menos conocida que Huila o Nariño, y por eso todavía se consiguen microlotes excepcionales a precios sensatos."}},{"@type":"Question","name":"¿Cómo funciona una subasta de café?","acceptedAnswer":{"@type":"Answer","text":"Se publica un lote pequeño con su puntaje y su ficha, se abre con un precio de salida y los compradores pujan en dólares por kilo de café verde. Se adjudica solo si se alcanza el precio de reserva y participan al menos tres compradores distintos."}},{"@type":"Question","name":"¿Le compran directo al productor?","acceptedAnswer":{"@type":"Answer","text":"Sí. Vamos a la finca y medimos el factor de rendimiento y la humedad delante del productor. No hay intermediarios entre la finca y la bolsa."}}]}]}</script>
 </head>
 <body data-view="inicio">
@@ -54,33 +54,24 @@
 </header>
 
 <main class="wrap" id="view">
-  <section class="hero">
-    <div>
-      <p class="eyebrow reveal">Nandez Café · Norte de Santander, Colombia</p>
-      <h1><span class="pal" style="--w:0">Café</span> <span class="pal" style="--w:1">con</span><br><em><span class="pal" style="--w:2">nombre</span> <span class="pal" style="--w:3">propio.</span></em></h1>
-      <p class="lede reveal" style="--i:2">Somos una familia cafetera de Chinácota. Escogemos, finca por finca, los mejores lotes de Norte de Santander y los tostamos con nuestra marca: cada bolsa dice quién lo cultivó, a qué altura creció y a qué sabe.</p>
-      <div class="cta reveal" style="--i:3">
-        <button class="btn primary lg" data-act="go" data-to="cafes">Ver los cafés</button>
-        <button class="btn lg" data-act="cafe" data-id="P-GEI">Bourbon rosado · $68.000</button>
+  <section class="portada" aria-labelledby="portada-titulo">
+    <picture class="portada-foto">
+      <source media="(max-width:760px)" srcset="/img/portada/portada-alto@0.5x.webp?v=52a02f43 500w, /img/portada/portada-alto.webp?v=52a02f43 1000w" sizes="100vw">
+      <img src="/img/portada/portada-ancho.webp?v=52a02f43" srcset="/img/portada/portada-ancho@0.5x.webp?v=52a02f43 1200w, /img/portada/portada-ancho.webp?v=52a02f43 2400w"
+        sizes="(min-width:1240px) 1200px, 100vw" width="2400" height="1340" fetchpriority="high" decoding="async"
+        alt="Bolsa de Nandez Café sobre una piedra con musgo en un cafetal de Norte de Santander, con hojas de café y una cereza madura al pie">
+    </picture>
+    <div class="portada-texto">
+      <p class="portada-sobre reveal">Café de origen de Norte de Santander</p>
+      <h1 id="portada-titulo"><span class="pal" style="--w:0">Café</span> <span class="pal" style="--w:1">con</span><br><em><span class="pal" style="--w:2">nombre</span> <span class="pal" style="--w:3">propio.</span></em></h1>
+      <p class="portada-lede reveal" style="--i:3">Escogemos, finca por finca, los mejores lotes de Norte de Santander y los tostamos con nuestra marca. Cada bolsa dice quién lo cultivó.</p>
+      <div class="portada-cta reveal" style="--i:4">
+        <button class="btn claro lg" data-act="go" data-to="cafes">Ver los cafés<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
+        <a class="portada-link" href="/cafes#cafeterias" data-act="go" data-to="cafes">Precios para cafeterías</a>
       </div>
-      <p class="hint hero-b2b reveal" style="--i:4">¿Cafetería o tostador? <a href="/cafes#cafeterias" data-act="go" data-to="cafes">Precios por kilo</a> · <a href="/subasta" data-act="go" data-to="subasta"><span class="live-dot "></span> Subasta de café verde</a></p>
+      <ul class="portada-sellos reveal" style="--i:5"><li><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20 9.5 8l4 7 2.5-4L21 20Z"/><path d="m8 11.2 1.5 1.3 1.6-1.4"/></svg><span>1.500 a 1.950<br>metros de altura</span></li><li><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 6-14 14-14 0 8-6 14-14 14Z"/><path d="M5 19 13 11"/></svg><span>Una finca<br>por bolsa</span></li><li><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l4 4v14H7Z"/><path d="M14 3v4h4"/><path d="m9.5 14 2 2 3.5-4"/></svg><span>Ficha<br>verificada</span></li></ul>
     </div>
-    <div class="hero-art reveal" style="--i:2"><figure class="cereza" data-cereza>
-    <div class="cereza-lente">
-      <span class="cereza-halo" aria-hidden="true"></span>
-      <span class="cereza-vidrio" aria-hidden="true"></span>
-      <img class="cereza-piel" src="/img/grano/cereza.webp?v=ea6cc84e" srcset="/img/grano/cereza@0.5x.webp?v=ea6cc84e 320w, /img/grano/cereza.webp?v=ea6cc84e 640w" sizes="(min-width:900px) 34vw, 62vw" width="640" height="640" alt="Cereza de café madura, roja y brillante"
-    fetchpriority="high" decoding="async">
-      <img class="cereza-corte" src="/img/grano/capa-corte.webp?v=ea6cc84e" srcset="/img/grano/capa-corte@0.5x.webp?v=ea6cc84e 320w, /img/grano/capa-corte.webp?v=ea6cc84e 640w" sizes="(min-width:900px) 34vw, 62vw" width="640" height="640" alt="Corte de la cereza: piel, pulpa, pergamino y los dos granos verdes"
-    aria-hidden="true" decoding="async">
-    </div>
-    <figcaption>
-      <p class="cereza-pista"><span class="con-mouse">Pasa el cursor por la cereza.</span><span
-        class="con-dedo">Arrastra el dedo sobre la cereza.</span></p>
-      <button class="cereza-btn" type="button" aria-expanded="false" aria-controls="capas-cereza">Ver las seis capas</button>
-      <ol class="cereza-capas" id="capas-cereza" hidden><li><b>Piel</b><i>exocarpio</i><span>Protege el fruto del sol, la lluvia y los insectos.</span></li><li><b>Pulpa</b><i>mesocarpio</i><span>Carnosa y dulce. Es lo que sale al despulpar.</span></li><li><b>Mucílago</b><span>La capa gelatinosa pegada al pergamino. Es la que fermenta.</span></li><li><b>Pergamino</b><i>endocarpio</i><span>Cáscara de papel que envuelve la semilla. Se quita en la trilla.</span></li><li><b>Película plateada</b><i>tegumento</i><span>Membrana fina, pegada al grano hasta el tueste.</span></li><li><b>Grano verde</b><i>semilla</i><span>Dos por fruto. Uno solo cuando sale caracolillo.</span></li></ol>
-    </figcaption>
-  </figure></div>
+    <p class="portada-firma" aria-hidden="true">Cosechado por vecinos</p>
   </section>
 
   <section class="section">
@@ -142,6 +133,30 @@
     <div class="section-head"><p class="eyebrow">Cómo trabajamos</p>
       <h2>Así llega el café <em>a tu mesa</em></h2></div>
     <div class="valor"><div class="val" style="--i:0"><b>Cada café tiene quién lo sembró</b><span>No es “café colombiano” sin más: es el café de una finca y de una cosecha, y te decimos quién lo sembró.</span></div><div class="val" style="--i:1"><b>Te contamos lo que sabemos</b><span>La altura, la variedad, el proceso y el puntaje dicen quién los revisó y cuándo. Lo que no hemos podido comprobar, también te lo decimos.</span></div><div class="val" style="--i:2"><b>Lo mejor se guarda aparte</b><span>Cada finca vecina tiene su variedad. Cuando un lote sale especial de verdad, no va a la bolsa: va a la subasta.</span></div></div>
+  </section>
+
+  <section class="section por-dentro">
+    <figure class="cereza" data-cereza>
+      <div class="cereza-lente">
+        <span class="cereza-halo" aria-hidden="true"></span>
+        <span class="cereza-vidrio" aria-hidden="true"></span>
+        <img class="cereza-piel" src="/img/grano/cereza.webp?v=52a02f43" srcset="/img/grano/cereza@0.5x.webp?v=52a02f43 320w, /img/grano/cereza.webp?v=52a02f43 640w" sizes="(min-width:900px) 34vw, 62vw" width="640" height="640" alt="Cereza de café madura, roja y brillante"
+    loading="lazy" decoding="async">
+        <img class="cereza-corte" src="/img/grano/capa-corte.webp?v=52a02f43" srcset="/img/grano/capa-corte@0.5x.webp?v=52a02f43 320w, /img/grano/capa-corte.webp?v=52a02f43 640w" sizes="(min-width:900px) 34vw, 62vw" width="640" height="640" alt="Corte de la cereza: piel, pulpa, pergamino y los dos granos verdes"
+    aria-hidden="true" loading="lazy" decoding="async">
+      </div>
+      <figcaption>
+        <p class="cereza-pista"><span class="con-mouse">Pasa el cursor por la cereza.</span><span
+          class="con-dedo">Arrastra el dedo sobre la cereza.</span></p>
+        <button class="cereza-btn" type="button" aria-pressed="false">Abrirla entera</button>
+      </figcaption>
+    </figure>
+    <div class="por-dentro-texto">
+      <div class="section-head"><p class="eyebrow">Por dentro</p>
+        <h2>Una cereza, <em>seis capas</em></h2>
+        <p>De afuera hacia adentro, todo lo que hay que quitarle antes de que el grano llegue al tostador.</p></div>
+      <ol class="cereza-capas"><li><b>Piel</b><i>exocarpio</i><span>Protege el fruto del sol, la lluvia y los insectos.</span></li><li><b>Pulpa</b><i>mesocarpio</i><span>Carnosa y dulce. Es lo que sale al despulpar.</span></li><li><b>Mucílago</b><span>La capa gelatinosa pegada al pergamino. Es la que fermenta.</span></li><li><b>Pergamino</b><i>endocarpio</i><span>Cáscara de papel que envuelve la semilla. Se quita en la trilla.</span></li><li><b>Película plateada</b><i>tegumento</i><span>Membrana fina, pegada al grano hasta el tueste.</span></li><li><b>Grano verde</b><i>semilla</i><span>Dos por fruto. Uno solo cuando sale caracolillo.</span></li></ol>
+    </div>
   </section>
 
   <section class="section">
@@ -244,12 +259,12 @@
   <div class="dlg-body" id="dlg-body"></div>
 </dialog>
 
-<script>window.IMG_V = "ea6cc84e";</script>
-<script src="/js/core.js?v=558a0da3"></script>
-<script src="/js/fases.js?v=558a0da3"></script>
-<script src="/js/shop.js?v=558a0da3"></script>
-<script src="/js/pages.js?v=558a0da3"></script>
-<script src="/js/auction.js?v=558a0da3"></script>
-<script src="/js/main.js?v=558a0da3"></script>
+<script>window.IMG_V = "52a02f43";</script>
+<script src="/js/core.js?v=0b99426a"></script>
+<script src="/js/fases.js?v=0b99426a"></script>
+<script src="/js/shop.js?v=0b99426a"></script>
+<script src="/js/pages.js?v=0b99426a"></script>
+<script src="/js/auction.js?v=0b99426a"></script>
+<script src="/js/main.js?v=0b99426a"></script>
 </body>
 </html>

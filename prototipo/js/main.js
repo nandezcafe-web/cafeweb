@@ -6,8 +6,7 @@
 const pal = (txt, desde = 0) => txt.split(" ").map((p, i) => `<span class="pal" style="--w:${desde + i}">${p}</span>`).join(" ");
 
 function viewInicio() {
-  const en = UI.lang === "en", a = UI.au;
-  const p = S.productos.find((x) => x.destacado) || S.productos[0];
+  const en = UI.lang === "en";
   const valor = en
     ? [["Every coffee has a grower", "Not just “Colombian coffee”: the coffee of one farm and one harvest, and we tell you who planted it."],
        ["We tell you what we know", "Altitude, variety, process and score say who checked them and when. What we could not check, we tell you too."],
@@ -16,21 +15,7 @@ function viewInicio() {
        ["Te contamos lo que sabemos", "La altura, la variedad, el proceso y el puntaje dicen quién los revisó y cuándo. Lo que no hemos podido comprobar, también te lo decimos."],
        ["Lo mejor se guarda aparte", "Cada finca vecina tiene su variedad. Cuando un lote sale especial de verdad, no va a la bolsa: va a la subasta."]];
   return `
-  <section class="hero">
-    <div>
-      <p class="eyebrow reveal">${esc(CONFIG.marca)} · ${esc(tx(CONFIG.lugar))}</p>
-      <h1>${pal(en ? "Coffee with" : "Café con")}<br><em>${pal(en ? "a first name." : "nombre propio.", 2)}</em></h1>
-      <p class="lede reveal" style="--i:2">${en
-        ? "We are a coffee-growing family from Chinácota. Farm by farm, we choose the best lots in Norte de Santander and roast them under our name: every bag says who grew it, how high it grew and how it tastes."
-        : "Somos una familia cafetera de Chinácota. Escogemos, finca por finca, los mejores lotes de Norte de Santander y los tostamos con nuestra marca: cada bolsa dice quién lo cultivó, a qué altura creció y a qué sabe."}</p>
-      <div class="cta reveal" style="--i:3">
-        <button class="btn primary lg" data-act="go" data-to="cafes">${en ? "See the coffees" : "Ver los cafés"}</button>
-        <button class="btn lg" data-act="cafe" data-id="${p.id}">${esc(tx(p.nombre))} · ${cop(principal(p).precio)}</button>
-      </div>
-      <p class="hint hero-b2b reveal" style="--i:4">${en ? "Café or roaster?" : "¿Cafetería o tostador?"} <a href="${ruta("cafes")}#cafeterias" data-act="go" data-to="cafes">${en ? "Prices by the kilo" : "Precios por kilo"}</a> · <a href="${ruta("subasta")}" data-act="go" data-to="subasta"><span class="live-dot ${a.ended ? "off" : ""}"></span> ${en ? "Green coffee auction" : "Subasta de café verde"}</a></p>
-    </div>
-    <div class="hero-art reveal" style="--i:2">${heroCereza(en)}</div>
-  </section>
+  ${portada(en)}
 
   <section class="section">
     <div class="section-head"><p class="eyebrow">${en ? "This harvest" : "Esta cosecha"}</p>
@@ -45,6 +30,8 @@ function viewInicio() {
       <h2>${en ? "How the coffee reaches <em>your table</em>" : "Así llega el café <em>a tu mesa</em>"}</h2></div>
     <div class="valor">${valor.map(([tt, d], i) => `<div class="val" style="--i:${i}"><b>${tt}</b><span>${d}</span></div>`).join("")}</div>
   </section>
+
+  ${seccionCereza(en)}
 
   <section class="section">
     <div class="section-head"><p class="eyebrow">${en ? "The neighbours" : "Los vecinos"}</p>

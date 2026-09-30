@@ -20,14 +20,14 @@ const MODS = ["core", "fases", "shop", "pages", "auction", "main"];
 /* huella de los archivos: obliga al navegador a bajar la versión nueva tras cada despliegue */
 const TODOS = ["core", "fases", "shop", "pages", "auction", "main", "quote", "inventory", "clients", "market", "admin"];
 /* huella de las imágenes: si una foto cambia, cambia su dirección y ningún navegador sirve la vieja */
-const IMG_DIR = path.join(SRC, "img", "grano");
+const IMG_DIRS = ["grano", "portada"].map((d) => path.join(SRC, "img", d));
 const IMG_V = require("crypto").createHash("md5")
-  .update(Buffer.concat(fs.readdirSync(IMG_DIR).sort().map((f) => fs.readFileSync(path.join(IMG_DIR, f)))))
+  .update(Buffer.concat(IMG_DIRS.flatMap((d) => fs.readdirSync(d).sort().map((f) => fs.readFileSync(path.join(d, f))))))
   .digest("hex").slice(0, 8);
 const VERSION = require("crypto").createHash("md5").update(css + TODOS.map((f) => read("js/" + f + ".js")).join("") + IMG_V).digest("hex").slice(0, 8);
 const FUENTES = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">`;
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">`;
 
 /* ---------- 1. un “navegador” mínimo para ejecutar las vistas en Node ---------- */
 function mundo(lang) {
@@ -226,17 +226,20 @@ escribir("llms.txt", llms);
 
 /* ---------- 4. la tienda en un solo archivo (para enviar por WhatsApp) ---------- */
 /* las piezas del grano, en texto, para que el archivo funcione sin conexión */
-const PIEZAS = ["cereza", "capa-corte"];
+/* en el archivo suelto cada foto va dentro, en su tamaño chico */
+const EMBEBER = { "cereza": "grano/cereza@0.5x", "capa-corte": "grano/capa-corte@0.5x",
+                  "portada-ancho@0.5x": "portada/portada-ancho@0.5x", "portada-alto@0.5x": "portada/portada-alto@0.5x" };
 const pieza64 = (k) => "data:image/webp;base64," +
-  fs.readFileSync(path.join(SRC, "img", "grano", `${k}@0.5x.webp`)).toString("base64");
-const GRANO_DENTRO = `const GRANO_EMBEBIDO = ${JSON.stringify(Object.fromEntries(PIEZAS.map((k) => [k, pieza64(k)])))};`;
+  fs.readFileSync(path.join(SRC, "img", `${EMBEBER[k]}.webp`)).toString("base64");
+const GRANO_DENTRO = `const GRANO_EMBEBIDO = ${JSON.stringify(Object.fromEntries(Object.keys(EMBEBER).map((k) => [k, pieza64(k)])))};`;
 const ctxEs = mundo("es");
+vm.runInContext(GRANO_DENTRO, ctxEs);
 const unSolo = pagina(ctxEs, { view: "inicio" }, "es")
   .replace(/<link rel="stylesheet" href="\/styles\.css\?v=\w+">\s*<link rel="stylesheet" href="\/auction\.css\?v=\w+">/, `<style>\n${css}\n</style>`)
   .replace(new RegExp(MODS.map((f) => `<script src="/js/${f}.js\\?v=${VERSION}"></script>`).join("\\s*")), `<script>\n${GRANO_DENTRO}\n${MODS.map(mod).join("\n")}\n</script>`)
-  /* el archivo suelto viaja sin servidor: las fotos de las fases van dentro */
+  /* las fotos ya salen embebidas: el srcset sobra, cada una va en un solo tamaño */
   .replace(/\s*srcset="[^"]*"\s*sizes="[^"]*"/g, "")
-  .replace(/src="\/img\/grano\/([a-z-]+)\.webp(?:\?v=\w+)?"/g, (_, k) => `src="${pieza64(k)}"`);
+  .replace(/<source media="[^"]*">/g, "");
 escribir("nandez.html", unSolo);
 
 /* ---------- 5. panel interno ---------- */
