@@ -6,7 +6,7 @@
 - Bourbon rosado: variedad Bourbon rosado, proceso Lavado, 1750 msnm, 87.5 puntos SCA, desde $32.000 (https://cafeweb-five.vercel.app/cafe-bourbon-rosado)
 - Castillo de Arboledas: variedad Castillo, proceso Lavado, 1550 msnm, 84 puntos SCA, desde $38.000 (https://cafeweb-five.vercel.app/cafe-castillo-de-arboledas)
 - Subasta en vivo de un microlote Geisha de Toledo (https://cafeweb-five.vercel.app/subasta)
-- Suscripción mensual desde $68.000 (https://cafeweb-five.vercel.app/suscripcion)
+- Suscripción mensual desde $72.000, con kit de bienvenida para preparar en casa, filtros y una receta cada mes (https://cafeweb-five.vercel.app/suscripcion)
 
 ## Cómo trabajamos
 - Una finca, una variedad. Cada dato (altura, variedad, proceso, puntaje) dice quién lo comprobó y cuándo.

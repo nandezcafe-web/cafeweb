@@ -2,78 +2,164 @@
    SUSCRIPCIÓN, DIARIO (blog) y páginas de confianza:
    contacto, envíos y devoluciones, términos y datos personales.
    ============================================================ */
+/* Las dos preguntas que cambian el precio: ¿con kit? ¿mes a mes o 6 envíos?
+   Arranca en "con kit, mes a mes", que es lo que más deja por cliente; el
+   pago por adelantado se ofrece al lado con su ahorro en pesos. */
+const subKit = () => UI.subKit !== false;
+const subSeis = () => UI.subSeis === true;
+/* El link de Mercado Pago de cada combinación, cuando exista:
+   CONFIG.pagos.suscripcion["semilla-kit"], ["semilla-kit-6"], ["semilla"], ["semilla-6"]… */
+const claveSub = (id, kit, seis) => `${id}${kit ? "-kit" : ""}${seis ? "-6" : ""}`;
+
+function bloquePrecio(p, en) {
+  const x = precioPlan(p, subKit(), subSeis());
+  if (x.hoy) return `<p class="plan-precio"><b class="mono">${cop(x.hoy)}</b><small>${en ? "sign-up: the kit and your first box" : "inscripción: el kit y tu primer envío"}</small></p>
+    <p class="plan-luego">${en ? "Then" : "Luego"} <b class="mono">${cop(x.luego)}</b> ${t("mes")}</p>`;
+  if (x.total) return `<p class="plan-precio"><b class="mono">${cop(x.total)}</b><small>${subKit() ? (en ? "6 boxes and the kit" : "6 envíos y el kit") : (en ? "6 boxes" : "6 envíos")}</small></p>
+    <p class="plan-ahorro">${en ? "You save" : "Ahorras"} <b class="mono">${cop(x.ahorro)}</b> ${en ? "against paying monthly" : "frente a mes a mes"}</p>`;
+  return `<p class="plan-precio"><b class="mono">${cop(x.luego)}</b><small>${t("mes")}</small></p>`;
+}
+
 function viewSuscripcion() {
   const en = UI.lang === "en", abierta = Object.keys(CONFIG.pagos.suscripcion).length > 0;
-  const suelta = principal(S.productos[0]).precio + CONFIG.envio.costo;
-  const razones = en
-    ? [["Coffee has a season", "We buy each harvest once. A subscription is how we know how much to buy before the farm sells it elsewhere."],
-       ["It costs you less than buying loose", `A loose bag plus shipping comes to ${cop(suelta)}. In the subscription, shipping is included.`],
-       ["The farm can plan too", "Knowing how much we ship every month lets us commit volumes to the farm in advance."]]
-    : [["El café tiene temporada", "Cada cosecha se compra una vez. La suscripción es como sabemos cuánto comprar antes de que la finca venda su café a otro."],
-       ["Te sale mejor que suelto", `Una bolsa suelta con envío te sale en ${cop(suelta)}. En la suscripción el envío va incluido.`],
-       ["La finca también puede planear", "Saber cuánto despachamos cada mes nos deja comprometerle volumen a la finca por anticipado."]];
+  const kit = subKit(), seis = subSeis();
+  const op = (k, v, activo, txt) => `<button type="button" data-act="sub-op" data-k="${k}" data-v="${v}" aria-pressed="${activo}">${txt}</button>`;
   const como = en
-    ? [["When it arrives", `We roast and ship in ${tx(CONFIG.suscripcion.despacho)}; it reaches you ${tx(CONFIG.envio.dias)} later.`],
-       ["How you pay", "Each month, automatically through Mercado Pago, once the subscription opens."],
-       ["How you cancel", `Write to ${CONFIG.correo} before the 25th and next month is not charged. No minimum term.`]]
-    : [["Cuándo llega", `Tostamos y despachamos en ${tx(CONFIG.suscripcion.despacho)}; te llega ${tx(CONFIG.envio.dias)} después.`],
-       ["Cómo pagas", "Cada mes, automático con Mercado Pago, cuando abramos la suscripción."],
-       ["Cómo cancelas", `Escribes a ${CONFIG.correo} antes del día 25 y el mes siguiente ya no se cobra. Sin permanencia.`]];
+    ? [["montana", "Every month or every two", "Choose how often it arrives, and change it whenever you like. Each box costs the same."],
+       ["hoja", "Two ways to pay", "Monthly, with a one-time sign-up that brings the kit. Or six boxes paid in advance, which costs less."],
+       ["ficha", "No minimum term", `Paying monthly, write to us before the 25th and next month is not charged. Six boxes paid in advance cover the six.`]]
+    : [["montana", "Cada mes o cada dos", "Escoges cada cuánto te llega y lo cambias cuando quieras. Cada envío cuesta lo mismo."],
+       ["hoja", "Dos formas de pagar", "Mes a mes, con una inscripción única que trae el kit. O seis envíos por adelantado, que sale más barato."],
+       ["ficha", "Sin permanencia", "Mes a mes, nos escribes antes del día 25 y el mes siguiente ya no se cobra. Los seis envíos por adelantado cubren los seis."]];
+  const ruta = en
+    ? [["Cone dripper, the basics", "15 g, 250 ml, 93 °C, three minutes."],
+       ["Grind changes the cup", "The same coffee at two grind sizes, side by side."],
+       ["The greca, done right", "The Colombian home method, without bitterness."],
+       ["Cold brew at home", "Just a jar and a night in the fridge."],
+       ["French press", "Body and oils, the other way to taste a farm."],
+       ["Cupping two farms", "Both coffees side by side, with a flavour wheel."]]
+    : [["Gotero, lo básico", "15 g, 250 ml, 93 °C, tres minutos."],
+       ["La molienda cambia la taza", "El mismo café con dos moliendas, lado a lado."],
+       ["La greca, bien hecha", "El método de la casa colombiana, sin amargor."],
+       ["Cold brew en casa", "Solo un frasco y una noche en la nevera."],
+       ["Prensa francesa", "Cuerpo y aceites: otra forma de probar una finca."],
+       ["Cata de dos fincas", "Los dos cafés lado a lado, con rueda de sabores."]];
+  const comunidad = en
+    ? ["A WhatsApp community for subscribers", "A live class every month, brewing the coffee in the box", "A passport of methods, stamped as you learn each one"]
+    : ["Una comunidad de WhatsApp para suscriptores", "Una clase en vivo cada mes, preparando el café de la caja", "Un pasaporte de métodos que se sella con cada uno que aprendes"];
+
   return `<div class="view-head">
       <div><p class="eyebrow reveal">${en ? "Subscription" : "Suscripción"}${abierta ? "" : (en ? " · opening soon" : " · abrimos pronto")}</p>
-        <h2 class="reveal" style="--i:1">${en ? "Coffee at your door <em>every month</em>" : "Café en tu casa <em>cada mes</em>"}</h2>
-        <p class="reveal" style="--i:2">${abierta
-          ? (en ? "Every month we ship the freshest lot, with its data sheet." : "Cada mes despachamos el lote más fresco, con su ficha.")
-          : (en ? "We are not charging yet. Leave your email on the plan you want and we will send you the payment link the day it opens."
-                : "Todavía no cobramos. Deja tu correo en el plan que quieres y te mandamos el link de pago el día que abramos.")}</p></div>
+        <h2 class="reveal" style="--i:1">${en ? "Coffee at home, <em>and how to brew it</em>" : "Café en tu casa, <em>y cómo prepararlo</em>"}</h2>
+        <p class="reveal" style="--i:2">${en
+          ? "The first box brings the kit to brew at home. Every month after that, coffee from our farms, its filters and a new recipe."
+          : "La primera caja trae el kit para preparar en casa. Cada mes después, café de nuestras fincas, sus filtros y una receta nueva."}
+          ${abierta ? "" : (en ? " We are not charging yet: leave your email and we will send you the payment link the day it opens."
+                               : " Todavía no cobramos: deja tu correo y te mandamos el link de pago el día que abramos.")}</p></div>
     </div>
-    <div class="planes">${S.planes.map((p, i) => {
-      const link = CONFIG.pagos.suscripcion[p.id];
-      return `<article class="plan ${p.destacado ? "hot" : ""} reveal" style="--i:${i}">
-        ${p.destacado ? `<span class="plan-tag">${en ? "Our favourite" : "El que más nos gusta"}</span>` : ""}
+
+    <div class="sub-opciones reveal" style="--i:3">
+      <div class="seg" role="group" aria-label="${en ? "Kit" : "Kit"}">
+        ${op("kit", "si", kit, en ? "With the welcome kit" : "Con kit de bienvenida")}${op("kit", "no", !kit, en ? "I already have my gear" : "Ya tengo mi equipo")}
+      </div>
+      <div class="seg" role="group" aria-label="${en ? "How to pay" : "Cómo pagar"}">
+        ${op("seis", "no", !seis, en ? "Monthly" : "Mes a mes")}${op("seis", "si", seis, en ? "6 boxes in advance" : "6 envíos por adelantado")}
+      </div>
+    </div>
+
+    <div class="planes">${PLANES.map((p, i) => {
+      const k = KITS[p.kit], link = CONFIG.pagos.suscripcion[claveSub(p.id, kit, seis)];
+      return `<article class="plan ${p.destacado ? "hot" : ""} reveal" style="--i:${i + 4}">
+        ${p.destacado ? `<span class="plan-tag">${en ? "The one we recommend" : "El que recomendamos"}</span>` : ""}
         <h3>${esc(tx(p.nombre))}</h3>
-        <p class="plan-precio"><b class="mono">${cop(p.precio)}</b><small>${t("mes")}</small></p>
-        <p class="hint">${esc(tx(p.desc))}</p>
-        <ul class="plan-lista">${tx(p.incluye).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+        <p class="plan-para">${esc(tx(p.para))}</p>
+        ${bloquePrecio(p, en)}
+        ${kit ? `<div class="plan-kit"><b>${esc(tx(k.nombre))}</b><ul>${tx(k.trae).map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+        <p class="plan-cada">${en ? "In every box" : "En cada envío"}</p>
+        <ul class="plan-lista">${tx(p.cada).map((x) => `<li>${esc(x)}</li>`).join("")}<li>${en ? "Shipping included" : "Envío incluido"}</li></ul>
         <button class="btn ${p.destacado ? "primary" : ""}" data-act="sub" data-id="${p.id}">${link ? t("suscribirme") : (en ? "Notify me when it opens" : "Avísame cuando abra")}</button>
       </article>`;
     }).join("")}</div>
+
     <section class="section">
       <div class="section-head"><p class="eyebrow">${en ? "How it works" : "Cómo funciona"}</p>
-        <h2>${en ? "What you get, <em>when and how to stop</em>" : "Qué recibes, <em>cuándo y cómo paras</em>"}</h2></div>
-      <div class="valor">${como.map(([a, b], i) => `<div class="val" style="--i:${i}"><b>${esc(a)}</b><span>${esc(b)}</span></div>`).join("")}</div>
+        <h2>${en ? "You decide how often, <em>and how to pay</em>" : "Tú decides cada cuánto <em>y cómo pagas</em>"}</h2></div>
+      <div class="principios">${como.map(([ic, a, b]) => `<div class="principio">${icono(ic)}<b>${esc(a)}</b><span>${esc(b)}</span></div>`).join("")}</div>
     </section>
+
     <section class="section">
-      <div class="section-head"><p class="eyebrow">${en ? "Why we made it" : "Por qué la hicimos"}</p>
-        <h2>${en ? "So you never <em>run out of coffee</em>" : "Para que no te quedes <em>sin café</em>"}</h2></div>
-      <div class="valor">${razones.map(([a, b], i) => `<div class="val" style="--i:${i}"><b>${esc(a)}</b><span>${esc(b)}</span></div>`).join("")}</div>
+      <div class="section-head"><p class="eyebrow">${en ? "The Nandez route" : "La Ruta Nandez"}</p>
+        <h2>${en ? "Six months, <em>six ways to brew</em>" : "Seis meses, <em>seis formas de preparar</em>"}</h2>
+        <p>${en ? "Every box brings a card with the month's recipe and a QR code to a short video. After the sixth, the route goes on with new lots and other methods."
+                : "Cada caja trae una tarjeta con la receta del mes y un código QR a un video corto. Después del sexto, la ruta sigue con lotes nuevos y otros métodos."}</p></div>
+      <ol class="ruta">${ruta.map(([a, b]) => `<li><b>${esc(a)}</b><span>${esc(b)}</span></li>`).join("")}</ol>
+      <ul class="ruta-comunidad">${comunidad.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><p class="eyebrow">${en ? "For cafés" : "Para cafeterías"}</p>
+        <h2>${en ? "Your house coffee, <em>every month</em>" : "El café de tu barra, <em>cada mes</em>"}</h2></div>
+      <article class="plan plan-cafeteria">
+        <h3>${esc(tx(CAFETERIA.nombre))}</h3>
+        <p class="plan-precio"><b class="mono">${cop(CAFETERIA.mes)}</b><small>${t("mes")}</small></p>
+        <p class="hint">${esc(tx(CAFETERIA.desc))}</p>
+        <ul class="plan-lista">${tx(CAFETERIA.incluye).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+        <button class="btn" data-act="sub" data-id="${CAFETERIA.id}">${CONFIG.pagos.suscripcion[CAFETERIA.id] ? t("suscribirme") : (en ? "Notify me when it opens" : "Avísame cuando abra")}</button>
+      </article>
     </section>`;
 }
 
+function subOpcion(k, v) {
+  if (k === "kit") UI.subKit = v === "si";
+  if (k === "seis") UI.subSeis = v === "si";
+  UI.animate = false;
+  render();
+}
+
 function suscribir(id) {
-  const p = S.planes.find((x) => x.id === id), link = CONFIG.pagos.suscripcion[id], en = UI.lang === "en";
+  const en = UI.lang === "en", casa = PLANES.find((x) => x.id === id), p = casa || CAFETERIA;
+  const kit = casa ? subKit() : false, seis = casa ? subSeis() : false;
+  const link = CONFIG.pagos.suscripcion[casa ? claveSub(id, kit, seis) : id];
   if (link) return void window.open(link, "_blank", "noopener");
+  const x = casa ? precioPlan(p, kit, seis) : { luego: p.mes };
+  const resumen = casa
+    ? `${esc(tx(p.nombre))} · ${kit ? esc(tx(KITS[p.kit].nombre)) : (en ? "no kit" : "sin kit")} · ${seis ? (en ? "6 boxes in advance" : "6 envíos por adelantado") : (en ? "monthly" : "mes a mes")}<br>
+       <b class="mono">${x.hoy ? `${cop(x.hoy)} ${en ? "today, then" : "hoy, luego"} ${cop(x.luego)} ${t("mes")}` : x.total ? `${cop(x.total)} ${en ? "in one payment" : "en un solo pago"}` : `${cop(x.luego)} ${t("mes")}`}</b>`
+    : `${esc(tx(p.nombre))} · <b class="mono">${cop(p.mes)} ${t("mes")}</b>`;
+  const mol = casa ? p.molienda : "grano";
   modal(`${en ? "Subscription" : "Suscripción"} · <em>${esc(tx(p.nombre))}</em>`, `
+    <p class="sub-resumen">${resumen}</p>
     <p class="hint">${en ? "Leave your email and we will send you the payment link as soon as the subscription goes live. Nothing is charged today."
       : "Déjanos tu correo y te enviamos el link de pago apenas abramos la suscripción. Hoy no se cobra nada."}</p>
     <div class="form-grid">
       <div class="field"><label class="lbl" for="sub-mail">${en ? "Email" : "Correo"}</label><input id="sub-mail" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none" autocorrect="off" enterkeyhint="send"></div>
       <div class="field"><label class="lbl" for="sub-ciudad">${en ? "City" : "Ciudad"}</label><input id="sub-ciudad" class="input" autocomplete="address-level2"></div>
-      <div class="field" style="grid-column:1/-1"><label class="lbl" for="sub-molienda">${en ? "How do you want it ground?" : "¿Cómo quieres la molienda?"}</label>
-        <select id="sub-molienda" class="input">${MOLIENDAS.map((o) => `<option value="${o.id}" ${o.id === "grano" ? "selected" : ""}>${tx(o)}</option>`).join("")}</select>
-        <small class="hint" style="margin:0">${en ? "Only subscribers choose the grind: each shipment is ground to order." : "Solo en la suscripción eliges la molienda: cada envío se muele a tu gusto."}</small></div>
+      ${casa ? `<div class="field"><label class="lbl" for="sub-cada">${en ? "How often?" : "¿Cada cuánto?"}</label>
+        <select id="sub-cada" class="input"><option value="1">${en ? "Every month" : "Cada mes"}</option><option value="2">${en ? "Every two months" : "Cada dos meses"}</option></select></div>` : ""}
+      <div class="field"><label class="lbl" for="sub-molienda">${en ? "How do you want it ground?" : "¿Cómo quieres la molienda?"}</label>
+        <select id="sub-molienda" class="input">${MOLIENDAS.map((o) => `<option value="${o.id}" ${o.id === mol ? "selected" : ""}>${tx(o)}</option>`).join("")}</select></div>
+      <small class="hint" style="grid-column:1/-1;margin:0">${en ? "Only subscribers choose the grind: each box is ground to order." : "Solo en la suscripción eliges la molienda: cada envío se muele a tu gusto."}</small>
     </div>
     <div class="dlg-actions"><button class="btn" data-act="close">${en ? "Cancel" : "Cancelar"}</button>
       <button class="btn primary" data-act="sub-ok" data-id="${id}">${en ? "Notify me" : "Avisarme"}</button></div>`, "narrow");
 }
+
 function suscribirOk(id) {
   const mail = $("#sub-mail").value.trim(), en = UI.lang === "en";
   if (!/^\S+@\S+\.\S+$/.test(mail)) return toast(en ? "Write a valid email." : "Escribe un correo válido.", { type: "err" });
-  const p = S.planes.find((x) => x.id === id), mol = MOLIENDAS.find((o) => o.id === $("#sub-molienda")?.value) || MOLIENDAS[0];
-  const d = { mail, plan: id, ciudad: $("#sub-ciudad").value.trim(), molienda: mol.id, fecha: isoToday() };
+  const casa = PLANES.find((x) => x.id === id), p = casa || CAFETERIA;
+  const kit = casa ? subKit() : false, seis = casa ? subSeis() : false;
+  const mol = MOLIENDAS.find((o) => o.id === $("#sub-molienda")?.value) || MOLIENDAS[0];
+  const cada = $("#sub-cada")?.value === "2" ? 2 : 1;
+  const x = casa ? precioPlan(p, kit, seis) : { luego: p.mes };
+  const d = { mail, plan: id, kit, seis, cada, ciudad: $("#sub-ciudad").value.trim(), molienda: mol.id, fecha: isoToday() };
   S.suscriptores.unshift(d); save(); closeModal(); render();
+  const pago = x.hoy ? `${cop(x.hoy)} de inscripción y luego ${cop(x.luego)} al mes`
+    : x.total ? `${cop(x.total)} por 6 envíos` : `${cop(x.luego)} al mes`;
   registrar("suscripcion", d,
-    `Hola ${CONFIG.marca}, avísenme cuando abra la suscripción.\nPlan: ${tx(p.nombre)} (${cop(p.precio)} al mes)\nMolienda: ${mol.es}\nCorreo: ${mail}${d.ciudad ? "\nCiudad: " + d.ciudad : ""}`,
+    `Hola ${CONFIG.marca}, avísenme cuando abra la suscripción.\nPlan: ${tx(p.nombre)}` +
+    (casa ? `\nKit: ${kit ? tx(KITS[p.kit].nombre) : "ya tengo mi equipo"}\nForma de pago: ${seis ? "6 envíos por adelantado" : "mes a mes"}\nFrecuencia: ${cada === 2 ? "cada dos meses" : "cada mes"}` : "") +
+    `\nValor: ${pago}\nMolienda: ${mol.es}\nCorreo: ${mail}${d.ciudad ? "\nCiudad: " + d.ciudad : ""}`,
     `Suscripción · ${tx(p.nombre)}`);
 }
 

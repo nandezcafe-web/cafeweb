@@ -245,7 +245,7 @@ const llms = ev(c0, [
   '"## Qué vendemos",',
   '...S.productos.map((p) => "- " + tx(p.nombre) + ": variedad " + p.variedad + ", proceso " + p.proceso + ", " + p.altitud + " msnm, " + p.puntaje + " puntos SCA, desde " + cop(p.variantes[0].precio) + " (" + CONFIG.sitio + ruta("cafe", p.id, "es") + ")"),',
   '"- Subasta en vivo de un microlote Geisha de Toledo (" + CONFIG.sitio + "/subasta)",',
-  '"- Suscripción mensual desde " + cop(S.planes[0].precio) + " (" + CONFIG.sitio + "/suscripcion)", "",',
+  '"- Suscripción mensual desde " + cop(PLANES[0].mes) + ", con kit de bienvenida para preparar en casa, filtros y una receta cada mes (" + CONFIG.sitio + "/suscripcion)", "",',
   '"## Cómo trabajamos",',
   '"- Una finca, una variedad. Cada dato (altura, variedad, proceso, puntaje) dice quién lo comprobó y cuándo.",',
   '"- Los lotes excepcionales se venden en subasta, con precio de reserva y mínimo de participantes.", "",',

@@ -55,7 +55,8 @@ function viewInicio() {
     <div class="remate-texto">
       <p class="portada-sobre">${t("nav_suscripcion")}</p>
       <h2>${en ? "If you like it, <em>we bring it every month</em>" : "Si te gusta, <em>te lo llevamos cada mes</em>"}</h2>
-      <p>${en ? `From ${cop(S.planes[0].precio)} a month, shipping included.` : `Desde ${cop(S.planes[0].precio)} al mes, con el envío incluido.`}</p>
+      <p>${en ? `From ${cop(PLANES[0].mes)} a month with shipping, filters and a new recipe every month. The first box brings the kit to brew it.`
+              : `Desde ${cop(PLANES[0].mes)} al mes, con envío, filtros y una receta nueva cada mes. La primera caja trae el kit para prepararlo.`}</p>
       <div class="portada-cta">
         <button class="btn claro lg" data-act="go" data-to="suscripcion">${en ? "See the plans" : "Ver los planes"}${icono("flecha", "ico")}</button>
         <a class="portada-link" href="${ruta("diario")}" data-act="go" data-to="diario">${en ? "Read the journal" : "Leer el diario"}</a>
@@ -294,6 +295,7 @@ document.addEventListener("click", (e) => {
     case "menu": return menu(!document.body.classList.contains("menu-abierto"));
     case "mas": return mas(!document.body.classList.contains("mas-abierto"));
     case "sub": return suscribir(id);
+    case "sub-op": return subOpcion(el.dataset.k, el.dataset.v);
     case "sub-ok": return suscribirOk(id);
     case "bid": return myBid(+el.dataset.steps);
     case "bid-custom": return myBid(0);

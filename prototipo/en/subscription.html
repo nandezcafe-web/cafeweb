@@ -21,8 +21,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=6ebb6124">
-<link rel="stylesheet" href="/auction.css?v=6ebb6124">
+<link rel="stylesheet" href="/styles.css?v=fefc1d3a">
+<link rel="stylesheet" href="/auction.css?v=fefc1d3a">
 <script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Café","url":"https://cafeweb-five.vercel.app","email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"A coffee-growing family from Chinácota, Colombia. We buy the best lots from farms across Norte de Santander and roast them under our name: one farm per coffee, with altitude, variety, process and cupping score for each lot."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Café","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"en"}]}</script>
 </head>
 <body data-view="suscripcion">
@@ -70,40 +70,76 @@
 
 <main class="wrap calm" id="view"><div class="view-head">
       <div><p class="eyebrow reveal">Subscription · opening soon</p>
-        <h2 class="reveal" style="--i:1">Coffee at your door <em>every month</em></h2>
-        <p class="reveal" style="--i:2">We are not charging yet. Leave your email on the plan you want and we will send you the payment link the day it opens.</p></div>
+        <h2 class="reveal" style="--i:1">Coffee at home, <em>and how to brew it</em></h2>
+        <p class="reveal" style="--i:2">The first box brings the kit to brew at home. Every month after that, coffee from our farms, its filters and a new recipe.
+           We are not charging yet: leave your email and we will send you the payment link the day it opens.</p></div>
     </div>
-    <div class="planes"><article class="plan  reveal" style="--i:0">
+
+    <div class="sub-opciones reveal" style="--i:3">
+      <div class="seg" role="group" aria-label="Kit">
+        <button type="button" data-act="sub-op" data-k="kit" data-v="si" aria-pressed="true">With the welcome kit</button><button type="button" data-act="sub-op" data-k="kit" data-v="no" aria-pressed="false">I already have my gear</button>
+      </div>
+      <div class="seg" role="group" aria-label="How to pay">
+        <button type="button" data-act="sub-op" data-k="seis" data-v="no" aria-pressed="true">Monthly</button><button type="button" data-act="sub-op" data-k="seis" data-v="si" aria-pressed="false">6 boxes in advance</button>
+      </div>
+    </div>
+
+    <div class="planes"><article class="plan  reveal" style="--i:4">
         
-        <h3>Discover</h3>
-        <p class="plan-precio"><b class="mono">COP 68,000</b><small>per month</small></p>
-        <p class="hint">One 250 g bag a month of our current specialty coffee (today, the Pink Bourbon).</p>
-        <ul class="plan-lista"><li>250 g every month</li><li>Shipping included</li><li>Ground to your taste</li><li>Lot data sheet in every shipment</li><li>No minimum term</li></ul>
-        <button class="btn " data-act="sub" data-id="descubrir">Notify me when it opens</button>
-      </article><article class="plan hot reveal" style="--i:1">
-        <span class="plan-tag">Our favourite</span>
-        <h3>Two farms</h3>
-        <p class="plan-precio"><b class="mono">COP 120,000</b><small>per month</small></p>
-        <p class="hint">Two 250 g bags from different farms, to compare side by side (today, Pink Bourbon and Castillo).</p>
-        <ul class="plan-lista"><li>2 × 250 g monthly</li><li>Shipping included</li><li>Two different origins</li><li>Ground to your taste</li><li>Early access to the auction</li><li>No minimum term</li></ul>
-        <button class="btn primary" data-act="sub" data-id="dos">Notify me when it opens</button>
-      </article><article class="plan  reveal" style="--i:2">
+        <h3>Seed</h3>
+        <p class="plan-para">To start brewing at home</p>
+        <p class="plan-precio"><b class="mono">COP 169,000</b><small>sign-up: the kit and your first box</small></p>
+    <p class="plan-luego">Then <b class="mono">COP 72,000</b> per month</p>
+        <div class="plan-kit"><b>Essential kit</b><ul><li>V60-style cone dripper</li><li>100 filters</li><li>Measuring scoop</li><li>Brewing guide</li></ul></div>
+        <p class="plan-cada">In every box</p>
+        <ul class="plan-lista"><li>250 g of specialty coffee</li><li>20 filters</li><li>Ground to your taste</li><li>The month&#39;s recipe and video</li><li>Shipping included</li></ul>
+        <button class="btn " data-act="sub" data-id="semilla">Notify me when it opens</button>
+      </article><article class="plan hot reveal" style="--i:5">
+        <span class="plan-tag">The one we recommend</span>
+        <h3>Harvest</h3>
+        <p class="plan-para">To compare two farms every month</p>
+        <p class="plan-precio"><b class="mono">COP 319,000</b><small>sign-up: the kit and your first box</small></p>
+    <p class="plan-luego">Then <b class="mono">COP 105,000</b> per month</p>
+        <div class="plan-kit"><b>Complete kit</b><ul><li>V60-style cone dripper</li><li>100 filters</li><li>600 ml glass server</li><li>Scale with timer</li><li>Brewing guide</li></ul></div>
+        <p class="plan-cada">In every box</p>
+        <ul class="plan-lista"><li>2 × 250 g from two different farms</li><li>40 filters</li><li>Ground to your taste</li><li>The month&#39;s recipe and video</li><li>Early access to the auction</li><li>Shipping included</li></ul>
+        <button class="btn primary" data-act="sub" data-id="cosecha">Notify me when it opens</button>
+      </article><article class="plan  reveal" style="--i:6">
         
+        <h3>Barista</h3>
+        <p class="plan-para">For the full ritual, grinding at home</p>
+        <p class="plan-precio"><b class="mono">COP 549,000</b><small>sign-up: the kit and your first box</small></p>
+    <p class="plan-luego">Then <b class="mono">COP 115,000</b> per month</p>
+        <div class="plan-kit"><b>Barista kit</b><ul><li>Everything in the Complete kit</li><li>Gooseneck kettle</li><li>Conical burr hand grinder</li></ul></div>
+        <p class="plan-cada">In every box</p>
+        <ul class="plan-lista"><li>2 × 250 g whole bean, from two farms</li><li>40 filters</li><li>A brewing extra every three months</li><li>The month&#39;s recipe and video</li><li>Early access to the auction</li><li>Shipping included</li></ul>
+        <button class="btn " data-act="sub" data-id="barista">Notify me when it opens</button>
+      </article></div>
+
+    <section class="section">
+      <div class="section-head"><p class="eyebrow">How it works</p>
+        <h2>You decide how often, <em>and how to pay</em></h2></div>
+      <div class="principios"><div class="principio"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20 9.5 8l4 7 2.5-4L21 20Z"/><path d="m8 11.2 1.5 1.3 1.6-1.4"/></svg><b>Every month or every two</b><span>Choose how often it arrives, and change it whenever you like. Each box costs the same.</span></div><div class="principio"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 6-14 14-14 0 8-6 14-14 14Z"/><path d="M5 19 13 11"/></svg><b>Two ways to pay</b><span>Monthly, with a one-time sign-up that brings the kit. Or six boxes paid in advance, which costs less.</span></div><div class="principio"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l4 4v14H7Z"/><path d="M14 3v4h4"/><path d="m9.5 14 2 2 3.5-4"/></svg><b>No minimum term</b><span>Paying monthly, write to us before the 25th and next month is not charged. Six boxes paid in advance cover the six.</span></div></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><p class="eyebrow">The Nandez route</p>
+        <h2>Six months, <em>six ways to brew</em></h2>
+        <p>Every box brings a card with the month's recipe and a QR code to a short video. After the sixth, the route goes on with new lots and other methods.</p></div>
+      <ol class="ruta"><li><b>Cone dripper, the basics</b><span>15 g, 250 ml, 93 °C, three minutes.</span></li><li><b>Grind changes the cup</b><span>The same coffee at two grind sizes, side by side.</span></li><li><b>The greca, done right</b><span>The Colombian home method, without bitterness.</span></li><li><b>Cold brew at home</b><span>Just a jar and a night in the fridge.</span></li><li><b>French press</b><span>Body and oils, the other way to taste a farm.</span></li><li><b>Cupping two farms</b><span>Both coffees side by side, with a flavour wheel.</span></li></ol>
+      <ul class="ruta-comunidad"><li>A WhatsApp community for subscribers</li><li>A live class every month, brewing the coffee in the box</li><li>A passport of methods, stamped as you learn each one</li></ul>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><p class="eyebrow">For cafés</p>
+        <h2>Your house coffee, <em>every month</em></h2></div>
+      <article class="plan plan-cafeteria">
         <h3>Café</h3>
         <p class="plan-precio"><b class="mono">COP 460,000</b><small>per month</small></p>
         <p class="hint">Two kilos of whole bean Pink Bourbon a month: COP 230,000 per kilo, against 245,000 bought loose.</p>
         <ul class="plan-lista"><li>2 kg whole bean monthly</li><li>Shipping included</li><li>Roast to your profile</li><li>Menu material</li><li>More than 2 kg? Ask for a quote</li></ul>
-        <button class="btn " data-act="sub" data-id="cafeteria">Notify me when it opens</button>
-      </article></div>
-    <section class="section">
-      <div class="section-head"><p class="eyebrow">How it works</p>
-        <h2>What you get, <em>when and how to stop</em></h2></div>
-      <div class="valor"><div class="val" style="--i:0"><b>When it arrives</b><span>We roast and ship in the first week of every month; it reaches you 2 to 5 business days later.</span></div><div class="val" style="--i:1"><b>How you pay</b><span>Each month, automatically through Mercado Pago, once the subscription opens.</span></div><div class="val" style="--i:2"><b>How you cancel</b><span>Write to nandezcafe@gmail.com before the 25th and next month is not charged. No minimum term.</span></div></div>
-    </section>
-    <section class="section">
-      <div class="section-head"><p class="eyebrow">Why we made it</p>
-        <h2>So you never <em>run out of coffee</em></h2></div>
-      <div class="valor"><div class="val" style="--i:0"><b>Coffee has a season</b><span>We buy each harvest once. A subscription is how we know how much to buy before the farm sells it elsewhere.</span></div><div class="val" style="--i:1"><b>It costs you less than buying loose</b><span>A loose bag plus shipping comes to COP 80,000. In the subscription, shipping is included.</span></div><div class="val" style="--i:2"><b>The farm can plan too</b><span>Knowing how much we ship every month lets us commit volumes to the farm in advance.</span></div></div>
+        <button class="btn" data-act="sub" data-id="cafeteria">Notify me when it opens</button>
+      </article>
     </section><footer class="foot">
   <div class="foot-marca"><b>Nandez Café</b><span>Chinácota · Norte de Santander, Colombia</span>
     <a href="mailto:nandezcafe@gmail.com">nandezcafe@gmail.com</a></div>
@@ -125,11 +161,11 @@
 </dialog>
 
 <script>window.IMG_V = "22eda5f2";</script>
-<script src="/js/core.js?v=6ebb6124"></script>
-<script src="/js/fases.js?v=6ebb6124"></script>
-<script src="/js/shop.js?v=6ebb6124"></script>
-<script src="/js/pages.js?v=6ebb6124"></script>
-<script src="/js/auction.js?v=6ebb6124"></script>
-<script src="/js/main.js?v=6ebb6124"></script>
+<script src="/js/core.js?v=fefc1d3a"></script>
+<script src="/js/fases.js?v=fefc1d3a"></script>
+<script src="/js/shop.js?v=fefc1d3a"></script>
+<script src="/js/pages.js?v=fefc1d3a"></script>
+<script src="/js/auction.js?v=fefc1d3a"></script>
+<script src="/js/main.js?v=fefc1d3a"></script>
 </body>
 </html>

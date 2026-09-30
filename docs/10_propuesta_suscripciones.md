@@ -15,19 +15,50 @@ La primera caja trae el equipo para preparar bien (un kit según el plan), y cad
 
 ## Los tres paquetes
 
-Cada paquete tiene una **inscripción** (se paga una vez: el kit y el primer mes de café) y una **mensualidad** (desde el segundo mes).
+Cada plan se puede tomar **con kit o sin él** ("ya tengo mi equipo") y pagar de **dos formas**: mes a mes o 6 envíos por adelantado. En la página hay dos selectores arriba que cambian el precio de las tres tarjetas.
 
 | | **Semilla** | **Cosecha** ★ | **Barista** |
 |---|---|---|---|
 | Para quién | Empieza a preparar en casa | Quiere comparar fincas | Quiere el ritual completo |
-| Café cada mes | 250 g | 2 × 250 g de dos fincas | 2 × 250 g en grano |
-| Filtros cada mes | 20 | 40 | 40 |
-| Extra | — | — | Algo del oficio cada 3 meses |
+| Café en cada envío | 250 g | 2 × 250 g de dos fincas | 2 × 250 g en grano |
+| Filtros en cada envío | 20 | 40 | 40 |
+| Extra | — | Acceso anticipado a la subasta | Subasta + algo del oficio cada 3 meses |
 | **Kit de bienvenida** | **Esencial** | **Completo** | **Barista** |
-| **Inscripción** | **$169.000** | **$319.000** | **$549.000** |
-| **Mensualidad** | **$72.000** | **$105.000** | **$115.000** |
 
-**Opción "Ya tengo mi equipo":** cualquier plan sin kit. No paga inscripción; la primera caja trae la guía y la tarjeta de la comunidad. Sin esta opción se pierde a quien ya tiene su gotero.
+| Forma de pago | Semilla | Cosecha | Barista |
+|---|---|---|---|
+| **Con kit, mes a mes** | $169.000 de inscripción, luego $72.000 | $319.000, luego $105.000 | $549.000, luego $115.000 |
+| **Con kit, 6 envíos** | **$459.000** (ahorra $70.000) | **$679.000** (ahorra $165.000) | **$849.000** (ahorra $275.000) |
+| Sin kit, mes a mes | $72.000 | $105.000 | $115.000 |
+| Sin kit, 6 envíos | $399.000 (ahorra $33.000) | $585.000 (ahorra $45.000) | $639.000 (ahorra $51.000) |
+
+El ahorro se compara con pagar esos mismos 6 envíos mes a mes. Cada envío puede llegar **cada mes o cada dos meses**, al mismo precio: quien toma poco café no acumula bolsas, que es una de las primeras razones para cancelar.
+
+## Por qué así: lo más atractivo y lo más rentable
+
+**Lo que más deja por cliente es "con kit, mes a mes"**, porque el kit se vende con margen alto. Calculando con la cancelación típica del sector (unos 8 % al mes, es decir, unos 4,9 envíos en promedio en 6 meses):
+
+| Ganancia esperada en 6 meses | Semilla | Cosecha | Barista |
+|---|---|---|---|
+| Con kit, mes a mes (con cancelaciones) | ~$252.000 | ~$418.000 | ~$502.000 |
+| Con kit, 6 envíos (asegurado) | ~$224.000 | ~$316.000 | ~$294.000 |
+
+Por eso la página **abre en "con kit, mes a mes"**: lo que se muestra primero es lo que más se escoge.
+
+**El pago por adelantado deja un poco menos, pero vale la pena ofrecerlo:**
+
+- Es plata **segura y por adelantado**: no hay cancelaciones en esos 6 envíos.
+- Llega **antes de comprar la cosecha**, que es justo cuando la necesitan. Es el mismo argumento de "el café tiene temporada".
+- **Es el gancho más fuerte** para el cliente: ve el ahorro en pesos junto al kit.
+
+**Lo que hace atractiva la oferta:**
+
+- **Cosecha es el recomendado** y queda en el centro. Barista, al lado, lo hace ver razonable, y es el que más ahorra en proporción.
+- **El ahorro dicho en pesos**, nunca en porcentajes.
+- **La Ruta Nandez y la comunidad** se ven en la misma página: no es solo café por correo.
+- **"Ya tengo mi equipo"** no espanta a quien ya prepara café.
+
+**Lo que no se publicó y queda para que lo decidan:** una garantía del tipo "si el primer envío no te convence, te cambiamos el café" (la usa Pact Coffee y ataca la decepción de la primera bolsa). Es un compromiso con clientes, así que no lo puse en la página sin su visto bueno.
 
 ### Qué trae cada kit
 
@@ -92,7 +123,7 @@ La caja y la guía impresa (~$15.000) se hacen en Colombia; es un estimado por c
 
 ## Los números
 
-### Inscripción (kit + primer mes)
+### Inscripción mes a mes (kit + primer envío)
 
 | | Semilla | Cosecha | Barista |
 |---|---|---|---|

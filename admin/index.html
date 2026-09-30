@@ -1375,6 +1375,49 @@ body[data-view=subasta] .tab-luz{background:var(--crema)}
 }
 @media (prefers-reduced-motion:reduce){.faq-lista .faq summary::after{transition:none}.faq-lista .faq[open] p{animation:none}}
 
+/* ============================================================
+   SUSCRIPCIÓN: dos preguntas arriba (¿kit? ¿cómo pagas?) que cambian
+   el precio de las tres tarjetas, y el ahorro dicho en pesos.
+   ============================================================ */
+.sub-opciones{display:flex;flex-wrap:wrap;gap:12px 16px;margin:6px 0 30px}
+.sub-opciones .seg{background:var(--v-fondo);border:1px solid var(--v-canto);box-shadow:var(--v-brillo);
+  backdrop-filter:var(--v-lente);-webkit-backdrop-filter:var(--v-lente)}
+.sub-opciones .seg button{padding:10px 16px;font-size:14px;transition:background .25s var(--ease-out),color .25s var(--ease-out)}
+.sub-opciones .seg button[aria-pressed=true]{background:var(--ink);color:var(--paper);box-shadow:inset 0 1px 1px rgba(255,255,255,.18)}
+.plan{gap:12px}
+.plan-para{margin:-4px 0 4px;color:var(--ink-2);font-size:14.5px}
+.plan-precio{flex-wrap:wrap;row-gap:2px}
+.plan-precio b{font-size:2rem}
+.plan-precio small{font-size:13px}
+.plan-luego{margin:-6px 0 0;color:var(--ink-2);font-size:14px}
+.plan-ahorro{margin:-6px 0 0;align-self:flex-start;padding:4px 10px;border-radius:999px;font-size:13.5px;
+  background:rgba(46,71,50,.12);color:var(--leaf)}
+.plan-kit{padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.4);border:1px solid var(--v-canto)}
+.plan-kit b{font:400 1.15rem/1.2 var(--serif)}
+.plan-kit ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:5px;font-size:13.5px;color:var(--ink-2)}
+.plan-kit li::before{content:"+ ";color:var(--cherry);font-weight:700}
+.plan-cada{margin:4px 0 -6px;font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.plan-cafeteria{max-width:520px;margin-top:30px}
+.sub-resumen{margin:0 0 6px;padding:12px 14px;border-radius:14px;background:var(--paper-2);line-height:1.6}
+
+/* la ruta: seis pasos en orden, con su número */
+.ruta{list-style:none;counter-reset:ruta;margin:34px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line)}
+.ruta li{counter-increment:ruta;display:grid;gap:6px;align-content:start;padding:24px 24px 22px 0;border-bottom:1px solid var(--line)}
+.ruta li:not(:nth-child(3n+1)){padding-left:24px;border-left:1px solid var(--line)}
+.ruta li::before{content:"Mes " counter(ruta);font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--cherry)}
+html[lang=en] .ruta li::before{content:"Month " counter(ruta)}
+.ruta b{font:400 1.3rem/1.2 var(--serif)}
+.ruta span{color:var(--ink-2);font-size:14.5px}
+.ruta-comunidad{list-style:none;margin:28px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:10px}
+.ruta-comunidad li{padding:10px 16px;border-radius:999px;font-size:14px;color:var(--ink);
+  background:var(--v-fondo-2);border:1px solid var(--v-canto);box-shadow:var(--v-brillo)}
+@media (max-width:760px){
+  .ruta{grid-template-columns:1fr}
+  .ruta li,.ruta li:not(:nth-child(3n+1)){padding:20px 0;border-left:0}
+  .sub-opciones .seg{width:100%}
+  .sub-opciones .seg button{flex:1;justify-content:center;padding:10px 8px;font-size:13px}
+}
+
 /* sala de subasta */
 .auction{color:#E6D7C3}
 .auction .kicker{color:#c9b497}
@@ -1676,17 +1719,6 @@ function seed() {
     ],
 
     /* ---------- SUSCRIPCIÓN ---------- */
-    planes: [
-      { id: "descubrir", nombre: { es: "Descubrir", en: "Discover" }, precio: 68000, envios: 1,
-        desc: { es: "Una bolsa de 250 g al mes del café de especialidad del momento (hoy, el Bourbon rosado).", en: "One 250 g bag a month of our current specialty coffee (today, the Pink Bourbon)." },
-        incluye: { es: ["250 g cada mes", "Envío incluido", "Molienda a tu gusto", "Ficha del lote en cada envío", "Sin permanencia"], en: ["250 g every month", "Shipping included", "Ground to your taste", "Lot data sheet in every shipment", "No minimum term"] } },
-      { id: "dos", nombre: { es: "Dos fincas", en: "Two farms" }, precio: 120000, envios: 2, destacado: true,
-        desc: { es: "Dos bolsas de 250 g de fincas distintas, para comparar en la misma semana (hoy, Bourbon rosado y Castillo).", en: "Two 250 g bags from different farms, to compare side by side (today, Pink Bourbon and Castillo)." },
-        incluye: { es: ["2 × 250 g cada mes", "Envío incluido", "Dos orígenes distintos", "Molienda a tu gusto", "Acceso anticipado a la subasta", "Sin permanencia"], en: ["2 × 250 g monthly", "Shipping included", "Two different origins", "Ground to your taste", "Early access to the auction", "No minimum term"] } },
-      { id: "cafeteria", nombre: { es: "Cafetería", en: "Café" }, precio: 460000, envios: 2,
-        desc: { es: "Dos kilos de Bourbon rosado en grano al mes: $230.000 el kilo, frente a $245.000 suelto.", en: "Two kilos of whole bean Pink Bourbon a month: COP 230,000 per kilo, against 245,000 bought loose." },
-        incluye: { es: ["2 kg en grano cada mes", "Envío incluido", "Tostión a tu perfil", "Material para tu carta", "¿Más de 2 kg? Te cotizamos"], en: ["2 kg whole bean monthly", "Shipping included", "Roast to your profile", "Menu material", "More than 2 kg? Ask for a quote"] } },
-    ],
 
     /* ---------- DIARIO (blog) — PENDIENTE de contenido real ---------- */
     entradas: [
@@ -1792,6 +1824,56 @@ const MOLIENDAS = [
   { id: "gruesa", es: "Gruesa · prensa francesa", en: "Coarse · French press" },
   { id: "extragruesa", es: "Extragruesa · cold brew", en: "Extra coarse · cold brew" },
 ];
+
+/* ---------- SUSCRIPCIÓN ----------
+   Tres planes para la casa y uno para cafeterías. Viven aquí y no en los
+   datos guardados, para que nadie vea precios viejos.
+   Cada plan se paga de dos formas:
+     · mes a mes: una inscripción (el kit y el primer envío) y luego la mensualidad;
+     · 6 envíos por adelantado: un solo pago, más barato.
+   Y con kit o sin él ("ya tengo mi equipo").
+   Cuentas y razones: docs/10_propuesta_suscripciones.md */
+const KITS = {
+  esencial: { nombre: { es: "Kit Esencial", en: "Essential kit" },
+    trae: { es: ["Gotero cónico tipo V60", "100 filtros", "Cuchara medidora", "Guía de preparación"],
+            en: ["V60-style cone dripper", "100 filters", "Measuring scoop", "Brewing guide"] } },
+  completo: { nombre: { es: "Kit Completo", en: "Complete kit" },
+    trae: { es: ["Gotero cónico tipo V60", "100 filtros", "Servidor de vidrio 600 ml", "Balanza con temporizador", "Guía de preparación"],
+            en: ["V60-style cone dripper", "100 filters", "600 ml glass server", "Scale with timer", "Brewing guide"] } },
+  barista: { nombre: { es: "Kit Barista", en: "Barista kit" },
+    trae: { es: ["Todo el Kit Completo", "Tetera cuello de cisne", "Molino manual de muela cónica"],
+            en: ["Everything in the Complete kit", "Gooseneck kettle", "Conical burr hand grinder"] } },
+};
+const PLANES = [
+  { id: "semilla", nombre: { es: "Semilla", en: "Seed" }, kit: "esencial",
+    para: { es: "Para empezar a preparar en casa", en: "To start brewing at home" },
+    mes: 72000, inscripcion: 169000, seisKit: 459000, seisSinKit: 399000, molienda: "media-fina",
+    cada: { es: ["250 g de café de especialidad", "20 filtros", "Molienda a tu gusto", "La receta del mes y su video"],
+            en: ["250 g of specialty coffee", "20 filters", "Ground to your taste", "The month's recipe and video"] } },
+  { id: "cosecha", nombre: { es: "Cosecha", en: "Harvest" }, kit: "completo", destacado: true,
+    para: { es: "Para comparar dos fincas cada mes", en: "To compare two farms every month" },
+    mes: 105000, inscripcion: 319000, seisKit: 679000, seisSinKit: 585000, molienda: "media-fina",
+    cada: { es: ["2 × 250 g de dos fincas distintas", "40 filtros", "Molienda a tu gusto", "La receta del mes y su video", "Acceso anticipado a la subasta"],
+            en: ["2 × 250 g from two different farms", "40 filters", "Ground to your taste", "The month's recipe and video", "Early access to the auction"] } },
+  { id: "barista", nombre: { es: "Barista", en: "Barista" }, kit: "barista",
+    para: { es: "Para el ritual completo, moliendo en casa", en: "For the full ritual, grinding at home" },
+    mes: 115000, inscripcion: 549000, seisKit: 849000, seisSinKit: 639000, molienda: "grano",
+    cada: { es: ["2 × 250 g en grano, de dos fincas", "40 filtros", "Algo del oficio cada tres meses", "La receta del mes y su video", "Acceso anticipado a la subasta"],
+            en: ["2 × 250 g whole bean, from two farms", "40 filters", "A brewing extra every three months", "The month's recipe and video", "Early access to the auction"] } },
+];
+const CAFETERIA = { id: "cafeteria", nombre: { es: "Cafetería", en: "Café" }, mes: 460000,
+  desc: { es: "Dos kilos de Bourbon rosado en grano al mes: $230.000 el kilo, frente a $245.000 suelto.",
+          en: "Two kilos of whole bean Pink Bourbon a month: COP 230,000 per kilo, against 245,000 bought loose." },
+  incluye: { es: ["2 kg en grano cada mes", "Envío incluido", "Tostión a tu perfil", "Material para tu carta", "¿Más de 2 kg? Te cotizamos"],
+             en: ["2 kg whole bean monthly", "Shipping included", "Roast to your profile", "Menu material", "More than 2 kg? Ask for a quote"] } };
+
+/* Lo que cuesta cada forma de pago y cuánto se ahorra frente a mes a mes (seis envíos). */
+function precioPlan(p, conKit, seis) {
+  if (conKit && seis) return { total: p.seisKit, ahorro: p.inscripcion + 5 * p.mes - p.seisKit };
+  if (conKit) return { hoy: p.inscripcion, luego: p.mes };
+  if (seis) return { total: p.seisSinKit, ahorro: 6 * p.mes - p.seisSinKit };
+  return { luego: p.mes };
+}
 
 /* ---------- SEO: sitio, rutas y textos de cada página ---------- */
 CONFIG.sitio = "https://cafeweb-five.vercel.app";   // cambiar cuando haya dominio propio

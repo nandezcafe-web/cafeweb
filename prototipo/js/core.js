@@ -162,17 +162,6 @@ function seed() {
     ],
 
     /* ---------- SUSCRIPCIÓN ---------- */
-    planes: [
-      { id: "descubrir", nombre: { es: "Descubrir", en: "Discover" }, precio: 68000, envios: 1,
-        desc: { es: "Una bolsa de 250 g al mes del café de especialidad del momento (hoy, el Bourbon rosado).", en: "One 250 g bag a month of our current specialty coffee (today, the Pink Bourbon)." },
-        incluye: { es: ["250 g cada mes", "Envío incluido", "Molienda a tu gusto", "Ficha del lote en cada envío", "Sin permanencia"], en: ["250 g every month", "Shipping included", "Ground to your taste", "Lot data sheet in every shipment", "No minimum term"] } },
-      { id: "dos", nombre: { es: "Dos fincas", en: "Two farms" }, precio: 120000, envios: 2, destacado: true,
-        desc: { es: "Dos bolsas de 250 g de fincas distintas, para comparar en la misma semana (hoy, Bourbon rosado y Castillo).", en: "Two 250 g bags from different farms, to compare side by side (today, Pink Bourbon and Castillo)." },
-        incluye: { es: ["2 × 250 g cada mes", "Envío incluido", "Dos orígenes distintos", "Molienda a tu gusto", "Acceso anticipado a la subasta", "Sin permanencia"], en: ["2 × 250 g monthly", "Shipping included", "Two different origins", "Ground to your taste", "Early access to the auction", "No minimum term"] } },
-      { id: "cafeteria", nombre: { es: "Cafetería", en: "Café" }, precio: 460000, envios: 2,
-        desc: { es: "Dos kilos de Bourbon rosado en grano al mes: $230.000 el kilo, frente a $245.000 suelto.", en: "Two kilos of whole bean Pink Bourbon a month: COP 230,000 per kilo, against 245,000 bought loose." },
-        incluye: { es: ["2 kg en grano cada mes", "Envío incluido", "Tostión a tu perfil", "Material para tu carta", "¿Más de 2 kg? Te cotizamos"], en: ["2 kg whole bean monthly", "Shipping included", "Roast to your profile", "Menu material", "More than 2 kg? Ask for a quote"] } },
-    ],
 
     /* ---------- DIARIO (blog) — PENDIENTE de contenido real ---------- */
     entradas: [
@@ -278,6 +267,56 @@ const MOLIENDAS = [
   { id: "gruesa", es: "Gruesa · prensa francesa", en: "Coarse · French press" },
   { id: "extragruesa", es: "Extragruesa · cold brew", en: "Extra coarse · cold brew" },
 ];
+
+/* ---------- SUSCRIPCIÓN ----------
+   Tres planes para la casa y uno para cafeterías. Viven aquí y no en los
+   datos guardados, para que nadie vea precios viejos.
+   Cada plan se paga de dos formas:
+     · mes a mes: una inscripción (el kit y el primer envío) y luego la mensualidad;
+     · 6 envíos por adelantado: un solo pago, más barato.
+   Y con kit o sin él ("ya tengo mi equipo").
+   Cuentas y razones: docs/10_propuesta_suscripciones.md */
+const KITS = {
+  esencial: { nombre: { es: "Kit Esencial", en: "Essential kit" },
+    trae: { es: ["Gotero cónico tipo V60", "100 filtros", "Cuchara medidora", "Guía de preparación"],
+            en: ["V60-style cone dripper", "100 filters", "Measuring scoop", "Brewing guide"] } },
+  completo: { nombre: { es: "Kit Completo", en: "Complete kit" },
+    trae: { es: ["Gotero cónico tipo V60", "100 filtros", "Servidor de vidrio 600 ml", "Balanza con temporizador", "Guía de preparación"],
+            en: ["V60-style cone dripper", "100 filters", "600 ml glass server", "Scale with timer", "Brewing guide"] } },
+  barista: { nombre: { es: "Kit Barista", en: "Barista kit" },
+    trae: { es: ["Todo el Kit Completo", "Tetera cuello de cisne", "Molino manual de muela cónica"],
+            en: ["Everything in the Complete kit", "Gooseneck kettle", "Conical burr hand grinder"] } },
+};
+const PLANES = [
+  { id: "semilla", nombre: { es: "Semilla", en: "Seed" }, kit: "esencial",
+    para: { es: "Para empezar a preparar en casa", en: "To start brewing at home" },
+    mes: 72000, inscripcion: 169000, seisKit: 459000, seisSinKit: 399000, molienda: "media-fina",
+    cada: { es: ["250 g de café de especialidad", "20 filtros", "Molienda a tu gusto", "La receta del mes y su video"],
+            en: ["250 g of specialty coffee", "20 filters", "Ground to your taste", "The month's recipe and video"] } },
+  { id: "cosecha", nombre: { es: "Cosecha", en: "Harvest" }, kit: "completo", destacado: true,
+    para: { es: "Para comparar dos fincas cada mes", en: "To compare two farms every month" },
+    mes: 105000, inscripcion: 319000, seisKit: 679000, seisSinKit: 585000, molienda: "media-fina",
+    cada: { es: ["2 × 250 g de dos fincas distintas", "40 filtros", "Molienda a tu gusto", "La receta del mes y su video", "Acceso anticipado a la subasta"],
+            en: ["2 × 250 g from two different farms", "40 filters", "Ground to your taste", "The month's recipe and video", "Early access to the auction"] } },
+  { id: "barista", nombre: { es: "Barista", en: "Barista" }, kit: "barista",
+    para: { es: "Para el ritual completo, moliendo en casa", en: "For the full ritual, grinding at home" },
+    mes: 115000, inscripcion: 549000, seisKit: 849000, seisSinKit: 639000, molienda: "grano",
+    cada: { es: ["2 × 250 g en grano, de dos fincas", "40 filtros", "Algo del oficio cada tres meses", "La receta del mes y su video", "Acceso anticipado a la subasta"],
+            en: ["2 × 250 g whole bean, from two farms", "40 filters", "A brewing extra every three months", "The month's recipe and video", "Early access to the auction"] } },
+];
+const CAFETERIA = { id: "cafeteria", nombre: { es: "Cafetería", en: "Café" }, mes: 460000,
+  desc: { es: "Dos kilos de Bourbon rosado en grano al mes: $230.000 el kilo, frente a $245.000 suelto.",
+          en: "Two kilos of whole bean Pink Bourbon a month: COP 230,000 per kilo, against 245,000 bought loose." },
+  incluye: { es: ["2 kg en grano cada mes", "Envío incluido", "Tostión a tu perfil", "Material para tu carta", "¿Más de 2 kg? Te cotizamos"],
+             en: ["2 kg whole bean monthly", "Shipping included", "Roast to your profile", "Menu material", "More than 2 kg? Ask for a quote"] } };
+
+/* Lo que cuesta cada forma de pago y cuánto se ahorra frente a mes a mes (seis envíos). */
+function precioPlan(p, conKit, seis) {
+  if (conKit && seis) return { total: p.seisKit, ahorro: p.inscripcion + 5 * p.mes - p.seisKit };
+  if (conKit) return { hoy: p.inscripcion, luego: p.mes };
+  if (seis) return { total: p.seisSinKit, ahorro: 6 * p.mes - p.seisSinKit };
+  return { luego: p.mes };
+}
 
 /* ---------- SEO: sitio, rutas y textos de cada página ---------- */
 CONFIG.sitio = "https://cafeweb-five.vercel.app";   // cambiar cuando haya dominio propio

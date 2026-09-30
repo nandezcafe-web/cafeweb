@@ -1363,3 +1363,46 @@ body[data-view=subasta] .tab-luz{background:var(--crema)}
   .faq-lista .faq summary::after{flex-basis:34px;height:34px}
 }
 @media (prefers-reduced-motion:reduce){.faq-lista .faq summary::after{transition:none}.faq-lista .faq[open] p{animation:none}}
+
+/* ============================================================
+   SUSCRIPCIÓN: dos preguntas arriba (¿kit? ¿cómo pagas?) que cambian
+   el precio de las tres tarjetas, y el ahorro dicho en pesos.
+   ============================================================ */
+.sub-opciones{display:flex;flex-wrap:wrap;gap:12px 16px;margin:6px 0 30px}
+.sub-opciones .seg{background:var(--v-fondo);border:1px solid var(--v-canto);box-shadow:var(--v-brillo);
+  backdrop-filter:var(--v-lente);-webkit-backdrop-filter:var(--v-lente)}
+.sub-opciones .seg button{padding:10px 16px;font-size:14px;transition:background .25s var(--ease-out),color .25s var(--ease-out)}
+.sub-opciones .seg button[aria-pressed=true]{background:var(--ink);color:var(--paper);box-shadow:inset 0 1px 1px rgba(255,255,255,.18)}
+.plan{gap:12px}
+.plan-para{margin:-4px 0 4px;color:var(--ink-2);font-size:14.5px}
+.plan-precio{flex-wrap:wrap;row-gap:2px}
+.plan-precio b{font-size:2rem}
+.plan-precio small{font-size:13px}
+.plan-luego{margin:-6px 0 0;color:var(--ink-2);font-size:14px}
+.plan-ahorro{margin:-6px 0 0;align-self:flex-start;padding:4px 10px;border-radius:999px;font-size:13.5px;
+  background:rgba(46,71,50,.12);color:var(--leaf)}
+.plan-kit{padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.4);border:1px solid var(--v-canto)}
+.plan-kit b{font:400 1.15rem/1.2 var(--serif)}
+.plan-kit ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:5px;font-size:13.5px;color:var(--ink-2)}
+.plan-kit li::before{content:"+ ";color:var(--cherry);font-weight:700}
+.plan-cada{margin:4px 0 -6px;font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.plan-cafeteria{max-width:520px;margin-top:30px}
+.sub-resumen{margin:0 0 6px;padding:12px 14px;border-radius:14px;background:var(--paper-2);line-height:1.6}
+
+/* la ruta: seis pasos en orden, con su número */
+.ruta{list-style:none;counter-reset:ruta;margin:34px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line)}
+.ruta li{counter-increment:ruta;display:grid;gap:6px;align-content:start;padding:24px 24px 22px 0;border-bottom:1px solid var(--line)}
+.ruta li:not(:nth-child(3n+1)){padding-left:24px;border-left:1px solid var(--line)}
+.ruta li::before{content:"Mes " counter(ruta);font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--cherry)}
+html[lang=en] .ruta li::before{content:"Month " counter(ruta)}
+.ruta b{font:400 1.3rem/1.2 var(--serif)}
+.ruta span{color:var(--ink-2);font-size:14.5px}
+.ruta-comunidad{list-style:none;margin:28px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:10px}
+.ruta-comunidad li{padding:10px 16px;border-radius:999px;font-size:14px;color:var(--ink);
+  background:var(--v-fondo-2);border:1px solid var(--v-canto);box-shadow:var(--v-brillo)}
+@media (max-width:760px){
+  .ruta{grid-template-columns:1fr}
+  .ruta li,.ruta li:not(:nth-child(3n+1)){padding:20px 0;border-left:0}
+  .sub-opciones .seg{width:100%}
+  .sub-opciones .seg button{flex:1;justify-content:center;padding:10px 8px;font-size:13px}
+}
