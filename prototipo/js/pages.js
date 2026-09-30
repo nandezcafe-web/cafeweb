@@ -23,7 +23,7 @@ function bloquePrecio(p, en) {
 function viewSuscripcion() {
   const en = UI.lang === "en", abierta = Object.keys(CONFIG.pagos.suscripcion).length > 0;
   const kit = subKit(), seis = subSeis();
-  const op = (k, v, activo, txt) => `<button type="button" data-act="sub-op" data-k="${k}" data-v="${v}" aria-pressed="${activo}">${txt}</button>`;
+  const op = (k, v, activo, txt) => `<button type="button" id="sub-${k}-${v}" data-act="sub-op" data-k="${k}" data-v="${v}" aria-pressed="${activo}">${txt}</button>`;
   const como = en
     ? [["montana", "Every month or every two", "Choose how often it arrives, and change it whenever you like. Each box costs the same."],
        ["hoja", "Two ways to pay", "Monthly, with a one-time sign-up that brings the kit. Or six boxes paid in advance, which costs less."],
