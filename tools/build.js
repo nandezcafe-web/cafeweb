@@ -27,7 +27,7 @@ const IMG_V = require("crypto").createHash("md5")
 const VERSION = require("crypto").createHash("md5").update(css + TODOS.map((f) => read("js/" + f + ".js")).join("") + IMG_V).digest("hex").slice(0, 8);
 const FUENTES = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">`;
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">`;
 
 /* ---------- 1. un “navegador” mínimo para ejecutar las vistas en Node ---------- */
 function mundo(lang) {

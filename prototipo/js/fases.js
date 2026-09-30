@@ -47,7 +47,6 @@ function portada(en) {
       </div>
       <ul class="portada-sellos reveal" style="--i:5">${sellos.map(([k, a, b]) => `<li>${icono(k)}<span>${a}<br>${b}</span></li>`).join("")}</ul>
     </div>
-    <p class="portada-firma" aria-hidden="true">${en ? "Grown by neighbours" : "Cosechado por vecinos"}</p>
   </section>`;
 }
 

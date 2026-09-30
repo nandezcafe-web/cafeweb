@@ -1143,12 +1143,6 @@ dialog{background:rgba(239,229,215,.84);backdrop-filter:var(--v-lente-2);-webkit
 .portada-sellos li{display:flex;align-items:center;gap:10px;font:600 11px/1.35 var(--sans);letter-spacing:.1em;
   text-transform:uppercase;color:rgba(244,234,215,.86)}
 .portada-sellos svg{width:28px;height:28px;flex:0 0 auto;color:var(--luz)}
-/* la firma a mano, junto a la bolsa: la única letra de pluma del sitio */
-.portada-firma{position:absolute;left:67%;top:33%;margin:0;pointer-events:none;
-  font:400 clamp(1.7rem,2.7vw,2.5rem)/1 "Nothing You Could Do",cursive;color:var(--luz);
-  transform:rotate(-8deg);text-shadow:0 2px 14px rgba(0,0,0,.45);
-  animation:firma 1.2s var(--ease-out) 1.1s backwards}
-@keyframes firma{from{opacity:0;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0 0 0 0)}}
 
 @media (max-width:760px){
   .portada{display:flex;flex-direction:column;aspect-ratio:auto;max-height:none;min-height:0;border-radius:26px}
@@ -1159,7 +1153,6 @@ dialog{background:rgba(239,229,215,.84);backdrop-filter:var(--v-lente-2);-webkit
   /* la foto sube a encontrarse con el verde del texto, sin corte */
   .portada-foto::after{content:"";position:absolute;inset:0 0 auto;height:26%;
     background:linear-gradient(180deg,#18231b,transparent)}
-  .portada-firma{display:none}
   .portada-sellos{gap:14px 20px}
   .portada-sellos li{font-size:10.5px}
 }
