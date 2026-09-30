@@ -57,7 +57,8 @@ const A = (v, nivel, fuente, fecha, extra = {}) => ({ v, nivel, fuente, fecha, .
 const T = {
   nav_inicio: { es: "Inicio", en: "Home" }, nav_cafes: { es: "Cafés", en: "Coffees" },
   nav_subasta: { es: "Subasta", en: "Auction" }, nav_suscripcion: { es: "Suscripción", en: "Subscription" },
-  nav_diario: { es: "Diario", en: "Journal" },
+  nav_diario: { es: "Diario", en: "Journal" }, nav_contacto: { es: "Contacto", en: "Contact" },
+  nav_pedido: { es: "Pedido", en: "Order" }, nav_mas: { es: "Más", en: "More" },
   comprar: { es: "Comprar", en: "Buy" }, agregar: { es: "Agregar al pedido", en: "Add to order" },
   ver_cafe: { es: "Ver el café", en: "View coffee" }, agotado: { es: "Agotado", en: "Sold out" },
   pedido: { es: "Tu pedido", en: "Your order" }, total: { es: "Total", en: "Total" },

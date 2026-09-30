@@ -21,8 +21,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=1cafabde">
-<link rel="stylesheet" href="/auction.css?v=1cafabde">
+<link rel="stylesheet" href="/styles.css?v=66ded87d">
+<link rel="stylesheet" href="/auction.css?v=66ded87d">
 <script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Café","url":"https://cafeweb-five.vercel.app","email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"Familia cafetera de Chinácota. Le compramos los mejores lotes a fincas de Norte de Santander y los tostamos con nuestra marca: un café por finca, con su altura, su variedad, su proceso y su puntaje de catación."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Café","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"es"}]}</script>
 </head>
 <body data-view="diario">
@@ -33,6 +33,7 @@
       <b>Nandez</b><small>café de origen</small>
     </a>
     <nav class="tabs" id="nav-principal" aria-label="Secciones">
+      <span class="tab-luz" aria-hidden="true"></span>
       <a class="tab" href="/" data-act="go" data-to="inicio" data-i18n="nav_inicio">Inicio </a>
       <a class="tab" href="/cafes" data-act="go" data-to="cafes" data-i18n="nav_cafes">Cafés </a>
       <a class="tab" href="/subasta" data-act="go" data-to="subasta" data-i18n="nav_subasta">Subasta <span class="live-dot" id="nav-live"></span><span class="mono nav-time" data-live-time></span></a>
@@ -52,6 +53,20 @@
     </div>
   </div>
 </header>
+<nav class="dock" aria-label="Accesos">
+  <a class="dock-it" href="/" data-act="go" data-to="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4Z"/></svg><span data-i18n="nav_inicio">Inicio</span></a>
+  <a class="dock-it" href="/cafes" data-act="go" data-to="cafes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="6.2" ry="8.6" transform="rotate(32 12 12)"/><path d="M8.8 17.6c2.8-2.6 3.6-8.6 6.4-11.2"/></svg><span data-i18n="nav_cafes">Cafés</span></a>
+  <a class="dock-it" href="/subasta" data-act="go" data-to="subasta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.4 1.8M9.5 3.5h5"/></svg><span class="live-dot" id="dock-live"></span><span data-i18n="nav_subasta">Subasta</span></a>
+  <button class="dock-it" id="dock-pedido" data-act="carrito"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg><span class="dock-n" id="dock-n" hidden></span><span data-i18n="nav_pedido">Pedido</span></button>
+  <button class="dock-it" id="dock-mas" data-act="mas" aria-expanded="false" aria-controls="dock-hoja"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/></svg><span data-i18n="nav_mas">Más</span></button>
+</nav>
+<div class="dock-hoja" id="dock-hoja" hidden>
+  <a class="tab" href="/suscripcion" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Suscripción </a><a class="tab" href="/diario" data-act="go" data-to="diario" data-i18n="nav_diario" aria-current="page">Diario </a><a class="tab" href="/contacto" data-act="go" data-to="contacto" data-i18n="nav_contacto">Contacto </a>
+  <div class="lang" role="group" aria-label="Idioma">
+    <button data-act="lang" data-lang="es" aria-pressed="true">Español</button>
+    <button data-act="lang" data-lang="en" aria-pressed="false">English</button>
+  </div>
+</div>
 
 <main class="wrap calm" id="view"><div class="view-head">
       <div><p class="eyebrow reveal">Diario</p>
@@ -94,11 +109,11 @@
 </dialog>
 
 <script>window.IMG_V = "878b9878";</script>
-<script src="/js/core.js?v=1cafabde"></script>
-<script src="/js/fases.js?v=1cafabde"></script>
-<script src="/js/shop.js?v=1cafabde"></script>
-<script src="/js/pages.js?v=1cafabde"></script>
-<script src="/js/auction.js?v=1cafabde"></script>
-<script src="/js/main.js?v=1cafabde"></script>
+<script src="/js/core.js?v=66ded87d"></script>
+<script src="/js/fases.js?v=66ded87d"></script>
+<script src="/js/shop.js?v=66ded87d"></script>
+<script src="/js/pages.js?v=66ded87d"></script>
+<script src="/js/auction.js?v=66ded87d"></script>
+<script src="/js/main.js?v=66ded87d"></script>
 </body>
 </html>

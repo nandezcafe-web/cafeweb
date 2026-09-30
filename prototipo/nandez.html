@@ -1217,6 +1217,83 @@ dialog{background:rgba(239,229,215,.84);backdrop-filter:var(--v-lente-2);-webkit
 
 .cart-art img{position:absolute;inset:4px;width:calc(100% - 8px);height:calc(100% - 8px);object-fit:contain}
 
+/* ============================================================
+   NAVEGACIÓN FLOTANTE.
+   Computador: la píldora se aparta al bajar, vuelve al subir y se compacta
+   al hacer scroll; una sola luz oscura marca la sección y se desliza.
+   Celular: la navegación baja al pulgar, en una barra que flota abajo.
+   ============================================================ */
+.top{transition:transform .5s var(--ease-out)}
+body.nav-oculta .top{transform:translateY(calc(-100% - 24px))}
+.top-inner{transition:max-width .5s var(--ease-out),padding .35s var(--ease-out),box-shadow .35s var(--ease-out)}
+body.nav-compacta .top-inner{max-width:1040px;padding-block:5px;
+  box-shadow:var(--v-brillo),0 22px 44px -24px rgba(74,46,27,.6)}
+body.nav-compacta .brand small{display:none}
+
+/* la luz: sin JavaScript, cada pestaña activa lleva su propio fondo y se lee igual */
+.tabs{position:relative}
+.tab{position:relative;z-index:1}
+.tabs.con-luz .tab[aria-current=page]{background:transparent;transition:color .3s var(--ease-out)}
+.tab-luz{position:absolute;left:0;top:0;z-index:0;height:100%;width:var(--w,0);border-radius:999px;
+  transform:translateX(var(--x,0));background:var(--ink);opacity:0;pointer-events:none;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.18),0 6px 14px -8px rgba(29,20,15,.6);
+  transition:transform .5s var(--ease-out),width .5s var(--ease-out),opacity .2s}
+.tab-luz.quieta{transition:none}
+body[data-view=subasta] .tab-luz{background:var(--crema)}
+
+.dock,.dock-hoja{display:none}
+
+@media (max-width:760px){
+  /* arriba queda solo la marca, y se va con la página */
+  .top,body[data-view=subasta] .top{position:relative}
+  body.nav-oculta .top{transform:none}
+  .top-inner .tabs,.top-inner .lang,.top-inner .menu-btn,.top-inner .cart-btn{display:none!important}
+  .top-inner{padding:9px 16px}
+
+  .dock{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;position:fixed;z-index:70;
+    left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));padding:6px;border-radius:26px;
+    background:var(--v-fondo-2);backdrop-filter:var(--v-lente-2);-webkit-backdrop-filter:var(--v-lente-2);
+    box-shadow:var(--v-brillo),0 20px 44px -18px rgba(74,46,27,.6)}
+  .dock::before,.dock-hoja::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.4px;pointer-events:none;
+    background:linear-gradient(180deg,var(--v-luz) 0%,var(--v-luz-2) 22%,transparent 42%,transparent 60%,var(--v-luz-2) 82%,var(--v-luz) 100%);
+    -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+  .dock-it{position:relative;display:grid;justify-items:center;align-content:center;gap:3px;min-height:54px;padding:6px 2px 5px;
+    border:0;border-radius:20px;background:none;color:var(--ink-2);font:600 11px/1 var(--sans);text-decoration:none;cursor:pointer;
+    -webkit-tap-highlight-color:transparent;transition:background .25s var(--ease-out),color .25s var(--ease-out),transform .12s var(--ease-out)}
+  .dock-it svg{width:23px;height:23px}
+  .dock-it:active{transform:scale(.93)}
+  .dock-it[aria-current=page],.dock-it[aria-expanded=true]{background:var(--ink);color:var(--paper)}
+  .dock-it:focus-visible{outline:2px solid var(--cherry);outline-offset:-2px}
+  .dock-it .live-dot{position:absolute;top:8px;left:calc(50% + 7px);width:7px;height:7px}
+  .dock-n{position:absolute;top:4px;left:calc(50% + 5px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;
+    background:var(--cherry);color:#fff;font:600 11px/18px var(--mono);text-align:center}
+  body[data-view=subasta] .dock-it{color:#d3c0a5}
+  body[data-view=subasta] .dock-it[aria-current=page],body[data-view=subasta] .dock-it[aria-expanded=true]{background:var(--crema);color:var(--roast)}
+
+  /* "Más": una hoja que sale de la barra, justo encima */
+  .dock-hoja:not([hidden]){display:grid;gap:2px;position:fixed;z-index:69;left:10px;right:10px;
+    bottom:calc(88px + env(safe-area-inset-bottom,0px));padding:8px;border-radius:24px;
+    background:var(--v-fondo-2);backdrop-filter:var(--v-lente-2);-webkit-backdrop-filter:var(--v-lente-2);
+    box-shadow:var(--v-brillo),0 24px 50px -20px rgba(74,46,27,.6);animation:hoja .32s var(--ease-out)}
+  @keyframes hoja{from{opacity:0;transform:translateY(14px) scale(.98)}}
+  .dock-hoja .tab{display:flex;min-height:50px;padding:0 16px;border-radius:16px;font-size:16px;align-items:center}
+  .dock-hoja .tab[aria-current=page]{background:var(--ink);color:var(--paper)}
+  .dock-hoja .lang{display:flex;margin:6px 4px 4px;padding:3px}
+  .dock-hoja .lang button{flex:1;min-height:44px;font-size:13px}
+
+  /* lo que flota abajo se corre para no quedar tapado por la barra */
+  .tray{bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+  .wrap{padding-bottom:calc(130px + env(safe-area-inset-bottom,0px))}
+}
+@media (prefers-reduced-motion:reduce){.top,.top-inner,.tab-luz,.dock-it{transition:none}.dock-hoja:not([hidden]){animation:none}}
+/* sobre la foto oscura de la portada el vidrio fino se vuelve gris: la barra y la hoja
+   llevan más cuerpo, porque ahí se lee y se decide */
+@media (max-width:760px){
+  .dock{background:rgba(239,229,215,.8)}
+  .dock-hoja:not([hidden]){background:rgba(239,229,215,.92)}
+  body[data-view=subasta] .dock,body[data-view=subasta] .dock-hoja:not([hidden]){background:rgba(58,36,22,.88)}
+}
+
 /* sala de subasta */
 .auction{color:#E6D7C3}
 .auction .kicker{color:#c9b497}
@@ -1350,6 +1427,7 @@ details.rule p{color:#d3c0a5;margin:8px 0 0;font-size:14px}
       <b>Nandez</b><small>café de origen</small>
     </a>
     <nav class="tabs" id="nav-principal" aria-label="Secciones">
+      <span class="tab-luz" aria-hidden="true"></span>
       <a class="tab" href="/" data-act="go" data-to="inicio" data-i18n="nav_inicio" aria-current="page">Inicio </a>
       <a class="tab" href="/cafes" data-act="go" data-to="cafes" data-i18n="nav_cafes">Cafés </a>
       <a class="tab" href="/subasta" data-act="go" data-to="subasta" data-i18n="nav_subasta">Subasta <span class="live-dot" id="nav-live"></span><span class="mono nav-time" data-live-time></span></a>
@@ -1369,6 +1447,20 @@ details.rule p{color:#d3c0a5;margin:8px 0 0;font-size:14px}
     </div>
   </div>
 </header>
+<nav class="dock" aria-label="Accesos">
+  <a class="dock-it" href="/" data-act="go" data-to="inicio" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4Z"/></svg><span data-i18n="nav_inicio">Inicio</span></a>
+  <a class="dock-it" href="/cafes" data-act="go" data-to="cafes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="6.2" ry="8.6" transform="rotate(32 12 12)"/><path d="M8.8 17.6c2.8-2.6 3.6-8.6 6.4-11.2"/></svg><span data-i18n="nav_cafes">Cafés</span></a>
+  <a class="dock-it" href="/subasta" data-act="go" data-to="subasta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.4 1.8M9.5 3.5h5"/></svg><span class="live-dot" id="dock-live"></span><span data-i18n="nav_subasta">Subasta</span></a>
+  <button class="dock-it" id="dock-pedido" data-act="carrito"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg><span class="dock-n" id="dock-n" hidden></span><span data-i18n="nav_pedido">Pedido</span></button>
+  <button class="dock-it" id="dock-mas" data-act="mas" aria-expanded="false" aria-controls="dock-hoja"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/></svg><span data-i18n="nav_mas">Más</span></button>
+</nav>
+<div class="dock-hoja" id="dock-hoja" hidden>
+  <a class="tab" href="/suscripcion" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Suscripción </a><a class="tab" href="/diario" data-act="go" data-to="diario" data-i18n="nav_diario">Diario </a><a class="tab" href="/contacto" data-act="go" data-to="contacto" data-i18n="nav_contacto">Contacto </a>
+  <div class="lang" role="group" aria-label="Idioma">
+    <button data-act="lang" data-lang="es" aria-pressed="true">Español</button>
+    <button data-act="lang" data-lang="en" aria-pressed="false">English</button>
+  </div>
+</div>
 
 <main class="wrap" id="view">
   <section class="portada" aria-labelledby="portada-titulo">
@@ -1631,7 +1723,8 @@ const A = (v, nivel, fuente, fecha, extra = {}) => ({ v, nivel, fuente, fecha, .
 const T = {
   nav_inicio: { es: "Inicio", en: "Home" }, nav_cafes: { es: "Cafés", en: "Coffees" },
   nav_subasta: { es: "Subasta", en: "Auction" }, nav_suscripcion: { es: "Suscripción", en: "Subscription" },
-  nav_diario: { es: "Diario", en: "Journal" },
+  nav_diario: { es: "Diario", en: "Journal" }, nav_contacto: { es: "Contacto", en: "Contact" },
+  nav_pedido: { es: "Pedido", en: "Order" }, nav_mas: { es: "Más", en: "More" },
   comprar: { es: "Comprar", en: "Buy" }, agregar: { es: "Agregar al pedido", en: "Add to order" },
   ver_cafe: { es: "Ver el café", en: "View coffee" }, agotado: { es: "Agotado", en: "Sold out" },
   pedido: { es: "Tu pedido", en: "Your order" }, total: { es: "Total", en: "Total" },
@@ -3291,7 +3384,7 @@ function go(view, id) {
   UI.view = view;
   if (view === "cafe" && id) UI.cafe = id;
   if (view === "entrada" && id) UI.entrada = id;
-  UI.animate = true; closeModal(); menu(false);
+  UI.animate = true; closeModal(); menu(false); mas(false);
   const url = ruta(view, id || (view === "cafe" ? UI.cafe : view === "entrada" ? UI.entrada : null));
   try { if (location.pathname !== url) history.pushState({ view }, "", url); } catch {}
   render();
@@ -3301,6 +3394,65 @@ function menu(abrir) {
   const b = $("#menu-btn"); document.body.classList.toggle("menu-abierto", !!abrir);
   if (b) b.setAttribute("aria-expanded", String(!!abrir));
 }
+/* "Más", en la barra del celular: lo que no cabe en los cinco accesos */
+function mas(abrir) {
+  const h = $("#dock-hoja"), b = $("#dock-mas");
+  if (!h) return;
+  h.hidden = !abrir;
+  document.body.classList.toggle("mas-abierto", !!abrir);
+  if (b) b.setAttribute("aria-expanded", String(!!abrir));
+}
+
+/* La luz de la sección activa: una sola píldora que se desliza de una a otra.
+   La primera vez se pone en su sitio sin animarse, para que no entre volando. */
+function moverLuz() {
+  const tabs = $(".tabs"), luz = tabs && tabs.querySelector(".tab-luz");
+  if (!luz) return;
+  const act = tabs.querySelector('.tab[aria-current="page"]');
+  if (!act || !act.offsetWidth) { luz.style.opacity = "0"; return; }
+  const primera = !tabs.classList.contains("con-luz");
+  if (primera) luz.classList.add("quieta");
+  luz.style.setProperty("--x", act.offsetLeft + "px");
+  luz.style.setProperty("--w", act.offsetWidth + "px");
+  luz.style.opacity = "1";
+  tabs.classList.add("con-luz");
+  if (primera) requestAnimationFrame(() => requestAnimationFrame(() => luz.classList.remove("quieta")));
+}
+
+/* Al bajar, la barra se aparta; al subir, vuelve. Hace falta moverse 40 px en
+   la misma dirección para que cambie: un temblor del dedo no la esconde. */
+function montarNav() {
+  const top = $(".top"), cuerpo = document.body;
+  if (!top || top.dataset.montada) return;
+  top.dataset.montada = "1";
+  let ultimo = Math.max(0, scrollY), acum = 0, pedido = null;
+  function mirar() {
+    pedido = null;
+    const y = Math.max(0, scrollY), d = y - ultimo;
+    ultimo = y;
+    cuerpo.classList.toggle("nav-compacta", y > 24);
+    const quieta = y < 140 || cuerpo.classList.contains("menu-abierto") || top.contains(document.activeElement);
+    if (quieta) { acum = 0; cuerpo.classList.remove("nav-oculta"); return; }
+    acum = Math.sign(d) === Math.sign(acum) ? acum + d : d;
+    if (acum > 40) cuerpo.classList.add("nav-oculta");
+    else if (acum < -10) cuerpo.classList.remove("nav-oculta");
+  }
+  addEventListener("scroll", () => { if (!pedido) pedido = requestAnimationFrame(mirar); }, { passive: true });
+  top.addEventListener("focusin", () => cuerpo.classList.remove("nav-oculta"));
+  /* respaldo para teclado: si Tab deja el foco en el menú, el menú se muestra */
+  addEventListener("keyup", (e) => { if (e.key === "Tab" && top.contains(document.activeElement)) cuerpo.classList.remove("nav-oculta"); });
+  /* con mouse, acercarse al borde de arriba la trae de vuelta */
+  if (matchMedia("(hover: hover) and (pointer: fine)").matches)
+    addEventListener("mousemove", (e) => { if (e.clientY < 70) cuerpo.classList.remove("nav-oculta"); }, { passive: true });
+  addEventListener("resize", moverLuz);
+  document.fonts?.ready.then(moverLuz);
+  /* tocar fuera de "Más" lo cierra */
+  document.addEventListener("click", (e) => {
+    if (cuerpo.classList.contains("mas-abierto") && !e.target.closest("#dock-hoja, #dock-mas")) mas(false);
+  });
+  mirar();
+}
+
 function renderNav() {
   const activa = UI.view === "cafe" ? "cafes" : UI.view === "entrada" ? "diario" : UI.view;
   document.querySelectorAll(".tab").forEach((x) => {
@@ -3314,6 +3466,16 @@ function renderNav() {
   if (bc) { bc.setAttribute("aria-label", (UI.lang === "en" ? "Order" : "Pedido") + (n ? ` (${n})` : "")); bc.classList.toggle("lleno", !!n); }
   if (bn) { bn.hidden = !n; bn.textContent = n; }
   $("#nav-live").classList.toggle("off", UI.au.ended);
+  document.querySelectorAll(".dock-it[data-to]").forEach((x) => {
+    x.setAttribute("aria-current", x.dataset.to === activa ? "page" : "false");
+    x.setAttribute("href", ruta(x.dataset.to));
+  });
+  document.querySelectorAll(".dock [data-i18n]").forEach((x) => { x.textContent = t(x.dataset.i18n); });
+  const dn = $("#dock-n"), dp = $("#dock-pedido");
+  if (dn) { dn.hidden = !n; dn.textContent = n; }
+  if (dp) dp.setAttribute("aria-label", (UI.lang === "en" ? "Order" : "Pedido") + (n ? ` (${n})` : ""));
+  $("#dock-live")?.classList.toggle("off", UI.au.ended);
+  moverLuz();
   document.querySelectorAll("[data-lang]").forEach((x) => x.setAttribute("aria-pressed", x.dataset.lang === UI.lang));
 }
 function cambiarIdioma(l) {
@@ -3353,6 +3515,7 @@ document.addEventListener("click", (e) => {
     case "cotizar": return cotizar(id);
     case "cotizar-ok": return cotizarOk();
     case "menu": return menu(!document.body.classList.contains("menu-abierto"));
+    case "mas": return mas(!document.body.classList.contains("mas-abierto"));
     case "sub": return suscribir(id);
     case "sub-ok": return suscribirOk(id);
     case "bid": return myBid(+el.dataset.steps);
@@ -3372,6 +3535,7 @@ document.addEventListener("keydown", (e) => {
   if ((e.key === "Enter" || e.key === " ") && x.getAttribute?.("role") === "button" && x.dataset.act) { e.preventDefault(); x.click(); }
   if (e.key === "Enter" && x.id === "au-custom") myBid(0);
   if (e.key === "Escape" && document.body.classList.contains("menu-abierto")) menu(false);
+  if (e.key === "Escape" && document.body.classList.contains("mas-abierto")) { mas(false); $("#dock-mas")?.focus(); }
 });
 $("#dlg").addEventListener("click", (e) => { if (e.target === $("#dlg")) closeModal(); });
 $("#cart")?.addEventListener("click", (e) => { if (e.target === $("#cart")) cerrarCarrito(); });
@@ -3387,6 +3551,7 @@ const r0 = vistaDeRuta(location.pathname);
 UI.view = VIEWS[r0.view] ? r0.view : "inicio";
 if (r0.id) { UI.cafe = r0.id; UI.entrada = r0.id; }
 render(true);
+montarNav();
 setInterval(() => {
   const a = UI.au, now = Date.now();
   if (!a.ended) { botTick(a, now); if (now >= a.endsAt) { endAuction(a); renderNav(); } }

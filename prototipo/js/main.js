@@ -154,7 +154,7 @@ function go(view, id) {
   UI.view = view;
   if (view === "cafe" && id) UI.cafe = id;
   if (view === "entrada" && id) UI.entrada = id;
-  UI.animate = true; closeModal(); menu(false);
+  UI.animate = true; closeModal(); menu(false); mas(false);
   const url = ruta(view, id || (view === "cafe" ? UI.cafe : view === "entrada" ? UI.entrada : null));
   try { if (location.pathname !== url) history.pushState({ view }, "", url); } catch {}
   render();
@@ -164,6 +164,65 @@ function menu(abrir) {
   const b = $("#menu-btn"); document.body.classList.toggle("menu-abierto", !!abrir);
   if (b) b.setAttribute("aria-expanded", String(!!abrir));
 }
+/* "Más", en la barra del celular: lo que no cabe en los cinco accesos */
+function mas(abrir) {
+  const h = $("#dock-hoja"), b = $("#dock-mas");
+  if (!h) return;
+  h.hidden = !abrir;
+  document.body.classList.toggle("mas-abierto", !!abrir);
+  if (b) b.setAttribute("aria-expanded", String(!!abrir));
+}
+
+/* La luz de la sección activa: una sola píldora que se desliza de una a otra.
+   La primera vez se pone en su sitio sin animarse, para que no entre volando. */
+function moverLuz() {
+  const tabs = $(".tabs"), luz = tabs && tabs.querySelector(".tab-luz");
+  if (!luz) return;
+  const act = tabs.querySelector('.tab[aria-current="page"]');
+  if (!act || !act.offsetWidth) { luz.style.opacity = "0"; return; }
+  const primera = !tabs.classList.contains("con-luz");
+  if (primera) luz.classList.add("quieta");
+  luz.style.setProperty("--x", act.offsetLeft + "px");
+  luz.style.setProperty("--w", act.offsetWidth + "px");
+  luz.style.opacity = "1";
+  tabs.classList.add("con-luz");
+  if (primera) requestAnimationFrame(() => requestAnimationFrame(() => luz.classList.remove("quieta")));
+}
+
+/* Al bajar, la barra se aparta; al subir, vuelve. Hace falta moverse 40 px en
+   la misma dirección para que cambie: un temblor del dedo no la esconde. */
+function montarNav() {
+  const top = $(".top"), cuerpo = document.body;
+  if (!top || top.dataset.montada) return;
+  top.dataset.montada = "1";
+  let ultimo = Math.max(0, scrollY), acum = 0, pedido = null;
+  function mirar() {
+    pedido = null;
+    const y = Math.max(0, scrollY), d = y - ultimo;
+    ultimo = y;
+    cuerpo.classList.toggle("nav-compacta", y > 24);
+    const quieta = y < 140 || cuerpo.classList.contains("menu-abierto") || top.contains(document.activeElement);
+    if (quieta) { acum = 0; cuerpo.classList.remove("nav-oculta"); return; }
+    acum = Math.sign(d) === Math.sign(acum) ? acum + d : d;
+    if (acum > 40) cuerpo.classList.add("nav-oculta");
+    else if (acum < -10) cuerpo.classList.remove("nav-oculta");
+  }
+  addEventListener("scroll", () => { if (!pedido) pedido = requestAnimationFrame(mirar); }, { passive: true });
+  top.addEventListener("focusin", () => cuerpo.classList.remove("nav-oculta"));
+  /* respaldo para teclado: si Tab deja el foco en el menú, el menú se muestra */
+  addEventListener("keyup", (e) => { if (e.key === "Tab" && top.contains(document.activeElement)) cuerpo.classList.remove("nav-oculta"); });
+  /* con mouse, acercarse al borde de arriba la trae de vuelta */
+  if (matchMedia("(hover: hover) and (pointer: fine)").matches)
+    addEventListener("mousemove", (e) => { if (e.clientY < 70) cuerpo.classList.remove("nav-oculta"); }, { passive: true });
+  addEventListener("resize", moverLuz);
+  document.fonts?.ready.then(moverLuz);
+  /* tocar fuera de "Más" lo cierra */
+  document.addEventListener("click", (e) => {
+    if (cuerpo.classList.contains("mas-abierto") && !e.target.closest("#dock-hoja, #dock-mas")) mas(false);
+  });
+  mirar();
+}
+
 function renderNav() {
   const activa = UI.view === "cafe" ? "cafes" : UI.view === "entrada" ? "diario" : UI.view;
   document.querySelectorAll(".tab").forEach((x) => {
@@ -177,6 +236,16 @@ function renderNav() {
   if (bc) { bc.setAttribute("aria-label", (UI.lang === "en" ? "Order" : "Pedido") + (n ? ` (${n})` : "")); bc.classList.toggle("lleno", !!n); }
   if (bn) { bn.hidden = !n; bn.textContent = n; }
   $("#nav-live").classList.toggle("off", UI.au.ended);
+  document.querySelectorAll(".dock-it[data-to]").forEach((x) => {
+    x.setAttribute("aria-current", x.dataset.to === activa ? "page" : "false");
+    x.setAttribute("href", ruta(x.dataset.to));
+  });
+  document.querySelectorAll(".dock [data-i18n]").forEach((x) => { x.textContent = t(x.dataset.i18n); });
+  const dn = $("#dock-n"), dp = $("#dock-pedido");
+  if (dn) { dn.hidden = !n; dn.textContent = n; }
+  if (dp) dp.setAttribute("aria-label", (UI.lang === "en" ? "Order" : "Pedido") + (n ? ` (${n})` : ""));
+  $("#dock-live")?.classList.toggle("off", UI.au.ended);
+  moverLuz();
   document.querySelectorAll("[data-lang]").forEach((x) => x.setAttribute("aria-pressed", x.dataset.lang === UI.lang));
 }
 function cambiarIdioma(l) {
@@ -216,6 +285,7 @@ document.addEventListener("click", (e) => {
     case "cotizar": return cotizar(id);
     case "cotizar-ok": return cotizarOk();
     case "menu": return menu(!document.body.classList.contains("menu-abierto"));
+    case "mas": return mas(!document.body.classList.contains("mas-abierto"));
     case "sub": return suscribir(id);
     case "sub-ok": return suscribirOk(id);
     case "bid": return myBid(+el.dataset.steps);
@@ -235,6 +305,7 @@ document.addEventListener("keydown", (e) => {
   if ((e.key === "Enter" || e.key === " ") && x.getAttribute?.("role") === "button" && x.dataset.act) { e.preventDefault(); x.click(); }
   if (e.key === "Enter" && x.id === "au-custom") myBid(0);
   if (e.key === "Escape" && document.body.classList.contains("menu-abierto")) menu(false);
+  if (e.key === "Escape" && document.body.classList.contains("mas-abierto")) { mas(false); $("#dock-mas")?.focus(); }
 });
 $("#dlg").addEventListener("click", (e) => { if (e.target === $("#dlg")) closeModal(); });
 $("#cart")?.addEventListener("click", (e) => { if (e.target === $("#cart")) cerrarCarrito(); });
@@ -250,6 +321,7 @@ const r0 = vistaDeRuta(location.pathname);
 UI.view = VIEWS[r0.view] ? r0.view : "inicio";
 if (r0.id) { UI.cafe = r0.id; UI.entrada = r0.id; }
 render(true);
+montarNav();
 setInterval(() => {
   const a = UI.au, now = Date.now();
   if (!a.ended) { botTick(a, now); if (now >= a.endsAt) { endAuction(a); renderNav(); } }

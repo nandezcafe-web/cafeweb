@@ -71,6 +71,36 @@ function paginas(ctx) {
 
 const ev = (ctx, expr) => vm.runInContext(expr, ctx);
 
+/* la barra de abajo del celular: cinco accesos al alcance del pulgar, con su texto */
+const IC = {
+  inicio: '<path d="M4 11 12 4l8 7v9h-5v-6H9v6H4Z"/>',
+  cafes: '<ellipse cx="12" cy="12" rx="6.2" ry="8.6" transform="rotate(32 12 12)"/><path d="M8.8 17.6c2.8-2.6 3.6-8.6 6.4-11.2"/>',
+  subasta: '<circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.4 1.8M9.5 3.5h5"/>',
+  pedido: '<path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>',
+  mas: '<circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/>',
+};
+const ic = (k) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]}</svg>`;
+function dockHTML(ctx, activa, lang) {
+  const T = (k) => ev(ctx, `t(${JSON.stringify(k)})`), R = (v) => ev(ctx, `ruta(${JSON.stringify(v)})`);
+  const ir = (v, k, extra = "") => `<a class="dock-it" href="${R(v)}" data-act="go" data-to="${v}"${v === activa ? ' aria-current="page"' : ""}>${ic(v)}${extra}<span data-i18n="${k}">${T(k)}</span></a>`;
+  const hoja = [["suscripcion", "nav_suscripcion"], ["diario", "nav_diario"], ["contacto", "nav_contacto"]]
+    .map(([v, k]) => `<a class="tab" href="${R(v)}" data-act="go" data-to="${v}" data-i18n="${k}"${v === activa ? ' aria-current="page"' : ""}>${T(k)} </a>`).join("");
+  return `<nav class="dock" aria-label="${lang === "en" ? "Quick access" : "Accesos"}">
+  ${ir("inicio", "nav_inicio")}
+  ${ir("cafes", "nav_cafes")}
+  ${ir("subasta", "nav_subasta", '<span class="live-dot" id="dock-live"></span>')}
+  <button class="dock-it" id="dock-pedido" data-act="carrito">${ic("pedido")}<span class="dock-n" id="dock-n" hidden></span><span data-i18n="nav_pedido">${T("nav_pedido")}</span></button>
+  <button class="dock-it" id="dock-mas" data-act="mas" aria-expanded="false" aria-controls="dock-hoja">${ic("mas")}<span data-i18n="nav_mas">${T("nav_mas")}</span></button>
+</nav>
+<div class="dock-hoja" id="dock-hoja" hidden>
+  ${hoja}
+  <div class="lang" role="group" aria-label="${lang === "en" ? "Language" : "Idioma"}">
+    <button data-act="lang" data-lang="es" aria-pressed="${lang === "es"}">Español</button>
+    <button data-act="lang" data-lang="en" aria-pressed="${lang === "en"}">English</button>
+  </div>
+</div>`;
+}
+
 function navHTML(ctx, activa) {
   const it = [["inicio", "nav_inicio"], ["cafes", "nav_cafes"], ["subasta", "nav_subasta"], ["suscripcion", "nav_suscripcion"], ["diario", "nav_diario"]];
   const extra = { subasta: '<span class="live-dot" id="nav-live"></span><span class="mono nav-time" data-live-time></span>' };
@@ -123,6 +153,7 @@ ${FUENTES}
       <b>Nandez</b><small>${lang === "en" ? "single origin coffee" : "café de origen"}</small>
     </a>
     <nav class="tabs" id="nav-principal" aria-label="${lang === "en" ? "Sections" : "Secciones"}">
+      <span class="tab-luz" aria-hidden="true"></span>
       ${navHTML(ctx, activa)}
     </nav>
     <button class="cart-btn" id="cart-btn" data-act="carrito" aria-label="${lang === "en" ? "Order" : "Pedido"}">
@@ -138,6 +169,7 @@ ${FUENTES}
     </div>
   </div>
 </header>
+${dockHTML(ctx, activa, lang)}
 
 <main class="wrap${view === "inicio" ? "" : " calm"}" id="view">${cuerpo}</main>
 

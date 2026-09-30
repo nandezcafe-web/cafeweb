@@ -21,8 +21,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=1cafabde">
-<link rel="stylesheet" href="/auction.css?v=1cafabde">
+<link rel="stylesheet" href="/styles.css?v=66ded87d">
+<link rel="stylesheet" href="/auction.css?v=66ded87d">
 <script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Café","url":"https://cafeweb-five.vercel.app","email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"A coffee-growing family from Chinácota, Colombia. We buy the best lots from farms across Norte de Santander and roast them under our name: one farm per coffee, with altitude, variety, process and cupping score for each lot."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Café","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"en"},{"@type":"Product","name":"Pink Bourbon","description":"Pink Bourbon: Bourbon rosado lavado grown at 1,750 m in Chinácota, 87.5 SCA points. Notes of jasmine, bergamot, peach. From COP 32,000.","brand":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"category":"Specialty coffee","additionalProperty":[{"@type":"PropertyValue","name":"Variety","value":"Bourbon rosado"},{"@type":"PropertyValue","name":"Process","value":"Lavado"},{"@type":"PropertyValue","name":"Altitude","value":"1750 msnm"},{"@type":"PropertyValue","name":"SCA","value":"87.5"},{"@type":"PropertyValue","name":"Farm","value":"Lote Chinácota, Chinácota"}],"offers":[{"@type":"Offer","name":"100 g","price":32000,"priceCurrency":"COP","availability":"https://schema.org/InStock","url":"https://cafeweb-five.vercel.app/en/coffee-pink-bourbon"},{"@type":"Offer","name":"250 g","price":68000,"priceCurrency":"COP","availability":"https://schema.org/InStock","url":"https://cafeweb-five.vercel.app/en/coffee-pink-bourbon"},{"@type":"Offer","name":"1 kg","price":245000,"priceCurrency":"COP","availability":"https://schema.org/InStock","url":"https://cafeweb-five.vercel.app/en/coffee-pink-bourbon"}]},{"@type":"Product","name":"Castillo from Arboledas","description":"Castillo from Arboledas: Castillo lavado grown at 1,550 m in Arboledas, 84 SCA points. Notes of brown sugar, chocolate, orange. From COP 38,000.","brand":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"category":"Specialty coffee","additionalProperty":[{"@type":"PropertyValue","name":"Variety","value":"Castillo"},{"@type":"PropertyValue","name":"Process","value":"Lavado"},{"@type":"PropertyValue","name":"Altitude","value":"1550 msnm"},{"@type":"PropertyValue","name":"SCA","value":"84"},{"@type":"PropertyValue","name":"Farm","value":"Lote Arboledas, Arboledas"}],"offers":[{"@type":"Offer","name":"250 g","price":38000,"priceCurrency":"COP","availability":"https://schema.org/InStock","url":"https://cafeweb-five.vercel.app/en/coffee-castillo-from-arboledas"},{"@type":"Offer","name":"1 kg","price":132000,"priceCurrency":"COP","availability":"https://schema.org/InStock","url":"https://cafeweb-five.vercel.app/en/coffee-castillo-from-arboledas"}]}]}</script>
 </head>
 <body data-view="cafes">
@@ -33,6 +33,7 @@
       <b>Nandez</b><small>single origin coffee</small>
     </a>
     <nav class="tabs" id="nav-principal" aria-label="Sections">
+      <span class="tab-luz" aria-hidden="true"></span>
       <a class="tab" href="/en/" data-act="go" data-to="inicio" data-i18n="nav_inicio">Home </a>
       <a class="tab" href="/en/coffees" data-act="go" data-to="cafes" data-i18n="nav_cafes" aria-current="page">Coffees </a>
       <a class="tab" href="/en/auction" data-act="go" data-to="subasta" data-i18n="nav_subasta">Auction <span class="live-dot" id="nav-live"></span><span class="mono nav-time" data-live-time></span></a>
@@ -52,6 +53,20 @@
     </div>
   </div>
 </header>
+<nav class="dock" aria-label="Quick access">
+  <a class="dock-it" href="/en/" data-act="go" data-to="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4Z"/></svg><span data-i18n="nav_inicio">Home</span></a>
+  <a class="dock-it" href="/en/coffees" data-act="go" data-to="cafes" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="6.2" ry="8.6" transform="rotate(32 12 12)"/><path d="M8.8 17.6c2.8-2.6 3.6-8.6 6.4-11.2"/></svg><span data-i18n="nav_cafes">Coffees</span></a>
+  <a class="dock-it" href="/en/auction" data-act="go" data-to="subasta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.4 1.8M9.5 3.5h5"/></svg><span class="live-dot" id="dock-live"></span><span data-i18n="nav_subasta">Auction</span></a>
+  <button class="dock-it" id="dock-pedido" data-act="carrito"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg><span class="dock-n" id="dock-n" hidden></span><span data-i18n="nav_pedido">Order</span></button>
+  <button class="dock-it" id="dock-mas" data-act="mas" aria-expanded="false" aria-controls="dock-hoja"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/></svg><span data-i18n="nav_mas">More</span></button>
+</nav>
+<div class="dock-hoja" id="dock-hoja" hidden>
+  <a class="tab" href="/en/subscription" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Subscription </a><a class="tab" href="/en/journal" data-act="go" data-to="diario" data-i18n="nav_diario">Journal </a><a class="tab" href="/en/contact" data-act="go" data-to="contacto" data-i18n="nav_contacto">Contact </a>
+  <div class="lang" role="group" aria-label="Language">
+    <button data-act="lang" data-lang="es" aria-pressed="false">Español</button>
+    <button data-act="lang" data-lang="en" aria-pressed="true">English</button>
+  </div>
+</div>
 
 <main class="wrap calm" id="view"><div class="view-head">
       <div><p class="eyebrow reveal">This harvest</p>
@@ -204,11 +219,11 @@
 </dialog>
 
 <script>window.IMG_V = "878b9878";</script>
-<script src="/js/core.js?v=1cafabde"></script>
-<script src="/js/fases.js?v=1cafabde"></script>
-<script src="/js/shop.js?v=1cafabde"></script>
-<script src="/js/pages.js?v=1cafabde"></script>
-<script src="/js/auction.js?v=1cafabde"></script>
-<script src="/js/main.js?v=1cafabde"></script>
+<script src="/js/core.js?v=66ded87d"></script>
+<script src="/js/fases.js?v=66ded87d"></script>
+<script src="/js/shop.js?v=66ded87d"></script>
+<script src="/js/pages.js?v=66ded87d"></script>
+<script src="/js/auction.js?v=66ded87d"></script>
+<script src="/js/main.js?v=66ded87d"></script>
 </body>
 </html>

@@ -1192,3 +1192,80 @@ dialog{background:rgba(239,229,215,.84);backdrop-filter:var(--v-lente-2);-webkit
 .prod-escena + .notas-chips{margin-top:14px}
 
 .cart-art img{position:absolute;inset:4px;width:calc(100% - 8px);height:calc(100% - 8px);object-fit:contain}
+
+/* ============================================================
+   NAVEGACIÓN FLOTANTE.
+   Computador: la píldora se aparta al bajar, vuelve al subir y se compacta
+   al hacer scroll; una sola luz oscura marca la sección y se desliza.
+   Celular: la navegación baja al pulgar, en una barra que flota abajo.
+   ============================================================ */
+.top{transition:transform .5s var(--ease-out)}
+body.nav-oculta .top{transform:translateY(calc(-100% - 24px))}
+.top-inner{transition:max-width .5s var(--ease-out),padding .35s var(--ease-out),box-shadow .35s var(--ease-out)}
+body.nav-compacta .top-inner{max-width:1040px;padding-block:5px;
+  box-shadow:var(--v-brillo),0 22px 44px -24px rgba(74,46,27,.6)}
+body.nav-compacta .brand small{display:none}
+
+/* la luz: sin JavaScript, cada pestaña activa lleva su propio fondo y se lee igual */
+.tabs{position:relative}
+.tab{position:relative;z-index:1}
+.tabs.con-luz .tab[aria-current=page]{background:transparent;transition:color .3s var(--ease-out)}
+.tab-luz{position:absolute;left:0;top:0;z-index:0;height:100%;width:var(--w,0);border-radius:999px;
+  transform:translateX(var(--x,0));background:var(--ink);opacity:0;pointer-events:none;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.18),0 6px 14px -8px rgba(29,20,15,.6);
+  transition:transform .5s var(--ease-out),width .5s var(--ease-out),opacity .2s}
+.tab-luz.quieta{transition:none}
+body[data-view=subasta] .tab-luz{background:var(--crema)}
+
+.dock,.dock-hoja{display:none}
+
+@media (max-width:760px){
+  /* arriba queda solo la marca, y se va con la página */
+  .top,body[data-view=subasta] .top{position:relative}
+  body.nav-oculta .top{transform:none}
+  .top-inner .tabs,.top-inner .lang,.top-inner .menu-btn,.top-inner .cart-btn{display:none!important}
+  .top-inner{padding:9px 16px}
+
+  .dock{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;position:fixed;z-index:70;
+    left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));padding:6px;border-radius:26px;
+    background:var(--v-fondo-2);backdrop-filter:var(--v-lente-2);-webkit-backdrop-filter:var(--v-lente-2);
+    box-shadow:var(--v-brillo),0 20px 44px -18px rgba(74,46,27,.6)}
+  .dock::before,.dock-hoja::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.4px;pointer-events:none;
+    background:linear-gradient(180deg,var(--v-luz) 0%,var(--v-luz-2) 22%,transparent 42%,transparent 60%,var(--v-luz-2) 82%,var(--v-luz) 100%);
+    -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+  .dock-it{position:relative;display:grid;justify-items:center;align-content:center;gap:3px;min-height:54px;padding:6px 2px 5px;
+    border:0;border-radius:20px;background:none;color:var(--ink-2);font:600 11px/1 var(--sans);text-decoration:none;cursor:pointer;
+    -webkit-tap-highlight-color:transparent;transition:background .25s var(--ease-out),color .25s var(--ease-out),transform .12s var(--ease-out)}
+  .dock-it svg{width:23px;height:23px}
+  .dock-it:active{transform:scale(.93)}
+  .dock-it[aria-current=page],.dock-it[aria-expanded=true]{background:var(--ink);color:var(--paper)}
+  .dock-it:focus-visible{outline:2px solid var(--cherry);outline-offset:-2px}
+  .dock-it .live-dot{position:absolute;top:8px;left:calc(50% + 7px);width:7px;height:7px}
+  .dock-n{position:absolute;top:4px;left:calc(50% + 5px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;
+    background:var(--cherry);color:#fff;font:600 11px/18px var(--mono);text-align:center}
+  body[data-view=subasta] .dock-it{color:#d3c0a5}
+  body[data-view=subasta] .dock-it[aria-current=page],body[data-view=subasta] .dock-it[aria-expanded=true]{background:var(--crema);color:var(--roast)}
+
+  /* "Más": una hoja que sale de la barra, justo encima */
+  .dock-hoja:not([hidden]){display:grid;gap:2px;position:fixed;z-index:69;left:10px;right:10px;
+    bottom:calc(88px + env(safe-area-inset-bottom,0px));padding:8px;border-radius:24px;
+    background:var(--v-fondo-2);backdrop-filter:var(--v-lente-2);-webkit-backdrop-filter:var(--v-lente-2);
+    box-shadow:var(--v-brillo),0 24px 50px -20px rgba(74,46,27,.6);animation:hoja .32s var(--ease-out)}
+  @keyframes hoja{from{opacity:0;transform:translateY(14px) scale(.98)}}
+  .dock-hoja .tab{display:flex;min-height:50px;padding:0 16px;border-radius:16px;font-size:16px;align-items:center}
+  .dock-hoja .tab[aria-current=page]{background:var(--ink);color:var(--paper)}
+  .dock-hoja .lang{display:flex;margin:6px 4px 4px;padding:3px}
+  .dock-hoja .lang button{flex:1;min-height:44px;font-size:13px}
+
+  /* lo que flota abajo se corre para no quedar tapado por la barra */
+  .tray{bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+  .wrap{padding-bottom:calc(130px + env(safe-area-inset-bottom,0px))}
+}
+@media (prefers-reduced-motion:reduce){.top,.top-inner,.tab-luz,.dock-it{transition:none}.dock-hoja:not([hidden]){animation:none}}
+/* sobre la foto oscura de la portada el vidrio fino se vuelve gris: la barra y la hoja
+   llevan más cuerpo, porque ahí se lee y se decide */
+@media (max-width:760px){
+  .dock{background:rgba(239,229,215,.8)}
+  .dock-hoja:not([hidden]){background:rgba(239,229,215,.92)}
+  body[data-view=subasta] .dock,body[data-view=subasta] .dock-hoja:not([hidden]){background:rgba(58,36,22,.88)}
+}
