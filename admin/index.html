@@ -1281,6 +1281,63 @@ body[data-view=subasta] .tab-luz{background:var(--crema)}
   body[data-view=subasta] .dock,body[data-view=subasta] .dock-hoja:not([hidden]){background:rgba(58,36,22,.88)}
 }
 
+/* ============================================================
+   EL RESTO DEL INICIO, CON LA VOZ DE LA PORTADA.
+   Más aire entre secciones, íconos de trazo fino en vez de cajas, montañas
+   con la bruma verde de la foto, y un cierre que responde a la portada.
+   ============================================================ */
+@media (min-width:761px){.section{padding-block:104px 8px}}
+
+/* principios: tres columnas separadas por una línea, sin cajas */
+.principios{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:40px;border-top:1px solid var(--line)}
+.principio{display:grid;align-content:start;gap:12px;padding:32px 32px 8px 0}
+.principio + .principio{padding-left:32px;border-left:1px solid var(--line)}
+.principio svg{width:34px;height:34px;color:var(--cherry)}
+.principio b{font:400 clamp(1.35rem,2vw,1.7rem)/1.15 var(--serif)}
+.principio span{color:var(--ink-2);font-size:15px;line-height:1.6;max-width:36ch}
+@media (max-width:760px){
+  .principios{grid-template-columns:1fr}
+  .principio{padding:26px 0 18px}
+  .principio + .principio{padding-left:0;border-left:0;border-top:1px solid var(--line)}
+}
+
+/* fincas: la montaña deja el marrón plano y toma la bruma verde de la portada.
+   La línea punteada y la cifra siguen diciendo a qué altura está cada una. */
+.finca-art{height:132px;background:linear-gradient(180deg,#e8dcc6 0%,#d6c8aa 58%,#c3b590 100%)}
+.finca-art::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(70% 60% at 22% 12%,rgba(255,238,205,.65),transparent 70%),
+             linear-gradient(180deg,transparent 55%,rgba(232,220,198,.28))}
+.finca-art svg path{fill:#34503b}
+.finca-art svg path:first-child{fill:#7a9170;opacity:.6}
+.finca-art svg path.front{opacity:.94}
+.finca.propia .finca-art{background:linear-gradient(180deg,#eadfcb,#d9ccb1)}
+.finca.propia .finca-art svg path.front{opacity:.55}
+
+/* preguntas: el título se queda a la izquierda y las respuestas corren a la derecha */
+@media (min-width:900px){
+  .faqs{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:0 72px;align-items:start}
+  .faqs .section-head{position:sticky;top:120px}
+  .faqs .faq-lista{margin-top:0;max-width:none}
+}
+
+/* el remate del inicio: la misma tarde de la portada, sin la bolsa */
+.remate{--luz:#F4EAD7;position:relative;isolation:isolate;overflow:hidden;display:grid;align-items:center;
+  min-height:440px;margin-top:120px;border-radius:30px;color:var(--luz);background:#18231b;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.14),0 60px 100px -60px rgba(29,20,15,.8)}
+.remate-foto{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;object-position:72% 40%}
+.remate::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(90deg,rgba(16,24,18,.9) 0%,rgba(16,24,18,.66) 38%,rgba(16,24,18,.12) 68%,transparent 82%)}
+.remate-texto{display:grid;gap:16px;justify-items:start;max-width:620px;padding:clamp(30px,5vw,64px)}
+.remate h2{font-size:clamp(2.3rem,4.4vw,3.8rem);line-height:.98;color:var(--luz)}
+.remate h2 em{color:#EDA887}
+.remate .portada-sobre{color:rgba(244,234,215,.78)}
+.remate-texto > p:not(.portada-sobre){margin:0;font-size:1.06rem;color:rgba(244,234,215,.86)}
+@media (max-width:760px){
+  .remate{min-height:0;margin-top:80px;border-radius:26px}
+  .remate-foto{object-position:88% 30%}
+  .remate::before{background:linear-gradient(180deg,rgba(16,24,18,.55),rgba(16,24,18,.9))}
+}
+
 /* sala de subasta */
 .auction{color:#E6D7C3}
 .auction .kicker{color:#c9b497}

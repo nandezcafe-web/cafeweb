@@ -28,7 +28,7 @@ function viewInicio() {
   <section class="section">
     <div class="section-head"><p class="eyebrow">${en ? "How we work" : "Cómo trabajamos"}</p>
       <h2>${en ? "How the coffee reaches <em>your table</em>" : "Así llega el café <em>a tu mesa</em>"}</h2></div>
-    <div class="valor">${valor.map(([tt, d], i) => `<div class="val" style="--i:${i}"><b>${tt}</b><span>${d}</span></div>`).join("")}</div>
+    <div class="principios">${valor.map(([tt, d], i) => `<div class="principio">${icono(["brote", "lupa", "sello"][i])}<b>${tt}</b><span>${d}</span></div>`).join("")}</div>
   </section>
 
   ${seccionCereza(en)}
@@ -48,12 +48,18 @@ function viewInicio() {
     <div class="faq-lista">${FAQ.map((f, i) => `<details class="faq" ${i === 0 ? "open" : ""}><summary><h3>${esc(tx(f.q))}</h3></summary><p>${esc(tx(f.a))}</p></details>`).join("")}</div>
   </section>
 
-  <section class="section">
-    <div class="section-head"><p class="eyebrow">${t("nav_suscripcion")}</p>
+  <section class="remate">
+    <img class="remate-foto" src="${foto("/img/portada/cierre.webp")}" srcset="${foto("/img/portada/cierre@0.5x.webp")} 1000w, ${foto("/img/portada/cierre.webp")} 2000w"
+      sizes="(min-width:1240px) 1200px, 100vw" width="2000" height="800" alt="" loading="lazy" decoding="async">
+    <div class="remate-texto">
+      <p class="portada-sobre">${t("nav_suscripcion")}</p>
       <h2>${en ? "If you like it, <em>we bring it every month</em>" : "Si te gusta, <em>te lo llevamos cada mes</em>"}</h2>
-      <p>${en ? `From ${cop(S.planes[0].precio)} a month, shipping included.` : `Desde ${cop(S.planes[0].precio)} al mes, con el envío incluido.`}</p></div>
-    <div class="cta"><button class="btn primary" data-act="go" data-to="suscripcion">${en ? "See the plans" : "Ver los planes"}</button>
-      <button class="btn" data-act="go" data-to="diario">${en ? "Read the journal" : "Leer el diario"}</button></div>
+      <p>${en ? `From ${cop(S.planes[0].precio)} a month, shipping included.` : `Desde ${cop(S.planes[0].precio)} al mes, con el envío incluido.`}</p>
+      <div class="portada-cta">
+        <button class="btn claro lg" data-act="go" data-to="suscripcion">${en ? "See the plans" : "Ver los planes"}${icono("flecha", "ico")}</button>
+        <a class="portada-link" href="${ruta("diario")}" data-act="go" data-to="diario">${en ? "Read the journal" : "Leer el diario"}</a>
+      </div>
+    </div>
   </section>`;
 }
 

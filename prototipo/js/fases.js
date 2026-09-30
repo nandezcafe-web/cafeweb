@@ -20,6 +20,9 @@ const ICONOS = {
   hoja: '<path d="M5 19c0-8 6-14 14-14 0 8-6 14-14 14Z"/><path d="M5 19 13 11"/>',
   ficha: '<path d="M7 3h7l4 4v14H7Z"/><path d="M14 3v4h4"/><path d="m9.5 14 2 2 3.5-4"/>',
   flecha: '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>',
+  brote: '<path d="M12 21v-8"/><path d="M12 13c0-4 3-7 7-7 0 4-3 7-7 7Z"/><path d="M12 15.5c0-3-2.5-5.5-6-5.5 0 3.5 2.5 5.5 6 5.5Z"/>',
+  lupa: '<circle cx="11" cy="11" r="6.2"/><path d="m20 20-4.6-4.6"/><path d="m8.6 11 1.7 1.7 3.1-3.3"/>',
+  sello: '<circle cx="12" cy="9" r="5.6"/><path d="m8.6 13.6-1.6 7.2 5-2.6 5 2.6-1.6-7.2"/>',
 };
 const icono = (k, clase = "") => `<svg class="${clase}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONOS[k]}</svg>`;
 
