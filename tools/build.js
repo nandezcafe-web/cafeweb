@@ -175,7 +175,7 @@ ${FUENTES_GANG}
 <body data-view="${view}">
 <header class="top">
   <div class="top-inner">
-    <a class="brand" href="${lang === "en" ? "/en/" : "/"}" data-act="go" data-to="inicio" aria-label="${ev(ctx, "CONFIG.marca")}">
+    <a class="brand" href="${lang === "en" ? "/en" : "/"}" data-act="go" data-to="inicio" aria-label="${ev(ctx, "CONFIG.marca")}">
       ${logoHTML(lang)}
     </a>
     <nav class="tabs" id="nav-principal" aria-label="${lang === "en" ? "Sections" : "Secciones"}">
@@ -231,7 +231,7 @@ const urls = [];
   const ctx = mundo(lang);
   paginas(ctx).forEach((pg) => {
     const rel = ev(ctx, `ruta(${JSON.stringify(pg.view)}, ${JSON.stringify(pg.id || null)}, ${JSON.stringify(lang)})`);
-    const archivo = (rel === "/" ? "/index" : rel === "/en/" ? "/en/index" : rel) + ".html";
+    const archivo = (rel === "/" ? "/index" : rel === "/en" ? "/en/index" : rel) + ".html";
     escribir(archivo.replace(/^\//, ""), pagina(ctx, pg, lang));
     urls.push({ loc: ev(ctx, "CONFIG.sitio") + rel, prio: pg.prio, lang });
   });

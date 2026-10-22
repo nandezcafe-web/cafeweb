@@ -30,20 +30,20 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=4d7de4a4">
-<link rel="stylesheet" href="/auction.css?v=4d7de4a4">
-<link rel="stylesheet" href="/gang.css?v=4d7de4a4">
+<link rel="stylesheet" href="/styles.css?v=7f1125b2">
+<link rel="stylesheet" href="/auction.css?v=7f1125b2">
+<link rel="stylesheet" href="/gang.css?v=7f1125b2">
 <script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Coffee","url":"https://cafeweb-five.vercel.app","logo":"https://cafeweb-five.vercel.app/img/marca/icono-512.png","image":"https://cafeweb-five.vercel.app/img/marca/compartir.jpg","sameAs":["https://www.instagram.com/nandezcafe/","https://www.facebook.com/profile.php?id=61594868961438","https://www.youtube.com/@N%C3%A1ndezCaf%C3%A9"],"email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"A coffee-growing family from Chinácota, Colombia. We buy the best lots from farms across Norte de Santander and roast them under our name: one farm per coffee, with altitude, variety, process and cupping score for each lot."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Coffee","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"en"}]}</script>
 </head>
 <body data-view="accesorios">
 <header class="top">
   <div class="top-inner">
-    <a class="brand" href="/en/" data-act="go" data-to="inicio" aria-label="Nandez Coffee">
+    <a class="brand" href="/en" data-act="go" data-to="inicio" aria-label="Nandez Coffee">
       <img class="logo" src="/img/marca/logo.png?v=1af1081b" width="464" height="120" alt="Nandez Coffee" fetchpriority="high">
     </a>
     <nav class="tabs" id="nav-principal" aria-label="Sections">
       <span class="tab-luz" aria-hidden="true"></span>
-      <a class="tab" href="/en/" data-act="go" data-to="inicio" data-i18n="nav_inicio">Home </a>
+      <a class="tab" href="/en" data-act="go" data-to="inicio" data-i18n="nav_inicio">Home </a>
       <div class="tab-grupo"><a class="tab" href="/en/shop" data-act="go" data-to="tienda" data-i18n="nav_tienda" aria-current="page" aria-haspopup="true">Shop </a><div class="tab-sub"><a href="/en/coffees" data-act="go" data-to="cafes" data-i18n="nav_cafes_esp">Specialty coffee</a><a href="/en/accessories" data-act="go" data-to="accesorios" data-i18n="nav_accesorios">Gear and merch</a></div></div>
       <a class="tab" href="/en/subscription" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Subscription </a>
     </nav>
@@ -61,7 +61,7 @@
   </div>
 </header>
 <nav class="dock" aria-label="Quick access">
-  <a class="dock-it" href="/en/" data-act="go" data-to="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4Z"/></svg><span data-i18n="nav_inicio">Home</span></a>
+  <a class="dock-it" href="/en" data-act="go" data-to="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4Z"/></svg><span data-i18n="nav_inicio">Home</span></a>
   <a class="dock-it" href="/en/shop" data-act="go" data-to="tienda" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5 5.5 4h13L20 9.5"/><path d="M4 9.5c0 1.5 1.2 2.5 2.7 2.5s2.6-1 2.6-2.5c0 1.5 1.2 2.5 2.7 2.5s2.7-1 2.7-2.5c0 1.5 1.1 2.5 2.6 2.5S20 11 20 9.5"/><path d="M5.5 12v8h13v-8M10 20v-5h4v5"/></svg><span data-i18n="nav_tienda">Shop</span></a>
   <a class="dock-it" href="/en/subscription" data-act="go" data-to="suscripcion"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.7"/><path d="M20 4v4.7h-4.7"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 15.3"/><path d="M4 20v-4.7h4.7"/></svg><span data-i18n="nav_suscripcion">Subscription</span></a>
   <button class="dock-it" id="dock-pedido" data-act="carrito"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg><span class="dock-n" id="dock-n" hidden></span><span data-i18n="nav_pedido">Order</span></button>
@@ -147,11 +147,11 @@
 </dialog>
 
 <script>window.IMG_V = "1af1081b";</script>
-<script src="/js/core.js?v=4d7de4a4"></script>
-<script src="/js/fases.js?v=4d7de4a4"></script>
-<script src="/js/shop.js?v=4d7de4a4"></script>
-<script src="/js/pages.js?v=4d7de4a4"></script>
-<script src="/js/auction.js?v=4d7de4a4"></script>
-<script src="/js/main.js?v=4d7de4a4"></script>
+<script src="/js/core.js?v=7f1125b2"></script>
+<script src="/js/fases.js?v=7f1125b2"></script>
+<script src="/js/shop.js?v=7f1125b2"></script>
+<script src="/js/pages.js?v=7f1125b2"></script>
+<script src="/js/auction.js?v=7f1125b2"></script>
+<script src="/js/main.js?v=7f1125b2"></script>
 </body>
 </html>

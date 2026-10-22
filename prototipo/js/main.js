@@ -437,7 +437,7 @@ document.documentElement.classList.add("js");
 aplicarCfgGuardada();
 cargarCarrito();
 UI.au = newAuction();
-UI.lang = location.pathname.startsWith("/en") ? "en" : "es";   // manda la URL, no lo guardado
+UI.lang = esIngles(location.pathname) ? "en" : "es";   // manda la URL, no lo guardado
 const r0 = vistaDeRuta(location.pathname);
 UI.view = VIEWS[r0.view] ? r0.view : "inicio";
 if (r0.id) { UI.cafe = r0.id; UI.entrada = r0.id; }

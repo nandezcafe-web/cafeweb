@@ -420,10 +420,14 @@ function ruta(view, id, lang) {
   const R = RUTAS[L] || RUTAS.es;
   if (view === "cafe" && id) { const p = prodById(id); return p ? base + R.cafe + "-" + slug(enIdioma(p.nombre)) : base + R.cafes; }
   if (view === "entrada" && id) { const e = S.entradas.find((x) => x.id === id); return e ? base + R.entrada + "-" + slug(enIdioma(e.titulo)).slice(0, 60) : base + R.diario; }
-  return base + (R[view] ?? "");
+  /* sin barra final: Vercel redirige /en/ a /en (trailingSlash: false) y la dirección oficial no debe redirigir */
+  const out = base + (R[view] ?? "");
+  return out.length > 1 && out.endsWith("/") ? out.slice(0, -1) : out;
 }
+/* ¿La dirección es de la versión en inglés? /en o /en/…, nunca /envios-y-devoluciones */
+const esIngles = (path) => /^\/en(\/|$)/.test(String(path));
 function vistaDeRuta(path) {
-  const p = String(path).replace(/^\/(en\/)?/, "").replace(/\.html$/, "").replace(/\/$/, "");
+  const p = String(path).replace(/^\/(en(\/|$))?/, "").replace(/\.html$/, "").replace(/\/$/, "");
   if (!p || p === "index" || p.endsWith("nandez")) return { view: "inicio" };   // nandez.html: la tienda en un archivo
   const pre = ["cafe-", "coffee-"].find((x) => p.startsWith(x));
   if (pre) { const s = p.slice(pre.length), pr = S.productos.find((x) => slug(x.nombre.es) === s || slug(x.nombre.en) === s); return pr ? { view: "cafe", id: pr.id } : { view: "cafes" }; }
