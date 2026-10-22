@@ -14,20 +14,31 @@ const fs = require("fs"), path = require("path"), vm = require("vm");
 const SRC = path.join(__dirname, "..", "prototipo");
 const read = (f) => fs.readFileSync(path.join(SRC, f), "utf8");
 const escribir = (rel, txt) => { const f = path.join(SRC, rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, txt); };
-const css = ["styles.css", "auction.css"].map(read).join("\n");
+/* la tienda lleva encima la línea gráfica Coffee Gang (gang.css); el panel se queda con la base */
+const cssBase = ["styles.css", "auction.css"].map(read).join("\n");
+const css = cssBase + "\n" + read("gang.css");
 const mod = (f) => `/* ---- ${f}.js ---- */\n` + read(`js/${f}.js`);
 const MODS = ["core", "fases", "shop", "pages", "auction", "main"];
 /* huella de los archivos: obliga al navegador a bajar la versión nueva tras cada despliegue */
 const TODOS = ["core", "fases", "shop", "pages", "auction", "main", "quote", "inventory", "clients", "market", "admin"];
 /* huella de las imágenes: si una foto cambia, cambia su dirección y ningún navegador sirve la vieja */
-const IMG_DIRS = ["grano", "portada", "productos"].map((d) => path.join(SRC, "img", d));
+const IMG_DIRS = ["grano", "portada", "productos", "marca"].map((d) => path.join(SRC, "img", d));
 const IMG_V = require("crypto").createHash("md5")
   .update(Buffer.concat(IMG_DIRS.flatMap((d) => fs.readdirSync(d).sort().map((f) => fs.readFileSync(path.join(d, f))))))
   .digest("hex").slice(0, 8);
 const VERSION = require("crypto").createHash("md5").update(css + TODOS.map((f) => read("js/" + f + ".js")).join("") + IMG_V).digest("hex").slice(0, 8);
+/* el logo: un PNG con fondo transparente recortado de fuentes/marca/logo-nandez-v1.png */
+const LOGO = `/img/marca/logo.png?v=${IMG_V}`;
+const LOGO_DENTRO = "data:image/png;base64," + fs.readFileSync(path.join(SRC, "img", "marca", "logo.png")).toString("base64");
+/* el precio del día: la primera fila de data/mercado.json (la tarea de GitHub lo mantiene al día) */
+const MERCADO_HOY = (() => { try { return JSON.parse(read("data/mercado.json")).historial[0] || null; } catch { return null; } })();
+const logoHTML = (lang) => `<img class="logo" src="${LOGO}" width="464" height="120" alt="Nandez Coffee Gang" fetchpriority="high">`;
 const FUENTES = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">`;
+const FUENTES_GANG = `<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">`;
 
 /* ---------- 1. un “navegador” mínimo para ejecutar las vistas en Node ---------- */
 function mundo(lang) {
@@ -37,7 +48,7 @@ function mundo(lang) {
     title: "", activeElement: null, getElementById: nodo, querySelector: nodo, querySelectorAll: () => [],
     createElement: nodo, addEventListener() {} };
   const ctx = {
-    IMG_V,
+    IMG_V, MERCADO_HOY,
     console, Date, Math, JSON, String, Number, Array, Object, Set, Map, Intl, isNaN, parseInt, parseFloat, encodeURIComponent,
     document: doc, window: { addEventListener() {}, scrollTo() {}, open() {} },
     navigator: { language: lang }, location: { pathname: "/", hash: "", href: "/", search: "" },
@@ -138,19 +149,19 @@ function pagina(ctx, { view, id }, lang) {
 <meta property="og:url" content="${url}">
 <meta property="og:locale" content="${lang === "en" ? "en_US" : "es_CO"}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#E6D7C3">
+<meta name="theme-color" content="#F5F0E6">
 <meta name="color-scheme" content="light">
-${FUENTES}
+${FUENTES_GANG}
 <link rel="stylesheet" href="/styles.css?v=${VERSION}">
 <link rel="stylesheet" href="/auction.css?v=${VERSION}">
+<link rel="stylesheet" href="/gang.css?v=${VERSION}">
 <script type="application/ld+json" id="ld-json">${ld}</script>
 </head>
 <body data-view="${view}">
 <header class="top">
   <div class="top-inner">
     <a class="brand" href="${lang === "en" ? "/en/" : "/"}" data-act="go" data-to="inicio" aria-label="${ev(ctx, "CONFIG.marca")}">
-      <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor">${[0, 72, 144, 216, 288].map((r) => `<ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(${r} 12 12)"/>`).join("")}</g><circle cx="12" cy="12" r="1.3" fill="var(--paper)"/></svg>
-      <b>Nandez</b><small>${lang === "en" ? "single origin coffee" : "café de origen"}</small>
+      ${logoHTML(lang)}
     </a>
     <nav class="tabs" id="nav-principal" aria-label="${lang === "en" ? "Sections" : "Secciones"}">
       <span class="tab-luz" aria-hidden="true"></span>
@@ -186,7 +197,7 @@ ${dockHTML(ctx, activa, lang)}
   <div class="dlg-body" id="dlg-body"></div>
 </dialog>
 
-<script>window.IMG_V = "${IMG_V}";</script>
+<script>window.IMG_V = "${IMG_V}"; window.MERCADO_HOY = ${JSON.stringify(MERCADO_HOY)};</script>
 ${MODS.map((f) => `<script src="/js/${f}.js?v=${VERSION}"></script>`).join("\n")}
 </body>
 </html>
@@ -243,7 +254,7 @@ const llms = ev(c0, [
   '"# " + CONFIG.marca, "",',
   '"> Familia cafetera de Chinácota, Norte de Santander (Colombia). Compramos lote por lote a fincas de Chinácota, Toledo y Arboledas, y vendemos cada café tostado con su ficha verificable. Nuestra propia finca (5.000 plantas de Geisha) da su primera cosecha en 2027.", "",',
   '"## Qué vendemos",',
-  '...S.productos.map((p) => "- " + tx(p.nombre) + ": variedad " + p.variedad + ", proceso " + p.proceso + ", " + p.altitud + " msnm, " + p.puntaje + " puntos SCA, desde " + cop(p.variantes[0].precio) + " (" + CONFIG.sitio + ruta("cafe", p.id, "es") + ")"),',
+  '...S.productos.map((p) => "- " + tx(p.nombre) + (p.proximamente ? ": café en grano, por confirmar (finca, ficha y precio); lista de espera en " : ": variedad " + p.variedad + ", proceso " + p.proceso + ", " + p.altitud + " msnm, " + p.puntaje + " puntos SCA, en grano, desde " + cop(p.variantes[0].precio) + " (") + CONFIG.sitio + ruta("cafe", p.id, "es") + ")"),',
   '"- Subasta en vivo de un microlote Geisha de Toledo (" + CONFIG.sitio + "/subasta)",',
   '"- Suscripción mensual desde " + cop(PLANES[0].mes) + ", con kit de bienvenida para preparar en casa, filtros y una receta cada mes (" + CONFIG.sitio + "/suscripcion)", "",',
   '"## Cómo trabajamos",',
@@ -261,7 +272,7 @@ escribir("llms.txt", llms);
 /* en el archivo suelto cada foto va dentro, en su tamaño chico */
 const EMBEBER = { "cereza": "grano/cereza@0.5x", "capa-corte": "grano/capa-corte@0.5x",
                   "portada-ancho@0.5x": "portada/portada-ancho@0.5x", "portada-alto@0.5x": "portada/portada-alto@0.5x",
-                  "p-gei@0.5x": "productos/p-gei@0.5x", "p-cas@0.5x": "productos/p-cas@0.5x",
+                  "p-cas@0.5x": "productos/p-cas@0.5x",
                   "cierre@0.5x": "portada/cierre@0.5x" };
 const pieza64 = (k) => "data:image/webp;base64," +
   fs.readFileSync(path.join(SRC, "img", `${EMBEBER[k]}.webp`)).toString("base64");
@@ -269,7 +280,8 @@ const GRANO_DENTRO = `const GRANO_EMBEBIDO = ${JSON.stringify(Object.fromEntries
 const ctxEs = mundo("es");
 vm.runInContext(GRANO_DENTRO, ctxEs);
 const unSolo = pagina(ctxEs, { view: "inicio" }, "es")
-  .replace(/<link rel="stylesheet" href="\/styles\.css\?v=\w+">\s*<link rel="stylesheet" href="\/auction\.css\?v=\w+">/, `<style>\n${css}\n</style>`)
+  .replace(/<link rel="stylesheet" href="\/styles\.css\?v=\w+">\s*<link rel="stylesheet" href="\/auction\.css\?v=\w+">\s*<link rel="stylesheet" href="\/gang\.css\?v=\w+">/, `<style>\n${css}\n</style>`)
+  .replace(LOGO, LOGO_DENTRO)
   .replace(new RegExp(MODS.map((f) => `<script src="/js/${f}.js\\?v=${VERSION}"></script>`).join("\\s*")), `<script>\n${GRANO_DENTRO}\n${MODS.map(mod).join("\n")}\n</script>`)
   /* las fotos ya salen embebidas: el srcset sobra, cada una va en un solo tamaño */
   .replace(/\s*srcset="[^"]*"\s*sizes="[^"]*"/g, "")
@@ -287,7 +299,7 @@ const panel = `<!doctype html>
 <meta name="robots" content="noindex, nofollow">
 ${FUENTES}
 <style>
-${css}
+${cssBase}
 </style>
 </head>
 <body data-view="login">

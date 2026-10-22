@@ -7,61 +7,88 @@ const pal = (txt, desde = 0) => txt.split(" ").map((p, i) => `<span class="pal" 
 
 function viewInicio() {
   const en = UI.lang === "en";
-  const valor = en
+  const principios = en
     ? [["Every coffee has a grower", "Not just “Colombian coffee”: the coffee of one farm and one harvest, and we tell you who planted it."],
-       ["We tell you what we know", "Altitude, variety, process and score say who checked them and when. What we could not check, we tell you too."],
-       ["The best is kept apart", "Each neighbouring farm grows its own variety. When a lot comes out truly special, it goes to the auction instead of a bag."]]
+       ["We tell you what we know, and what we don't", "Altitude, variety, process and score say who checked them and when. What we could not check, we say so."],
+       ["The best is kept apart", "Each farm grows its own variety. When a lot comes out truly special, it skips the bag and goes to the auction."]]
     : [["Cada café tiene quién lo sembró", "No es “café colombiano” sin más: es el café de una finca y de una cosecha, y te decimos quién lo sembró."],
-       ["Te contamos lo que sabemos", "La altura, la variedad, el proceso y el puntaje dicen quién los revisó y cuándo. Lo que no hemos podido comprobar, también te lo decimos."],
-       ["Lo mejor se guarda aparte", "Cada finca vecina tiene su variedad. Cuando un lote sale especial de verdad, no va a la bolsa: va a la subasta."]];
+       ["Te contamos lo que sabemos, y lo que no", "La altura, la variedad, el proceso y el puntaje dicen quién los revisó y cuándo. Lo que no hemos podido comprobar, también lo decimos."],
+       ["Lo mejor se guarda aparte", "Cada finca tiene su variedad. Cuando un lote sale especial de verdad, no va a la bolsa: va a la subasta."]];
+  const ref = S.productos.find((p) => p.pago && !p.proximamente);
+  const mas = ref ? Math.round(((ref.pago.pagadoKg - ref.pago.referenciaKg) / ref.pago.referenciaKg) * 100) : 0;
+  const cabeza = (num, kicker, titulo, texto, link) => `<div class="g-head g-io">
+      <span class="g-num">${num}</span><p class="g-kicker">${kicker}</p>
+      <h2>${titulo}</h2>${texto ? `<p>${texto}</p>` : ""}${link || ""}</div>`;
+  const a = UI.au, top = topBid(a);
   return `
   ${portada(en)}
+  ${cinta(en)}
 
-  <section class="section">
-    <div class="section-head"><p class="eyebrow">${en ? "This harvest" : "Esta cosecha"}</p>
-      <h2>${en ? "What we have <em>at home</em>" : "Lo que tenemos <em>en casa</em>"}</h2>
-      <p>${en ? "A few coffees, chosen one by one. Each comes from a neighbouring farm, and the truly special lot we keep for the auction."
-        : "Pocos cafés, escogidos uno por uno. Cada uno viene de una finca vecina, y el lote que sale muy especial lo guardamos para la subasta."}</p></div>
-    <div class="dos">${S.productos.map((x, i) => cafeCard(x, i)).join("")}${subastaCard(S.productos.length)}</div>
+  <section class="g-sec" id="cafes" aria-labelledby="g-cafes">
+    ${cabeza("01", en ? "This harvest" : "Esta cosecha",
+      `<span id="g-cafes">${en ? "Three coffees. <em>One farm each.</em>" : "Tres cafés. <em>Una finca cada uno.</em>"}</span>`,
+      en ? "Whole bean, roasted the week you order. Each bag carries its farm, its altitude and who checked every number."
+         : "En grano, tostados la semana del pedido. Cada bolsa lleva su finca, su altura y quién comprobó cada dato.")}
+    <div class="g-prods">${S.productos.map((p, i) => tarjetaInicio(p, i)).join("")}</div>
+    <div class="g-subasta g-io">
+      <p><span class="live-dot ${a.ended ? "off" : ""}"></span><b>${t("nav_subasta")}</b>${en
+        ? `${esc(tr(AU_LOTE.variedad))} from ${esc(AU_LOTE.productor)}, ${AU_LOTE.puntaje} SCA · <span class="mono" data-live-price>${usd(top ? top.p : a.start)}</span> per kg green`
+        : `${esc(tr(AU_LOTE.variedad))} de ${esc(AU_LOTE.productor)}, ${AU_LOTE.puntaje} SCA · <span class="mono" data-live-price>${usd(top ? top.p : a.start)}</span> el kilo verde`}</p>
+      <button class="btn sm" data-act="go" data-to="subasta">${a.ended ? t("ver_cafe") : (en ? "See the auction" : "Ver la subasta")}</button>
+    </div>
   </section>
 
-  <section class="section">
-    <div class="section-head"><p class="eyebrow">${en ? "How we work" : "Cómo trabajamos"}</p>
-      <h2>${en ? "How the coffee reaches <em>your table</em>" : "Así llega el café <em>a tu mesa</em>"}</h2></div>
-    <div class="principios">${valor.map(([tt, d], i) => `<div class="principio">${icono(["brote", "lupa", "sello"][i])}<b>${tt}</b><span>${d}</span></div>`).join("")}</div>
+  <section class="g-manifiesto" aria-labelledby="g-gang">
+    <div class="g-manifiesto-in">
+      <p class="g-kicker g-io"><span class="g-num">02</span> &nbsp; ${en ? "How we work" : "Cómo trabajamos"}</p>
+      <h2 id="g-gang" class="g-io">${en ? "Not “Colombian coffee”. <em>Somebody's coffee.</em>" : "No es “café colombiano”. <em>Es el café de alguien.</em>"}</h2>
+      <ol class="g-principios g-io" style="--i:1">${principios.map(([tt, d]) => `<li><b>${tt}</b><span>${d}</span></li>`).join("")}</ol>
+      ${ref ? `<div class="g-pago g-io" style="--i:2">
+        <div><small>${en ? "What we paid the farm" : "Lo que le pagamos a la finca"}</small><b>${cop(ref.pago.pagadoKg)}</b><i>${en ? "per kg of parchment, " : "por kilo de pergamino, "}${esc(tx(ref.nombre))}</i></div>
+        <div><small>${en ? "Reference price that day" : "Referencia del día de la compra"}</small><b>${cop(ref.pago.referenciaKg)}</b><i>${en ? "FNC committee price, " : "precio del comité FNC, "}${fmtFecha(ref.pago.fecha)}</i></div>
+        <div class="mas"><small>${en ? "Above the reference" : "Por encima de la referencia"}</small><b>+${mas} %</b><i>${en ? "paid in the farm, in cash" : "pagado en la finca, de contado"}</i></div>
+      </div>` : ""}
+    </div>
   </section>
 
   ${seccionCereza(en)}
 
-  <section class="section">
-    <div class="section-head"><p class="eyebrow">${en ? "The neighbours" : "Los vecinos"}</p>
-      <h2>${en ? "The farms <em>it comes from</em>" : "Las fincas <em>de donde viene</em>"}</h2>
-      <p>${en ? "Today we roast coffee from neighbouring farms. Our own first harvest comes in 2027, and we will keep buying from them."
-        : "Hoy tostamos café de fincas vecinas. En 2027 sale la primera cosecha de la nuestra, y les vamos a seguir comprando a ellos."}</p></div>
+  <section class="g-sec" aria-labelledby="g-fincas">
+    ${cabeza("03", en ? "The neighbours" : "Los vecinos",
+      `<span id="g-fincas">${en ? "Where each <em>bag comes from.</em>" : "De dónde viene <em>cada bolsa.</em>"}</span>`,
+      en ? "Today we roast coffee from neighbouring farms. Our own first harvest comes in 2027, and we will keep buying from them."
+         : "Hoy tostamos café de fincas vecinas. En 2027 sale la primera cosecha de la nuestra, y les vamos a seguir comprando a ellos.")}
     <div class="fincas">${S.fincas.map((f, i) => fincaCard(f, i)).join("")}</div>
   </section>
 
+  <section class="g-sub g-io" aria-labelledby="g-sus">
+    <div>
+      <p class="g-kicker"><span class="g-num">04</span> &nbsp; ${t("nav_suscripcion")}</p>
+      <h2 id="g-sus">${en ? "If you like it, <em>we bring it every month.</em>" : "Si te gusta, <em>te lo llevamos cada mes.</em>"}</h2>
+      <p>${en ? "Coffee from the harvest, filters and a new recipe every month. The first box brings the kit to brew it, and the Nandez route teaches you a method a month."
+              : "Café de la cosecha, filtros y una receta nueva cada mes. La primera caja trae el kit para prepararlo, y la Ruta Nandez te enseña un método al mes."}</p>
+      <button class="btn claro lg" data-act="go" data-to="suscripcion">${en ? "See the plans" : "Ver los planes"}${icono("flecha", "ico")}</button>
+    </div>
+    <ul class="g-planes">${PLANES.map((p) => `<li class="${p.destacado ? "hot" : ""}"><b>${esc(tx(p.nombre))}</b><span>${esc(tx(p.para))}</span><strong>${cop(p.mes)}<small>/${en ? "month" : "mes"}</small></strong></li>`).join("")}</ul>
+  </section>
 
-  <section class="section faqs">
-    <div class="section-head"><p class="eyebrow">${en ? "Questions" : "Preguntas"}</p>
+  <section class="g-sec" aria-labelledby="g-diario">
+    ${cabeza("05", t("nav_diario"),
+      `<span id="g-diario">${en ? "What we learn <em>buying coffee.</em>" : "Lo que aprendemos <em>comprando café.</em>"}</span>`, "",
+      `<a class="g-link" href="${ruta("diario")}" data-act="go" data-to="diario">${en ? "All the entries" : "Todas las entradas"}</a>`)}
+    <div class="g-diario">${S.entradas.slice(0, 3).map((e, i) => `<article class="g-io" style="--i:${i}">
+      <div class="ent-meta"><span class="tag">${esc(tx(e.tag))}</span><time>${fmtFecha(e.fecha)}</time></div>
+      <h3>${esc(tx(e.titulo))}</h3>
+      <p>${esc(String(tx(e.resumen)).replace(/^PEND\w+[:.]\s*/i, ""))}</p>
+      <a class="g-link" href="${ruta("entrada", e.id)}" data-act="entrada" data-id="${e.id}">${t("leer")}</a>
+    </article>`).join("")}</div>
+  </section>
+
+  <section class="section faqs g-sec">
+    <div class="section-head"><p class="eyebrow">06 · ${en ? "Questions" : "Preguntas"}</p>
       <h2>${en ? "What people <em>ask us</em>" : "Lo que <em>nos preguntan</em>"}</h2>
       <p class="faq-ayuda">${en ? "Is your question not here?" : "¿No está tu pregunta?"} <a href="${ruta("contacto")}" data-act="go" data-to="contacto">${en ? "Write to us" : "Escríbenos"}</a></p></div>
     <div class="faq-lista">${FAQ.map((f, i) => `<details class="faq" ${i === 0 ? "open" : ""}><summary><h3>${esc(tx(f.q))}</h3></summary><p>${esc(tx(f.a))}</p></details>`).join("")}</div>
-  </section>
-
-  <section class="remate">
-    <img class="remate-foto" src="${foto("/img/portada/cierre.webp")}" srcset="${foto("/img/portada/cierre@0.5x.webp")} 1000w, ${foto("/img/portada/cierre.webp")} 2000w"
-      sizes="(min-width:1240px) 1200px, 100vw" width="2000" height="800" alt="" loading="lazy" decoding="async">
-    <div class="remate-texto">
-      <p class="portada-sobre">${t("nav_suscripcion")}</p>
-      <h2>${en ? "If you like it, <em>we bring it every month</em>" : "Si te gusta, <em>te lo llevamos cada mes</em>"}</h2>
-      <p>${en ? `From ${cop(PLANES[0].mes)} a month with shipping, filters and a new recipe every month. The first box brings the kit to brew it.`
-              : `Desde ${cop(PLANES[0].mes)} al mes, con envío, filtros y una receta nueva cada mes. La primera caja trae el kit para prepararlo.`}</p>
-      <div class="portada-cta">
-        <button class="btn claro lg" data-act="go" data-to="suscripcion">${en ? "See the plans" : "Ver los planes"}${icono("flecha", "ico")}</button>
-        <a class="portada-link" href="${ruta("diario")}" data-act="go" data-to="diario">${en ? "Read the journal" : "Leer el diario"}</a>
-      </div>
-    </div>
   </section>`;
 }
 
@@ -70,11 +97,12 @@ const FOOT = () => {
   const links = [["contacto", en ? "Contact" : "Contacto"], ["envios", en ? "Shipping and returns" : "Envíos y devoluciones"],
     ["terminos", en ? "Terms" : "Términos"], ["privacidad", en ? "Privacy" : "Datos personales"]];
   return `<footer class="foot">
-  <div class="foot-marca"><b>${esc(CONFIG.marca)}</b><span>Chinácota · ${esc(tx(CONFIG.lugar))}</span>
+  <div class="foot-marca"><b>${esc(CONFIG.marca)} · ${esc(CONFIG.gang)}</b><span>Chinácota · ${esc(tx(CONFIG.lugar))}</span>
     <a href="mailto:${CONFIG.correo}">${esc(CONFIG.correo)}</a>${CONFIG.whatsapp ? `<a href="https://wa.me/${CONFIG.whatsapp}" target="_blank" rel="noopener">WhatsApp +${CONFIG.whatsapp}</a>` : ""}</div>
   <nav class="foot-links" aria-label="${en ? "Information" : "Información"}">${links.map(([v, txt]) => `<a href="${ruta(v)}" data-act="go" data-to="${v}">${txt}</a>`).join("")}</nav>
   <small class="foot-nota">${en ? "Prototype with example data: photos, texts and prices to be confirmed." : "Prototipo con datos de ejemplo: fotos, textos y precios por confirmar."}</small>
-  ${demo() ? `<button class="btn sm" data-act="reset-demo">${en ? "Reset demo data" : "Reiniciar datos de la demo"}</button>` : ""}</footer>`;
+  ${demo() ? `<button class="btn sm" data-act="reset-demo">${en ? "Reset demo data" : "Reiniciar datos de la demo"}</button>` : ""}
+  <p class="g-wordmark" aria-hidden="true"><b>Nandez</b><small>${esc(CONFIG.gang)}</small></p></footer>`;
 };
 
 const VIEWS = { inicio: viewInicio, cafes: viewCafes, cafe: viewCafe, subasta: viewSubasta, suscripcion: viewSuscripcion, diario: viewDiario, entrada: viewEntrada,
@@ -115,12 +143,12 @@ function datosEstructurados(view, id) {
         additionalProperty: [
           { "@type": "PropertyValue", name: UI.lang === "en" ? "Variety" : "Variedad", value: p.variedad },
           { "@type": "PropertyValue", name: UI.lang === "en" ? "Process" : "Proceso", value: p.proceso },
-          { "@type": "PropertyValue", name: UI.lang === "en" ? "Altitude" : "Altitud", value: p.altitud + " msnm" },
-          { "@type": "PropertyValue", name: "SCA", value: String(p.puntaje) },
+          { "@type": "PropertyValue", name: UI.lang === "en" ? "Altitude" : "Altitud", value: (p.altitud || "—") + " msnm" },
+          { "@type": "PropertyValue", name: "SCA", value: String(p.puntaje || "—") },
           { "@type": "PropertyValue", name: UI.lang === "en" ? "Farm" : "Finca", value: (f.finca || "") + ", " + (f.municipio || "") },
         ],
-        offers: p.variantes.map((v) => ({ "@type": "Offer", name: gramos(v.g), price: v.precio, priceCurrency: "COP",
-          availability: v.stock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock", url: CONFIG.sitio + ruta("cafe", p.id) })),
+        offers: p.variantes.filter((v) => v.precio > 0).map((v) => ({ "@type": "Offer", name: gramos(v.g), price: v.precio, priceCurrency: "COP",
+          availability: v.stock ? "https://schema.org/InStock" : "https://schema.org/PreOrder", url: CONFIG.sitio + ruta("cafe", p.id) })),
       });
     });
   }
@@ -154,8 +182,19 @@ function render(arranque) {
   if (UI.view === "subasta") updateAuction();
   renderTray(); liveBits();
   try { montarCereza(); } catch {}   // si falla la profundidad, la secuencia sigue viéndose
+  try { montarReveal(); } catch {}   // si falla el observador, todo queda visible
   UI.animate = false;
   if (fid) { const n = document.getElementById(fid); if (n) { n.focus({ preventScroll: true }); if (sel) try { n.setSelectionRange(...sel); } catch {} } }
+}
+/* Las piezas del inicio entran cuando llegan a la vista. Sin JavaScript o con
+   "menos movimiento" están visibles desde el principio (ver html.js en gang.css). */
+function montarReveal() {
+  const els = document.querySelectorAll(".g-io:not(.in)");
+  if (!els.length) return;
+  if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) { els.forEach((e) => e.classList.add("in")); return; }
+  const io = new IntersectionObserver((es) => es.forEach((x) => { if (x.isIntersecting) { x.target.classList.add("in"); io.unobserve(x.target); } }),
+    { rootMargin: "0px 0px -6% 0px", threshold: 0.06 });
+  els.forEach((e) => io.observe(e));
 }
 function softRefresh() { if (UI.view === "subasta") return renderNav(); render(); }
 function go(view, id) {
@@ -302,6 +341,8 @@ document.addEventListener("click", (e) => {
     case "inscribir-ok": return inscribirOk(el.dataset.steps);
     case "au-reset": return resetAuction();
     case "remind": return avisarme(id);
+    case "espera": return listaEspera(id);
+    case "espera-ok": return listaEsperaOk(id);
     case "avisarme-ok": return avisarmeOk(id);
     case "reset-demo":
       try { localStorage.removeItem(CONFIG.storageKey); } catch {}
@@ -322,6 +363,7 @@ $("#cart")?.addEventListener("close", () => renderTray());
 window.addEventListener("popstate", () => { const r = vistaDeRuta(location.pathname); UI.view = VIEWS[r.view] ? r.view : "inicio"; if (r.id) { UI.cafe = r.id; UI.entrada = r.id; } UI.animate = true; render(); });
 
 /* ---------- arranque ---------- */
+document.documentElement.classList.add("js");
 aplicarCfgGuardada();
 cargarCarrito();
 UI.au = newAuction();

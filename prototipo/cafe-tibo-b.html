@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>Tibo B · café en grano, próximamente · Nandez Café</title>
+<meta name="description" content="Tibo B: el próximo café en grano de Norte de Santander. Finca, ficha y precio por confirmar; deja tu correo y te avisamos el día que salga.">
+<link rel="canonical" href="https://cafeweb-five.vercel.app/cafe-tibo-b">
+<link rel="alternate" hreflang="es" href="https://cafeweb-five.vercel.app/cafe-tibo-b">
+<link rel="alternate" hreflang="en" href="https://cafeweb-five.vercel.app/en/coffee-tibo-b">
+<link rel="alternate" hreflang="x-default" href="https://cafeweb-five.vercel.app/cafe-tibo-b">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nandez Café">
+<meta property="og:title" content="Tibo B · café en grano, próximamente · Nandez Café">
+<meta property="og:description" content="Tibo B: el próximo café en grano de Norte de Santander. Finca, ficha y precio por confirmar; deja tu correo y te avisamos el día que salga.">
+<meta property="og:url" content="https://cafeweb-five.vercel.app/cafe-tibo-b">
+<meta property="og:locale" content="es_CO">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F5F0E6">
+<meta name="color-scheme" content="light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css?v=72b88244">
+<link rel="stylesheet" href="/auction.css?v=72b88244">
+<link rel="stylesheet" href="/gang.css?v=72b88244">
+<script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Café","url":"https://cafeweb-five.vercel.app","email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"Familia cafetera de Chinácota. Le compramos los mejores lotes a fincas de Norte de Santander y los tostamos con nuestra marca: un café por finca, con su altura, su variedad, su proceso y su puntaje de catación."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Café","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"es"},{"@type":"Product","name":"Tibo B","description":"Tibo B: el próximo café en grano de Norte de Santander. Finca, ficha y precio por confirmar; deja tu correo y te avisamos el día que salga.","brand":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"category":"Café de especialidad","additionalProperty":[{"@type":"PropertyValue","name":"Variedad","value":"Por confirmar"},{"@type":"PropertyValue","name":"Proceso","value":"Por confirmar"},{"@type":"PropertyValue","name":"Altitud","value":"1750 msnm"},{"@type":"PropertyValue","name":"SCA","value":"—"},{"@type":"PropertyValue","name":"Finca","value":"Lote Tibo B, Chinácota"}],"offers":[]}]}</script>
+</head>
+<body data-view="cafe">
+<header class="top">
+  <div class="top-inner">
+    <a class="brand" href="/" data-act="go" data-to="inicio" aria-label="Nandez Café">
+      <img class="logo" src="/img/marca/logo.png?v=1126848c" width="464" height="120" alt="Nandez Coffee Gang" fetchpriority="high">
+    </a>
+    <nav class="tabs" id="nav-principal" aria-label="Secciones">
+      <span class="tab-luz" aria-hidden="true"></span>
+      <a class="tab" href="/" data-act="go" data-to="inicio" data-i18n="nav_inicio">Inicio </a>
+      <a class="tab" href="/cafes" data-act="go" data-to="cafes" data-i18n="nav_cafes" aria-current="page">Cafés </a>
+      <a class="tab" href="/subasta" data-act="go" data-to="subasta" data-i18n="nav_subasta">Subasta <span class="live-dot" id="nav-live"></span><span class="mono nav-time" data-live-time></span></a>
+      <a class="tab" href="/suscripcion" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Suscripción </a>
+      <a class="tab" href="/diario" data-act="go" data-to="diario" data-i18n="nav_diario">Diario </a>
+    </nav>
+    <button class="cart-btn" id="cart-btn" data-act="carrito" aria-label="Pedido">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16l-1.2 11.2a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 7Z"/><path d="M9 7V5.5a3 3 0 0 1 6 0V7"/></svg>
+      <span class="cart-n" id="cart-n" hidden></span>
+    </button>
+    <button class="menu-btn" id="menu-btn" data-act="menu" aria-expanded="false" aria-controls="nav-principal" aria-label="Menú">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <div class="lang" role="group" aria-label="Idioma">
+      <button data-act="lang" data-lang="es" aria-pressed="true">ES</button>
+      <button data-act="lang" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+</header>
+<nav class="dock" aria-label="Accesos">
+  <a class="dock-it" href="/" data-act="go" data-to="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4Z"/></svg><span data-i18n="nav_inicio">Inicio</span></a>
+  <a class="dock-it" href="/cafes" data-act="go" data-to="cafes" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="6.2" ry="8.6" transform="rotate(32 12 12)"/><path d="M8.8 17.6c2.8-2.6 3.6-8.6 6.4-11.2"/></svg><span data-i18n="nav_cafes">Cafés</span></a>
+  <a class="dock-it" href="/subasta" data-act="go" data-to="subasta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.4 1.8M9.5 3.5h5"/></svg><span class="live-dot" id="dock-live"></span><span data-i18n="nav_subasta">Subasta</span></a>
+  <button class="dock-it" id="dock-pedido" data-act="carrito"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg><span class="dock-n" id="dock-n" hidden></span><span data-i18n="nav_pedido">Pedido</span></button>
+  <button class="dock-it" id="dock-mas" data-act="mas" aria-expanded="false" aria-controls="dock-hoja"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/></svg><span data-i18n="nav_mas">Más</span></button>
+</nav>
+<div class="dock-hoja" id="dock-hoja" hidden>
+  <a class="tab" href="/suscripcion" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Suscripción </a><a class="tab" href="/diario" data-act="go" data-to="diario" data-i18n="nav_diario">Diario </a><a class="tab" href="/contacto" data-act="go" data-to="contacto" data-i18n="nav_contacto">Contacto </a>
+  <div class="lang" role="group" aria-label="Idioma">
+    <button data-act="lang" data-lang="es" aria-pressed="true">Español</button>
+    <button data-act="lang" data-lang="en" aria-pressed="false">English</button>
+  </div>
+</div>
+
+<main class="wrap calm" id="view"><article class="prod" style="--pc:#2C4FA3">
+    <div class="prod-top">
+    <div class="prod-buy reveal">
+      <p class="eyebrow">Productor por confirmar, Lote Tibo B</p>
+      <h1>Tibo B</h1>
+      <p class="lede">PENDIENTE: quién cultiva el Tibo B, a qué altura y por qué su café sabe distinto.</p>
+      
+      <div class="pronto-aviso">
+        <b>Próximamente</b>
+        <p>La finca, la ficha y el precio están por confirmar. Deja tu correo y te avisamos el día que salga.</p>
+        <button class="btn primary" data-act="espera" data-id="P-TIB">Avísame</button>
+      </div>
+      <p class="sale"><span class="sale-tag">En grano</span> <span>Lo mandamos entero para que no pierda aroma.</span></p>
+    </div>
+
+    <div class="prod-art reveal" style="--i:1">
+      <div class="prod-escena">
+        <span class="g-pronto">Próximamente<i>Por confirmar · cosecha 2026</i></span>
+        
+      </div>
+      <ul class="notas-chips"><li>Notas por confirmar</li></ul>
+      <div class="foto-pend">Foto de la finca y del productor</div>
+    </div>
+    </div>
+
+    <section class="prod-ficha reveal" style="--i:2">
+      <div class="section-head"><p class="eyebrow">La ficha</p>
+        <h2>Cada dato dice <em>quién lo comprobó</em></h2></div>
+      <table class="ficha-tabla">
+        <thead><tr><th scope="col">Dato</th><th scope="col">Valor</th><th scope="col">Nivel</th><th scope="col">Quién lo comprobó</th></tr></thead>
+        <tbody>
+        <tr style="--c:var(--ink-3)">
+      <th scope="row">Variedad</th>
+      <td class="fv">Por confirmar</td>
+      <td class="fn"><span class="lvtag">Declarado</span></td>
+      <td class="ff">Productor<small>22 de oct de 2026</small></td></tr><tr style="--c:var(--ink-3)">
+      <th scope="row">Altitud</th>
+      <td class="fv">1.750 msnm</td>
+      <td class="fn"><span class="lvtag">Declarado</span></td>
+      <td class="ff">Productor<small>22 de oct de 2026</small></td></tr>
+        <tr style="--c:var(--ink-3)">
+      <th scope="row">Proceso</th>
+      <td class="fv">Por confirmar</td>
+      <td class="fn"><span class="lvtag">Declarado</span></td>
+      <td class="ff">Productor<small>22 de oct de 2026</small></td></tr><tr style="--c:var(--ink-3)">
+      <th scope="row">Puntaje SCA</th>
+      <td class="fv">—</td>
+      <td class="fn"><span class="lvtag">Declarado</span></td>
+      <td class="ff">Productor<small>22 de oct de 2026</small></td></tr>
+        <tr style="--c:var(--ink-3)">
+      <th scope="row">Factor de rendimiento</th>
+      <td class="fv">—</td>
+      <td class="fn"><span class="lvtag">Declarado</span></td>
+      <td class="ff">Productor<small>22 de oct de 2026</small></td></tr>
+        </tbody>
+      </table>
+      <dl class="leyenda"><div style="--c:var(--ink-3)"><dt><i></i>Declarado</dt><dd>Lo dice el productor.</dd></div><div style="--c:var(--doc)"><dt><i></i>Documentado</dt><dd>Hay un documento que lo respalda.</dd></div><div style="--c:var(--leaf)"><dt><i></i>Verificado</dt><dd>Lo comprobamos nosotros o un tercero.</dd></div><div style="--c:var(--gold)"><dt><i></i>Certificado</dt><dd>Lo avala una entidad competente.</dd></div></dl>
+    </section>
+
+    <section class="prod-receta reveal" style="--i:3">
+      <div class="section-head"><p class="eyebrow">Cómo prepararlo</p>
+        <h2>La receta <em>de la casa</em></h2></div>
+      <div class="receta"><div><span class="lbl">Método</span><b>V60</b></div><div><span class="lbl">Café</span><b>15 g</b></div><div><span class="lbl">Agua</span><b>250 ml</b></div><div><span class="lbl">Temperatura</span><b>93 °C</b></div><div><span class="lbl">Tiempo</span><b>2:45</b></div><div><span class="lbl">Molienda</span><b>Media fina</b></div></div>
+      <p class="hint">Si queda amargo, muele más grueso. Si queda aguado, muele más fino.</p>
+    </section>
+
+    <section class="cierre reveal" style="--i:4">
+      <p>Cada lote es de una sola cosecha y se acaba. Si quieres que el siguiente te llegue a la casa, está la suscripción.</p>
+      <button class="btn" data-act="go" data-to="suscripcion">Ver la suscripción</button>
+    </section>
+  </article><footer class="foot">
+  <div class="foot-marca"><b>Nandez Café · Coffee Gang</b><span>Chinácota · Norte de Santander, Colombia</span>
+    <a href="mailto:nandezcafe@gmail.com">nandezcafe@gmail.com</a></div>
+  <nav class="foot-links" aria-label="Información"><a href="/contacto" data-act="go" data-to="contacto">Contacto</a><a href="/envios-y-devoluciones" data-act="go" data-to="envios">Envíos y devoluciones</a><a href="/terminos" data-act="go" data-to="terminos">Términos</a><a href="/privacidad" data-act="go" data-to="privacidad">Datos personales</a></nav>
+  <small class="foot-nota">Prototipo con datos de ejemplo: fotos, textos y precios por confirmar.</small>
+  
+  <p class="g-wordmark" aria-hidden="true"><b>Nandez</b><small>Coffee Gang</small></p></footer></main>
+
+<div class="tray" id="tray" hidden></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<dialog id="cart" class="drawer" aria-label="Tu pedido">
+  <div class="cart-head"><h3>Tu pedido</h3>
+    <button class="x" data-act="cart-close" aria-label="Cerrar">✕</button></div>
+  <div class="cart-body" id="cart-body"></div>
+  <div class="cart-foot" id="cart-foot"></div>
+</dialog>
+<dialog id="dlg">
+  <div class="dlg-head"><h3 id="dlg-title"></h3><button class="x" data-act="close" aria-label="Cerrar">✕</button></div>
+  <div class="dlg-body" id="dlg-body"></div>
+</dialog>
+
+<script>window.IMG_V = "1126848c"; window.MERCADO_HOY = {"fecha":"2026-09-30","precioCarga":2170000,"ny":290.7,"tasaFnc":3307.5,"trm":3341.23};</script>
+<script src="/js/core.js?v=72b88244"></script>
+<script src="/js/fases.js?v=72b88244"></script>
+<script src="/js/shop.js?v=72b88244"></script>
+<script src="/js/pages.js?v=72b88244"></script>
+<script src="/js/auction.js?v=72b88244"></script>
+<script src="/js/main.js?v=72b88244"></script>
+</body>
+</html>

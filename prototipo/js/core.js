@@ -7,12 +7,13 @@
    ============================================================ */
 const CONFIG = {
   marca: "Nandez Café",
+  gang: "Coffee Gang",            // lo que dice el logo debajo de NANDEZ
   lugar: { es: "Norte de Santander, Colombia", en: "Norte de Santander, Colombia" },
   /* Referencias del mercado. El panel las actualiza solo desde /api/mercado (FNC y Banco de la República);
      estos valores son el punto de partida si no hay conexión. */
   fnc: { precioCarga: 2105000, factorBase: 94, fecha: "2026-09-25" },
   mercado: { ny: 278.6, trm: 3306.86 },
-  storageKey: "nandez-v7",
+  storageKey: "nandez-v8",
   whatsapp: "",                 // 573001234567 · mientras esté vacío, pedidos y avisos salen por correo
   correo: "nandezcafe@gmail.com",
   /* Formulario externo (Formspree, Getform…): si hay URL, pedidos, suscriptores y postores
@@ -50,7 +51,7 @@ const LV = {
   CERTIFICADO: { label: { es: "Certificado", en: "Certified" }, c: "var(--gold)", k: 4, desc: { es: "Lo avala una entidad competente.", en: "Backed by a certifying body." } },
 };
 /* Solo las cuatro tintas de la línea gráfica */
-const PROC_COLOR = { Lavado: "#2E4732", Natural: "#C05A3E", Honey: "#C05A3E", "Anaeróbico": "#4A2E1B" };
+const PROC_COLOR = { Lavado: "#2E4732", Natural: "#C05A3E", Honey: "#C05A3E", "Anaeróbico": "#4A2E1B", "Por confirmar": "#6B645C" };
 const A = (v, nivel, fuente, fecha, extra = {}) => ({ v, nivel, fuente, fecha, ...extra });
 
 /* ---------- idioma ---------- */
@@ -71,6 +72,8 @@ const T = {
   leer: { es: "Leer", en: "Read" }, volver: { es: "Volver", en: "Back" },
   en_vivo: { es: "en vivo", en: "live" }, cerrada: { es: "cerrada", en: "closed" },
   suscribirme: { es: "Suscribirme", en: "Subscribe" }, mes: { es: "al mes", en: "per month" },
+  proximamente: { es: "Próximamente", en: "Coming soon" }, avisame: { es: "Avísame", en: "Notify me" },
+  por_confirmar: { es: "Por confirmar", en: "To be confirmed" }, en_grano: { es: "En grano", en: "Whole bean" },
 };
 const t = (k) => (T[k] ? T[k][UI.lang] || T[k].es : k);
 const tx = (o) => (o && typeof o === "object" && !Array.isArray(o) ? (o[UI.lang] ?? o.es) : o);
@@ -80,7 +83,8 @@ const lvl = (nivel) => tx(LV[nivel].label);
 const ES_EN = {
   "Productor por confirmar": "Grower to be confirmed", "Finca por confirmar": "Farm to be confirmed",
   "Nuestra finca": "Our farm", "Familia Nandez": "The Nandez family",
-  "Bourbon rosado": "Pink Bourbon", Castillo: "Castillo", Geisha: "Geisha",
+  "Bourbon rosado": "Pink Bourbon", Castillo: "Castillo", Geisha: "Geisha", "Por confirmar": "To be confirmed",
+  "Lote Tibo B": "Tibo B lot", "Tibo B": "Tibo B",
   Lavado: "Washed", Natural: "Natural", Honey: "Honey", "Anaeróbico": "Anaerobic",
   Productor: "Grower", "GPS en visita de campo": "GPS on a farm visit", "Bitácora con fotos": "Photo log",
   "Q-grader independiente": "Independent Q-grader", "Informe de trilla": "Milling report", "Catación propia": "Our own cupping",
@@ -94,7 +98,7 @@ const msnm = (n) => fmtNum(n) + (UI.lang === "en" ? " m a.s.l." : " msnm");
 
 function seed() {
   return {
-    v: 7, seq: 400,
+    v: 8, seq: 400,
 
     /* ---------- FINCAS ALIADAS ---------- */
     fincas: [
@@ -102,9 +106,9 @@ function seed() {
         variedad: "Geisha", exclusiva: true, premios: { es: "Ganador de concursos de calidad (por confirmar)", en: "Quality competition winner (to be confirmed)" },
         historia: { es: "PENDIENTE: la historia de don Domingo, cuántos años lleva con el Geisha y qué premios ha ganado.",
                     en: "PENDING: Domingo's story, how long he has grown Geisha and which awards he has won." }, pendiente: true },
-      { id: "F-02", productor: "Productor por confirmar", finca: "Lote Chinácota", municipio: "Chinácota", altitud: 1750,
-        variedad: "Bourbon rosado", exclusiva: false,
-        historia: { es: "PENDIENTE: quién cultiva este lote y por qué su café sabe distinto.", en: "PENDING: who grows this lot and why it tastes different." }, pendiente: true },
+      { id: "F-02", productor: "Productor por confirmar", finca: "Lote Tibo B", municipio: "Chinácota", altitud: 1750,
+        variedad: "Por confirmar", exclusiva: false,
+        historia: { es: "PENDIENTE: quién cultiva el Tibo B, a qué altura y por qué su café sabe distinto.", en: "PENDING: who grows Tibo B, at what altitude and why it tastes different." }, pendiente: true },
       { id: "F-03", productor: "Productor por confirmar", finca: "Lote Arboledas", municipio: "Arboledas", altitud: 1550,
         variedad: "Castillo", exclusiva: false,
         historia: { es: "PENDIENTE: historia de la finca.", en: "PENDING: farm story." }, pendiente: true },
@@ -116,32 +120,11 @@ function seed() {
 
     /* ---------- CAFÉS A LA VENTA ---------- */
     productos: [
-      { id: "P-GEI", fincaId: "F-02", loteId: "C-001",
-        nombre: { es: "Bourbon rosado", en: "Pink Bourbon" }, sub: { es: "Lavado · cosecha 2026", en: "Washed · 2026 harvest" },
-        variedad: "Bourbon rosado", proceso: "Lavado", tueste: { es: "Medio-claro", en: "Medium-light" }, cosecha: "2026",
-        sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que no pierda aroma.", en: "We ship it whole so it keeps its aroma." },
-        altitud: 1750, puntaje: 87.5, nivel: "VERIFICADO", fuente: "Q-grader", fecha: "2026-09-02",
-        notas: { es: ["Jazmín", "Bergamota", "Durazno"], en: ["Jasmine", "Bergamot", "Peach"] },
-        ficha: {
-          variedad: A("Bourbon rosado", "DECLARADO", "Productor", "2026-06-10"),
-          altitud: A(1750, "VERIFICADO", "GPS en visita de campo", "2026-06-10"),
-          proceso: A("Lavado", "DOCUMENTADO", "Bitácora con fotos", "2026-06-22", { detalle: "Fermentación 36 h · Marquesina 18 días" }),
-          puntaje: A(87.5, "VERIFICADO", "Q-grader independiente", "2026-09-02", { vig: 6 }),
-          factor: A(91, "DOCUMENTADO", "Informe de trilla", "2026-07-02"),
-        },
-        pago: { pagadoKg: 26000, referenciaKg: 16040, fecha: "2026-06-25" },
-        receta: { metodo: "V60", dosis: "15 g", agua: "250 ml", temp: "93 °C", tiempo: "2:45", molienda: { es: "Media fina", en: "Medium fine" } },
-        variantes: [
-          { g: 100, precio: 32000, label: { es: "Muestra", en: "Sample" }, nota: { es: "para probarlo", en: "try it first" }, stock: 38 },
-          { g: 250, precio: 68000, label: { es: "Bolsa", en: "Bag" }, nota: { es: "la de siempre", en: "the usual" }, stock: 74, principal: true },
-          { g: 1000, precio: 245000, label: { es: "Kilo", en: "Kilo" }, nota: { es: "para cafeterías", en: "for cafés" }, stock: 6 },
-        ],
-        presentacion: 250, precio: 68000, stock: 74, destacado: true },
-
       { id: "P-CAS", fincaId: "F-03", loteId: "C-003",
         nombre: { es: "Castillo de Arboledas", en: "Castillo from Arboledas" }, sub: { es: "Lavado · cosecha 2026", en: "Washed · 2026 harvest" },
         variedad: "Castillo", proceso: "Lavado", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026",
-        sale: { es: "Molido, media", en: "Ground, medium" }, saleNota: { es: "Molienda media, lista para cafetera de goteo o Chemex. El kilo va en grano.", en: "Medium grind, ready for drip or Chemex. The kilo ships whole bean." },
+        color: "#2F5A3C",
+        sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero, tostado la semana del pedido, para que lo muelas el día que lo preparas.", en: "We ship it whole, roasted the week you order, so you grind it the day you brew it." },
         altitud: 1550, puntaje: 84, nivel: "DOCUMENTADO", fuente: "Catación propia", fecha: "2026-09-14",
         notas: { es: ["Panela", "Chocolate", "Naranja"], en: ["Brown sugar", "Chocolate", "Orange"] },
         ficha: {
@@ -155,10 +138,52 @@ function seed() {
         receta: { metodo: "Prensa francesa", dosis: "30 g", agua: "500 ml", temp: "94 °C", tiempo: "4:00", molienda: { es: "Gruesa", en: "Coarse" } },
         variantes: [
           { g: 250, precio: 38000, label: { es: "Bolsa", en: "Bag" }, nota: { es: "el de todos los días", en: "the everyday one" }, stock: 90, principal: true },
-          { g: 1000, precio: 132000, label: { es: "Kilo", en: "Kilo" }, nota: { es: "para cafeterías · en grano", en: "for cafés · whole bean" }, stock: 14,
-            sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "El kilo va en grano, para que lo muelas en tu máquina el día que lo usas.", en: "The kilo ships whole bean, so you grind it on your machine the day you use it." } },
+          { g: 1000, precio: 132000, label: { es: "Kilo", en: "Kilo" }, nota: { es: "para cafeterías", en: "for cafés" }, stock: 14 },
         ],
         presentacion: 250, precio: 38000, stock: 90 },
+
+      /* Los tres cafés van EN GRANO. Castillo ya está; Tibo B y el tercero están por confirmar
+         (nombre, finca, precio y ficha): mientras tanto se muestran como "próximamente" y
+         recogen correos. `color` es la tinta de cada café en la página. */
+      { id: "P-TIB", fincaId: "F-02", loteId: null, proximamente: true, color: "#2C4FA3",
+        nombre: { es: "Tibo B", en: "Tibo B" }, sub: { es: "Por confirmar · cosecha 2026", en: "To be confirmed · 2026 harvest" },
+        variedad: "Por confirmar", proceso: "Por confirmar", tueste: { es: "Por confirmar", en: "To be confirmed" }, cosecha: "2026",
+        sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que no pierda aroma.", en: "We ship it whole so it keeps its aroma." },
+        altitud: 1750, puntaje: null, nivel: "DECLARADO", fuente: "Productor", fecha: "2026-10-22",
+        notas: { es: ["Notas por confirmar"], en: ["Notes to be confirmed"] },
+        ficha: {
+          variedad: A("Por confirmar", "DECLARADO", "Productor", "2026-10-22"),
+          altitud: A(1750, "DECLARADO", "Productor", "2026-10-22"),
+          proceso: A("Por confirmar", "DECLARADO", "Productor", "2026-10-22"),
+          puntaje: A("—", "DECLARADO", "Productor", "2026-10-22"),
+          factor: A("—", "DECLARADO", "Productor", "2026-10-22"),
+        },
+        pago: null,
+        receta: { metodo: "V60", dosis: "15 g", agua: "250 ml", temp: "93 °C", tiempo: "2:45", molienda: { es: "Media fina", en: "Medium fine" } },
+        variantes: [
+          { g: 250, precio: 0, label: { es: "Bolsa", en: "Bag" }, nota: { es: "precio por confirmar", en: "price to be confirmed" }, stock: 0, principal: true },
+        ],
+        presentacion: 250, precio: 0, stock: 0 },
+
+      { id: "P-003", fincaId: null, loteId: null, proximamente: true, color: "#C98A1E",
+        nombre: { es: "Tercer café", en: "Third coffee" }, sub: { es: "Por confirmar · cosecha 2026", en: "To be confirmed · 2026 harvest" },
+        variedad: "Por confirmar", proceso: "Por confirmar", tueste: { es: "Por confirmar", en: "To be confirmed" }, cosecha: "2026",
+        sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que no pierda aroma.", en: "We ship it whole so it keeps its aroma." },
+        altitud: null, puntaje: null, nivel: "DECLARADO", fuente: "Productor", fecha: "2026-10-22",
+        notas: { es: ["Notas por confirmar"], en: ["Notes to be confirmed"] },
+        ficha: {
+          variedad: A("Por confirmar", "DECLARADO", "Productor", "2026-10-22"),
+          altitud: A("—", "DECLARADO", "Productor", "2026-10-22"),
+          proceso: A("Por confirmar", "DECLARADO", "Productor", "2026-10-22"),
+          puntaje: A("—", "DECLARADO", "Productor", "2026-10-22"),
+          factor: A("—", "DECLARADO", "Productor", "2026-10-22"),
+        },
+        pago: null,
+        receta: { metodo: "V60", dosis: "15 g", agua: "250 ml", temp: "93 °C", tiempo: "2:45", molienda: { es: "Media fina", en: "Medium fine" } },
+        variantes: [
+          { g: 250, precio: 0, label: { es: "Bolsa", en: "Bag" }, nota: { es: "precio por confirmar", en: "price to be confirmed" }, stock: 0, principal: true },
+        ],
+        presentacion: 250, precio: 0, stock: 0 },
     ],
 
     /* ---------- SUSCRIPCIÓN ---------- */
@@ -200,11 +225,11 @@ function seed() {
     ],
     pedidos: [
       { id: "PD-101", clienteId: "CL-001", nombre: "Café Ejemplo Centro", ciudad: "Cúcuta", fecha: "2026-09-08", canal: "tienda",
-        items: [{ id: "P-GEI", nombre: "Bourbon rosado 250 g", n: 12, precio: 68000 }], total: 816000 },
+        items: [{ id: "P-CAS", nombre: "Castillo 250 g", n: 12, precio: 38000 }], total: 456000 },
       { id: "PD-102", clienteId: "CL-001", nombre: "Café Ejemplo Centro", ciudad: "Cúcuta", fecha: "2026-08-11", canal: "tienda",
         items: [{ id: "P-CAS", nombre: "Castillo 250 g", n: 20, precio: 38000 }], total: 760000 },
       { id: "PD-103", clienteId: "CL-002", nombre: "Tostaduría Ejemplo", ciudad: "Bucaramanga", fecha: "2026-08-28", canal: "tienda",
-        items: [{ id: "P-GEI", nombre: "Bourbon rosado 1 kg", n: 4, precio: 245000 }], total: 980000 },
+        items: [{ id: "P-CAS", nombre: "Castillo 1 kg", n: 4, precio: 132000 }], total: 528000 },
       { id: "PD-104", clienteId: "CL-003", nombre: "Tienda Ejemplo Pamplona", ciudad: "Pamplona", fecha: "2026-05-18", canal: "directo",
         items: [{ id: "P-CAS", nombre: "Castillo 250 g", n: 8, precio: 38000 }], total: 304000 },
     ],
@@ -217,7 +242,7 @@ function seed() {
   };
 }
 
-function load() { try { const s = JSON.parse(localStorage.getItem(CONFIG.storageKey)); return s && s.v === 7 ? s : null; } catch { return null; } }
+function load() { try { const s = JSON.parse(localStorage.getItem(CONFIG.storageKey)); return s && s.v === 8 ? s : null; } catch { return null; } }
 function save() { try { localStorage.setItem(CONFIG.storageKey, JSON.stringify(S)); } catch {} }
 function idiomaGuardado() { try { return localStorage.getItem("nandez-lang"); } catch { return null; } }
 
@@ -304,9 +329,9 @@ const PLANES = [
     cada: { es: ["2 × 250 g en grano, de dos fincas", "40 filtros", "Algo del oficio cada tres meses", "La receta del mes y su video", "Acceso anticipado a la subasta"],
             en: ["2 × 250 g whole bean, from two farms", "40 filters", "A brewing extra every three months", "The month's recipe and video", "Early access to the auction"] } },
 ];
-const CAFETERIA = { id: "cafeteria", nombre: { es: "Cafetería", en: "Café" }, mes: 460000,
-  desc: { es: "Dos kilos de Bourbon rosado en grano al mes: $230.000 el kilo, frente a $245.000 suelto.",
-          en: "Two kilos of whole bean Pink Bourbon a month: COP 230,000 per kilo, against 245,000 bought loose." },
+const CAFETERIA = { id: "cafeteria", nombre: { es: "Cafetería", en: "Café" }, mes: 240000,
+  desc: { es: "Dos kilos de Castillo en grano al mes: $120.000 el kilo, frente a $132.000 suelto.",
+          en: "Two kilos of whole bean Castillo a month: COP 120,000 per kilo, against 132,000 bought loose." },
   incluye: { es: ["2 kg en grano cada mes", "Envío incluido", "Tostión a tu perfil", "Material para tu carta", "¿Más de 2 kg? Te cotizamos"],
              en: ["2 kg whole bean monthly", "Shipping included", "Roast to your profile", "Menu material", "More than 2 kg? Ask for a quote"] } };
 
@@ -364,14 +389,20 @@ function meta(view, id) {
           d: "Familia cafetera de Chinácota. Le compramos los mejores lotes a fincas de Norte de Santander y los tostamos con nuestra marca: un café por finca, con su altura, su variedad, su proceso y su puntaje de catación." },
     cafes: en
       ? { t: "Coffees on sale · " + marca,
-          d: "One coffee per farm: Pink Bourbon, Castillo and the Geisha lot going to auction. Colombian specialty coffee roasted in Norte de Santander and shipped countrywide." }
+          d: "Three whole bean coffees, one farm each: Castillo from Arboledas, Tibo B and a third lot to be confirmed, plus the Geisha going to auction. Roasted in Norte de Santander and shipped countrywide." }
       : { t: "Cafés a la venta · " + marca,
-          d: "Un café por finca: Bourbon rosado, Castillo y el lote Geisha que va a subasta. Café especial colombiano tostado en Norte de Santander, con envío a todo el país." },
+          d: "Tres cafés en grano, una finca cada uno: Castillo de Arboledas, Tibo B y un tercer lote por confirmar, más el Geisha que va a subasta. Tostados en Norte de Santander, con envío a todo el país." },
     cafe: en
-      ? { t: tx(p.nombre) + " · " + p.puntaje + " SCA · coffee from " + (fincaDe(p).municipio || "Colombia") + " · " + marca,
-          d: tx(p.nombre) + ": " + p.variedad + " " + p.proceso.toLowerCase() + " grown at " + fmtNum(p.altitud) + " m in " + (fincaDe(p).municipio || "") + ", " + p.puntaje + " SCA points. Notes of " + tx(p.notas).join(", ").toLowerCase() + ". From " + cop(p.variantes[0].precio) + "." }
-      : { t: tx(p.nombre) + " · " + p.puntaje + " SCA · café de " + (fincaDe(p).municipio || "Colombia") + " · " + marca,
-          d: tx(p.nombre) + ": " + p.variedad + " " + p.proceso.toLowerCase() + " cultivado a " + fmtNum(p.altitud) + " msnm en " + (fincaDe(p).municipio || "") + ", con " + p.puntaje + " puntos SCA. Notas de " + tx(p.notas).join(", ").toLowerCase() + ". Desde " + cop(p.variantes[0].precio) + "." },
+      ? (p.proximamente
+          ? { t: tx(p.nombre) + " · whole bean coffee, coming soon · " + marca,
+              d: tx(p.nombre) + ": the next whole bean coffee from Norte de Santander. Farm, data sheet and price to be confirmed; leave your email and we tell you the day it is out." }
+          : { t: tx(p.nombre) + " · " + p.puntaje + " SCA · coffee from " + (fincaDe(p).municipio || "Colombia") + " · " + marca,
+              d: tx(p.nombre) + ": " + p.variedad + " " + p.proceso.toLowerCase() + " grown at " + fmtNum(p.altitud) + " m in " + (fincaDe(p).municipio || "") + ", " + p.puntaje + " SCA points. Notes of " + tx(p.notas).join(", ").toLowerCase() + ". Whole bean, from " + cop(p.variantes[0].precio) + "." })
+      : (p.proximamente
+          ? { t: tx(p.nombre) + " · café en grano, próximamente · " + marca,
+              d: tx(p.nombre) + ": el próximo café en grano de Norte de Santander. Finca, ficha y precio por confirmar; deja tu correo y te avisamos el día que salga." }
+          : { t: tx(p.nombre) + " · " + p.puntaje + " SCA · café de " + (fincaDe(p).municipio || "Colombia") + " · " + marca,
+              d: tx(p.nombre) + ": " + p.variedad + " " + p.proceso.toLowerCase() + " cultivado a " + fmtNum(p.altitud) + " msnm en " + (fincaDe(p).municipio || "") + ", con " + p.puntaje + " puntos SCA. Notas de " + tx(p.notas).join(", ").toLowerCase() + ". En grano, desde " + cop(p.variantes[0].precio) + "." }),
     subasta: en
       ? { t: "Live Geisha coffee auction · " + marca,
           d: "Bid in US dollars for a single 30 kg Geisha microlot of green coffee from Toledo, Norte de Santander, Colombia: reserve price, verified bidders and a 100 g sample to cup first." }

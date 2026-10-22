@@ -27,30 +27,46 @@ const ICONOS = {
 const icono = (k, clase = "") => `<svg class="${clase}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONOS[k]}</svg>`;
 
 function portada(en) {
-  const sellos = en
-    ? [["montana", "1,500 to 1,950", "metres up"], ["hoja", "One farm", "per bag"], ["ficha", "Checked", "data sheet"]]
-    : [["montana", "1.500 a 1.950", "metros de altura"], ["hoja", "Una finca", "por bolsa"], ["ficha", "Ficha", "verificada"]];
-  return `<section class="portada" aria-labelledby="portada-titulo">
-    <picture class="portada-foto">
-      <source media="(max-width:760px)" srcset="${foto("/img/portada/portada-alto@0.5x.webp")} 500w, ${foto("/img/portada/portada-alto.webp")} 1000w" sizes="100vw">
-      <img src="${foto("/img/portada/portada-ancho.webp")}" srcset="${foto("/img/portada/portada-ancho@0.5x.webp")} 1200w, ${foto("/img/portada/portada-ancho.webp")} 2400w"
-        sizes="(min-width:1240px) 1200px, 100vw" width="2400" height="1340" fetchpriority="high" decoding="async"
-        alt="${en ? "A bag of Nandez Café on a mossy stone in a coffee farm in Norte de Santander, with coffee leaves and a ripe cherry at its foot"
-                  : "Bolsa de Nandez Café sobre una piedra con musgo en un cafetal de Norte de Santander, con hojas de café y una cereza madura al pie"}">
-    </picture>
-    <div class="portada-texto">
-      <p class="portada-sobre reveal">${en ? "Single-origin coffee from Norte de Santander" : "Café de origen de Norte de Santander"}</p>
-      <h1 id="portada-titulo">${pal(en ? "Coffee with" : "Café con")}<br><em>${pal(en ? "a first name." : "nombre propio.", 2)}</em></h1>
-      <p class="portada-lede reveal" style="--i:3">${en
-        ? "Farm by farm, we choose the best lots in Norte de Santander and roast them under our name. Every bag says who grew it."
-        : "Escogemos, finca por finca, los mejores lotes de Norte de Santander y los tostamos con nuestra marca. Cada bolsa dice quién lo cultivó."}</p>
-      <div class="portada-cta reveal" style="--i:4">
-        <button class="btn claro lg" data-act="go" data-to="cafes">${en ? "See the coffees" : "Ver los cafés"}${icono("flecha", "ico")}</button>
-        <a class="portada-link" href="${ruta("cafes")}#cafeterias" data-act="go" data-to="cafes">${en ? "Prices for cafés" : "Precios para cafeterías"}</a>
+  const p = S.productos.find((x) => !x.proximamente) || S.productos[0];
+  const hechos = en
+    ? [["1,500 to 1,950 m", "above sea level"], ["Whole bean, always", "you grind it at home"], ["Roasted the week", "you order it"]]
+    : [["1.500 a 1.950 msnm", "fincas vecinas"], ["En grano, siempre", "lo mueles en casa"], ["Tostado la semana", "del pedido"]];
+  const sello = en ? "2026 HARVEST · WHOLE BEAN · NORTE DE SANTANDER · " : "COSECHA 2026 · EN GRANO · NORTE DE SANTANDER · ";
+  return `<section class="g-hero hero" aria-labelledby="portada-titulo">
+    <div class="g-hero-txt">
+      <p class="g-kicker reveal"><em>${esc(CONFIG.marca.replace(" Café", ""))} ${esc(CONFIG.gang)}</em> · Chinácota, Norte de Santander</p>
+      <h1 id="portada-titulo">${pal(en ? "Whole bean coffee" : "Café en grano")}<em>${pal(en ? "with a first name." : "con nombre propio.", 3)}</em></h1>
+      <p class="g-lede reveal" style="--i:3">${en
+        ? "Three coffees from neighbouring farms. We roast them the week you order and ship them whole, so you grind at home and every cup tastes like the farm it came from."
+        : "Tres cafés de fincas vecinas. Los tostamos la semana que los pides y los mandamos enteros, para que los muelas en casa y cada taza sepa a la finca de donde salió."}</p>
+      <div class="g-cta reveal" style="--i:4">
+        <button class="btn primary lg" data-act="go" data-to="cafes">${en ? "See the coffees" : "Ver los cafés"}${icono("flecha", "ico")}</button>
+        <a class="g-link" href="${ruta("suscripcion")}" data-act="go" data-to="suscripcion">${en ? "The subscription" : "La suscripción"}</a>
       </div>
-      <ul class="portada-sellos reveal" style="--i:5">${sellos.map(([k, a, b]) => `<li>${icono(k)}<span>${a}<br>${b}</span></li>`).join("")}</ul>
+      <ul class="g-hechos reveal" style="--i:5">${hechos.map(([a, b]) => `<li><b>${a}</b><small>${b}</small></li>`).join("")}</ul>
+    </div>
+    <div class="g-hero-art reveal" style="--i:2" data-act="cafe" data-id="${p.id}" role="button" tabindex="0" aria-label="${esc(tx(p.nombre))}">
+      <p class="g-hero-tag">${en ? "Now roasting" : "Tostando ahora"}<b>${esc(tx(p.nombre))}</b></p>
+      ${fotoProducto(p, { sizes: "(min-width:900px) 480px, 80vw", clase: "g-hero-foto", prioridad: true })}
+      <svg class="g-sello" viewBox="0 0 200 200" aria-hidden="true"><defs><path id="g-arco" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
+        <circle cx="100" cy="100" r="92"/><circle cx="100" cy="100" r="4" style="fill:currentColor"/><text><textPath href="#g-arco">${sello}</textPath></text></svg>
     </div>
   </section>`;
+}
+
+/* La cinta: el precio del día que ya alimenta el panel, más lo que prometemos.
+   Es el mismo dato en bucle; corre despacio y se detiene al pasar el cursor. */
+function cinta(en) {
+  const h = (typeof MERCADO_HOY !== "undefined" && MERCADO_HOY) || (S.mercado && S.mercado.historial && S.mercado.historial[S.mercado.historial.length - 1]) || {};
+  const carga = h.precioCarga || CONFIG.fnc.precioCarga, ny = h.ny || CONFIG.mercado.ny, trm = h.trm || CONFIG.mercado.trm;
+  const fecha = fmtFecha(h.fecha || CONFIG.fnc.fecha);
+  const items = en
+    ? [`FNC price ${fecha}: <em>${cop(carga)}</em> per 125 kg load`, `New York: <em>${fmtNum(ny, 2)} US¢/lb</em>`, `Exchange rate: <em>${cop(trm)}</em> per USD`,
+       `Free shipping from <em>${cop(CONFIG.envio.gratisDesde)}</em>`, `<em>Whole bean</em>, roasted the week you order`, `Norte de Santander, Colombia · <em>${CONFIG.gang}</em>`]
+    : [`Precio FNC ${fecha}: <em>${cop(carga)}</em> la carga de 125 kg`, `Bolsa de Nueva York: <em>${fmtNum(ny, 2)} US¢/lb</em>`, `TRM: <em>${cop(trm)}</em> por dólar`,
+       `Envío gratis desde <em>${cop(CONFIG.envio.gratisDesde)}</em>`, `<em>En grano</em>, tostado la semana del pedido`, `Norte de Santander, Colombia · <em>${CONFIG.gang}</em>`];
+  const fila = items.map((x) => `<span>${x}</span>`).join("");
+  return `<div class="g-ticker" aria-label="${en ? "Market today" : "El mercado hoy"}"><div class="g-ticker-track">${fila}${fila}</div></div>`;
 }
 
 /* ---------- la cereza por dentro ---------- */

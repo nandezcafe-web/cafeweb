@@ -17,7 +17,7 @@ const envioDe = (subtotal) => (subtotal >= CONFIG.envio.gratisDesde ? 0 : CONFIG
    @0.5x. Por ahora son pruebas hechas con el empaque en diseño; cuando lleguen
    las fotos reales se reemplazan con el mismo nombre y nada más cambia.
    Si un café todavía no tiene foto, se muestra el dibujo de su montaña. */
-const CON_FOTO = new Set(["P-GEI", "P-CAS"]);
+const CON_FOTO = new Set(["P-CAS"]);
 function fotoProducto(p, { sizes = "(min-width:900px) 360px, 70vw", clase = "prod-foto", prioridad = false } = {}) {
   if (!CON_FOTO.has(p.id)) return ridge(p, { w: 420, h: 200 });
   const base = `/img/productos/${p.id.toLowerCase()}`;
@@ -27,20 +27,65 @@ function fotoProducto(p, { sizes = "(min-width:900px) 360px, 70vw", clase = "pro
 }
 
 function cafeCard(p, i = 0) {
-  const f = fincaDe(p), v = principal(p);
-  return `<article class="card-cafe reveal" style="--i:${i}">
+  const f = fincaDe(p), v = principal(p), en = UI.lang === "en", pronto = !!p.proximamente;
+  return `<article class="card-cafe reveal${pronto ? " pronto" : ""}" style="--i:${i};--pc:${p.color || "#2F5A3C"}">
     <div class="cc-art${CON_FOTO.has(p.id) ? " con-foto" : ""}" data-act="cafe" data-id="${p.id}" role="button" tabindex="0" aria-label="${esc(tx(p.nombre))}">
-      ${fotoProducto(p)}
-      <span class="state st-publicado">${v.stock} ${t("disponibles")}</span>
-      <div class="cc-score"><b>${esc(p.puntaje)}</b><small style="color:${LV[p.nivel].c}">SCA · ${lvl(p.nivel)}</small></div>
+      ${pronto ? `<span class="g-pronto">${t("proximamente")}<i>${esc(tx(p.sub))}</i></span>` : fotoProducto(p)}
+      ${pronto ? "" : `<span class="state st-publicado">${v.stock} ${t("disponibles")}</span>
+      <div class="cc-score"><b>${esc(p.puntaje)}</b><small style="color:${LV[p.nivel].c}">SCA · ${lvl(p.nivel)}</small></div>`}
     </div>
     <div class="cc-body">
-      <p class="kicker">${esc(tr(f.finca || ""))}<br>${esc(p.altitud ? msnm(p.altitud) : "")}</p>
+      <p class="kicker">${esc(tr(f.finca || t("por_confirmar")))}<br>${p.altitud ? esc(msnm(p.altitud)) : (en ? "altitude to be confirmed" : "altura por confirmar")}</p>
       <h3>${esc(tx(p.nombre))}</h3>
       <p class="notas-linea">${tx(p.notas).join(" · ")}</p>
-      <div class="cc-foot"><b class="mono">${cop(v.precio)}</b><small>${gramos(v.g)} · ${esc(tx(saleDe(p, v))).toLowerCase()}</small>
-        <button class="btn primary sm" data-act="cafe" data-id="${p.id}">${t("ver_cafe")}</button></div>
+      <div class="cc-foot">${pronto
+        ? `<b>${t("por_confirmar")}</b><small>${t("en_grano").toLowerCase()}</small><button class="btn sm" data-act="espera" data-id="${p.id}">${t("avisame")}</button>`
+        : `<b class="mono">${cop(v.precio)}</b><small>${gramos(v.g)} · ${esc(tx(saleDe(p, v))).toLowerCase()}</small>
+        <button class="btn primary sm" data-act="cafe" data-id="${p.id}">${t("ver_cafe")}</button>`}</div>
     </div></article>`;
+}
+
+/* La tarjeta grande del inicio: la bolsa sobre su propia tinta, el número de la
+   serie y el puntaje; abajo la finca, el nombre, las notas y el precio. */
+function tarjetaInicio(p, i = 0) {
+  const f = fincaDe(p), v = principal(p), en = UI.lang === "en", pronto = !!p.proximamente;
+  return `<article class="g-prod g-io${pronto ? " pronto" : ""}" style="--pc:${p.color || "#2F5A3C"};--i:${i}">
+    <div class="g-prod-art" data-act="cafe" data-id="${p.id}" role="button" tabindex="0" aria-label="${esc(tx(p.nombre))}">
+      ${pronto ? `<span class="g-pronto">${t("proximamente")}<i>${esc(tx(p.sub))}</i></span>` : fotoProducto(p, { clase: "g-prod-foto", sizes: "(min-width:1000px) 400px, 90vw" })}
+      ${pronto ? "" : `<p class="g-prod-sca"><b>${esc(p.puntaje)}</b><small>SCA · ${lvl(p.nivel)}</small></p>`}
+      <span class="g-prod-n">0${i + 1}</span>
+    </div>
+    <div class="g-prod-body">
+      <p class="g-kicker">${esc(tr(f.finca || t("por_confirmar")))} · ${p.altitud ? esc(msnm(p.altitud)) : (en ? "altitude tbc" : "altura por confirmar")}</p>
+      <h3>${esc(tx(p.nombre))}</h3>
+      <p class="g-notas">${pronto ? esc(tx(p.sub)) : tx(p.notas).join(" · ")}</p>
+      <div class="g-prod-foot">${pronto
+        ? `<b>${t("por_confirmar")}</b><small>${t("en_grano").toLowerCase()}</small><button class="btn sm" data-act="espera" data-id="${p.id}">${t("avisame")}</button>`
+        : `<b class="mono">${cop(v.precio)}</b><small>${gramos(v.g)} · ${t("en_grano").toLowerCase()}</small>
+        <button class="btn primary sm" data-act="add" data-p="${p.id}" data-g="${v.g}" ${v.stock ? "" : "disabled"}>${t("agregar")}</button>`}</div>
+    </div></article>`;
+}
+
+/* Lista de espera de un café que todavía no sale: un correo y listo */
+function listaEspera(id) {
+  const p = prodById(id), en = UI.lang === "en";
+  if (!p) return;
+  modal(t("avisame"), `
+    <p class="hint">${en ? `We write to you the day <b>${esc(tx(p.nombre))}</b> goes on sale, with its data sheet and price.`
+      : `Te escribimos el día que salga <b>${esc(tx(p.nombre))}</b>, con su ficha y su precio.`}</p>
+    <div class="field"><label class="lbl" for="le-mail">${en ? "Email" : "Correo"}</label><input id="le-mail" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none"></div>
+    <div class="dlg-actions"><button class="btn" data-act="close">${en ? "Cancel" : "Cancelar"}</button>
+      <button class="btn primary" data-act="espera-ok" data-id="${p.id}">${t("avisame")}</button></div>`, "narrow");
+  setTimeout(() => $("#le-mail")?.focus(), 50);
+}
+function listaEsperaOk(id) {
+  const p = prodById(id), en = UI.lang === "en", correo = ($("#le-mail")?.value || "").trim();
+  if (!p || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) { toast(en ? "Check the email." : "Revisa el correo.", { type: "err" }); return; }
+  S.espera.push({ id: nextId("LE"), producto: p.id, correo, fecha: isoToday() }); save();
+  closeModal();
+  registrar("espera", { producto: tx(p.nombre), correo },
+    en ? `Hi, let me know when ${tx(p.nombre)} is out. My email: ${correo}` : `Hola, avísenme cuando salga ${tx(p.nombre)}. Mi correo: ${correo}`,
+    (en ? "Notify me: " : "Avísame: ") + tx(p.nombre));
 }
 
 function subastaCard(i = 0) {
@@ -81,7 +126,7 @@ function fincaCard(f, i = 0) {
 /* ---------- para cafeterías: precio por volumen ---------- */
 function bloqueCafeterias() {
   const en = UI.lang === "en";
-  const filas = S.productos.map((p) => {
+  const filas = S.productos.filter((p) => !p.proximamente).map((p) => {
     const b = principal(p), k = p.variantes.find((x) => x.g === 1000);
     return `<tr><th scope="row">${esc(tx(p.nombre))}<small>${esc(p.puntaje)} SCA</small></th>
       <td class="mono">${cop(b.precio)}<small>${gramos(b.g)}</small></td>
@@ -181,13 +226,15 @@ function viewCafe() {
   const sinMolino = enGrano
     ? ` <a class="enlace" href="${esc(contactoURL(en ? `Hi, I want the ${tx(p.nombre)} but I have no grinder.` : `Hola, quiero el ${tx(p.nombre)} pero no tengo molino.`, tx(p.nombre)))}" target="_blank" rel="noopener">${en ? "No grinder? Write to us." : "¿No tienes molino? Escríbenos."}</a>`
     : "";
-  return `<article class="prod">
-    <div class="prod-top">
-    <div class="prod-buy reveal">
-      <p class="eyebrow">${esc(tr(f.productor || ""))}, ${esc(tr(f.finca || ""))}</p>
-      <h1>${esc(tx(p.nombre))}</h1>
-      <p class="lede">${esc(tx(f.historia || { es: "", en: "" }))}</p>
-
+  const pronto = !!p.proximamente;
+  const compra = pronto ? `
+      <div class="pronto-aviso">
+        <b>${t("proximamente")}</b>
+        <p>${en ? "Farm, data sheet and price are still to be confirmed. Leave your email and we tell you the day it is out."
+                : "La finca, la ficha y el precio están por confirmar. Deja tu correo y te avisamos el día que salga."}</p>
+        <button class="btn primary" data-act="espera" data-id="${p.id}">${t("avisame")}</button>
+      </div>
+      <p class="sale"><span class="sale-tag">${esc(tx(saleDe(p, v)))}</span> <span>${esc(tx(saleNotaDe(p, v)))}</span></p>` : `
       <div class="vars" role="radiogroup" aria-label="${en ? "Size" : "Presentación"}">
         ${p.variantes.map((x) => `<button class="var ${x.g === v.g ? "on" : ""}" role="radio" aria-checked="${x.g === v.g}" data-act="var" data-p="${p.id}" data-g="${x.g}"
           aria-label="${esc(`${gramos(x.g)} · ${tx(x.label)} · ${cop(x.precio)}${x.stock ? "" : " · " + t("agotado")}`)}" ${x.stock ? "" : "disabled"}>
@@ -203,13 +250,20 @@ function viewCafe() {
       </div>
       <p class="hint">${v.stock} ${t("disponibles")} · ${en
         ? `ships from Cúcuta within Colombia in ${tx(E.dias)} · ${cop(E.costo)}, free from ${cop(E.gratisDesde)}`
-        : `sale de Cúcuta y llega en ${tx(E.dias)} · envío ${cop(E.costo)}, gratis desde ${cop(E.gratisDesde)}`}</p>
+        : `sale de Cúcuta y llega en ${tx(E.dias)} · envío ${cop(E.costo)}, gratis desde ${cop(E.gratisDesde)}`}</p>`;
+  return `<article class="prod" style="--pc:${p.color || "#2F5A3C"}">
+    <div class="prod-top">
+    <div class="prod-buy reveal">
+      <p class="eyebrow">${esc(tr(f.productor || t("por_confirmar")))}, ${esc(tr(f.finca || t("por_confirmar")))}</p>
+      <h1>${esc(tx(p.nombre))}</h1>
+      <p class="lede">${esc(tx(f.historia || { es: "", en: "" }))}</p>
+      ${compra}
     </div>
 
     <div class="prod-art reveal" style="--i:1">
       <div class="prod-escena">
-        ${fotoProducto(p, { sizes: "(min-width:900px) 560px, 90vw", prioridad: true })}
-        <p class="prod-sello"><b>${esc(p.puntaje)}</b><small>SCA</small></p>
+        ${pronto ? `<span class="g-pronto">${t("proximamente")}<i>${esc(tx(p.sub))}</i></span>` : fotoProducto(p, { sizes: "(min-width:900px) 560px, 90vw", prioridad: true })}
+        ${pronto ? "" : `<p class="prod-sello"><b>${esc(p.puntaje)}</b><small>SCA</small></p>`}
       </div>
       <ul class="notas-chips">${tx(p.notas).map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
       <div class="foto-pend">${en ? "Photo of the farm and the producer" : "Foto de la finca y del productor"}</div>

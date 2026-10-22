@@ -22,6 +22,8 @@ Le compramos café a fincas de Norte de Santander —cada una con su variedad—
 
 | Archivo | Contenido |
 |---|---|
+| [docs/11_rediseno_editorial.md](docs/11_rediseno_editorial.md) | Rediseño Coffee Gang: crítica a coff.com.co, referentes, la línea gráfica y lo que falta decidir |
+| [docs/10_propuesta_suscripciones.md](docs/10_propuesta_suscripciones.md) | Suscripción con kit de bienvenida, dos formas de pagar y la Ruta Nandez |
 | [docs/09_prompt_auditoria.md](docs/09_prompt_auditoria.md) | Prompt listo para auditar la página con ojos frescos |
 | [docs/08_envios.md](docs/08_envios.md) | Envíos: qué cobra el mercado, con quién enviar y qué nos conviene |
 | [docs/07_seo.md](docs/07_seo.md) | Cómo está armada la página para Google y para los asistentes de IA |
@@ -46,7 +48,7 @@ La tienda queda en `http://localhost:5174` y el panel en `http://localhost:5175`
 
 ## Armar el sitio
 
-El código vive en `prototipo/js/`. Después de cualquier cambio:
+El código vive en `prototipo/js/` y la línea gráfica en `prototipo/styles.css` (base), `prototipo/auction.css` (subasta) y `prototipo/gang.css` (la capa editorial Coffee Gang, solo para la tienda). Después de cualquier cambio:
 
 ```bash
 node tools/build.js

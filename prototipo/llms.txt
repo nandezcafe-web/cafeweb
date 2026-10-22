@@ -3,8 +3,9 @@
 > Familia cafetera de Chinácota, Norte de Santander (Colombia). Compramos lote por lote a fincas de Chinácota, Toledo y Arboledas, y vendemos cada café tostado con su ficha verificable. Nuestra propia finca (5.000 plantas de Geisha) da su primera cosecha en 2027.
 
 ## Qué vendemos
-- Bourbon rosado: variedad Bourbon rosado, proceso Lavado, 1750 msnm, 87.5 puntos SCA, desde $32.000 (https://cafeweb-five.vercel.app/cafe-bourbon-rosado)
-- Castillo de Arboledas: variedad Castillo, proceso Lavado, 1550 msnm, 84 puntos SCA, desde $38.000 (https://cafeweb-five.vercel.app/cafe-castillo-de-arboledas)
+- Castillo de Arboledas: variedad Castillo, proceso Lavado, 1550 msnm, 84 puntos SCA, en grano, desde $38.000 (https://cafeweb-five.vercel.app/cafe-castillo-de-arboledas)
+- Tibo B: café en grano, por confirmar (finca, ficha y precio); lista de espera en https://cafeweb-five.vercel.app/cafe-tibo-b)
+- Tercer café: café en grano, por confirmar (finca, ficha y precio); lista de espera en https://cafeweb-five.vercel.app/cafe-tercer-cafe)
 - Subasta en vivo de un microlote Geisha de Toledo (https://cafeweb-five.vercel.app/subasta)
 - Suscripción mensual desde $72.000, con kit de bienvenida para preparar en casa, filtros y una receta cada mes (https://cafeweb-five.vercel.app/suscripcion)
 
@@ -29,8 +30,9 @@ Sí. Vamos a la finca y medimos el factor de rendimiento y la humedad delante de
 ## Páginas
 - https://cafeweb-five.vercel.app/
 - https://cafeweb-five.vercel.app/cafes
-- https://cafeweb-five.vercel.app/cafe-bourbon-rosado
 - https://cafeweb-five.vercel.app/cafe-castillo-de-arboledas
+- https://cafeweb-five.vercel.app/cafe-tibo-b
+- https://cafeweb-five.vercel.app/cafe-tercer-cafe
 - https://cafeweb-five.vercel.app/subasta
 - https://cafeweb-five.vercel.app/suscripcion
 - https://cafeweb-five.vercel.app/diario

@@ -14,11 +14,14 @@ description: How to run and drive the Nandez Café site (public SPA, single-file
 - El sitio es una SPA: `go('suscripcion')` desde la consola navega sin recargar. En `nandez.html` el hash (`#/ruta`) NO enruta; usar `go()`.
 - Los crawlers no ejecutan JS: para textos SEO/llms.txt basta `curl -s <url> | grep`.
 - Inglés: rutas bajo `/en/` (p. ej. `/en/subscription`).
-- Estado del visitante: `localStorage['nandez-v7']`. Para probar estado viejo, inyectar claves ahí y recargar; limpiar al terminar.
+- Estado del visitante: `localStorage['nandez-v8']`. Para probar estado viejo, inyectar claves ahí y recargar; limpiar al terminar.
 - Formularios que "envían" abren el correo con `abrirContacto(texto, asunto)`: reemplazarla por una función que capture, para no abrir el cliente de correo.
 - Móvil: resize_window preset mobile; revisar `scrollWidth - innerWidth === 0` y que el `.dock` esté visible.
 
+- Estilos: `gang.css` va encima de `styles.css` y `auction.css`; las piezas del inicio llevan prefijo `g-` y las secciones entran al hacer scroll con la clase `g-io` → `in`.
+
 ## Trampas
+- Con el panel del navegador oculto, las animaciones CSS no avanzan y todo lo que lleva `.reveal` o `.g-io` sale en blanco en las capturas: antes de capturar, `document.getElementById('view').classList.add('calm')` y `document.querySelectorAll('.g-io').forEach(e=>e.classList.add('in'))`; el scroll suave también se traba, poner `document.documentElement.style.scrollBehavior='auto'`.
 - Con el panel del navegador oculto, `requestAnimationFrame` se pausa y los eventos de foco no llegan: simular rAF con setTimeout.
 - El panel admin tiene su propia copia de `PLANES` en `admin/index.html`; no entrar con credenciales reales, basta con que cargue sin errores.
 - Las imágenes llevan `?v=IMG_V`; si en producción se ve una imagen vieja, revisar ese hash antes de sospechar del código.
