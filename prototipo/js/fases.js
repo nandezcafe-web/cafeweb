@@ -60,10 +60,10 @@ function portada(en) {
 function cinta(en) {
   const items = en
     ? [`<em>One farm</em> per bag`, `Grown at <em>1,500 to 1,950</em> metres`, `<em>Whole bean</em>, ground at home`, `<em>2026</em> harvest`,
-       `Chinácota · Toledo · Arboledas`, `Free shipping from <em>${cop(CONFIG.envio.gratisDesde)}</em>`,
+       `Chinácota · Toledo · Ragonvalia`, `Free shipping from <em>${cop(CONFIG.envio.gratisDesde)}</em>`,
        `Our own farm: <em>5,000</em> Geisha plants, first harvest 2027`, `Norte de Santander · <em>${CONFIG.gang}</em>`]
     : [`<em>Una finca</em> por bolsa`, `Cultivado entre <em>1.500 y 1.950</em> metros`, `<em>En grano</em>, para moler en casa`, `Cosecha <em>2026</em>`,
-       `Chinácota · Toledo · Arboledas`, `Envío gratis desde <em>${cop(CONFIG.envio.gratisDesde)}</em>`,
+       `Chinácota · Toledo · Ragonvalia`, `Envío gratis desde <em>${cop(CONFIG.envio.gratisDesde)}</em>`,
        `Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027`, `Norte de Santander · <em>${CONFIG.gang}</em>`];
   const fila = items.map((x) => `<span>${x}</span>`).join("");
   return `<div class="g-ticker" aria-label="${en ? "At a glance" : "En corto"}"><div class="g-ticker-track">${fila}${fila}</div></div>`;

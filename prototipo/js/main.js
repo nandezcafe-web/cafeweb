@@ -50,8 +50,8 @@ function viewInicio() {
   <section class="g-sec" aria-labelledby="g-fincas">
     ${cabeza("03", en ? "The neighbours" : "Los vecinos",
       `<span id="g-fincas">${en ? "Where each <em>bag comes from.</em>" : "De dónde viene <em>cada bolsa.</em>"}</span>`,
-      en ? "Chinácota, Toledo and Arboledas: mountains between 1,500 and 1,950 metres, with cold nights that ripen the cherry slowly. In 2027 the first harvest from our own farm joins them."
-         : "Chinácota, Toledo y Arboledas: montañas entre 1.500 y 1.950 metros, con noches frías que maduran el grano despacio. En 2027 se suma la primera cosecha de nuestra propia finca.")}
+      en ? "Chinácota, Toledo and Ragonvalia: mountains between 1,500 and 1,950 metres, with cold nights that ripen the cherry slowly. In 2027 the first harvest from our own farm joins them."
+         : "Chinácota, Toledo y Ragonvalia: montañas entre 1.500 y 1.950 metros, con noches frías que maduran el grano despacio. En 2027 se suma la primera cosecha de nuestra propia finca.")}
     <div class="fincas">${S.fincas.map((f, i) => fincaCard(f, i)).join("")}</div>
   </section>
 
