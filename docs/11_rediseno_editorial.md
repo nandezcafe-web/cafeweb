@@ -135,7 +135,7 @@ El Bourbon rosado salió del catálogo. El plan Cafetería pasó a 2 kg de Casti
 
 Pendiente de completar:
 
-1. **La lista de Spotify:** hoy es una lista pública de ejemplo (Café Bossa Nova). Cambiar `CONFIG.spotify.playlist` por el id de la lista propia.
-2. **Las redes:** poner las direcciones en `CONFIG.redes`. Mientras estén vacías, el ícono se ve apagado.
+1. **La lista de Spotify:** ya es la de Nandez, Coffee & chill (`CONFIG.spotify`). Al 22 de octubre tiene una sola canción; conviene llenarla.
+2. **Las redes:** ya están Instagram, Facebook y YouTube (`CONFIG.redes`).
 3. **Accesorios y merch:** las diez piezas están como próximamente, sin precio ni foto. Se completan en `ACCESORIOS`, en `core.js`.
 4. **Los correos de la comunidad:** sin formulario externo (`CONFIG.formulario`), cada registro solo llega si la persona envía el correo que se le abre. Conviene conectar Formspree o una herramienta de correo masivo.

@@ -11,14 +11,18 @@ const CONFIG = {
   /* Secciones apagadas hasta que estén listas: no salen en el menú, ni en el inicio,
      ni en el sitemap, y su dirección da 404. Para volver a mostrarlas, quitarlas de aquí. */
   ocultas: ["subasta", "diario"],
-  /* La lista para tomar café. Es una lista pública de ejemplo: cambiar el id por el de
-     la lista propia de Nandez (lo que va después de /playlist/ en el enlace de Spotify). */
-  spotify: { playlist: "2TBfY9LoCTMdZnmXww0UeH", nombre: "Café Bossa Nova" },
+  /* La lista para tomar café, la de Nandez. El id es lo que va después de /playlist/
+     en el enlace de Spotify. */
+  spotify: { playlist: "304MmcqXlTA1ZhuYo81OWR", nombre: "Coffee & chill" },
   /* Grupos de la página de accesorios que se muestran. "preparar" (gotero, molino, tetera…)
      queda apagado por ahora; para mostrarlo, agregarlo aquí. */
   accesoriosVisibles: ["merch"],
-  /* Redes: POR CONFIRMAR. Mientras estén vacías, el ícono se ve pero no lleva a ningún lado. */
-  redes: { instagram: "", facebook: "", youtube: "" },
+  /* Redes. Si una queda vacía, su ícono se ve apagado y el pie avisa que viene pronto. */
+  redes: {
+    instagram: "https://www.instagram.com/nandezcafe/",
+    facebook: "https://www.facebook.com/profile.php?id=61594868961438",
+    youtube: "https://www.youtube.com/@N%C3%A1ndezCaf%C3%A9",
+  },
   lugar: { es: "Norte de Santander, Colombia", en: "Norte de Santander, Colombia" },
   /* Referencias del mercado. El panel las actualiza solo desde /api/mercado (FNC y Banco de la República);
      estos valores son el punto de partida si no hay conexión. */
