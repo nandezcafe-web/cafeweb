@@ -6,7 +6,7 @@
 - Castillo de Arboledas: variedad Castillo, proceso Lavado, 1550 msnm, 84 puntos SCA, en grano, desde $38.000 (https://cafeweb-five.vercel.app/cafe-castillo-de-arboledas)
 - Tibo B: café en grano, por confirmar (finca, ficha y precio); lista de espera en https://cafeweb-five.vercel.app/cafe-tibo-b)
 - Tercer café: café en grano, por confirmar (finca, ficha y precio); lista de espera en https://cafeweb-five.vercel.app/cafe-tercer-cafe)
-- Accesorios para preparar en casa y merch Coffee Gang, próximamente (https://cafeweb-five.vercel.app/accesorios)
+- Merch Coffee Gang, próximamente (https://cafeweb-five.vercel.app/accesorios)
 - Suscripción mensual desde $72.000, con kit de bienvenida para preparar en casa, filtros y una receta cada mes (https://cafeweb-five.vercel.app/suscripcion)
 
 ## Cómo trabajamos

@@ -1571,6 +1571,9 @@ const CONFIG = {
   /* La lista para tomar café. Es una lista pública de ejemplo: cambiar el id por el de
      la lista propia de Nandez (lo que va después de /playlist/ en el enlace de Spotify). */
   spotify: { playlist: "2TBfY9LoCTMdZnmXww0UeH", nombre: "Café Bossa Nova" },
+  /* Grupos de la página de accesorios que se muestran. "preparar" (gotero, molino, tetera…)
+     queda apagado por ahora; para mostrarlo, agregarlo aquí. */
+  accesoriosVisibles: ["merch"],
   /* Redes: POR CONFIRMAR. Mientras estén vacías, el ícono se ve pero no lleva a ningún lado. */
   redes: { instagram: "", facebook: "", youtube: "" },
   lugar: { es: "Norte de Santander, Colombia", en: "Norte de Santander, Colombia" },
@@ -1937,6 +1940,8 @@ const ACCESORIOS = [
     desc: { es: "Diseño por confirmar.", en: "Design to be confirmed." } },
 ];
 const itemById = (id) => prodById(id) || ACCESORIOS.find((a) => a.id === id);
+const accesoriosVisibles = () => ACCESORIOS.filter((a) => CONFIG.accesoriosVisibles.includes(a.grupo));
+const conPreparar = () => CONFIG.accesoriosVisibles.includes("preparar");
 
 /* ---------- SEO: sitio, rutas y textos de cada página ---------- */
 CONFIG.sitio = "https://cafeweb-five.vercel.app";   // cambiar cuando haya dominio propio
@@ -1991,8 +1996,12 @@ function meta(view, id) {
       ? { t: "Shop · " + marca, d: "Specialty whole bean coffee from Norte de Santander, plus brewing gear and Coffee Gang merch." }
       : { t: "Tienda · " + marca, d: "Café de especialidad en grano de Norte de Santander, accesorios para prepararlo y merch Coffee Gang." },
     accesorios: en
-      ? { t: "Brewing gear and merch · " + marca, d: "Cone dripper, filters, hand grinder, scale, gooseneck kettle and Coffee Gang merch. Coming soon: leave your email." }
-      : { t: "Accesorios y merch · " + marca, d: "Gotero, filtros, molino manual, balanza, tetera cuello de cisne y merch Coffee Gang. Próximamente: deja tu correo." },
+      ? (conPreparar()
+          ? { t: "Brewing gear and merch · " + marca, d: "Cone dripper, filters, hand grinder, scale, gooseneck kettle and Coffee Gang merch. Coming soon: leave your email." }
+          : { t: "Coffee Gang merch · " + marca, d: "T-shirt, cap, mug and tote bag from Nandez Coffee Gang. Coming soon: leave your email and we tell you the day it is out." })
+      : (conPreparar()
+          ? { t: "Accesorios y merch · " + marca, d: "Gotero, filtros, molino manual, balanza, tetera cuello de cisne y merch Coffee Gang. Próximamente: deja tu correo." }
+          : { t: "Merch Coffee Gang · " + marca, d: "Camiseta, gorra, taza y bolsa de tela de Nandez Coffee Gang. Próximamente: deja tu correo y te avisamos el día que salga." }),
     cafes: en
       ? { t: "Specialty coffee · " + marca,
           d: "Three whole bean coffees, one farm each: Castillo from Arboledas, Tibo B and a third lot to be confirmed. Roasted in Norte de Santander and shipped countrywide." }

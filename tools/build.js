@@ -264,7 +264,7 @@ const llms = ev(c0, [
   '"## Qué vendemos",',
   '...S.productos.map((p) => "- " + tx(p.nombre) + (p.proximamente ? ": café en grano, por confirmar (finca, ficha y precio); lista de espera en " : ": variedad " + p.variedad + ", proceso " + p.proceso + ", " + p.altitud + " msnm, " + p.puntaje + " puntos SCA, en grano, desde " + cop(p.variantes[0].precio) + " (") + CONFIG.sitio + ruta("cafe", p.id, "es") + ")"),',
   '...(visible("subasta") ? ["- Subasta en vivo de un microlote Geisha de Toledo (" + CONFIG.sitio + "/subasta)"] : []),',
-  '"- Accesorios para preparar en casa y merch Coffee Gang, próximamente (" + CONFIG.sitio + ruta("accesorios", null, "es") + ")",',
+  '"- " + (conPreparar() ? "Accesorios para preparar en casa y merch Coffee Gang" : "Merch Coffee Gang") + ", próximamente (" + CONFIG.sitio + ruta("accesorios", null, "es") + ")",',
   '"- Suscripción mensual desde " + cop(PLANES[0].mes) + ", con kit de bienvenida para preparar en casa, filtros y una receta cada mes (" + CONFIG.sitio + "/suscripcion)", "",',
   '"## Cómo trabajamos",',
   '"- Una finca, una variedad. Cada dato (altura, variedad, proceso, puntaje) dice quién lo comprobó y cuándo.",',

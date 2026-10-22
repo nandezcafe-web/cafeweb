@@ -218,8 +218,10 @@ function viewTienda() {
           <b>${t("nav_cafes_esp")}</b><i>${en ? "One farm each, roasted the week you order." : "Una finca cada uno, tostados la semana del pedido."}</i></span></a>
       <a class="g-puerta oscura reveal" style="--i:4" href="${ruta("accesorios")}" data-act="go" data-to="accesorios">
         <span class="g-puerta-art"><span class="g-pronto">Coffee Gang<i>${t("proximamente")}</i></span></span>
-        <span class="g-puerta-txt"><small>02 · ${ACCESORIOS.length} ${en ? "pieces" : "piezas"} · ${t("proximamente").toLowerCase()}</small>
-          <b>${t("nav_accesorios")}</b><i>${en ? "Dripper, grinder, kettle, and things to wear." : "Gotero, molino, tetera, y algo para ponerse."}</i></span></a>
+        <span class="g-puerta-txt"><small>02 · ${accesoriosVisibles().length} ${en ? "pieces" : "piezas"} · ${t("proximamente").toLowerCase()}</small>
+          <b>${t("nav_accesorios")}</b><i>${conPreparar()
+            ? (en ? "Dripper, grinder, kettle, and things to wear." : "Gotero, molino, tetera, y algo para ponerse.")
+            : (en ? "T-shirt, cap, mug and tote bag from the gang." : "Camiseta, gorra, taza y bolsa de tela del gang.")}</i></span></a>
     </div>`;
 }
 
@@ -236,23 +238,21 @@ function accesorioCard(a, i = 0) {
 }
 
 function viewAccesorios() {
-  const en = UI.lang === "en";
-  const grupo = (g) => ACCESORIOS.filter((a) => a.grupo === g);
+  const en = UI.lang === "en", prep = conPreparar();
+  const grupos = [["preparar", en ? "To brew at home" : "Para preparar en casa"], ["merch", "Merch " + esc(CONFIG.gang)]]
+    .filter(([g]) => CONFIG.accesoriosVisibles.includes(g));
   return `${subnavTienda("accesorios")}
     <div class="view-head">
       <div><p class="eyebrow reveal">${t("nav_tienda")} · ${t("nav_accesorios")}</p>
-        <h2 class="reveal" style="--i:1">${en ? "To brew it, <em>and to wear it</em>" : "Para prepararlo, <em>y para ponértelo</em>"}</h2>
+        <h2 class="reveal" style="--i:1">${prep ? (en ? "To brew it, <em>and to wear it</em>" : "Para prepararlo, <em>y para ponértelo</em>")
+                                              : (en ? "Wear the <em>gang</em>" : "Ponte el <em>gang</em>")}</h2>
         <p class="reveal" style="--i:2">${en ? "We are choosing each piece. Leave your email on the ones you want and we tell you the day they are out, with their price."
           : "Estamos escogiendo cada pieza. Deja tu correo en las que quieras y te avisamos el día que salgan, con su precio."}</p></div>
     </div>
-    <section class="g-acc-grupo">
-      <p class="g-kicker reveal">${en ? "To brew at home" : "Para preparar en casa"}</p>
-      <div class="g-accs">${grupo("preparar").map((a, i) => accesorioCard(a, i)).join("")}</div>
-    </section>
-    <section class="g-acc-grupo">
-      <p class="g-kicker reveal">Merch ${esc(CONFIG.gang)}</p>
-      <div class="g-accs">${grupo("merch").map((a, i) => accesorioCard(a, i)).join("")}</div>
-    </section>`;
+    ${grupos.map(([g, titulo]) => `<section class="g-acc-grupo">
+      ${grupos.length > 1 ? `<p class="g-kicker reveal">${titulo}</p>` : ""}
+      <div class="g-accs">${ACCESORIOS.filter((a) => a.grupo === g).map((a, i) => accesorioCard(a, i)).join("")}</div>
+    </section>`).join("")}`;
 }
 
 /* ---------- catálogo ---------- */

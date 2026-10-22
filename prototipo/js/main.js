@@ -86,8 +86,8 @@ function musica(en) {
   if (!L || !L.playlist) return "";
   const url = `https://open.spotify.com/playlist/${L.playlist}`;
   return `<section class="g-sec g-musica" aria-labelledby="g-musica">
-    <div class="g-head g-io">
-      <span class="g-num">05</span><p class="g-kicker">${en ? "To go with it" : "Para acompañar"}</p>
+    <div class="g-musica-txt g-io">
+      <p class="g-kicker"><span class="g-num">05</span> &nbsp; ${en ? "To go with it" : "Para acompañar"}</p>
       <h2 id="g-musica">${en ? "Music to <em>drink coffee to.</em>" : "Música para <em>tomar café.</em>"}</h2>
       <p>${en ? "A list for grinding, brewing and staying a while. Put it on, share it, and tell us what it is missing."
               : "Una lista para moler, colar y quedarse un rato. Ponla, compártela y dinos qué le falta."}</p>
@@ -96,10 +96,11 @@ function musica(en) {
         <a class="g-link" href="${url}" target="_blank" rel="noopener">${en ? "Open in Spotify" : "Abrir en Spotify"}</a>
       </div>
     </div>
-    <div class="g-musica-player g-io" style="--i:1">
+    <figure class="g-musica-player g-io" style="--i:1">
+      <figcaption><span class="g-eq" aria-hidden="true"><i></i><i></i><i></i></span>${en ? "Playing at Nandez" : "Sonando en Nandez"} · ${esc(L.nombre)}</figcaption>
       <iframe title="${esc(L.nombre)} · Spotify" src="https://open.spotify.com/embed/playlist/${L.playlist}?utm_source=generator&amp;theme=0"
-        width="100%" height="380" frameborder="0" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
-    </div>
+        width="100%" height="352" frameborder="0" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+    </figure>
   </section>`;
 }
 function compartirLista() {
@@ -126,11 +127,11 @@ const REDES = {
   facebook: ["Facebook", '<path d="M14 21v-7.5h2.6l.4-3H14V8.6c0-.9.3-1.5 1.6-1.5H17V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.3H8.3v3H11V21"/>'],
   youtube: ["YouTube", '<rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10 9.2 5 2.8-5 2.8Z" fill="currentColor"/>'],
 };
-const redesHTML = () => `<ul class="g-redes">${Object.entries(REDES).map(([k, [nombre, svg]]) => {
+const redesHTML = () => `<div class="g-redes-fila"><ul class="g-redes">${Object.entries(REDES).map(([k, [nombre, svg]]) => {
   const url = CONFIG.redes[k], ic = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${svg}</svg>`;
   return `<li>${url ? `<a href="${esc(url)}" target="_blank" rel="noopener" aria-label="${nombre}">${ic}</a>`
                     : `<span aria-label="${nombre} (${t("por_confirmar").toLowerCase()})" title="${nombre} · ${t("por_confirmar")}">${ic}</span>`}</li>`;
-}).join("")}</ul>`;
+}).join("")}</ul>${Object.values(CONFIG.redes).some(Boolean) ? "" : `<small>${UI.lang === "en" ? "Socials coming soon" : "Muy pronto en redes"}</small>`}</div>`;
 
 const FOOT = () => {
   const en = UI.lang === "en";
@@ -154,8 +155,8 @@ const FOOT = () => {
   <div class="foot-marca"><b>${esc(CONFIG.marca)} · ${esc(CONFIG.gang)}</b><span>Chinácota · ${esc(tx(CONFIG.lugar))}</span>
     <a href="mailto:${CONFIG.correo}">${esc(CONFIG.correo)}</a>${CONFIG.whatsapp ? `<a href="https://wa.me/${CONFIG.whatsapp}" target="_blank" rel="noopener">WhatsApp +${CONFIG.whatsapp}</a>` : ""}
     ${redesHTML()}</div>
-  <nav class="foot-links" aria-label="${t("nav_tienda")}">${lista(tienda)}</nav>
-  <nav class="foot-links" aria-label="${en ? "Policies" : "Políticas"}">${lista(politicas)}</nav>
+  <nav class="foot-links" aria-labelledby="pie-tienda"><p class="foot-tit" id="pie-tienda">${t("nav_tienda")}</p>${lista(tienda)}</nav>
+  <nav class="foot-links" aria-labelledby="pie-ayuda"><p class="foot-tit" id="pie-ayuda">${en ? "Help" : "Ayuda"}</p>${lista(politicas)}</nav>
   <small class="foot-nota">© ${new Date().getFullYear()} ${esc(CONFIG.marca)} · ${en ? "Prototype with example data: photos, texts and prices to be confirmed." : "Prototipo con datos de ejemplo: fotos, textos y precios por confirmar."}</small>
   ${demo() ? `<button class="btn sm" data-act="reset-demo">${en ? "Reset demo data" : "Reiniciar datos de la demo"}</button>` : ""}
   <p class="g-wordmark" aria-hidden="true"><b>Nandez</b><small>${esc(CONFIG.gang)}</small></p></footer>`;
