@@ -455,3 +455,112 @@ html.js .g-io.in{opacity:1;transform:none}
   .dos,.planes,.entradas{grid-template-columns:1fr}
   .card-cafe,.plan,.entrada{border-right:0}
 }
+
+/* ============================================================
+   TIENDA, MÚSICA Y COMUNIDAD (octubre 2026)
+   El menú queda en Inicio · Tienda · Suscripción. "Tienda" abre sus
+   dos categorías; la subasta y el diario están apagados (CONFIG.ocultas).
+   ============================================================ */
+/* "Tienda" y su desplegable: aparece al pasar el cursor o al llegar con el teclado */
+.tab-grupo{position:relative;display:flex}
+.tab-sub{position:absolute;z-index:60;top:calc(100% + 10px);left:50%;min-width:250px;display:grid;padding:6px;
+  background:var(--paper);border:1px solid var(--ink);opacity:0;visibility:hidden;transform:translate(-50%,6px);
+  transition:opacity .2s var(--ease-out),transform .2s var(--ease-out),visibility 0s .2s}
+.tab-sub::before{content:"";position:absolute;left:0;right:0;top:-12px;height:12px}
+.tab-grupo:hover .tab-sub,.tab-grupo:focus-within .tab-sub{opacity:1;visibility:visible;transform:translate(-50%,0);transition-delay:0s}
+.tab-sub a{padding:12px 14px;font:600 12px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink);text-decoration:none;white-space:nowrap}
+.tab-sub a:hover,.tab-sub a:focus-visible{background:var(--ink);color:var(--paper);outline:0}
+@media (prefers-reduced-motion:reduce){.tab-sub{transition:none}}
+
+/* la fila que une las tres páginas de la tienda */
+.g-subnav{display:flex;flex-wrap:wrap;gap:0;margin:4px 0 26px;border:1px solid var(--ink);width:max-content;max-width:100%}
+.g-subnav a{padding:10px 16px;font:600 11.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink);text-decoration:none;border-right:1px solid var(--ink)}
+.g-subnav a:last-child{border-right:0}
+.g-subnav a[aria-current=page]{background:var(--ink);color:var(--paper)}
+@media (hover:hover) and (pointer:fine){.g-subnav a:not([aria-current=page]):hover{color:var(--cherry)}}
+
+/* la tienda: dos puertas grandes */
+.g-puertas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border:1px solid var(--ink)}
+.g-puerta{--pc:var(--cherry);display:grid;grid-template-rows:auto 1fr;text-decoration:none;color:var(--ink);background:var(--paper);border-right:1px solid var(--ink)}
+.g-puerta:last-child{border-right:0}
+.g-puerta-art{position:relative;aspect-ratio:5/4;display:grid;place-items:end center;overflow:hidden;background:var(--pc);border-bottom:1px solid var(--ink)}
+.g-puerta.oscura .g-puerta-art{background:var(--ink);place-items:center}
+.g-puerta .g-prod-foto{height:84%}
+.g-puerta-txt{display:grid;gap:8px;padding:24px 24px 28px}
+.g-puerta-txt small{font:600 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+.g-puerta-txt b{font:800 clamp(2rem,4vw,3.4rem)/.92 var(--display);letter-spacing:-.04em;text-transform:uppercase}
+.g-puerta-txt i{font:italic 1.25rem/1.3 var(--serif);color:var(--ink-2)}
+.g-puerta .g-prod-foto,.g-puerta-txt b{transition:transform .55s var(--ease-out),color .25s var(--ease-out)}
+@media (hover:hover) and (pointer:fine){.g-puerta:hover .g-prod-foto{transform:translateY(-10px) rotate(-2deg)}.g-puerta:hover .g-puerta-txt b{color:var(--cherry)}}
+
+/* accesorios y merch: un bloque de color con el nombre, como una etiqueta */
+.g-acc-grupo{margin-top:34px}
+.g-acc-grupo .g-kicker{padding-bottom:12px;border-bottom:1px solid var(--ink)}
+.g-accs{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));border-left:1px solid var(--ink)}
+.g-acc{display:grid;grid-template-rows:auto 1fr;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);background:var(--paper)}
+.g-acc-art{position:relative;aspect-ratio:1;display:grid;align-content:end;padding:18px;background:var(--pc);color:var(--paper);cursor:pointer;overflow:hidden}
+.g-acc-art b{font:800 clamp(1.5rem,2.4vw,2.1rem)/.92 var(--display);letter-spacing:-.03em;text-transform:uppercase;transition:transform .45s var(--ease-out)}
+.g-acc-n{position:absolute;top:14px;right:16px;font:600 11px var(--mono);letter-spacing:.2em}
+@media (hover:hover) and (pointer:fine){.g-acc:hover .g-acc-art b{transform:translateY(-6px)}}
+.g-acc-body{display:grid;gap:10px;align-content:space-between;padding:18px 18px 20px}
+.g-acc-body p{margin:0;color:var(--ink-2);font-size:14.5px;line-height:1.5}
+.g-acc .g-prod-foot{margin-top:0}
+.g-acc .g-prod-foot b{font:800 .95rem var(--display);text-transform:uppercase;letter-spacing:.02em;color:var(--cherry)}
+
+/* la música: el texto a un lado, el reproductor al otro */
+.g-musica{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 clamp(28px,5vw,72px);align-items:end}
+.g-musica .g-head{border-bottom:0;padding-bottom:0}
+.g-musica-cta{grid-column:2;display:flex;align-items:center;flex-wrap:wrap;gap:14px 24px;margin-top:22px}
+.g-musica-cta .g-link{margin-top:0}
+.g-musica-player{border:1px solid var(--ink);background:var(--ink);line-height:0}
+.g-musica-player iframe{display:block;width:100%;height:380px;border:0}
+
+/* la comunidad: una franja negra antes del pie, en todas las páginas */
+.g-comunidad{width:100vw;margin:clamp(64px,10vw,130px) 0 0 calc(50% - 50vw);padding:clamp(40px,6vw,72px) var(--borde);
+  background:var(--ink);color:var(--paper);display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:24px clamp(28px,5vw,72px);align-items:end}
+.g-comunidad > *{max-width:640px}
+.g-comunidad h2{font-size:clamp(2rem,4.6vw,3.8rem);text-transform:uppercase;letter-spacing:-.04em;color:var(--paper)}
+.g-comunidad h2 em{text-transform:none;font-size:.92em}
+.g-comunidad p{margin:14px 0 0;font-size:1.05rem;color:rgba(245,240,230,.78)}
+.g-comunidad-form{display:grid;gap:10px}
+.g-comunidad-form .lbl{color:rgba(245,240,230,.75)}
+.g-comunidad-form > div{display:flex;border:1px solid var(--paper)}
+.g-comunidad-form .input{flex:1;min-width:0;border:0;background:transparent;color:var(--paper);padding:14px 16px;font-size:16px}
+.g-comunidad-form .input::placeholder{color:rgba(245,240,230,.45)}
+.g-comunidad-form .input:focus{outline:2px solid var(--cherry);outline-offset:-2px}
+.g-comunidad-form .btn{border:0;border-left:1px solid var(--paper)}
+.g-comunidad-form small{color:rgba(245,240,230,.6);font-size:12.5px}
+.g-comunidad-form small a{color:var(--paper);text-decoration:underline;text-underline-offset:3px}
+.g-comunidad + .foot{margin-top:0;border-top:0}
+body[data-view=subasta] .g-comunidad{border-top:1px solid rgba(245,240,230,.2)}
+
+/* el pie con tres columnas y las redes */
+.foot{grid-template-columns:minmax(0,1.4fr) auto auto;gap:18px clamp(28px,5vw,64px)}
+.foot-links{align-content:start}
+.g-redes{list-style:none;display:flex;gap:8px;margin:14px 0 0;padding:0}
+.g-redes a,.g-redes span{display:grid;place-items:center;width:42px;height:42px;border:1px solid var(--ink);color:var(--ink);transition:background .2s var(--ease-out),color .2s var(--ease-out)}
+.g-redes svg{width:20px;height:20px}
+.g-redes a:hover{background:var(--cherry);border-color:var(--cherry);color:#fff}
+.g-redes span{opacity:.45;cursor:not-allowed}
+body[data-view=subasta] .g-redes a,body[data-view=subasta] .g-redes span{border-color:rgba(245,240,230,.4);color:var(--crema)}
+
+@media (max-width:900px){
+  .g-musica{grid-template-columns:1fr;gap:22px}
+  .g-musica-cta{grid-column:1}
+  .g-comunidad{grid-template-columns:1fr}
+  .foot{grid-template-columns:1fr 1fr}
+  .foot-marca{grid-column:1/-1}
+}
+@media (max-width:760px){
+  .g-puertas{grid-template-columns:1fr}
+  .g-puerta{border-right:0;border-bottom:1px solid var(--ink)}
+  .g-puerta:last-child{border-bottom:0}
+  .g-accs{grid-template-columns:1fr 1fr}
+  .g-acc-art b{font-size:1.3rem}
+  .g-subnav{width:100%}
+  .g-subnav a{flex:1;text-align:center;padding:10px 8px;font-size:10.5px}
+  .g-comunidad{padding-inline:16px}
+  .g-comunidad-form > div{flex-direction:column}
+  .g-comunidad-form .btn{border-left:0;border-top:1px solid var(--paper);justify-content:center}
+  .g-musica-player iframe{height:352px}
+}

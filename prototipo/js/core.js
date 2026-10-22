@@ -8,6 +8,14 @@
 const CONFIG = {
   marca: "Nandez Café",
   gang: "Coffee Gang",            // lo que dice el logo debajo de NANDEZ
+  /* Secciones apagadas hasta que estén listas: no salen en el menú, ni en el inicio,
+     ni en el sitemap, y su dirección da 404. Para volver a mostrarlas, quitarlas de aquí. */
+  ocultas: ["subasta", "diario"],
+  /* La lista para tomar café. Es una lista pública de ejemplo: cambiar el id por el de
+     la lista propia de Nandez (lo que va después de /playlist/ en el enlace de Spotify). */
+  spotify: { playlist: "2TBfY9LoCTMdZnmXww0UeH", nombre: "Café Bossa Nova" },
+  /* Redes: POR CONFIRMAR. Mientras estén vacías, el ícono se ve pero no lleva a ningún lado. */
+  redes: { instagram: "", facebook: "", youtube: "" },
   lugar: { es: "Norte de Santander, Colombia", en: "Norte de Santander, Colombia" },
   /* Referencias del mercado. El panel las actualiza solo desde /api/mercado (FNC y Banco de la República);
      estos valores son el punto de partida si no hay conexión. */
@@ -60,6 +68,8 @@ const T = {
   nav_subasta: { es: "Subasta", en: "Auction" }, nav_suscripcion: { es: "Suscripción", en: "Subscription" },
   nav_diario: { es: "Diario", en: "Journal" }, nav_contacto: { es: "Contacto", en: "Contact" },
   nav_pedido: { es: "Pedido", en: "Order" }, nav_mas: { es: "Más", en: "More" },
+  nav_tienda: { es: "Tienda", en: "Shop" }, nav_cafes_esp: { es: "Cafés de especialidad", en: "Specialty coffee" },
+  nav_accesorios: { es: "Accesorios y merch", en: "Gear and merch" },
   comprar: { es: "Comprar", en: "Buy" }, agregar: { es: "Agregar al pedido", en: "Add to order" },
   ver_cafe: { es: "Ver el café", en: "View coffee" }, agotado: { es: "Agotado", en: "Sold out" },
   pedido: { es: "Tu pedido", en: "Your order" }, total: { es: "Total", en: "Total" },
@@ -321,13 +331,13 @@ const PLANES = [
   { id: "cosecha", nombre: { es: "Cosecha", en: "Harvest" }, kit: "completo", destacado: true,
     para: { es: "Para comparar dos fincas cada mes", en: "To compare two farms every month" },
     mes: 105000, inscripcion: 319000, seisKit: 679000, seisSinKit: 585000, molienda: "media-fina",
-    cada: { es: ["2 × 250 g de dos fincas distintas", "40 filtros", "Molienda a tu gusto", "La receta del mes y su video", "Acceso anticipado a la subasta"],
-            en: ["2 × 250 g from two different farms", "40 filters", "Ground to your taste", "The month's recipe and video", "Early access to the auction"] } },
+    cada: { es: ["2 × 250 g de dos fincas distintas", "40 filtros", "Molienda a tu gusto", "La receta del mes y su video", "Acceso anticipado a cada lote nuevo"],
+            en: ["2 × 250 g from two different farms", "40 filters", "Ground to your taste", "The month's recipe and video", "Early access to every new lot"] } },
   { id: "barista", nombre: { es: "Barista", en: "Barista" }, kit: "barista",
     para: { es: "Para el ritual completo, moliendo en casa", en: "For the full ritual, grinding at home" },
     mes: 115000, inscripcion: 549000, seisKit: 849000, seisSinKit: 639000, molienda: "grano",
-    cada: { es: ["2 × 250 g en grano, de dos fincas", "40 filtros", "Algo del oficio cada tres meses", "La receta del mes y su video", "Acceso anticipado a la subasta"],
-            en: ["2 × 250 g whole bean, from two farms", "40 filters", "A brewing extra every three months", "The month's recipe and video", "Early access to the auction"] } },
+    cada: { es: ["2 × 250 g en grano, de dos fincas", "40 filtros", "Algo del oficio cada tres meses", "La receta del mes y su video", "Acceso anticipado a cada lote nuevo"],
+            en: ["2 × 250 g whole bean, from two farms", "40 filters", "A brewing extra every three months", "The month's recipe and video", "Early access to every new lot"] } },
 ];
 const CAFETERIA = { id: "cafeteria", nombre: { es: "Cafetería", en: "Café" }, mes: 240000,
   desc: { es: "Dos kilos de Castillo en grano al mes: $120.000 el kilo, frente a $132.000 suelto.",
@@ -343,16 +353,48 @@ function precioPlan(p, conKit, seis) {
   return { luego: p.mes };
 }
 
+/* ---------- ACCESORIOS Y MERCH ----------
+   Todavía no hay precios ni fotos: cada pieza sale como "próximamente" y recoge
+   correos. Las de preparar son las mismas de los kits de la suscripción.
+   Cuando haya precio, poner `precio` y quitar `proximamente`. */
+const ACCESORIOS = [
+  { id: "A-V60", grupo: "preparar", color: "#2F5A3C", proximamente: true, nombre: { es: "Gotero cónico tipo V60", en: "V60-style cone dripper" },
+    desc: { es: "El método con el que arranca la Ruta Nandez.", en: "The method the Nandez route starts with." } },
+  { id: "A-FIL", grupo: "preparar", color: "#C98A1E", proximamente: true, nombre: { es: "Filtros de papel × 100", en: "Paper filters × 100" },
+    desc: { es: "Para el gotero. Sin sabor a papel si los enjuagas antes.", en: "For the dripper. No paper taste if you rinse them first." } },
+  { id: "A-MOL", grupo: "preparar", color: "#141210", proximamente: true, nombre: { es: "Molino manual de muela cónica", en: "Conical burr hand grinder" },
+    desc: { es: "Porque el café va en grano: muele justo antes de prepararlo.", en: "The coffee ships whole bean: grind right before brewing." } },
+  { id: "A-BAL", grupo: "preparar", color: "#2C4FA3", proximamente: true, nombre: { es: "Balanza con temporizador", en: "Scale with timer" },
+    desc: { es: "Quince gramos, doscientos cincuenta mililitros, tres minutos.", en: "Fifteen grams, two hundred fifty millilitres, three minutes." } },
+  { id: "A-TET", grupo: "preparar", color: "#EF4724", proximamente: true, nombre: { es: "Tetera cuello de cisne", en: "Gooseneck kettle" },
+    desc: { es: "Para verter despacio y en círculos.", en: "To pour slowly, in circles." } },
+  { id: "A-SRV", grupo: "preparar", color: "#6B645C", proximamente: true, nombre: { es: "Servidor de vidrio 600 ml", en: "600 ml glass server" },
+    desc: { es: "Para dos tazas, o una muy larga.", en: "For two cups, or one very long one." } },
+  { id: "M-CAM", grupo: "merch", color: "#EF4724", proximamente: true, nombre: { es: "Camiseta Coffee Gang", en: "Coffee Gang T-shirt" },
+    desc: { es: "Diseño por confirmar.", en: "Design to be confirmed." } },
+  { id: "M-GOR", grupo: "merch", color: "#141210", proximamente: true, nombre: { es: "Gorra Nandez", en: "Nandez cap" },
+    desc: { es: "Diseño por confirmar.", en: "Design to be confirmed." } },
+  { id: "M-TAZ", grupo: "merch", color: "#2F5A3C", proximamente: true, nombre: { es: "Taza de cerámica", en: "Ceramic mug" },
+    desc: { es: "Diseño por confirmar.", en: "Design to be confirmed." } },
+  { id: "M-TOT", grupo: "merch", color: "#C98A1E", proximamente: true, nombre: { es: "Bolsa de tela", en: "Tote bag" },
+    desc: { es: "Diseño por confirmar.", en: "Design to be confirmed." } },
+];
+const itemById = (id) => prodById(id) || ACCESORIOS.find((a) => a.id === id);
+
 /* ---------- SEO: sitio, rutas y textos de cada página ---------- */
 CONFIG.sitio = "https://cafeweb-five.vercel.app";   // cambiar cuando haya dominio propio
 
 const RUTAS = {
-  es: { inicio: "", cafes: "cafes", cafe: "cafe", subasta: "subasta", suscripcion: "suscripcion", diario: "diario", entrada: "diario",
+  es: { inicio: "", tienda: "tienda", accesorios: "accesorios", cafes: "cafes", cafe: "cafe", subasta: "subasta", suscripcion: "suscripcion", diario: "diario", entrada: "diario",
         contacto: "contacto", envios: "envios-y-devoluciones", terminos: "terminos", privacidad: "privacidad" },
-  en: { inicio: "", cafes: "coffees", cafe: "coffee", subasta: "auction", suscripcion: "subscription", diario: "journal", entrada: "journal",
+  en: { inicio: "", tienda: "shop", accesorios: "accessories", cafes: "coffees", cafe: "coffee", subasta: "auction", suscripcion: "subscription", diario: "journal", entrada: "journal",
         contacto: "contact", envios: "shipping-and-returns", terminos: "terms", privacidad: "privacy" },
 };
 const slugEntrada = (e) => slug(tx(e.titulo)).slice(0, 60);
+/* ¿La sección está prendida? (ver CONFIG.ocultas). Una entrada del diario va con el diario. */
+const visible = (v) => !CONFIG.ocultas.includes(v === "entrada" ? "diario" : v);
+/* Qué pestaña del menú se marca en cada vista: todo lo de la tienda cae en "Tienda" */
+const seccionNav = (v) => (["tienda", "cafes", "cafe", "accesorios"].includes(v) ? "tienda" : v === "entrada" ? "diario" : v);
 
 function ruta(view, id, lang) {
   const L = lang || UI.lang, base = L === "en" ? "/en/" : "/";
@@ -368,8 +410,9 @@ function vistaDeRuta(path) {
   const pre = ["cafe-", "coffee-"].find((x) => p.startsWith(x));
   if (pre) { const s = p.slice(pre.length), pr = S.productos.find((x) => slug(x.nombre.es) === s || slug(x.nombre.en) === s); return pr ? { view: "cafe", id: pr.id } : { view: "cafes" }; }
   const preE = ["diario-", "journal-"].find((x) => p.startsWith(x));
-  if (preE) { const s = p.slice(preE.length), e = S.entradas.find((x) => slug(x.titulo.es).slice(0, 60) === s || slug(x.titulo.en).slice(0, 60) === s); return e ? { view: "entrada", id: e.id } : { view: "diario" }; }
-  for (const R of [RUTAS.es, RUTAS.en]) { const v = Object.keys(R).find((k) => R[k] === p && k !== "cafe" && k !== "entrada"); if (v) return { view: v }; }
+  if (preE) { if (!visible("diario")) return { view: "noencontrada" };
+    const s = p.slice(preE.length), e = S.entradas.find((x) => slug(x.titulo.es).slice(0, 60) === s || slug(x.titulo.en).slice(0, 60) === s); return e ? { view: "entrada", id: e.id } : { view: "diario" }; }
+  for (const R of [RUTAS.es, RUTAS.en]) { const v = Object.keys(R).find((k) => R[k] === p && k !== "cafe" && k !== "entrada"); if (v) return visible(v) ? { view: v } : { view: "noencontrada" }; }
   return { view: "noencontrada" };
 }
 
@@ -387,11 +430,17 @@ function meta(view, id) {
           d: "A coffee-growing family from Chinácota, Colombia. We buy the best lots from farms across Norte de Santander and roast them under our name: one farm per coffee, with altitude, variety, process and cupping score for each lot." }
       : { t: marca + " · Café de origen de Norte de Santander",
           d: "Familia cafetera de Chinácota. Le compramos los mejores lotes a fincas de Norte de Santander y los tostamos con nuestra marca: un café por finca, con su altura, su variedad, su proceso y su puntaje de catación." },
+    tienda: en
+      ? { t: "Shop · " + marca, d: "Specialty whole bean coffee from Norte de Santander, plus brewing gear and Coffee Gang merch." }
+      : { t: "Tienda · " + marca, d: "Café de especialidad en grano de Norte de Santander, accesorios para prepararlo y merch Coffee Gang." },
+    accesorios: en
+      ? { t: "Brewing gear and merch · " + marca, d: "Cone dripper, filters, hand grinder, scale, gooseneck kettle and Coffee Gang merch. Coming soon: leave your email." }
+      : { t: "Accesorios y merch · " + marca, d: "Gotero, filtros, molino manual, balanza, tetera cuello de cisne y merch Coffee Gang. Próximamente: deja tu correo." },
     cafes: en
-      ? { t: "Coffees on sale · " + marca,
-          d: "Three whole bean coffees, one farm each: Castillo from Arboledas, Tibo B and a third lot to be confirmed, plus the Geisha going to auction. Roasted in Norte de Santander and shipped countrywide." }
-      : { t: "Cafés a la venta · " + marca,
-          d: "Tres cafés en grano, una finca cada uno: Castillo de Arboledas, Tibo B y un tercer lote por confirmar, más el Geisha que va a subasta. Tostados en Norte de Santander, con envío a todo el país." },
+      ? { t: "Specialty coffee · " + marca,
+          d: "Three whole bean coffees, one farm each: Castillo from Arboledas, Tibo B and a third lot to be confirmed. Roasted in Norte de Santander and shipped countrywide." }
+      : { t: "Cafés de especialidad · " + marca,
+          d: "Tres cafés en grano, una finca cada uno: Castillo de Arboledas, Tibo B y un tercer lote por confirmar. Tostados en Norte de Santander, con envío a todo el país." },
     cafe: en
       ? (p.proximamente
           ? { t: tx(p.nombre) + " · whole bean coffee, coming soon · " + marca,
@@ -409,14 +458,14 @@ function meta(view, id) {
       : { t: "Subasta de café Geisha en vivo · " + marca,
           d: "Puja en dólares por un solo microlote de 30 kg de Geisha verde de Toledo, Norte de Santander: precio de reserva, postores verificados y muestra de 100 g para catar antes." },
     contacto: en
-      ? { t: "Contact · " + marca, d: "Write to the Nandez family: orders, cafés and roasters, auction bidders and questions about our coffee from Chinácota, Norte de Santander." }
-      : { t: "Contacto · " + marca, d: "Escríbele a la familia Nandez: pedidos, cafeterías y tostadores, postores de la subasta y preguntas sobre nuestro café de Chinácota, Norte de Santander." },
+      ? { t: "Contact · " + marca, d: "Write to the Nandez family: orders, cafés and roasters, and questions about our coffee from Chinácota, Norte de Santander." }
+      : { t: "Contacto · " + marca, d: "Escríbele a la familia Nandez: pedidos, cafeterías y tostadores, y preguntas sobre nuestro café de Chinácota, Norte de Santander." },
     envios: en
       ? { t: "Shipping and returns · " + marca, d: "What shipping costs, how long it takes to reach each city in Colombia and what we do if your coffee arrives damaged." }
       : { t: "Envíos y devoluciones · " + marca, d: "Cuánto cuesta el envío, cuánto tarda en llegar a cada ciudad de Colombia y qué hacemos si tu café llega mal." },
     terminos: en
-      ? { t: "Terms of sale · " + marca, d: "How buying from Nandez Café works: prices, payment, shipping, subscription and auction." }
-      : { t: "Términos y condiciones · " + marca, d: "Cómo funciona comprarle a Nandez Café: precios, pago, envío, suscripción y subasta." },
+      ? { t: "Terms of sale · " + marca, d: "How buying from Nandez Café works: prices, payment, shipping and subscription." }
+      : { t: "Términos y condiciones · " + marca, d: "Cómo funciona comprarle a Nandez Café: precios, pago, envío y suscripción." },
     privacidad: en
       ? { t: "Privacy policy · " + marca, d: "What personal data we collect, what we use it for and how to ask us to change or delete it." }
       : { t: "Política de datos · " + marca, d: "Qué datos personales pedimos, para qué los usamos y cómo pedirnos que los cambiemos o los borremos (Ley 1581 de 2012)." },

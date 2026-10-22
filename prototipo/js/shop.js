@@ -68,7 +68,7 @@ function tarjetaInicio(p, i = 0) {
 
 /* Lista de espera de un café que todavía no sale: un correo y listo */
 function listaEspera(id) {
-  const p = prodById(id), en = UI.lang === "en";
+  const p = itemById(id), en = UI.lang === "en";
   if (!p) return;
   modal(t("avisame"), `
     <p class="hint">${en ? `We write to you the day <b>${esc(tx(p.nombre))}</b> goes on sale, with its data sheet and price.`
@@ -79,7 +79,7 @@ function listaEspera(id) {
   setTimeout(() => $("#le-mail")?.focus(), 50);
 }
 function listaEsperaOk(id) {
-  const p = prodById(id), en = UI.lang === "en", correo = ($("#le-mail")?.value || "").trim();
+  const p = itemById(id), en = UI.lang === "en", correo = ($("#le-mail")?.value || "").trim();
   if (!p || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) { toast(en ? "Check the email." : "Revisa el correo.", { type: "err" }); return; }
   S.espera.push({ id: nextId("LE"), producto: p.id, correo, fecha: isoToday() }); save();
   closeModal();
@@ -118,7 +118,7 @@ function fincaCard(f, i = 0) {
         <span class="var-chip">${esc(tr(f.variedad))}</span>
         ${f.proxima ? `<span class="pronto">${en ? "First harvest" : "Primera cosecha"} ${f.proxima}</span>`
           : cafes.length ? `<button class="btn sm" data-act="cafe" data-id="${cafes[0].id}">${t("ver_cafe")}</button>`
-          : `<button class="btn sm" data-act="go" data-to="subasta">${t("nav_subasta")}</button>`}
+          : visible("subasta") ? `<button class="btn sm" data-act="go" data-to="subasta">${t("nav_subasta")}</button>` : ""}
       </div>
     </div></article>`;
 }
@@ -193,16 +193,80 @@ function registrar(tipo, datos, texto, asunto) {
 }
 
 /* ---------- catálogo ---------- */
+/* La tienda tiene dos puertas: cafés y accesorios. Esta fila las une en las tres páginas. */
+function subnavTienda(activa) {
+  const it = [["cafes", t("nav_cafes_esp")], ["accesorios", t("nav_accesorios")]];
+  return `<nav class="g-subnav reveal" aria-label="${t("nav_tienda")}">
+    <a href="${ruta("tienda")}" data-act="go" data-to="tienda"${activa === "tienda" ? ' aria-current="page"' : ""}>${t("nav_tienda")}</a>
+    ${it.map(([v, txt]) => `<a href="${ruta(v)}" data-act="go" data-to="${v}"${activa === v ? ' aria-current="page"' : ""}>${txt}</a>`).join("")}</nav>`;
+}
+
+function viewTienda() {
+  const en = UI.lang === "en", p = S.productos.find((x) => !x.proximamente) || S.productos[0];
+  const n = S.productos.length, ya = S.productos.filter((x) => !x.proximamente).length;
+  return `${subnavTienda("tienda")}
+    <div class="view-head">
+      <div><p class="eyebrow reveal">${t("nav_tienda")}</p>
+        <h2 class="reveal" style="--i:1">${en ? "Everything <em>from the house</em>" : "Todo lo <em>de la casa</em>"}</h2>
+        <p class="reveal" style="--i:2">${en ? "Whole bean coffee from neighbouring farms, the gear to brew it and Coffee Gang merch."
+          : "Café en grano de fincas vecinas, lo necesario para prepararlo y el merch Coffee Gang."}</p></div>
+    </div>
+    <div class="g-puertas">
+      <a class="g-puerta reveal" style="--pc:${p.color || "#2F5A3C"};--i:3" href="${ruta("cafes")}" data-act="go" data-to="cafes">
+        <span class="g-puerta-art">${fotoProducto(p, { clase: "g-prod-foto", sizes: "(min-width:900px) 520px, 90vw" })}</span>
+        <span class="g-puerta-txt"><small>01 · ${n} ${en ? "whole bean coffees" : "cafés en grano"}${ya < n ? ` · ${ya} ${en ? "on sale" : "a la venta"}` : ""}</small>
+          <b>${t("nav_cafes_esp")}</b><i>${en ? "One farm each, roasted the week you order." : "Una finca cada uno, tostados la semana del pedido."}</i></span></a>
+      <a class="g-puerta oscura reveal" style="--i:4" href="${ruta("accesorios")}" data-act="go" data-to="accesorios">
+        <span class="g-puerta-art"><span class="g-pronto">Coffee Gang<i>${t("proximamente")}</i></span></span>
+        <span class="g-puerta-txt"><small>02 · ${ACCESORIOS.length} ${en ? "pieces" : "piezas"} · ${t("proximamente").toLowerCase()}</small>
+          <b>${t("nav_accesorios")}</b><i>${en ? "Dripper, grinder, kettle, and things to wear." : "Gotero, molino, tetera, y algo para ponerse."}</i></span></a>
+    </div>`;
+}
+
+function accesorioCard(a, i = 0) {
+  return `<article class="g-acc reveal" style="--pc:${a.color};--i:${i}">
+    <div class="g-acc-art" data-act="espera" data-id="${a.id}" role="button" tabindex="0" aria-label="${esc(tx(a.nombre))}">
+      <span class="g-acc-n">${String(i + 1).padStart(2, "0")}</span><b>${esc(tx(a.nombre))}</b></div>
+    <div class="g-acc-body">
+      <p>${esc(tx(a.desc))}</p>
+      <div class="g-prod-foot">${a.proximamente
+        ? `<b>${t("proximamente")}</b><button class="btn sm" data-act="espera" data-id="${a.id}">${t("avisame")}</button>`
+        : `<b class="mono">${cop(a.precio)}</b>`}</div>
+    </div></article>`;
+}
+
+function viewAccesorios() {
+  const en = UI.lang === "en";
+  const grupo = (g) => ACCESORIOS.filter((a) => a.grupo === g);
+  return `${subnavTienda("accesorios")}
+    <div class="view-head">
+      <div><p class="eyebrow reveal">${t("nav_tienda")} · ${t("nav_accesorios")}</p>
+        <h2 class="reveal" style="--i:1">${en ? "To brew it, <em>and to wear it</em>" : "Para prepararlo, <em>y para ponértelo</em>"}</h2>
+        <p class="reveal" style="--i:2">${en ? "We are choosing each piece. Leave your email on the ones you want and we tell you the day they are out, with their price."
+          : "Estamos escogiendo cada pieza. Deja tu correo en las que quieras y te avisamos el día que salgan, con su precio."}</p></div>
+    </div>
+    <section class="g-acc-grupo">
+      <p class="g-kicker reveal">${en ? "To brew at home" : "Para preparar en casa"}</p>
+      <div class="g-accs">${grupo("preparar").map((a, i) => accesorioCard(a, i)).join("")}</div>
+    </section>
+    <section class="g-acc-grupo">
+      <p class="g-kicker reveal">Merch ${esc(CONFIG.gang)}</p>
+      <div class="g-accs">${grupo("merch").map((a, i) => accesorioCard(a, i)).join("")}</div>
+    </section>`;
+}
+
+/* ---------- catálogo ---------- */
 function viewCafes() {
   const en = UI.lang === "en";
-  return `<div class="view-head">
-      <div><p class="eyebrow reveal">${en ? "This harvest" : "Esta cosecha"}</p>
-        <h2 class="reveal" style="--i:1">${en ? "What we have <em>at home</em>" : "Lo que tenemos <em>en casa</em>"}</h2>
+  return `${subnavTienda("cafes")}
+    <div class="view-head">
+      <div><p class="eyebrow reveal">${t("nav_tienda")} · ${t("nav_cafes_esp")}</p>
+        <h2 class="reveal" style="--i:1">${en ? "Three coffees, <em>whole bean</em>" : "Tres cafés, <em>en grano</em>"}</h2>
         <p class="reveal" style="--i:2">${en
           ? "These are the coffees we are roasting right now. Each one comes from a neighbouring farm in Norte de Santander and carries the name of whoever grew it."
           : "Estos son los cafés que estamos tostando ahora. Cada uno viene de una finca vecina de Norte de Santander y lleva el nombre de quien lo cultivó."}</p></div>
     </div>
-    <div class="dos">${S.productos.map((p, i) => cafeCard(p, i)).join("")}${subastaCard(S.productos.length)}</div>
+    <div class="dos">${S.productos.map((p, i) => cafeCard(p, i)).join("")}${visible("subasta") ? subastaCard(S.productos.length) : ""}</div>
     ${bloqueCafeterias()}
     <section class="section">
       <div class="section-head"><p class="eyebrow">${en ? "The neighbours" : "Los vecinos"}</p>

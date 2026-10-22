@@ -10,12 +10,10 @@ function viewInicio() {
   const principios = en
     ? [["Every coffee has a grower", "Not just “Colombian coffee”: the coffee of one farm and one harvest, and we tell you who planted it."],
        ["We tell you what we know, and what we don't", "Altitude, variety, process and score say who checked them and when. What we could not check, we say so."],
-       ["The best is kept apart", "Each farm grows its own variety. When a lot comes out truly special, it skips the bag and goes to the auction."]]
+       ["Few coffees, chosen one by one", "Three coffees, not thirty. A lot goes on the shelf only after we cup it and it convinces us."]]
     : [["Cada café tiene quién lo sembró", "No es “café colombiano” sin más: es el café de una finca y de una cosecha, y te decimos quién lo sembró."],
        ["Te contamos lo que sabemos, y lo que no", "La altura, la variedad, el proceso y el puntaje dicen quién los revisó y cuándo. Lo que no hemos podido comprobar, también lo decimos."],
-       ["Lo mejor se guarda aparte", "Cada finca tiene su variedad. Cuando un lote sale especial de verdad, no va a la bolsa: va a la subasta."]];
-  const ref = S.productos.find((p) => p.pago && !p.proximamente);
-  const mas = ref ? Math.round(((ref.pago.pagadoKg - ref.pago.referenciaKg) / ref.pago.referenciaKg) * 100) : 0;
+       ["Pocos cafés, escogidos uno por uno", "Tres cafés, no treinta. Un lote entra a la tienda solo cuando lo catamos y nos convence."]];
   const cabeza = (num, kicker, titulo, texto, link) => `<div class="g-head g-io">
       <span class="g-num">${num}</span><p class="g-kicker">${kicker}</p>
       <h2>${titulo}</h2>${texto ? `<p>${texto}</p>` : ""}${link || ""}</div>`;
@@ -28,14 +26,15 @@ function viewInicio() {
     ${cabeza("01", en ? "This harvest" : "Esta cosecha",
       `<span id="g-cafes">${en ? "Three coffees. <em>One farm each.</em>" : "Tres cafés. <em>Una finca cada uno.</em>"}</span>`,
       en ? "Whole bean, roasted the week you order. Each bag carries its farm, its altitude and who checked every number."
-         : "En grano, tostados la semana del pedido. Cada bolsa lleva su finca, su altura y quién comprobó cada dato.")}
+         : "En grano, tostados la semana del pedido. Cada bolsa lleva su finca, su altura y quién comprobó cada dato.",
+      `<a class="g-link" href="${ruta("tienda")}" data-act="go" data-to="tienda">${en ? "Go to the shop" : "Ir a la tienda"}</a>`)}
     <div class="g-prods">${S.productos.map((p, i) => tarjetaInicio(p, i)).join("")}</div>
-    <div class="g-subasta g-io">
+    ${visible("subasta") ? `<div class="g-subasta g-io">
       <p><span class="live-dot ${a.ended ? "off" : ""}"></span><b>${t("nav_subasta")}</b>${en
         ? `${esc(tr(AU_LOTE.variedad))} from ${esc(AU_LOTE.productor)}, ${AU_LOTE.puntaje} SCA · <span class="mono" data-live-price>${usd(top ? top.p : a.start)}</span> per kg green`
         : `${esc(tr(AU_LOTE.variedad))} de ${esc(AU_LOTE.productor)}, ${AU_LOTE.puntaje} SCA · <span class="mono" data-live-price>${usd(top ? top.p : a.start)}</span> el kilo verde`}</p>
       <button class="btn sm" data-act="go" data-to="subasta">${a.ended ? t("ver_cafe") : (en ? "See the auction" : "Ver la subasta")}</button>
-    </div>
+    </div>` : ""}
   </section>
 
   <section class="g-manifiesto" aria-labelledby="g-gang">
@@ -43,15 +42,8 @@ function viewInicio() {
       <p class="g-kicker g-io"><span class="g-num">02</span> &nbsp; ${en ? "How we work" : "Cómo trabajamos"}</p>
       <h2 id="g-gang" class="g-io">${en ? "Not “Colombian coffee”. <em>Somebody's coffee.</em>" : "No es “café colombiano”. <em>Es el café de alguien.</em>"}</h2>
       <ol class="g-principios g-io" style="--i:1">${principios.map(([tt, d]) => `<li><b>${tt}</b><span>${d}</span></li>`).join("")}</ol>
-      ${ref ? `<div class="g-pago g-io" style="--i:2">
-        <div><small>${en ? "What we paid the farm" : "Lo que le pagamos a la finca"}</small><b>${cop(ref.pago.pagadoKg)}</b><i>${en ? "per kg of parchment, " : "por kilo de pergamino, "}${esc(tx(ref.nombre))}</i></div>
-        <div><small>${en ? "Reference price that day" : "Referencia del día de la compra"}</small><b>${cop(ref.pago.referenciaKg)}</b><i>${en ? "FNC committee price, " : "precio del comité FNC, "}${fmtFecha(ref.pago.fecha)}</i></div>
-        <div class="mas"><small>${en ? "Above the reference" : "Por encima de la referencia"}</small><b>+${mas} %</b><i>${en ? "paid in the farm, in cash" : "pagado en la finca, de contado"}</i></div>
-      </div>` : ""}
     </div>
   </section>
-
-  ${seccionCereza(en)}
 
   <section class="g-sec" aria-labelledby="g-fincas">
     ${cabeza("03", en ? "The neighbours" : "Los vecinos",
@@ -72,8 +64,10 @@ function viewInicio() {
     <ul class="g-planes">${PLANES.map((p) => `<li class="${p.destacado ? "hot" : ""}"><b>${esc(tx(p.nombre))}</b><span>${esc(tx(p.para))}</span><strong>${cop(p.mes)}<small>/${en ? "month" : "mes"}</small></strong></li>`).join("")}</ul>
   </section>
 
-  <section class="g-sec" aria-labelledby="g-diario">
-    ${cabeza("05", t("nav_diario"),
+  ${musica(en)}
+
+  ${visible("diario") ? `<section class="g-sec" aria-labelledby="g-diario">
+    ${cabeza("06", t("nav_diario"),
       `<span id="g-diario">${en ? "What we learn <em>buying coffee.</em>" : "Lo que aprendemos <em>comprando café.</em>"}</span>`, "",
       `<a class="g-link" href="${ruta("diario")}" data-act="go" data-to="diario">${en ? "All the entries" : "Todas las entradas"}</a>`)}
     <div class="g-diario">${S.entradas.slice(0, 3).map((e, i) => `<article class="g-io" style="--i:${i}">
@@ -82,30 +76,92 @@ function viewInicio() {
       <p>${esc(String(tx(e.resumen)).replace(/^PEND\w+[:.]\s*/i, ""))}</p>
       <a class="g-link" href="${ruta("entrada", e.id)}" data-act="entrada" data-id="${e.id}">${t("leer")}</a>
     </article>`).join("")}</div>
-  </section>
+  </section>` : ""}`;
+}
 
-  <section class="section faqs g-sec">
-    <div class="section-head"><p class="eyebrow">06 · ${en ? "Questions" : "Preguntas"}</p>
-      <h2>${en ? "What people <em>ask us</em>" : "Lo que <em>nos preguntan</em>"}</h2>
-      <p class="faq-ayuda">${en ? "Is your question not here?" : "¿No está tu pregunta?"} <a href="${ruta("contacto")}" data-act="go" data-to="contacto">${en ? "Write to us" : "Escríbenos"}</a></p></div>
-    <div class="faq-lista">${FAQ.map((f, i) => `<details class="faq" ${i === 0 ? "open" : ""}><summary><h3>${esc(tx(f.q))}</h3></summary><p>${esc(tx(f.a))}</p></details>`).join("")}</div>
+/* La lista para tomar café: el reproductor de Spotify y un botón para compartirla.
+   En el archivo suelto (sin conexión) el reproductor no carga, pero el enlace sí. */
+function musica(en) {
+  const L = CONFIG.spotify;
+  if (!L || !L.playlist) return "";
+  const url = `https://open.spotify.com/playlist/${L.playlist}`;
+  return `<section class="g-sec g-musica" aria-labelledby="g-musica">
+    <div class="g-head g-io">
+      <span class="g-num">05</span><p class="g-kicker">${en ? "To go with it" : "Para acompañar"}</p>
+      <h2 id="g-musica">${en ? "Music to <em>drink coffee to.</em>" : "Música para <em>tomar café.</em>"}</h2>
+      <p>${en ? "A list for grinding, brewing and staying a while. Put it on, share it, and tell us what it is missing."
+              : "Una lista para moler, colar y quedarse un rato. Ponla, compártela y dinos qué le falta."}</p>
+      <div class="g-musica-cta">
+        <button class="btn primary" data-act="compartir-lista">${en ? "Share the list" : "Compartir la lista"}</button>
+        <a class="g-link" href="${url}" target="_blank" rel="noopener">${en ? "Open in Spotify" : "Abrir en Spotify"}</a>
+      </div>
+    </div>
+    <div class="g-musica-player g-io" style="--i:1">
+      <iframe title="${esc(L.nombre)} · Spotify" src="https://open.spotify.com/embed/playlist/${L.playlist}?utm_source=generator&amp;theme=0"
+        width="100%" height="380" frameborder="0" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+    </div>
   </section>`;
 }
+function compartirLista() {
+  const L = CONFIG.spotify, en = UI.lang === "en", url = `https://open.spotify.com/playlist/${L.playlist}`;
+  const titulo = en ? `Music to drink coffee to · ${CONFIG.marca}` : `Música para tomar café · ${CONFIG.marca}`;
+  if (navigator.share) { navigator.share({ title: titulo, url }).catch(() => {}); return; }
+  copiar(url);
+}
+
+/* La comunidad: un correo y listo. Se guarda como las listas de espera. */
+function unirseComunidad() {
+  const en = UI.lang === "en", el = $("#com-mail"), correo = (el?.value || "").trim();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) { toast(en ? "Check the email." : "Revisa el correo.", { type: "err" }); el?.focus(); return; }
+  S.espera.push({ id: nextId("CM"), producto: "comunidad", correo, fecha: isoToday() }); save();
+  el.value = "";
+  registrar("comunidad", { correo },
+    en ? `Hi, I want to join the ${CONFIG.marca} ${CONFIG.gang} community. My email: ${correo}` : `Hola, quiero unirme a la comunidad ${CONFIG.gang}. Mi correo: ${correo}`,
+    en ? `Community: ${correo}` : `Comunidad: ${correo}`);
+}
+
+/* Íconos de las redes. Si la dirección no está, el ícono se ve pero no lleva a ningún lado. */
+const REDES = {
+  instagram: ["Instagram", '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none"/>'],
+  facebook: ["Facebook", '<path d="M14 21v-7.5h2.6l.4-3H14V8.6c0-.9.3-1.5 1.6-1.5H17V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.3H8.3v3H11V21"/>'],
+  youtube: ["YouTube", '<rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10 9.2 5 2.8-5 2.8Z" fill="currentColor"/>'],
+};
+const redesHTML = () => `<ul class="g-redes">${Object.entries(REDES).map(([k, [nombre, svg]]) => {
+  const url = CONFIG.redes[k], ic = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${svg}</svg>`;
+  return `<li>${url ? `<a href="${esc(url)}" target="_blank" rel="noopener" aria-label="${nombre}">${ic}</a>`
+                    : `<span aria-label="${nombre} (${t("por_confirmar").toLowerCase()})" title="${nombre} · ${t("por_confirmar")}">${ic}</span>`}</li>`;
+}).join("")}</ul>`;
 
 const FOOT = () => {
   const en = UI.lang === "en";
-  const links = [["contacto", en ? "Contact" : "Contacto"], ["envios", en ? "Shipping and returns" : "Envíos y devoluciones"],
-    ["terminos", en ? "Terms" : "Términos"], ["privacidad", en ? "Privacy" : "Datos personales"]];
-  return `<footer class="foot">
+  const politicas = [["privacidad", en ? "Privacy policy" : "Política de privacidad"], ["envios", en ? "Refund policy" : "Política de reembolso"],
+    ["contacto", en ? "Contact information" : "Información de contacto"], ["terminos", en ? "Terms of service" : "Términos del servicio"]];
+  const tienda = [["tienda", t("nav_tienda")], ["cafes", t("nav_cafes_esp")], ["accesorios", t("nav_accesorios")], ["suscripcion", t("nav_suscripcion")]];
+  const lista = (items) => items.map(([v, txt]) => `<a href="${ruta(v)}" data-act="go" data-to="${v}">${txt}</a>`).join("");
+  return `<section class="g-comunidad" aria-labelledby="g-comunidad">
+    <div>
+      <h2 id="g-comunidad">${en ? `Join the <em>${esc(CONFIG.gang)}</em> community` : `Únete a la comunidad <em>${esc(CONFIG.marca.replace(" Café", ""))} ${esc(CONFIG.gang)}</em>`}</h2>
+      <p>${en ? "Get the latest news and members-only offers." : "Recibe las últimas noticias y ofertas solo para miembros."}</p>
+    </div>
+    <form class="g-comunidad-form" data-form="comunidad" novalidate>
+      <label class="lbl" for="com-mail">${en ? "Email" : "Correo electrónico"}</label>
+      <div><input id="com-mail" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none" placeholder="${en ? "you@email.com" : "tu@correo.com"}">
+        <button class="btn primary" type="submit">${en ? "Join" : "Unirme"}${icono("flecha", "ico")}</button></div>
+      <small>${en ? "No spam. Unsubscribe whenever you like." : "Sin spam. Te sales cuando quieras."} <a href="${ruta("privacidad")}" data-act="go" data-to="privacidad">${en ? "Privacy policy" : "Política de privacidad"}</a></small>
+    </form>
+  </section>
+  <footer class="foot">
   <div class="foot-marca"><b>${esc(CONFIG.marca)} · ${esc(CONFIG.gang)}</b><span>Chinácota · ${esc(tx(CONFIG.lugar))}</span>
-    <a href="mailto:${CONFIG.correo}">${esc(CONFIG.correo)}</a>${CONFIG.whatsapp ? `<a href="https://wa.me/${CONFIG.whatsapp}" target="_blank" rel="noopener">WhatsApp +${CONFIG.whatsapp}</a>` : ""}</div>
-  <nav class="foot-links" aria-label="${en ? "Information" : "Información"}">${links.map(([v, txt]) => `<a href="${ruta(v)}" data-act="go" data-to="${v}">${txt}</a>`).join("")}</nav>
-  <small class="foot-nota">${en ? "Prototype with example data: photos, texts and prices to be confirmed." : "Prototipo con datos de ejemplo: fotos, textos y precios por confirmar."}</small>
+    <a href="mailto:${CONFIG.correo}">${esc(CONFIG.correo)}</a>${CONFIG.whatsapp ? `<a href="https://wa.me/${CONFIG.whatsapp}" target="_blank" rel="noopener">WhatsApp +${CONFIG.whatsapp}</a>` : ""}
+    ${redesHTML()}</div>
+  <nav class="foot-links" aria-label="${t("nav_tienda")}">${lista(tienda)}</nav>
+  <nav class="foot-links" aria-label="${en ? "Policies" : "Políticas"}">${lista(politicas)}</nav>
+  <small class="foot-nota">© ${new Date().getFullYear()} ${esc(CONFIG.marca)} · ${en ? "Prototype with example data: photos, texts and prices to be confirmed." : "Prototipo con datos de ejemplo: fotos, textos y precios por confirmar."}</small>
   ${demo() ? `<button class="btn sm" data-act="reset-demo">${en ? "Reset demo data" : "Reiniciar datos de la demo"}</button>` : ""}
   <p class="g-wordmark" aria-hidden="true"><b>Nandez</b><small>${esc(CONFIG.gang)}</small></p></footer>`;
 };
 
-const VIEWS = { inicio: viewInicio, cafes: viewCafes, cafe: viewCafe, subasta: viewSubasta, suscripcion: viewSuscripcion, diario: viewDiario, entrada: viewEntrada,
+const VIEWS = { inicio: viewInicio, tienda: viewTienda, accesorios: viewAccesorios, cafes: viewCafes, cafe: viewCafe, subasta: viewSubasta, suscripcion: viewSuscripcion, diario: viewDiario, entrada: viewEntrada,
   contacto: viewContacto, envios: viewEnvios, terminos: viewTerminos, privacidad: viewPrivacidad, noencontrada: viewNoEncontrada };
 
 function actualizarMeta() {
@@ -133,7 +189,7 @@ function datosEstructurados(view, id) {
     description: meta("inicio").d,
   };
   const grafo = [org, { "@type": "WebSite", "@id": CONFIG.sitio + "/#sitio", url: CONFIG.sitio, name: CONFIG.marca, publisher: { "@id": org["@id"] }, inLanguage: UI.lang }];
-  if (view === "inicio") grafo.push({ "@type": "FAQPage", mainEntity: FAQ.map((f) => ({ "@type": "Question", name: tx(f.q), acceptedAnswer: { "@type": "Answer", text: tx(f.a) } })) });
+  if (view === "inicio" && false) grafo.push({ "@type": "FAQPage", mainEntity: FAQ.map((f) => ({ "@type": "Question", name: tx(f.q), acceptedAnswer: { "@type": "Answer", text: tx(f.a) } })) });
   if (view === "cafe" || view === "cafes") {
     (view === "cafe" ? [prodById(id) || S.productos[0]] : S.productos).forEach((p) => {
       const f = fincaDe(p);
@@ -198,6 +254,7 @@ function montarReveal() {
 }
 function softRefresh() { if (UI.view === "subasta") return renderNav(); render(); }
 function go(view, id) {
+  if (!visible(view)) view = "inicio";
   UI.view = view;
   if (view === "cafe" && id) UI.cafe = id;
   if (view === "entrada" && id) UI.entrada = id;
@@ -271,7 +328,8 @@ function montarNav() {
 }
 
 function renderNav() {
-  const activa = UI.view === "cafe" ? "cafes" : UI.view === "entrada" ? "diario" : UI.view;
+  const activa = seccionNav(UI.view);
+  document.querySelectorAll(".tab-sub a[data-i18n]").forEach((x) => { x.textContent = t(x.dataset.i18n); x.setAttribute("href", ruta(x.dataset.to)); });
   document.querySelectorAll(".tab").forEach((x) => {
     x.setAttribute("aria-current", x.dataset.to === activa ? "page" : "false");
     x.setAttribute("href", ruta(x.dataset.to));
@@ -282,7 +340,7 @@ function renderNav() {
   const bc = $("#cart-btn"), bn = $("#cart-n");
   if (bc) { bc.setAttribute("aria-label", (UI.lang === "en" ? "Order" : "Pedido") + (n ? ` (${n})` : "")); bc.classList.toggle("lleno", !!n); }
   if (bn) { bn.hidden = !n; bn.textContent = n; }
-  $("#nav-live").classList.toggle("off", UI.au.ended);
+  $("#nav-live")?.classList.toggle("off", UI.au.ended);
   document.querySelectorAll(".dock-it[data-to]").forEach((x) => {
     x.setAttribute("aria-current", x.dataset.to === activa ? "page" : "false");
     x.setAttribute("href", ruta(x.dataset.to));
@@ -342,6 +400,7 @@ document.addEventListener("click", (e) => {
     case "au-reset": return resetAuction();
     case "remind": return avisarme(id);
     case "espera": return listaEspera(id);
+    case "compartir-lista": return compartirLista();
     case "espera-ok": return listaEsperaOk(id);
     case "avisarme-ok": return avisarmeOk(id);
     case "reset-demo":
@@ -357,6 +416,7 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && document.body.classList.contains("menu-abierto")) menu(false);
   if (e.key === "Escape" && document.body.classList.contains("mas-abierto")) { mas(false); $("#dock-mas")?.focus(); }
 });
+document.addEventListener("submit", (e) => { if (e.target.matches?.('[data-form="comunidad"]')) { e.preventDefault(); unirseComunidad(); } });
 $("#dlg").addEventListener("click", (e) => { if (e.target === $("#dlg")) closeModal(); });
 $("#cart")?.addEventListener("click", (e) => { if (e.target === $("#cart")) cerrarCarrito(); });
 $("#cart")?.addEventListener("close", () => renderTray());

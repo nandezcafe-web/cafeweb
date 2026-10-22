@@ -72,12 +72,12 @@ function mundo(lang) {
 function paginas(ctx) {
   const ids = JSON.parse(ev(ctx, "JSON.stringify({p:S.productos.map(x=>x.id), e:S.entradas.map(x=>x.id)})"));
   return [
-    { view: "inicio", prio: "1.0" }, { view: "cafes", prio: "0.9" },
+    { view: "inicio", prio: "1.0" }, { view: "tienda", prio: "0.9" }, { view: "cafes", prio: "0.9" }, { view: "accesorios", prio: "0.7" },
     ...ids.p.map((id) => ({ view: "cafe", id, prio: "0.9" })),
     { view: "subasta", prio: "0.8" }, { view: "suscripcion", prio: "0.8" }, { view: "diario", prio: "0.7" },
     { view: "contacto", prio: "0.5" }, { view: "envios", prio: "0.5" }, { view: "terminos", prio: "0.3" }, { view: "privacidad", prio: "0.3" },
     ...ids.e.map((id) => ({ view: "entrada", id, prio: "0.6" })),
-  ];
+  ].filter((pg) => ev(ctx, `visible(${JSON.stringify(pg.view)})`));
 }
 
 const ev = (ctx, expr) => vm.runInContext(expr, ctx);
@@ -89,17 +89,20 @@ const IC = {
   subasta: '<circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.4 1.8M9.5 3.5h5"/>',
   pedido: '<path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>',
   mas: '<circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/>',
+  tienda: '<path d="M4 9.5 5.5 4h13L20 9.5"/><path d="M4 9.5c0 1.5 1.2 2.5 2.7 2.5s2.6-1 2.6-2.5c0 1.5 1.2 2.5 2.7 2.5s2.7-1 2.7-2.5c0 1.5 1.1 2.5 2.6 2.5S20 11 20 9.5"/><path d="M5.5 12v8h13v-8M10 20v-5h4v5"/>',
+  suscripcion: '<path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.7"/><path d="M20 4v4.7h-4.7"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 15.3"/><path d="M4 20v-4.7h4.7"/>',
 };
 const ic = (k) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]}</svg>`;
 function dockHTML(ctx, activa, lang) {
   const T = (k) => ev(ctx, `t(${JSON.stringify(k)})`), R = (v) => ev(ctx, `ruta(${JSON.stringify(v)})`);
   const ir = (v, k, extra = "") => `<a class="dock-it" href="${R(v)}" data-act="go" data-to="${v}"${v === activa ? ' aria-current="page"' : ""}>${ic(v)}${extra}<span data-i18n="${k}">${T(k)}</span></a>`;
-  const hoja = [["suscripcion", "nav_suscripcion"], ["diario", "nav_diario"], ["contacto", "nav_contacto"]]
+  const hoja = [["cafes", "nav_cafes_esp"], ["accesorios", "nav_accesorios"], ["diario", "nav_diario"], ["contacto", "nav_contacto"]]
+    .filter(([v]) => ev(ctx, `visible(${JSON.stringify(v)})`))
     .map(([v, k]) => `<a class="tab" href="${R(v)}" data-act="go" data-to="${v}" data-i18n="${k}"${v === activa ? ' aria-current="page"' : ""}>${T(k)} </a>`).join("");
   return `<nav class="dock" aria-label="${lang === "en" ? "Quick access" : "Accesos"}">
   ${ir("inicio", "nav_inicio")}
-  ${ir("cafes", "nav_cafes")}
-  ${ir("subasta", "nav_subasta", '<span class="live-dot" id="dock-live"></span>')}
+  ${ir("tienda", "nav_tienda")}
+  ${ev(ctx, 'visible("subasta")') ? ir("subasta", "nav_subasta", '<span class="live-dot" id="dock-live"></span>') : ir("suscripcion", "nav_suscripcion")}
   <button class="dock-it" id="dock-pedido" data-act="carrito">${ic("pedido")}<span class="dock-n" id="dock-n" hidden></span><span data-i18n="nav_pedido">${T("nav_pedido")}</span></button>
   <button class="dock-it" id="dock-mas" data-act="mas" aria-expanded="false" aria-controls="dock-hoja">${ic("mas")}<span data-i18n="nav_mas">${T("nav_mas")}</span></button>
 </nav>
@@ -113,11 +116,16 @@ function dockHTML(ctx, activa, lang) {
 }
 
 function navHTML(ctx, activa) {
-  const it = [["inicio", "nav_inicio"], ["cafes", "nav_cafes"], ["subasta", "nav_subasta"], ["suscripcion", "nav_suscripcion"], ["diario", "nav_diario"]];
+  const it = [["inicio", "nav_inicio"], ["tienda", "nav_tienda"], ["subasta", "nav_subasta"], ["suscripcion", "nav_suscripcion"], ["diario", "nav_diario"]]
+    .filter(([v]) => ev(ctx, `visible(${JSON.stringify(v)})`));
   const extra = { subasta: '<span class="live-dot" id="nav-live"></span><span class="mono nav-time" data-live-time></span>' };
+  const R = (v) => ev(ctx, `ruta(${JSON.stringify(v)})`), T = (k) => ev(ctx, `t(${JSON.stringify(k)})`);
+  /* "Tienda" abre sus dos categorías al pasar el cursor o al llegar con el teclado */
+  const sub = `<div class="tab-sub">${[["cafes", "nav_cafes_esp"], ["accesorios", "nav_accesorios"]]
+    .map(([v, k]) => `<a href="${R(v)}" data-act="go" data-to="${v}" data-i18n="${k}">${T(k)}</a>`).join("")}</div>`;
   return it.map(([v, k]) => {
-    const href = ev(ctx, `ruta(${JSON.stringify(v)})`), txt = ev(ctx, `t(${JSON.stringify(k)})`);
-    return `<a class="tab" href="${href}" data-act="go" data-to="${v}" data-i18n="${k}"${v === activa ? ' aria-current="page"' : ""}>${txt} ${extra[v] || ""}</a>`;
+    const a = `<a class="tab" href="${R(v)}" data-act="go" data-to="${v}" data-i18n="${k}"${v === activa ? ' aria-current="page"' : ""}${v === "tienda" ? ' aria-haspopup="true"' : ""}>${T(k)} ${extra[v] || ""}</a>`;
+    return v === "tienda" ? `<div class="tab-grupo">${a}${sub}</div>` : a;
   }).join("\n      ");
 }
 
@@ -130,7 +138,7 @@ function pagina(ctx, { view, id }, lang) {
   const url = sitio + ev(ctx, `ruta(${JSON.stringify(view)}, ${JSON.stringify(id || null)}, ${JSON.stringify(lang)})`);
   const alt = { es: sitio + ev(ctx, `ruta(${JSON.stringify(view)}, ${JSON.stringify(id || null)}, "es")`),
                 en: sitio + ev(ctx, `ruta(${JSON.stringify(view)}, ${JSON.stringify(id || null)}, "en")`) };
-  const activa = view === "cafe" ? "cafes" : view === "entrada" ? "diario" : view;
+  const activa = ev(ctx, `seccionNav(${JSON.stringify(view)})`);
   return `<!doctype html>
 <html lang="${lang}">
 <head>
@@ -255,13 +263,14 @@ const llms = ev(c0, [
   '"> Familia cafetera de Chinácota, Norte de Santander (Colombia). Compramos lote por lote a fincas de Chinácota, Toledo y Arboledas, y vendemos cada café tostado con su ficha verificable. Nuestra propia finca (5.000 plantas de Geisha) da su primera cosecha en 2027.", "",',
   '"## Qué vendemos",',
   '...S.productos.map((p) => "- " + tx(p.nombre) + (p.proximamente ? ": café en grano, por confirmar (finca, ficha y precio); lista de espera en " : ": variedad " + p.variedad + ", proceso " + p.proceso + ", " + p.altitud + " msnm, " + p.puntaje + " puntos SCA, en grano, desde " + cop(p.variantes[0].precio) + " (") + CONFIG.sitio + ruta("cafe", p.id, "es") + ")"),',
-  '"- Subasta en vivo de un microlote Geisha de Toledo (" + CONFIG.sitio + "/subasta)",',
+  '...(visible("subasta") ? ["- Subasta en vivo de un microlote Geisha de Toledo (" + CONFIG.sitio + "/subasta)"] : []),',
+  '"- Accesorios para preparar en casa y merch Coffee Gang, próximamente (" + CONFIG.sitio + ruta("accesorios", null, "es") + ")",',
   '"- Suscripción mensual desde " + cop(PLANES[0].mes) + ", con kit de bienvenida para preparar en casa, filtros y una receta cada mes (" + CONFIG.sitio + "/suscripcion)", "",',
   '"## Cómo trabajamos",',
   '"- Una finca, una variedad. Cada dato (altura, variedad, proceso, puntaje) dice quién lo comprobó y cuándo.",',
-  '"- Los lotes excepcionales se venden en subasta, con precio de reserva y mínimo de participantes.", "",',
+  '...(visible("subasta") ? ["- Los lotes excepcionales se venden en subasta, con precio de reserva y mínimo de participantes."] : []), "",',
   '"## Preguntas frecuentes",',
-  '...FAQ.map((f) => "### " + tx(f.q) + String.fromCharCode(10) + tx(f.a)), "",',
+  '...FAQ.filter((f) => visible("subasta") || !/subasta/i.test(f.q.es)).map((f) => "### " + tx(f.q) + String.fromCharCode(10) + tx(f.a)), "",',
   '"## Páginas"',
   '].join(String.fromCharCode(10))',
 ].join("")) + "\n" + urls.filter((u) => u.lang === "es").map((u) => "- " + u.loc).join("\n") + "\n";

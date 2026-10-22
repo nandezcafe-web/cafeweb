@@ -121,3 +121,21 @@ El Bourbon rosado salió del catálogo. El plan Cafetería pasó a 2 kg de Casti
 4. **La suscripción en grano:** los planes Semilla y Cosecha todavía dicen "molienda a tu gusto". Si todo va en grano, hay que decidir si esos planes llevan molino o si se mantiene la molienda solo para suscriptores.
 5. **El nombre:** la página sigue diciendo "Nandez Café" en títulos y textos legales; el logo dice "Nandez Coffee Gang". Decidir cuál es el nombre comercial antes de publicar.
 6. **El logo en vectores:** hoy es un PNG recortado. Pedirle al diseñador el SVG para que se vea nítido en cualquier tamaño.
+
+---
+
+## 6. Ajustes del 22 de octubre: tienda, comunidad y secciones apagadas
+
+- **Menú:** Inicio · Tienda · Suscripción. Tienda abre dos categorías: Cafés de especialidad y Accesorios y merch. Hay una página de Tienda que lleva a las dos.
+- **Apagadas:** la subasta y el diario no salen en el menú, el inicio, el pie ni el sitemap, y su dirección da 404. Se vuelven a prender quitándolas de `CONFIG.ocultas` en `prototipo/js/core.js`.
+- **Cómo trabajamos:** ya no muestra lo pagado a la finca ni la referencia del día. Ese dato sigue en el panel interno.
+- **Fuera del inicio:** la cereza por dentro y las preguntas frecuentes.
+- **Nuevo en el inicio:** una lista de Spotify para tomar café, con botón para compartirla.
+- **Nuevo en todas las páginas:** la franja para unirse a la comunidad Nandez Coffee Gang, los íconos de Instagram, Facebook y YouTube, y las cuatro políticas en el pie (privacidad, reembolso, contacto y términos).
+
+Pendiente de completar:
+
+1. **La lista de Spotify:** hoy es una lista pública de ejemplo (Café Bossa Nova). Cambiar `CONFIG.spotify.playlist` por el id de la lista propia.
+2. **Las redes:** poner las direcciones en `CONFIG.redes`. Mientras estén vacías, el ícono se ve apagado.
+3. **Accesorios y merch:** las diez piezas están como próximamente, sin precio ni foto. Se completan en `ACCESORIOS`, en `core.js`.
+4. **Los correos de la comunidad:** sin formulario externo (`CONFIG.formulario`), cada registro solo llega si la persona envía el correo que se le abre. Conviene conectar Formspree o una herramienta de correo masivo.

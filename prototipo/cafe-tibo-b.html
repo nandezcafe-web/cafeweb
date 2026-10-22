@@ -21,9 +21,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=b6892739">
-<link rel="stylesheet" href="/auction.css?v=b6892739">
-<link rel="stylesheet" href="/gang.css?v=b6892739">
+<link rel="stylesheet" href="/styles.css?v=f75d01f7">
+<link rel="stylesheet" href="/auction.css?v=f75d01f7">
+<link rel="stylesheet" href="/gang.css?v=f75d01f7">
 <script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Café","url":"https://cafeweb-five.vercel.app","email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"Familia cafetera de Chinácota. Le compramos los mejores lotes a fincas de Norte de Santander y los tostamos con nuestra marca: un café por finca, con su altura, su variedad, su proceso y su puntaje de catación."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Café","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"es"},{"@type":"Product","name":"Tibo B","description":"Tibo B: el próximo café en grano de Norte de Santander. Finca, ficha y precio por confirmar; deja tu correo y te avisamos el día que salga.","brand":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"category":"Café de especialidad","additionalProperty":[{"@type":"PropertyValue","name":"Variedad","value":"Por confirmar"},{"@type":"PropertyValue","name":"Proceso","value":"Por confirmar"},{"@type":"PropertyValue","name":"Altitud","value":"1750 msnm"},{"@type":"PropertyValue","name":"SCA","value":"—"},{"@type":"PropertyValue","name":"Finca","value":"Lote Tibo B, Chinácota"}],"offers":[]}]}</script>
 </head>
 <body data-view="cafe">
@@ -35,10 +35,8 @@
     <nav class="tabs" id="nav-principal" aria-label="Secciones">
       <span class="tab-luz" aria-hidden="true"></span>
       <a class="tab" href="/" data-act="go" data-to="inicio" data-i18n="nav_inicio">Inicio </a>
-      <a class="tab" href="/cafes" data-act="go" data-to="cafes" data-i18n="nav_cafes" aria-current="page">Cafés </a>
-      <a class="tab" href="/subasta" data-act="go" data-to="subasta" data-i18n="nav_subasta">Subasta <span class="live-dot" id="nav-live"></span><span class="mono nav-time" data-live-time></span></a>
+      <div class="tab-grupo"><a class="tab" href="/tienda" data-act="go" data-to="tienda" data-i18n="nav_tienda" aria-current="page" aria-haspopup="true">Tienda </a><div class="tab-sub"><a href="/cafes" data-act="go" data-to="cafes" data-i18n="nav_cafes_esp">Cafés de especialidad</a><a href="/accesorios" data-act="go" data-to="accesorios" data-i18n="nav_accesorios">Accesorios y merch</a></div></div>
       <a class="tab" href="/suscripcion" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Suscripción </a>
-      <a class="tab" href="/diario" data-act="go" data-to="diario" data-i18n="nav_diario">Diario </a>
     </nav>
     <button class="cart-btn" id="cart-btn" data-act="carrito" aria-label="Pedido">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16l-1.2 11.2a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 7Z"/><path d="M9 7V5.5a3 3 0 0 1 6 0V7"/></svg>
@@ -55,13 +53,13 @@
 </header>
 <nav class="dock" aria-label="Accesos">
   <a class="dock-it" href="/" data-act="go" data-to="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4Z"/></svg><span data-i18n="nav_inicio">Inicio</span></a>
-  <a class="dock-it" href="/cafes" data-act="go" data-to="cafes" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="6.2" ry="8.6" transform="rotate(32 12 12)"/><path d="M8.8 17.6c2.8-2.6 3.6-8.6 6.4-11.2"/></svg><span data-i18n="nav_cafes">Cafés</span></a>
-  <a class="dock-it" href="/subasta" data-act="go" data-to="subasta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.4 1.8M9.5 3.5h5"/></svg><span class="live-dot" id="dock-live"></span><span data-i18n="nav_subasta">Subasta</span></a>
+  <a class="dock-it" href="/tienda" data-act="go" data-to="tienda" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5 5.5 4h13L20 9.5"/><path d="M4 9.5c0 1.5 1.2 2.5 2.7 2.5s2.6-1 2.6-2.5c0 1.5 1.2 2.5 2.7 2.5s2.7-1 2.7-2.5c0 1.5 1.1 2.5 2.6 2.5S20 11 20 9.5"/><path d="M5.5 12v8h13v-8M10 20v-5h4v5"/></svg><span data-i18n="nav_tienda">Tienda</span></a>
+  <a class="dock-it" href="/suscripcion" data-act="go" data-to="suscripcion"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.7"/><path d="M20 4v4.7h-4.7"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 15.3"/><path d="M4 20v-4.7h4.7"/></svg><span data-i18n="nav_suscripcion">Suscripción</span></a>
   <button class="dock-it" id="dock-pedido" data-act="carrito"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg><span class="dock-n" id="dock-n" hidden></span><span data-i18n="nav_pedido">Pedido</span></button>
   <button class="dock-it" id="dock-mas" data-act="mas" aria-expanded="false" aria-controls="dock-hoja"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/></svg><span data-i18n="nav_mas">Más</span></button>
 </nav>
 <div class="dock-hoja" id="dock-hoja" hidden>
-  <a class="tab" href="/suscripcion" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Suscripción </a><a class="tab" href="/diario" data-act="go" data-to="diario" data-i18n="nav_diario">Diario </a><a class="tab" href="/contacto" data-act="go" data-to="contacto" data-i18n="nav_contacto">Contacto </a>
+  <a class="tab" href="/cafes" data-act="go" data-to="cafes" data-i18n="nav_cafes_esp">Cafés de especialidad </a><a class="tab" href="/accesorios" data-act="go" data-to="accesorios" data-i18n="nav_accesorios">Accesorios y merch </a><a class="tab" href="/contacto" data-act="go" data-to="contacto" data-i18n="nav_contacto">Contacto </a>
   <div class="lang" role="group" aria-label="Idioma">
     <button data-act="lang" data-lang="es" aria-pressed="true">Español</button>
     <button data-act="lang" data-lang="en" aria-pressed="false">English</button>
@@ -138,11 +136,25 @@
       <p>Cada lote es de una sola cosecha y se acaba. Si quieres que el siguiente te llegue a la casa, está la suscripción.</p>
       <button class="btn" data-act="go" data-to="suscripcion">Ver la suscripción</button>
     </section>
-  </article><footer class="foot">
+  </article><section class="g-comunidad" aria-labelledby="g-comunidad">
+    <div>
+      <h2 id="g-comunidad">Únete a la comunidad <em>Nandez Coffee Gang</em></h2>
+      <p>Recibe las últimas noticias y ofertas solo para miembros.</p>
+    </div>
+    <form class="g-comunidad-form" data-form="comunidad" novalidate>
+      <label class="lbl" for="com-mail">Correo electrónico</label>
+      <div><input id="com-mail" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none" placeholder="tu@correo.com">
+        <button class="btn primary" type="submit">Unirme<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button></div>
+      <small>Sin spam. Te sales cuando quieras. <a href="/privacidad" data-act="go" data-to="privacidad">Política de privacidad</a></small>
+    </form>
+  </section>
+  <footer class="foot">
   <div class="foot-marca"><b>Nandez Café · Coffee Gang</b><span>Chinácota · Norte de Santander, Colombia</span>
-    <a href="mailto:nandezcafe@gmail.com">nandezcafe@gmail.com</a></div>
-  <nav class="foot-links" aria-label="Información"><a href="/contacto" data-act="go" data-to="contacto">Contacto</a><a href="/envios-y-devoluciones" data-act="go" data-to="envios">Envíos y devoluciones</a><a href="/terminos" data-act="go" data-to="terminos">Términos</a><a href="/privacidad" data-act="go" data-to="privacidad">Datos personales</a></nav>
-  <small class="foot-nota">Prototipo con datos de ejemplo: fotos, textos y precios por confirmar.</small>
+    <a href="mailto:nandezcafe@gmail.com">nandezcafe@gmail.com</a>
+    <ul class="g-redes"><li><span aria-label="Instagram (por confirmar)" title="Instagram · Por confirmar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none"/></svg></span></li><li><span aria-label="Facebook (por confirmar)" title="Facebook · Por confirmar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 21v-7.5h2.6l.4-3H14V8.6c0-.9.3-1.5 1.6-1.5H17V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.3H8.3v3H11V21"/></svg></span></li><li><span aria-label="YouTube (por confirmar)" title="YouTube · Por confirmar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10 9.2 5 2.8-5 2.8Z" fill="currentColor"/></svg></span></li></ul></div>
+  <nav class="foot-links" aria-label="Tienda"><a href="/tienda" data-act="go" data-to="tienda">Tienda</a><a href="/cafes" data-act="go" data-to="cafes">Cafés de especialidad</a><a href="/accesorios" data-act="go" data-to="accesorios">Accesorios y merch</a><a href="/suscripcion" data-act="go" data-to="suscripcion">Suscripción</a></nav>
+  <nav class="foot-links" aria-label="Políticas"><a href="/privacidad" data-act="go" data-to="privacidad">Política de privacidad</a><a href="/envios-y-devoluciones" data-act="go" data-to="envios">Política de reembolso</a><a href="/contacto" data-act="go" data-to="contacto">Información de contacto</a><a href="/terminos" data-act="go" data-to="terminos">Términos del servicio</a></nav>
+  <small class="foot-nota">© 2026 Nandez Café · Prototipo con datos de ejemplo: fotos, textos y precios por confirmar.</small>
   
   <p class="g-wordmark" aria-hidden="true"><b>Nandez</b><small>Coffee Gang</small></p></footer></main>
 
@@ -160,11 +172,11 @@
 </dialog>
 
 <script>window.IMG_V = "1126848c"; window.MERCADO_HOY = {"fecha":"2026-10-21","precioCarga":2235000,"ny":316.15,"tasaFnc":3190,"trm":3163.76};</script>
-<script src="/js/core.js?v=b6892739"></script>
-<script src="/js/fases.js?v=b6892739"></script>
-<script src="/js/shop.js?v=b6892739"></script>
-<script src="/js/pages.js?v=b6892739"></script>
-<script src="/js/auction.js?v=b6892739"></script>
-<script src="/js/main.js?v=b6892739"></script>
+<script src="/js/core.js?v=f75d01f7"></script>
+<script src="/js/fases.js?v=f75d01f7"></script>
+<script src="/js/shop.js?v=f75d01f7"></script>
+<script src="/js/pages.js?v=f75d01f7"></script>
+<script src="/js/auction.js?v=f75d01f7"></script>
+<script src="/js/main.js?v=f75d01f7"></script>
 </body>
 </html>
