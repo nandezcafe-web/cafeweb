@@ -38,6 +38,10 @@ const CONFIG = {
      llegan ahí además de abrir WhatsApp o el correo. Sin base de datos, es lo que evita
      que un registro se quede solo en el navegador del cliente. */
   formulario: "",               // https://formspree.io/f/xxxxxxx
+  /* La hoja de contactos de Nandez (Google Apps Script, gratis): la dirección que termina en /exec.
+     Con ella, comunidad, listas de espera, suscripción, cotizaciones y pedidos se guardan solos
+     y se ven en la pestaña Correos del panel. Puesta en marcha: docs/12_correos_y_remarketing.md */
+  registro: "",
   /* Suscripción: cuándo se tuesta y despacha cada mes. POR CONFIRMAR con el tostador. */
   suscripcion: { despacho: { es: "la primera semana de cada mes", en: "the first week of every month" } },
   /* Subasta: para compradores y coleccionistas del exterior, en dólares por kilo de café verde.
@@ -580,6 +584,10 @@ const canalContacto = () => (CONFIG.whatsapp ? "WhatsApp" : (UI.lang === "en" ? 
 /* Manda el registro al formulario externo si existe. Sin él, el registro solo sale si la persona
    envía el WhatsApp o el correo que le abrimos: por eso ese paso siempre queda a la vista. */
 function enviarAviso(tipo, datos) {
+  const cuerpo = { tipo, ...datos, pagina: location.href, idioma: UI.lang };
+  /* texto plano: así el navegador no pide permiso previo (CORS) y Apps Script lo recibe */
+  if (CONFIG.registro) return fetch(CONFIG.registro, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(cuerpo) })
+    .then((r) => r.json()).then((j) => !!(j && j.ok)).catch(() => false);
   if (!CONFIG.formulario) return Promise.resolve(false);
   return fetch(CONFIG.formulario, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({ tipo, ...datos, pagina: location.href }) }).then((r) => r.ok).catch(() => false);

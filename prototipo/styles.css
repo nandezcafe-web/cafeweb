@@ -1406,3 +1406,28 @@ html[lang=en] .ruta li::before{content:"Month " counter(ruta)}
   .sub-opciones .seg{width:100%}
   .sub-opciones .seg button{flex:1;justify-content:center;padding:10px 8px;font-size:13px}
 }
+
+/* ---- panel: correos ---- */
+.co-vacio{max-width:640px;display:grid;gap:12px}
+.co-vacio h2{font-size:clamp(1.8rem,3.6vw,2.6rem)}
+.co-pasos{margin:0;padding-left:22px;display:grid;gap:8px;color:var(--ink-2)}
+.co-pasos code,.co-vacio code{font:12.5px var(--mono);background:var(--paper-2);padding:2px 6px;border-radius:4px}
+.co-fila{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.co-fila .input{flex:1;min-width:220px}
+.co{display:grid;gap:22px}
+.co-head{max-width:none}
+.co-head .co-fila{margin-top:14px}
+.co-n{font-size:1.8rem}
+.co-etiquetas{display:flex;flex-wrap:wrap;gap:8px}
+.co-buscar{max-width:420px}
+.co-tabla{margin-top:0;min-width:680px}
+.co-tabla tbody th{font:600 14px var(--sans)}
+.co-tag{display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border:1px solid var(--line);border-radius:999px;font:500 12px var(--sans);color:var(--ink-2)}
+.co-si{color:var(--leaf);font-weight:600}
+.co-no{color:var(--ink-3)}
+.co-campana{display:grid;gap:12px;padding:22px}
+.co-campana h3{font-size:1.6rem}
+.co-mensaje{resize:vertical;min-height:160px;font:15px/1.55 var(--sans)}
+.co-resultado{margin:0;font-weight:600;color:var(--ink)}
+.co-hist-t{margin-top:8px}
+.co-hist{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:13.5px;color:var(--ink-2)}

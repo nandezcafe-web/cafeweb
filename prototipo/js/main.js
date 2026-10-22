@@ -119,7 +119,7 @@ function unirseComunidad() {
   if (ok && !ok.checked) { toast(en ? "Tick the box to receive our emails." : "Marca la casilla para recibir nuestros correos.", { type: "err" }); ok.focus(); return; }
   S.espera.push({ id: nextId("CM"), producto: "comunidad", correo, fecha: isoToday(), consentimiento: true }); save();
   el.value = ""; if (ok) ok.checked = false;
-  registrar("comunidad", { correo },
+  registrar("comunidad", { correo, consentimiento: true },
     en ? `Hi, I want to join the ${CONFIG.comunidad} community and I agree to receive news and offers by email. My email: ${correo}`
        : `Hola, quiero unirme a la comunidad ${CONFIG.comunidad} y acepto recibir noticias y ofertas por correo. Mi correo: ${correo}`,
     en ? `Community: ${correo}` : `Comunidad: ${correo}`);

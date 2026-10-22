@@ -183,9 +183,12 @@ function abrirContacto(texto, asunto) {
    si no, se abre el mensaje para que la persona lo envíe y de verdad nos llegue */
 function registrar(tipo, datos, texto, asunto) {
   const en = UI.lang === "en";
-  if (CONFIG.formulario) {
-    enviarAviso(tipo, datos).then((ok) => toast(ok ? (en ? "Done, we will write to you." : "Listo, te escribimos.")
-      : (en ? "It did not go through. Write to " : "No se pudo enviar. Escríbenos a ") + CONFIG.correo, ok ? {} : { type: "err" }));
+  if (CONFIG.registro || CONFIG.formulario) {
+    enviarAviso(tipo, datos).then((ok) => {
+      if (ok) return toast(en ? "Done, we will write to you." : "Listo, te escribimos.");
+      abrirContacto(texto, asunto);
+      toast(en ? `It did not save. Send the message that opened in your ${canalContacto()}.` : `No se pudo guardar. Envía el mensaje que se abrió en tu ${canalContacto()}.`, { type: "err" });
+    });
     return;
   }
   abrirContacto(texto, asunto);

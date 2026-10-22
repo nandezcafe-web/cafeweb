@@ -1440,6 +1440,31 @@ html[lang=en] .ruta li::before{content:"Month " counter(ruta)}
   .sub-opciones .seg button{flex:1;justify-content:center;padding:10px 8px;font-size:13px}
 }
 
+/* ---- panel: correos ---- */
+.co-vacio{max-width:640px;display:grid;gap:12px}
+.co-vacio h2{font-size:clamp(1.8rem,3.6vw,2.6rem)}
+.co-pasos{margin:0;padding-left:22px;display:grid;gap:8px;color:var(--ink-2)}
+.co-pasos code,.co-vacio code{font:12.5px var(--mono);background:var(--paper-2);padding:2px 6px;border-radius:4px}
+.co-fila{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.co-fila .input{flex:1;min-width:220px}
+.co{display:grid;gap:22px}
+.co-head{max-width:none}
+.co-head .co-fila{margin-top:14px}
+.co-n{font-size:1.8rem}
+.co-etiquetas{display:flex;flex-wrap:wrap;gap:8px}
+.co-buscar{max-width:420px}
+.co-tabla{margin-top:0;min-width:680px}
+.co-tabla tbody th{font:600 14px var(--sans)}
+.co-tag{display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border:1px solid var(--line);border-radius:999px;font:500 12px var(--sans);color:var(--ink-2)}
+.co-si{color:var(--leaf);font-weight:600}
+.co-no{color:var(--ink-3)}
+.co-campana{display:grid;gap:12px;padding:22px}
+.co-campana h3{font-size:1.6rem}
+.co-mensaje{resize:vertical;min-height:160px;font:15px/1.55 var(--sans)}
+.co-resultado{margin:0;font-weight:600;color:var(--ink)}
+.co-hist-t{margin-top:8px}
+.co-hist{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:13.5px;color:var(--ink-2)}
+
 /* sala de subasta */
 .auction{color:#E6D7C3}
 .auction .kicker{color:#c9b497}
@@ -2470,6 +2495,10 @@ const CONFIG = {
      llegan ahí además de abrir WhatsApp o el correo. Sin base de datos, es lo que evita
      que un registro se quede solo en el navegador del cliente. */
   formulario: "",               // https://formspree.io/f/xxxxxxx
+  /* La hoja de contactos de Nandez (Google Apps Script, gratis): la dirección que termina en /exec.
+     Con ella, comunidad, listas de espera, suscripción, cotizaciones y pedidos se guardan solos
+     y se ven en la pestaña Correos del panel. Puesta en marcha: docs/12_correos_y_remarketing.md */
+  registro: "",
   /* Suscripción: cuándo se tuesta y despacha cada mes. POR CONFIRMAR con el tostador. */
   suscripcion: { despacho: { es: "la primera semana de cada mes", en: "the first week of every month" } },
   /* Subasta: para compradores y coleccionistas del exterior, en dólares por kilo de café verde.
@@ -3012,6 +3041,10 @@ const canalContacto = () => (CONFIG.whatsapp ? "WhatsApp" : (UI.lang === "en" ? 
 /* Manda el registro al formulario externo si existe. Sin él, el registro solo sale si la persona
    envía el WhatsApp o el correo que le abrimos: por eso ese paso siempre queda a la vista. */
 function enviarAviso(tipo, datos) {
+  const cuerpo = { tipo, ...datos, pagina: location.href, idioma: UI.lang };
+  /* texto plano: así el navegador no pide permiso previo (CORS) y Apps Script lo recibe */
+  if (CONFIG.registro) return fetch(CONFIG.registro, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(cuerpo) })
+    .then((r) => r.json()).then((j) => !!(j && j.ok)).catch(() => false);
   if (!CONFIG.formulario) return Promise.resolve(false);
   return fetch(CONFIG.formulario, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({ tipo, ...datos, pagina: location.href }) }).then((r) => r.ok).catch(() => false);
@@ -3395,9 +3428,12 @@ function abrirContacto(texto, asunto) {
    si no, se abre el mensaje para que la persona lo envíe y de verdad nos llegue */
 function registrar(tipo, datos, texto, asunto) {
   const en = UI.lang === "en";
-  if (CONFIG.formulario) {
-    enviarAviso(tipo, datos).then((ok) => toast(ok ? (en ? "Done, we will write to you." : "Listo, te escribimos.")
-      : (en ? "It did not go through. Write to " : "No se pudo enviar. Escríbenos a ") + CONFIG.correo, ok ? {} : { type: "err" }));
+  if (CONFIG.registro || CONFIG.formulario) {
+    enviarAviso(tipo, datos).then((ok) => {
+      if (ok) return toast(en ? "Done, we will write to you." : "Listo, te escribimos.");
+      abrirContacto(texto, asunto);
+      toast(en ? `It did not save. Send the message that opened in your ${canalContacto()}.` : `No se pudo guardar. Envía el mensaje que se abrió en tu ${canalContacto()}.`, { type: "err" });
+    });
     return;
   }
   abrirContacto(texto, asunto);
@@ -4480,7 +4516,7 @@ function unirseComunidad() {
   if (ok && !ok.checked) { toast(en ? "Tick the box to receive our emails." : "Marca la casilla para recibir nuestros correos.", { type: "err" }); ok.focus(); return; }
   S.espera.push({ id: nextId("CM"), producto: "comunidad", correo, fecha: isoToday(), consentimiento: true }); save();
   el.value = ""; if (ok) ok.checked = false;
-  registrar("comunidad", { correo },
+  registrar("comunidad", { correo, consentimiento: true },
     en ? `Hi, I want to join the ${CONFIG.comunidad} community and I agree to receive news and offers by email. My email: ${correo}`
        : `Hola, quiero unirme a la comunidad ${CONFIG.comunidad} y acepto recibir noticias y ofertas por correo. Mi correo: ${correo}`,
     en ? `Community: ${correo}` : `Comunidad: ${correo}`);

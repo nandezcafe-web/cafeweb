@@ -1,0 +1,64 @@
+# Correos y remarketing, sin pagar
+
+**Fecha:** 22 de octubre de 2026
+**Para qué:** guardar cada correo que deja la gente en la página, verlos en el panel interno y escribirles campañas, con costo cero.
+
+---
+
+## 1. Por qué no MailerLite (todavía)
+
+| Opción | Costo | Límite |
+|---|---|---|
+| MailerLite gratis | $0 | 250 contactos y 2.500 correos al mes desde junio de 2026 |
+| MailerLite Comfort | Desde USD 12 al mes | Según el tamaño de la lista |
+| **Hoja de Google + Gmail (lo que quedó armado)** | **$0** | Gmail gratis envía a unas 100 personas al día; Google Workspace, 1.500 |
+
+Fuentes: [Mailsoftly](https://mailsoftly.com/blog/mailerlite-free-plan-changes/), [Email Software Insights](https://www.emailsoftwareinsights.com/reviews/mailerlite/pricing/free-plan/), [Email Tool Tester](https://www.emailtooltester.com/en/reviews/mailerlite/pricing/). Revisar la página de precios de MailerLite antes de decidir: los límites cambiaron este año.
+
+Cuando la lista pase de unos cientos de personas activas, o se quieran automatizaciones más finas, la pestaña Correos exporta un CSV que MailerLite (o Brevo) importa tal cual.
+
+## 2. Cómo funciona
+
+1. **La página** manda cada registro a un script de Google: comunidad, listas de espera, suscripción, cotizaciones y pedidos.
+2. **El script** ([tools/correos/Codigo.gs](../tools/correos/Codigo.gs)) lo anota en una Hoja de Google de Nandez, con tres pestañas:
+   - **Contactos:** un correo por fila, con sus etiquetas (`comunidad`, `espera: Tibo B`, `suscripción: cosecha`…), si acepta correos, alta, último registro y baja.
+   - **Registros:** la bitácora completa de lo que llegó.
+   - **Envíos:** cada campaña enviada.
+   - **Entregas:** a quién le llegó cada campaña, para no repetirla.
+3. **El panel interno**, pestaña **Correos**, muestra los contactos, los filtra por etiqueta, los exporta a CSV y envía campañas desde el Gmail de Nandez.
+4. **Cada correo** lleva la marca y un enlace firmado para darse de baja. Quien se da de baja no vuelve a recibir campañas, salvo que se una otra vez con la casilla.
+
+### La ley (1581 de 2012)
+
+- Solo reciben publicidad quienes marcaron la casilla "Acepto recibir noticias y ofertas" en la comunidad.
+- Las listas de espera y la suscripción guardan el correo para avisar de **ese** producto, no para publicidad.
+- La política de datos de la página explica todo esto, y cada correo trae su enlace de baja.
+
+## 3. Puesta en marcha (unos 10 minutos, una sola vez)
+
+1. Entrar a [script.google.com](https://script.google.com) con la cuenta de Google de Nandez (`nandezcafe@gmail.com`) y crear un **proyecto nuevo**. Llamarlo "Nandez · correos".
+2. Borrar lo que trae y **pegar todo** el archivo [tools/correos/Codigo.gs](../tools/correos/Codigo.gs). Guardar.
+3. Arriba, escoger la función **configurar** y darle **Ejecutar**. Google pide permisos (Hojas de cálculo, Gmail): aceptarlos. Si aparece "Google no verificó esta app", entrar en *Configuración avanzada* → *Ir a Nandez · correos*: es el script propio.
+4. En el **registro de ejecución** aparecen dos cosas: la dirección de la hoja y la **clave del panel**. Guardar la clave.
+5. **Implementar → Nueva implementación → Aplicación web.**
+   - Ejecutar como: **yo**.
+   - Quién tiene acceso: **cualquier persona**.
+   - Copiar la **URL de la aplicación web** (termina en `/exec`).
+6. Esa URL va en `CONFIG.registro`, en [prototipo/js/core.js](../prototipo/js/core.js). Después: `node tools/build.js`, commit y push.
+7. Abrir el panel interno → **Correos** → pegar la clave. Queda guardada en ese navegador.
+
+Si más adelante se cambia el script, hay que publicar una **nueva versión** de la misma implementación (Implementar → Administrar implementaciones → editar), para que la URL no cambie.
+
+## 4. Probar el script sin Google
+
+```bash
+node tools/correos/prueba.js tools/correos/Codigo.gs
+```
+
+Imita la hoja, Gmail y las propiedades en memoria y revisa 23 casos: etiquetas, autorización, clave, baja firmada, cuota diaria.
+
+## 5. Cuidados
+
+- **La URL del script es pública** (los formularios la usan), así que cualquiera podría mandarle registros falsos. No puede leer ni enviar nada sin la clave.
+- **La clave** solo vive en las propiedades del script y en el navegador de quien la pegó. Si se filtra: en el editor, *Configuración del proyecto → Propiedades del script*, cambiar `CLAVE` y pegarla de nuevo en el panel.
+- **La cuota de Gmail** se reinicia cada 24 horas. Si una campaña no alcanza, el panel lo dice. Al otro día se envía la misma campaña, con el mismo asunto, y solo les llega a quienes faltan: cada entrega queda anotada en la pestaña **Entregas** de la hoja.

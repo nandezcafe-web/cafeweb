@@ -20,7 +20,7 @@ const css = cssBase + "\n" + read("gang.css");
 const mod = (f) => `/* ---- ${f}.js ---- */\n` + read(`js/${f}.js`);
 const MODS = ["core", "fases", "shop", "pages", "auction", "main"];
 /* huella de los archivos: obliga al navegador a bajar la versión nueva tras cada despliegue */
-const TODOS = ["core", "fases", "shop", "pages", "auction", "main", "quote", "inventory", "clients", "market", "admin"];
+const TODOS = ["core", "fases", "shop", "pages", "auction", "main", "quote", "inventory", "clients", "market", "correos", "admin"];
 /* huella de las imágenes: si una foto cambia, cambia su dirección y ningún navegador sirve la vieja */
 const IMG_DIRS = ["grano", "portada", "productos", "marca"].map((d) => path.join(SRC, "img", d));
 const IMG_V = require("crypto").createHash("md5")
@@ -312,7 +312,7 @@ const unSolo = pagina(ctxEs, { view: "inicio" }, "es")
 escribir("nandez.html", unSolo);
 
 /* ---------- 5. panel interno ---------- */
-const panelJs = ["core", "quote", "inventory", "clients", "market", "admin"].map(mod).join("\n");
+const panelJs = ["core", "quote", "inventory", "clients", "market", "correos", "admin"].map(mod).join("\n");
 const panel = `<!doctype html>
 <html lang="es">
 <head>

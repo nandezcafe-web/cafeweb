@@ -16,12 +16,14 @@ Le compramos café a fincas de Norte de Santander —cada una con su variedad—
 7. **Cotizador** — cuánto paga el comité hoy, cuánto podemos pagar y con qué margen.
 8. **Inventario** — cada lote de la compra a la bolsa vendida, con costos reales y plata quieta.
 9. **Clientes** — quién compra, cada cuánto, qué prefiere y a quién llamar.
-10. **Mercado** — precio FNC, bolsa de Nueva York, TRM, tabla por factor y cuándo vender.
+10. **Correos** — quién dejó su correo, con qué etiqueta, y campañas de remarketing desde Gmail.
+11. **Mercado** — precio FNC, bolsa de Nueva York, TRM, tabla por factor y cuándo vender.
 
 ## Documentos
 
 | Archivo | Contenido |
 |---|---|
+| [docs/12_correos_y_remarketing.md](docs/12_correos_y_remarketing.md) | Correos y remarketing gratis: Hoja de Google, Gmail y la pestaña Correos del panel |
 | [docs/11_rediseno_editorial.md](docs/11_rediseno_editorial.md) | Rediseño Coffee Gang: crítica a coff.com.co, referentes, la línea gráfica y lo que falta decidir |
 | [docs/10_propuesta_suscripciones.md](docs/10_propuesta_suscripciones.md) | Suscripción con kit de bienvenida, dos formas de pagar y la Ruta Nandez |
 | [docs/09_prompt_auditoria.md](docs/09_prompt_auditoria.md) | Prompt listo para auditar la página con ojos frescos |
