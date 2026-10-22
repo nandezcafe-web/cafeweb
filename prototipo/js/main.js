@@ -8,12 +8,14 @@ const pal = (txt, desde = 0) => txt.split(" ").map((p, i) => `<span class="pal" 
 function viewInicio() {
   const en = UI.lang === "en";
   const principios = en
-    ? [["Every coffee has a grower", "Not just “Colombian coffee”: the coffee of one farm and one harvest, and we tell you who planted it."],
-       ["We tell you what we know, and what we don't", "Altitude, variety, process and score say who checked them and when. What we could not check, we say so."],
-       ["Few coffees, chosen one by one", "Three coffees, not thirty. A lot goes on the shelf only after we cup it and it convinces us."]]
-    : [["Cada café tiene quién lo sembró", "No es “café colombiano” sin más: es el café de una finca y de una cosecha, y te decimos quién lo sembró."],
-       ["Te contamos lo que sabemos, y lo que no", "La altura, la variedad, el proceso y el puntaje dicen quién los revisó y cuándo. Lo que no hemos podido comprobar, también lo decimos."],
-       ["Pocos cafés, escogidos uno por uno", "Tres cafés, no treinta. Un lote entra a la tienda solo cuando lo catamos y nos convence."]];
+    ? [["One farm, one bag.", "No blends of a hundred growers. Every bag comes from a single farm and a single harvest, so you know exactly what you are drinking."],
+       ["Data with a signature.", "Altitude, variety, process and score say who checked them and when. What we have not verified yet, we do not make up."],
+       ["Three coffees, not thirty.", "A lot goes on the shelf only if we cup it and it convinces us. We would rather sell out than fill the shelf."],
+       ["You grind it.", "We ship whole bean because the aroma escapes fast once it is ground. Grind it right before brewing and you taste it in the first cup."]]
+    : [["Una finca, una bolsa.", "Nada de mezclas de cien productores. Cada bolsa sale de una sola finca y de una sola cosecha, así que sabes exactamente qué estás tomando."],
+       ["Datos con firma.", "La altura, la variedad, el proceso y el puntaje dicen quién los comprobó y cuándo. Lo que todavía no hemos verificado, no lo inventamos."],
+       ["Tres cafés, no treinta.", "Un lote entra a la tienda solo si lo catamos y nos convence. Preferimos que se agote a llenar la estantería."],
+       ["Lo mueles tú.", "Lo mandamos en grano porque el aroma se escapa rápido una vez molido. Muélelo justo antes de prepararlo y lo notas en la primera taza."]];
   const cabeza = (num, kicker, titulo, texto, link) => `<div class="g-head g-io">
       <span class="g-num">${num}</span><p class="g-kicker">${kicker}</p>
       <h2>${titulo}</h2>${texto ? `<p>${texto}</p>` : ""}${link || ""}</div>`;
@@ -25,8 +27,8 @@ function viewInicio() {
   <section class="g-sec" id="cafes" aria-labelledby="g-cafes">
     ${cabeza("01", en ? "This harvest" : "Esta cosecha",
       `<span id="g-cafes">${en ? "Three coffees. <em>One farm each.</em>" : "Tres cafés. <em>Una finca cada uno.</em>"}</span>`,
-      en ? "Whole bean, roasted the week you order. Each bag carries its farm, its altitude and who checked every number."
-         : "En grano, tostados la semana del pedido. Cada bolsa lleva su finca, su altura y quién comprobó cada dato.",
+      en ? "Always whole bean. Each bag says which farm it comes from, how high it grew and who checked every number."
+         : "Siempre en grano. Cada bolsa dice de qué finca viene, a qué altura creció y quién comprobó cada dato.",
       `<a class="g-link" href="${ruta("tienda")}" data-act="go" data-to="tienda">${en ? "Go to the shop" : "Ir a la tienda"}</a>`)}
     <div class="g-prods">${S.productos.map((p, i) => tarjetaInicio(p, i)).join("")}</div>
     ${visible("subasta") ? `<div class="g-subasta g-io">
@@ -48,8 +50,8 @@ function viewInicio() {
   <section class="g-sec" aria-labelledby="g-fincas">
     ${cabeza("03", en ? "The neighbours" : "Los vecinos",
       `<span id="g-fincas">${en ? "Where each <em>bag comes from.</em>" : "De dónde viene <em>cada bolsa.</em>"}</span>`,
-      en ? "Today we roast coffee from neighbouring farms. Our own first harvest comes in 2027, and we will keep buying from them."
-         : "Hoy tostamos café de fincas vecinas. En 2027 sale la primera cosecha de la nuestra, y les vamos a seguir comprando a ellos.")}
+      en ? "Chinácota, Toledo and Arboledas: mountains between 1,500 and 1,950 metres, with cold nights that ripen the cherry slowly. In 2027 the first harvest from our own farm joins them."
+         : "Chinácota, Toledo y Arboledas: montañas entre 1.500 y 1.950 metros, con noches frías que maduran el grano despacio. En 2027 se suma la primera cosecha de nuestra propia finca.")}
     <div class="fincas">${S.fincas.map((f, i) => fincaCard(f, i)).join("")}</div>
   </section>
 

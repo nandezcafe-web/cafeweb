@@ -136,8 +136,8 @@ function bloqueCafeterias() {
   return `<section class="section b2b" id="cafeterias">
     <div class="section-head"><p class="eyebrow">${en ? "For cafés and roasters" : "Para cafeterías y tostadores"}</p>
       <h2>${en ? "Coffee by the <em>kilo</em>" : "Café por <em>kilos</em>"}</h2>
-      <p>${en ? "The kilo ships whole bean, roasted in the week you order. From 5 kg a month we quote a volume price and can roast to your profile."
-        : "El kilo va en grano y se tuesta la semana del pedido. Desde 5 kg al mes te cotizamos precio por volumen y podemos tostar a tu perfil."}</p></div>
+      <p>${en ? "The kilo ships whole bean. From 5 kg a month we quote a volume price and can roast to your profile."
+        : "El kilo va en grano. Desde 5 kg al mes te cotizamos precio por volumen y podemos tostar a tu perfil."}</p></div>
     <div class="table-scroll"><table class="b2b-tabla">
       <thead><tr><th>${en ? "Coffee" : "Café"}</th><th>${en ? "Bag" : "Bolsa"}</th><th>1 kg</th><th>${en ? "5 kg or more" : "5 kg o más"}</th></tr></thead>
       <tbody>${filas}</tbody></table></div>
@@ -218,7 +218,7 @@ function viewTienda() {
       <a class="g-puerta reveal" style="--pc:${p.color || "#2F5A3C"};--i:3" href="${ruta("cafes")}" data-act="go" data-to="cafes">
         <span class="g-puerta-art">${fotoProducto(p, { clase: "g-prod-foto", sizes: "(min-width:900px) 520px, 90vw" })}</span>
         <span class="g-puerta-txt"><small>01 · ${n} ${en ? "whole bean coffees" : "cafés en grano"}${ya < n ? ` · ${ya} ${en ? "on sale" : "a la venta"}` : ""}</small>
-          <b>${t("nav_cafes_esp")}</b><i>${en ? "One farm each, roasted the week you order." : "Una finca cada uno, tostados la semana del pedido."}</i></span></a>
+          <b>${t("nav_cafes_esp")}</b><i>${en ? "One farm each, always whole bean." : "Una finca cada uno, siempre en grano."}</i></span></a>
       <a class="g-puerta oscura reveal" style="--i:4" href="${ruta("accesorios")}" data-act="go" data-to="accesorios">
         <span class="g-puerta-art"><span class="g-pronto">Coffee Gang<i>${t("proximamente")}</i></span></span>
         <span class="g-puerta-txt"><small>02 · ${accesoriosVisibles().length} ${en ? "pieces" : "piezas"} · ${t("proximamente").toLowerCase()}</small>
@@ -266,8 +266,8 @@ function viewCafes() {
       <div><p class="eyebrow reveal">${t("nav_tienda")} · ${t("nav_cafes_esp")}</p>
         <h2 class="reveal" style="--i:1">${en ? "Three coffees, <em>whole bean</em>" : "Tres cafés, <em>en grano</em>"}</h2>
         <p class="reveal" style="--i:2">${en
-          ? "These are the coffees we are roasting right now. Each one comes from a neighbouring farm in Norte de Santander and carries the name of whoever grew it."
-          : "Estos son los cafés que estamos tostando ahora. Cada uno viene de una finca vecina de Norte de Santander y lleva el nombre de quien lo cultivó."}</p></div>
+          ? "Three whole bean coffees, each from a single farm in Norte de Santander. Choose by flavour, by altitude or by farm."
+          : "Tres cafés en grano, cada uno de una sola finca de Norte de Santander. Escoge por sabor, por altura o por finca."}</p></div>
     </div>
     <div class="dos">${S.productos.map((p, i) => cafeCard(p, i)).join("")}${visible("subasta") ? subastaCard(S.productos.length) : ""}</div>
     ${bloqueCafeterias()}

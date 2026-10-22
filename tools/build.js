@@ -30,8 +30,6 @@ const VERSION = require("crypto").createHash("md5").update(css + TODOS.map((f) =
 /* el logo: un PNG con fondo transparente recortado de fuentes/marca/logo-nandez-v1.png */
 const LOGO = `/img/marca/logo.png?v=${IMG_V}`;
 const LOGO_DENTRO = "data:image/png;base64," + fs.readFileSync(path.join(SRC, "img", "marca", "logo.png")).toString("base64");
-/* el precio del día: la primera fila de data/mercado.json (la tarea de GitHub lo mantiene al día) */
-const MERCADO_HOY = (() => { try { return JSON.parse(read("data/mercado.json")).historial[0] || null; } catch { return null; } })();
 const logoHTML = (lang) => `<img class="logo" src="${LOGO}" width="464" height="120" alt="Nandez Coffee" fetchpriority="high">`;
 const FUENTES = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,7 +46,7 @@ function mundo(lang) {
     title: "", activeElement: null, getElementById: nodo, querySelector: nodo, querySelectorAll: () => [],
     createElement: nodo, addEventListener() {} };
   const ctx = {
-    IMG_V, MERCADO_HOY,
+    IMG_V,
     console, Date, Math, JSON, String, Number, Array, Object, Set, Map, Intl, isNaN, parseInt, parseFloat, encodeURIComponent,
     document: doc, window: { addEventListener() {}, scrollTo() {}, open() {} },
     navigator: { language: lang }, location: { pathname: "/", hash: "", href: "/", search: "" },
@@ -214,7 +212,7 @@ ${dockHTML(ctx, activa, lang)}
   <div class="dlg-body" id="dlg-body"></div>
 </dialog>
 
-<script>window.IMG_V = "${IMG_V}"; window.MERCADO_HOY = ${JSON.stringify(MERCADO_HOY)};</script>
+<script>window.IMG_V = "${IMG_V}";</script>
 ${MODS.map((f) => `<script src="/js/${f}.js?v=${VERSION}"></script>`).join("\n")}
 </body>
 </html>

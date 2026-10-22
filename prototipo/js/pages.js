@@ -232,8 +232,8 @@ function viewEnvios() {
       `<p>${en ? `Shipping costs ${cop(E.costo)} anywhere in Colombia and is free on orders from ${cop(E.gratisDesde)}. You see it in the cart before giving us any data.`
         : `El envío cuesta ${cop(E.costo)} a cualquier ciudad de Colombia y es gratis en pedidos desde ${cop(E.gratisDesde)}. Lo ves en el carrito antes de darnos ningún dato.`}</p>`],
      [en ? "Time" : "Tiempo",
-      `<p>${en ? `We roast in the week of your order and ship from Cúcuta with ${E.transportadora}. It arrives in ${tx(E.dias)}; rural areas can take a few days more. We send you the tracking number.`
-        : `Tostamos la semana de tu pedido y despachamos desde Cúcuta por ${E.transportadora}. Llega en ${tx(E.dias)}; a zonas rurales puede tardar unos días más. Te mandamos la guía para que lo sigas.`}</p>`],
+      `<p>${en ? `We ship from Cúcuta with ${E.transportadora}. It arrives in ${tx(E.dias)}; rural areas can take a few days more. We send you the tracking number.`
+        : `Despachamos desde Cúcuta por ${E.transportadora}. Llega en ${tx(E.dias)}; a zonas rurales puede tardar unos días más. Te mandamos la guía para que lo sigas.`}</p>`],
      [en ? "If something goes wrong" : "Si algo sale mal",
       `<p>${en ? `If the bag arrives broken, wet or is not what you ordered, write to ${CONFIG.correo} within 5 days of receiving it, with a photo and your order number. We send it again or refund you, at our cost.`
         : `Si la bolsa llega rota, mojada o no es lo que pediste, escríbenos a ${CONFIG.correo} dentro de los 5 días siguientes a recibirla, con una foto y tu número de pedido. Te la volvemos a enviar o te devolvemos el dinero, por nuestra cuenta.`}</p>`],

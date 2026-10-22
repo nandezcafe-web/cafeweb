@@ -31,7 +31,7 @@ const CONFIG = {
      estos valores son el punto de partida si no hay conexión. */
   fnc: { precioCarga: 2105000, factorBase: 94, fecha: "2026-09-25" },
   mercado: { ny: 278.6, trm: 3306.86 },
-  storageKey: "nandez-v8",
+  storageKey: "nandez-v9",
   whatsapp: "",                 // 573001234567 · mientras esté vacío, pedidos y avisos salen por correo
   correo: "nandezcafe@gmail.com",
   /* Formulario externo (Formspree, Getform…): si hay URL, pedidos, suscriptores y postores
@@ -122,7 +122,7 @@ const msnm = (n) => fmtNum(n) + (UI.lang === "en" ? " m a.s.l." : " msnm");
 
 function seed() {
   return {
-    v: 8, seq: 400,
+    v: 9, seq: 400,
 
     /* ---------- FINCAS ALIADAS ---------- */
     fincas: [
@@ -148,7 +148,7 @@ function seed() {
         nombre: { es: "Castillo de Arboledas", en: "Castillo from Arboledas" }, sub: { es: "Lavado · cosecha 2026", en: "Washed · 2026 harvest" },
         variedad: "Castillo", proceso: "Lavado", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026",
         color: "#2F5A3C",
-        sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero, tostado la semana del pedido, para que lo muelas el día que lo preparas.", en: "We ship it whole, roasted the week you order, so you grind it the day you brew it." },
+        sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que lo muelas el día que lo preparas: así guarda el aroma.", en: "We ship it whole so you grind it the day you brew it, which keeps the aroma." },
         altitud: 1550, puntaje: 84, nivel: "DOCUMENTADO", fuente: "Catación propia", fecha: "2026-09-14",
         notas: { es: ["Panela", "Chocolate", "Naranja"], en: ["Brown sugar", "Chocolate", "Orange"] },
         ficha: {
@@ -266,7 +266,7 @@ function seed() {
   };
 }
 
-function load() { try { const s = JSON.parse(localStorage.getItem(CONFIG.storageKey)); return s && s.v === 8 ? s : null; } catch { return null; } }
+function load() { try { const s = JSON.parse(localStorage.getItem(CONFIG.storageKey)); return s && s.v === 9 ? s : null; } catch { return null; } }
 function save() { try { localStorage.setItem(CONFIG.storageKey, JSON.stringify(S)); } catch {} }
 function idiomaGuardado() { try { return localStorage.getItem("nandez-lang"); } catch { return null; } }
 
