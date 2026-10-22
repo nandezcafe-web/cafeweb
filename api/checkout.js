@@ -20,7 +20,7 @@ export default async function handler(req, res) {
       })),
       payer: { name: comprador.nombre || "", phone: { number: comprador.tel || "" } },
       external_reference: String(pedido),
-      statement_descriptor: "NANDEZ CAFE",
+      statement_descriptor: "NANDEZ COFFEE",
       back_urls: { success: `${base}/?pago=ok`, pending: `${base}/?pago=pendiente`, failure: `${base}/?pago=fallo` },
       auto_return: "approved",
       notification_url: `${base}/api/webhook`,

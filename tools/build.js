@@ -32,7 +32,7 @@ const LOGO = `/img/marca/logo.png?v=${IMG_V}`;
 const LOGO_DENTRO = "data:image/png;base64," + fs.readFileSync(path.join(SRC, "img", "marca", "logo.png")).toString("base64");
 /* el precio del día: la primera fila de data/mercado.json (la tarea de GitHub lo mantiene al día) */
 const MERCADO_HOY = (() => { try { return JSON.parse(read("data/mercado.json")).historial[0] || null; } catch { return null; } })();
-const logoHTML = (lang) => `<img class="logo" src="${LOGO}" width="464" height="120" alt="Nandez Café" fetchpriority="high">`;
+const logoHTML = (lang) => `<img class="logo" src="${LOGO}" width="464" height="120" alt="Nandez Coffee" fetchpriority="high">`;
 const FUENTES = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">`;
@@ -160,7 +160,7 @@ function pagina(ctx, { view, id }, lang) {
 <meta property="og:image" content="${ev(ctx, "CONFIG.sitio")}/img/marca/compartir.jpg?v=${IMG_V}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="${lang === "en" ? "Nandez Café: whole bean coffee with a first name, from Norte de Santander" : "Nandez Café: café en grano con nombre propio, de Norte de Santander"}">
+<meta property="og:image:alt" content="${lang === "en" ? "Nandez Coffee: whole bean coffee with a first name, from Norte de Santander" : "Nandez Coffee: café en grano con nombre propio, de Norte de Santander"}">
 <meta name="twitter:image" content="${ev(ctx, "CONFIG.sitio")}/img/marca/compartir.jpg?v=${IMG_V}">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/img/marca/icono-32.png?v=${IMG_V}">
@@ -249,7 +249,7 @@ escribir("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
   .replace("</urlset>", urls.map((u) => `  <url><loc>${u.loc}</loc><lastmod>${hoy}</lastmod><priority>${u.prio}</priority></url>`).join("\n") + "\n</urlset>"));
 
 /* para "agregar a la pantalla de inicio" en el celular */
-escribir("site.webmanifest", JSON.stringify({ name: "Nandez Café", short_name: "Nandez", start_url: "/", display: "standalone",
+escribir("site.webmanifest", JSON.stringify({ name: "Nandez Coffee", short_name: "Nandez", start_url: "/", display: "standalone",
   background_color: "#F5F0E6", theme_color: "#F5F0E6",
   icons: [{ src: "/img/marca/icono-180.png", sizes: "180x180", type: "image/png" }, { src: "/img/marca/icono-512.png", sizes: "512x512", type: "image/png" }] }, null, 2));
 
@@ -318,7 +318,7 @@ const panel = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Panel · Nandez Café</title>
+<title>Panel · Nandez Coffee</title>
 <meta name="robots" content="noindex, nofollow">
 ${FUENTES}
 <style>

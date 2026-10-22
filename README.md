@@ -1,4 +1,4 @@
-# Nandez Café — café de origen de Norte de Santander
+# Nandez Coffee — café de origen de Norte de Santander
 
 Le compramos café a fincas de Norte de Santander —cada una con su variedad— y lo vendemos con nuestra marca. Los lotes excepcionales van a subasta. Desde 2027 entra también el café de nuestra propia tierra.
 

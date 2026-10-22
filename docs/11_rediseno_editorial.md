@@ -119,7 +119,7 @@ El Bourbon rosado salió del catálogo. El plan Cafetería pasó a 2 kg de Casti
 2. **El tercer café:** nombre y todo lo demás.
 3. **El empaque:** las fotos de las bolsas siguen siendo las del diseño anterior ("Nandez Cafe · café de origen", kraft). Cuando el empaque se rediseñe con el logo nuevo, se reemplazan las fotos con el mismo nombre de archivo y nada más cambia.
 4. **La suscripción en grano:** los planes Semilla y Cosecha todavía dicen "molienda a tu gusto". Si todo va en grano, hay que decidir si esos planes llevan molino o si se mantiene la molienda solo para suscriptores.
-5. **El nombre:** la página sigue diciendo "Nandez Café" en títulos y textos legales; el logo dice "Nandez Coffee Gang". Decidir cuál es el nombre comercial antes de publicar.
+5. **El nombre:** decidido el 22 de octubre de 2026. La empresa se llama **Nandez Coffee** en títulos, textos legales, Google y correos; **Coffee Gang** queda para la comunidad (Nandez Coffee Gang) y el merch. La cuenta de correo, el Instagram (@nandezcafe) y el YouTube (@NándezCafé) conservan el nombre anterior.
 6. **El logo en vectores:** hoy es un PNG recortado. Pedirle al diseñador el SVG para que se vea nítido en cualquier tamaño.
 
 ---

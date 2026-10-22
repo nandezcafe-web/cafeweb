@@ -1,6 +1,6 @@
 # Propuesta: suscripción con kit de bienvenida y comunidad
 
-**Nandez Café · 30 de septiembre de 2026**
+**Nandez Coffee · 30 de septiembre de 2026**
 
 ## La idea en una línea
 

@@ -10,7 +10,7 @@ hace que un visitante NO compre, y proponer arreglos concretos.
 
 ## El negocio
 
-Nandez Café: una familia de Chinácota, Norte de Santander (Colombia) que
+Nandez Coffee: una familia de Chinácota, Norte de Santander (Colombia) que
 siembra café y además le compra lotes a fincas vecinas, los tuesta y los vende
 con su marca. Los lotes excepcionales se rematan en una subasta en vivo dentro
 de la misma página. Venden a dos públicos: personas que compran una bolsa y

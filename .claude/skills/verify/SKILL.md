@@ -1,9 +1,9 @@
 ---
 name: verify
-description: How to run and drive the Nandez Café site (public SPA, single-file build, admin panel) to verify a change.
+description: How to run and drive the Nandez Coffee site (public SPA, single-file build, admin panel) to verify a change.
 ---
 
-# Verificar un cambio en Nandez Café
+# Verificar un cambio en Nandez Coffee
 
 ## Levantar
 - Producción: `https://cafeweb-five.vercel.app` (Vercel despliega `main` solo; el push lo hace el usuario).

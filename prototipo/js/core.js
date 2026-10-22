@@ -1,13 +1,13 @@
 /* ============================================================
-   NANDEZ CAFÉ · núcleo: configuración, idioma, datos y utilidades
+   NANDEZ COFFEE · núcleo: configuración, idioma, datos y utilidades
    Compramos café a fincas de Norte de Santander, cada una con su
    variedad; los lotes excepcionales van a subasta. Más adelante
    entra el café de nuestra propia tierra.
    Textos y fotos: PENDIENTES, los pone el cliente.
    ============================================================ */
 const CONFIG = {
-  marca: "Nandez Café",
-  /* El nombre: la empresa es Nandez Café (títulos, textos legales, Google).
+  marca: "Nandez Coffee",
+  /* El nombre: la empresa es Nandez Coffee (títulos, textos legales, Google y correos).
      "Coffee Gang" es lo que dice el logo debajo de NANDEZ: la comunidad y el merch. */
   gang: "Coffee Gang",
   comunidad: "Nandez Coffee Gang",
@@ -483,14 +483,14 @@ function meta(view, id) {
       ? { t: "Contact · " + marca, d: "Write to the Nandez family: orders, cafés and roasters, and questions about our coffee from Chinácota, Norte de Santander." }
       : { t: "Contacto · " + marca, d: "Escríbele a la familia Nandez: pedidos, cafeterías y tostadores, y preguntas sobre nuestro café de Chinácota, Norte de Santander." },
     envios: en
-      ? { t: "Shipping and returns · " + marca, d: "What shipping costs, how long it takes to reach each city in Colombia and what we do if your coffee arrives damaged." }
-      : { t: "Envíos y devoluciones · " + marca, d: "Cuánto cuesta el envío, cuánto tarda en llegar a cada ciudad de Colombia y qué hacemos si tu café llega mal." },
+      ? { t: "Shipping and refund policy · " + marca, d: "What shipping costs, how long it takes to reach each city in Colombia and what we do if your coffee arrives damaged." }
+      : { t: "Política de envíos y reembolso · " + marca, d: "Cuánto cuesta el envío, cuánto tarda en llegar a cada ciudad de Colombia y qué hacemos si tu café llega mal." },
     terminos: en
-      ? { t: "Terms of sale · " + marca, d: "How buying from Nandez Café works: prices, payment, shipping and subscription." }
-      : { t: "Términos y condiciones · " + marca, d: "Cómo funciona comprarle a Nandez Café: precios, pago, envío y suscripción." },
+      ? { t: "Terms of sale · " + marca, d: "How buying from Nandez Coffee works: prices, payment, shipping and subscription." }
+      : { t: "Términos y condiciones · " + marca, d: "Cómo funciona comprarle a Nandez Coffee: precios, pago, envío y suscripción." },
     privacidad: en
       ? { t: "Privacy policy · " + marca, d: "What personal data we collect, what we use it for and how to ask us to change or delete it." }
-      : { t: "Política de datos · " + marca, d: "Qué datos personales pedimos, para qué los usamos y cómo pedirnos que los cambiemos o los borremos (Ley 1581 de 2012)." },
+      : { t: "Política de privacidad · " + marca, d: "Qué datos personales pedimos, para qué los usamos y cómo pedirnos que los cambiemos o los borremos (Ley 1581 de 2012)." },
     suscripcion: en
       ? { t: "Colombian coffee subscription · " + marca,
           d: "Freshly roasted Colombian specialty coffee every month, from COP 68,000. One or two farms per shipment, with the lot data sheet. Cancel anytime." }

@@ -1,5 +1,5 @@
 /* ============================================================
-   NANDEZ CAFÉ · registros y correos
+   NANDEZ COFFEE · registros y correos
    Google Apps Script, gratis, en la cuenta de Google de Nandez.
    Guarda en una Hoja de Google cada correo que llega de la página
    (comunidad, listas de espera, suscripción, cotizaciones, pedidos),
@@ -15,7 +15,7 @@
       Ejecutar como: yo. Quién tiene acceso: cualquier persona.
    4. Copiar la URL /exec y ponerla en CONFIG.registro (prototipo/js/core.js).
    ============================================================ */
-const MARCA = "Nandez Café";
+const MARCA = "Nandez Coffee";
 const COMUNIDAD = "Nandez Coffee Gang";
 const H_CONTACTOS = "Contactos", H_REGISTROS = "Registros", H_ENVIOS = "Envíos", H_ENTREGAS = "Entregas";
 const COLS = ["correo", "nombre", "etiquetas", "acepta_correos", "alta", "ultimo", "baja", "ciudad", "idioma"];
