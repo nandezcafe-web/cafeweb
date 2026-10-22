@@ -6,6 +6,16 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/cafe-castillo-de-arboledas",
+      "destination": "/cafe-castillo-de-ragonvalia",
+      "permanent": true
+    },
+    {
+      "source": "/en/coffee-castillo-from-arboledas",
+      "destination": "/en/coffee-castillo-from-ragonvalia",
+      "permanent": true
+    },
+    {
       "source": "/en/cafes",
       "destination": "/en/coffees",
       "permanent": true

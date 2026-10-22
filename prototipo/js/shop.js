@@ -321,7 +321,7 @@ function viewCafe() {
   return `<article class="prod" style="--pc:${p.color || "#2F5A3C"}">
     <div class="prod-top">
     <div class="prod-buy reveal">
-      <p class="eyebrow">${esc([conocido(f.productor) && tr(f.productor), conocido(f.finca) && tr(f.finca), f.municipio].filter(Boolean).join(" · ") || t("nav_cafes_esp"))}</p>
+      <p class="eyebrow">${esc([conocido(f.productor) && tr(f.productor), conocido(f.finca) && tr(f.finca), f.municipio && !String(f.finca || "").includes(f.municipio) && f.municipio].filter(Boolean).join(" · ") || t("nav_cafes_esp"))}</p>
       <h1>${esc(tx(p.nombre))}</h1>
       <p class="lede">${esc(historiaPublica(f) || (f.municipio
         ? (en ? `Whole bean coffee from ${f.municipio}, Norte de Santander${p.altitud ? `, grown at ${msnm(p.altitud)}` : ""}.`

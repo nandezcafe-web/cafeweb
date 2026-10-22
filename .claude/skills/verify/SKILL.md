@@ -14,7 +14,7 @@ description: How to run and drive the Nandez Coffee site (public SPA, single-fil
 - El sitio es una SPA: `go('suscripcion')` desde la consola navega sin recargar. En `nandez.html` el hash (`#/ruta`) NO enruta; usar `go()`.
 - Los crawlers no ejecutan JS: para textos SEO/llms.txt basta `curl -s <url> | grep`.
 - Inglés: rutas bajo `/en/` (p. ej. `/en/subscription`).
-- Estado del visitante: `localStorage['nandez-v9']`. Para probar estado viejo, inyectar claves ahí y recargar; limpiar al terminar.
+- Estado del visitante: `localStorage['nandez-v10']`. Para probar estado viejo, inyectar claves ahí y recargar; limpiar al terminar.
 - Formularios que "envían" abren el correo con `abrirContacto(texto, asunto)`: reemplazarla por una función que capture, para no abrir el cliente de correo.
 - Móvil: resize_window preset mobile; revisar `scrollWidth - innerWidth === 0` y que el `.dock` esté visible.
 

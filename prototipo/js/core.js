@@ -31,7 +31,7 @@ const CONFIG = {
      estos valores son el punto de partida si no hay conexión. */
   fnc: { precioCarga: 2105000, factorBase: 94, fecha: "2026-09-25" },
   mercado: { ny: 278.6, trm: 3306.86 },
-  storageKey: "nandez-v9",
+  storageKey: "nandez-v10",
   whatsapp: "",                 // 573001234567 · mientras esté vacío, pedidos y avisos salen por correo
   correo: "nandezcafe@gmail.com",
   /* Formulario externo (Formspree, Getform…): si hay URL, pedidos, suscriptores y postores
@@ -122,7 +122,7 @@ const msnm = (n) => fmtNum(n) + (UI.lang === "en" ? " m a.s.l." : " msnm");
 
 function seed() {
   return {
-    v: 9, seq: 400,
+    v: 10, seq: 400,
 
     /* ---------- FINCAS ALIADAS ---------- */
     fincas: [
@@ -133,7 +133,7 @@ function seed() {
       { id: "F-02", productor: "Productor por confirmar", finca: "Lote Tibo B", municipio: "Chinácota", altitud: 1750,
         variedad: "Por confirmar", exclusiva: false,
         historia: { es: "PENDIENTE: quién cultiva el Tibo B, a qué altura y por qué su café sabe distinto.", en: "PENDING: who grows Tibo B, at what altitude and why it tastes different." }, pendiente: true },
-      { id: "F-03", productor: "Productor por confirmar", finca: "Lote Arboledas", municipio: "Arboledas", altitud: 1550,
+      { id: "F-03", productor: "Productor por confirmar", finca: "Lote Ragonvalia", municipio: "Ragonvalia", altitud: 1550,
         variedad: "Castillo", exclusiva: false,
         historia: { es: "PENDIENTE: historia de la finca.", en: "PENDING: farm story." }, pendiente: true },
       { id: "F-00", productor: "Familia Nandez", finca: "Nuestra finca", municipio: "Chinácota", altitud: 1750,
@@ -145,7 +145,7 @@ function seed() {
     /* ---------- CAFÉS A LA VENTA ---------- */
     productos: [
       { id: "P-CAS", fincaId: "F-03", loteId: "C-003",
-        nombre: { es: "Castillo de Arboledas", en: "Castillo from Arboledas" }, sub: { es: "Lavado · cosecha 2026", en: "Washed · 2026 harvest" },
+        nombre: { es: "Castillo de Ragonvalia", en: "Castillo from Ragonvalia" }, sub: { es: "Lavado · cosecha 2026", en: "Washed · 2026 harvest" },
         variedad: "Castillo", proceso: "Lavado", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026",
         color: "#2F5A3C",
         sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que lo muelas el día que lo preparas: así guarda el aroma.", en: "We ship it whole so you grind it the day you brew it, which keeps the aroma." },
@@ -237,7 +237,7 @@ function seed() {
       { id: "C-002", productor: "Domingo Torres", finca: "Finca por confirmar", municipio: "Toledo", fecha: "2026-09-02",
         estadoCafe: "Pergamino seco", kg: 45, factor: 89, humedad: 11, precioKg: 34000, sca: 88.5, destino: "Subasta", estado: "TRILLADO",
         kgVerde: 35.4, costos: { compra: 1530000, trilla: 22500 } },
-      { id: "C-003", productor: "Lote Arboledas", finca: "Lote Arboledas", municipio: "Arboledas", fecha: "2026-09-12",
+      { id: "C-003", productor: "Lote Ragonvalia", finca: "Lote Ragonvalia", municipio: "Ragonvalia", fecha: "2026-09-12",
         estadoCafe: "Pergamino seco", kg: 180, factor: 94, humedad: 11.5, precioKg: 17000, sca: 84, destino: "Tostado", estado: "EMPACADO",
         kgVerde: 134, kgTostado: 111.2, bolsas: 444, bolsasVendidas: 354, precioVenta: 38000, ingresos: 13452000,
         costos: { compra: 3060000, trilla: 90000, tueste: 670000, empaque: 577000 } },
@@ -266,7 +266,7 @@ function seed() {
   };
 }
 
-function load() { try { const s = JSON.parse(localStorage.getItem(CONFIG.storageKey)); return s && s.v === 9 ? s : null; } catch { return null; } }
+function load() { try { const s = JSON.parse(localStorage.getItem(CONFIG.storageKey)); return s && s.v === 10 ? s : null; } catch { return null; } }
 function save() { try { localStorage.setItem(CONFIG.storageKey, JSON.stringify(S)); } catch {} }
 function idiomaGuardado() { try { return localStorage.getItem("nandez-lang"); } catch { return null; } }
 
@@ -460,9 +460,9 @@ function meta(view, id) {
           : { t: "Merch Coffee Gang · " + marca, d: "Camiseta, gorra, taza y bolsa de tela de Nandez Coffee Gang. Próximamente: deja tu correo y te avisamos el día que salga." }),
     cafes: en
       ? { t: "Specialty coffee · " + marca,
-          d: "Three whole bean coffees, one farm each: Castillo from Arboledas, Tibo B and a third lot to be confirmed. Roasted in Norte de Santander and shipped countrywide." }
+          d: "Three whole bean coffees, one farm each: Castillo from Ragonvalia, Tibo B and a third lot to be confirmed. Roasted in Norte de Santander and shipped countrywide." }
       : { t: "Cafés de especialidad · " + marca,
-          d: "Tres cafés en grano, una finca cada uno: Castillo de Arboledas, Tibo B y un tercer lote por confirmar. Tostados en Norte de Santander, con envío a todo el país." },
+          d: "Tres cafés en grano, una finca cada uno: Castillo de Ragonvalia, Tibo B y un tercer lote por confirmar. Tostados en Norte de Santander, con envío a todo el país." },
     cafe: en
       ? (p.proximamente
           ? { t: tx(p.nombre) + " · whole bean coffee, coming soon · " + marca,

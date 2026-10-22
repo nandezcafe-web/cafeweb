@@ -105,7 +105,7 @@ Tres cafés, todos **en grano**:
 
 | Id | Café | Estado |
 |---|---|---|
-| P-CAS | Castillo de Arboledas | A la venta: 250 g a $38.000 y kilo a $132.000, 84 SCA. |
+| P-CAS | Castillo de Ragonvalia | A la venta: 250 g a $38.000 y kilo a $132.000, 84 SCA. |
 | P-TIB | Tibo B | **Por confirmar**: nombre, finca, altura, ficha y precio. Se muestra como "Próximamente" y recoge correos. |
 | P-003 | Tercer café | **Por confirmar** todo. Igual que el anterior. |
 
