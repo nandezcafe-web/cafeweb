@@ -590,3 +590,28 @@ body[data-view=subasta] .g-redes a,body[data-view=subasta] .g-redes span{border-
   .g-comunidad-form .btn{border-left:0;border-top:1px solid var(--paper);justify-content:center}
   .g-musica-txt h2{font-size:clamp(2.4rem,12vw,3.4rem)}
 }
+
+/* ============================================================
+   CONTRASTE (octubre 2026)
+   El naranja del logo (#EF4724) da 3,3:1 sobre crema y el blanco encima
+   3,75:1: alcanza para titulares grandes, no para texto pequeño ni botones.
+   --cherry pasa a #C9381A (4,55:1 sobre crema, 5,17:1 con blanco encima);
+   --marca guarda el naranja del logo para los bloques grandes, los
+   titulares y lo que va sobre negro (ahí da 4,98:1).
+   ============================================================ */
+:root{--cherry:#C9381A;--cherry-2:#A82E14;--marca:#EF4724}
+h1 em,h2 em{color:var(--marca)}
+.g-hero-art{background:var(--marca)}
+.g-hero-tag{color:var(--ink)}
+.g-hero-tag b{color:var(--paper)}
+.g-wordmark b{color:var(--marca)}
+.g-musica-player::after{background:var(--marca)}
+.g-eq i{background:var(--marca)}
+/* sobre negro va el naranja del logo, que ahí sí se lee */
+.g-ticker em,.g-manifiesto .g-num,.g-principios li::before,.g-comunidad .g-num,.plan.hot .plan-lista li::before{color:var(--marca)}
+.g-ticker span::after{background:var(--marca)}
+.g-comunidad h2 em,.g-manifiesto h2 em{color:var(--marca)}
+.g-comunidad .btn.primary,.g-comunidad-form .btn{background:var(--cherry)}
+/* la casilla de la comunidad */
+.g-consiente{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:14px;line-height:1.45;color:rgba(245,240,230,.88)}
+.g-consiente input{flex:0 0 auto;width:20px;height:20px;margin:1px 0 0;accent-color:var(--marca)}

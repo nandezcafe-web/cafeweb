@@ -214,8 +214,7 @@ function viewContacto() {
     en ? "We are the Nandez family, coffee growers from Chinácota, Norte de Santander. We answer ourselves."
        : "Somos la familia Nandez, cafeteros de Chinácota, Norte de Santander. Contestamos nosotros mismos.",
     [[en ? "Where to find us" : "Dónde encontrarnos",
-      `<p>${en ? "Email" : "Correo"}: ${mail}${wa ? `<br>WhatsApp: ${wa}` : ""}<br>${en ? "We ship from Cúcuta to all of Colombia." : "Despachamos desde Cúcuta a toda Colombia."}</p>
-       <p class="hint">${en ? "PENDING: phone, address and tax ID (NIT)." : "PENDIENTE: teléfono, dirección y NIT."}</p>`],
+      `<p>${en ? "Email" : "Correo"}: ${mail}${wa ? `<br>WhatsApp: ${wa}` : ""}<br>${en ? "We ship from Cúcuta to all of Colombia." : "Despachamos desde Cúcuta a toda Colombia."}</p>`],
      [en ? "Who we are" : "Quiénes somos",
       `<p>${en ? "We grow coffee in Chinácota: 5,000 Geisha plants whose first harvest comes in 2027. Meanwhile we buy the best lots from neighbouring farms in Chinácota, Toledo and Arboledas and roast them under our name."
         : "Sembramos café en Chinácota: 5.000 plantas de Geisha que dan su primera cosecha en 2027. Mientras tanto le compramos los mejores lotes a fincas vecinas de Chinácota, Toledo y Arboledas y los tostamos con nuestra marca."}</p>`],
@@ -246,8 +245,8 @@ function viewEnvios() {
 function viewTerminos() {
   const en = UI.lang === "en";
   return paginaTexto(en ? "Terms of service" : "Términos del servicio", en ? "Terms of <em>sale</em>" : "Términos y <em>condiciones</em>",
-    en ? "PENDING legal review. A plain summary of how buying from us works." : "PENDIENTE de revisión legal. Resumen claro de cómo funciona comprarnos.",
-    [[en ? "Who sells" : "Quién vende", `<p>${esc(CONFIG.marca)} · Chinácota, Norte de Santander, Colombia · ${CONFIG.correo}. ${en ? "PENDING: tax ID (NIT) and INVIMA sanitary registration." : "PENDIENTE: NIT y registro sanitario del INVIMA."}</p>`],
+    en ? "A plain summary of how buying from us works." : "Resumen claro de cómo funciona comprarnos.",
+    [[en ? "Who sells" : "Quién vende", `<p>${esc(CONFIG.marca)} · Chinácota, Norte de Santander, Colombia · ${CONFIG.correo}.</p>`],
      [en ? "Prices" : "Precios", `<p>${en ? "Prices are in Colombian pesos (COP) and include VAT when it applies. Shipping is shown separately in the cart." : "Los precios están en pesos colombianos e incluyen IVA cuando aplica. El envío se muestra aparte en el carrito."}</p>`],
      [en ? "Orders and payment" : "Pedidos y pago", `<p>${en ? `An order is confirmed when we reply and you pay by ${tx(CONFIG.pagos.manual)}. If a coffee sells out before that, we tell you and do not charge you.`
         : `Un pedido queda confirmado cuando te respondemos y pagas por ${tx(CONFIG.pagos.manual)}. Si un café se agota antes, te avisamos y no te cobramos.`}</p>`],
@@ -260,14 +259,16 @@ function viewTerminos() {
 function viewPrivacidad() {
   const en = UI.lang === "en";
   return paginaTexto(en ? "Privacy policy" : "Política de privacidad", en ? "Your data, <em>only for your order</em>" : "Tus datos, <em>solo para tu pedido</em>",
-    en ? "Policy under Colombian Law 1581 of 2012. PENDING legal review." : "Política según la Ley 1581 de 2012. PENDIENTE de revisión legal.",
+    en ? "Policy under Colombian Law 1581 of 2012 on personal data." : "Política según la Ley 1581 de 2012 de protección de datos personales.",
     [[en ? "What we ask for" : "Qué pedimos", `<p>${en ? "Name, city, WhatsApp and email: only what we need to deliver your order, answer you or let you know about the subscription and the community."
         : "Nombre, ciudad, WhatsApp y correo: solo lo necesario para entregarte el pedido, responderte o avisarte de la suscripción y la comunidad."}</p>`],
+     [en ? "The community" : "La comunidad", `<p>${en ? `If you join the ${CONFIG.comunidad} community and tick the box, we use your email to send you news and members-only offers. You can leave with the link at the end of every email or by writing to ${CONFIG.correo}.`
+        : `Si te unes a la comunidad ${CONFIG.comunidad} y marcas la casilla, usamos tu correo para enviarte noticias y ofertas solo para miembros. Te sales con el enlace al final de cada correo o escribiéndonos a ${CONFIG.correo}.`}</p>`],
      [en ? "What we use it for" : "Para qué lo usamos", `<p>${en ? "To confirm and ship orders and send the notices and news you asked for. We do not sell or share your data, except with the carrier that delivers your order."
         : "Para confirmar y despachar pedidos y enviarte los avisos y noticias que pediste. No vendemos ni compartimos tus datos, salvo con la transportadora que entrega tu pedido."}</p>`],
      [en ? "Your rights" : "Tus derechos", `<p>${en ? `You can ask us to see, correct or delete your data at any time by writing to ${CONFIG.correo}. We answer within 15 business days.`
         : `Puedes pedirnos conocer, corregir o borrar tus datos cuando quieras, escribiendo a ${CONFIG.correo}. Respondemos en máximo 15 días hábiles.`}</p>`],
-     [en ? "Who is responsible" : "Responsable", `<p>${esc(CONFIG.marca)} · Chinácota, Norte de Santander · ${CONFIG.correo}. ${en ? "PENDING: tax ID (NIT) and address." : "PENDIENTE: NIT y dirección."}</p>`]]);
+     [en ? "Who is responsible" : "Responsable", `<p>${esc(CONFIG.marca)} · Chinácota, Norte de Santander · ${CONFIG.correo}.</p>`]]);
 }
 
 /* ---------- página no encontrada (404.html) ---------- */

@@ -112,8 +112,8 @@ function fincaCard(f, i = 0) {
     <div class="finca-body">
       <p class="kicker">${esc(f.municipio)} · ${msnm(f.altitud)}</p>
       <h3>${esc(tr(f.finca))}</h3>
-      <p class="finca-prod">${esc(tr(f.productor))}${f.exclusiva ? ` <span class="excl">${en ? "exclusive" : "exclusivo"}</span>` : ""}</p>
-      <p class="hint">${esc(tx(f.historia))}</p>
+      ${conocido(f.productor) || f.exclusiva ? `<p class="finca-prod">${conocido(f.productor) ? esc(tr(f.productor)) : ""}${f.exclusiva ? ` <span class="excl">${en ? "exclusive" : "exclusivo"}</span>` : ""}</p>` : ""}
+      ${historiaPublica(f) ? `<p class="hint">${esc(historiaPublica(f))}</p>` : ""}
       <div class="finca-foot">
         <span class="var-chip">${esc(tr(f.variedad))}</span>
         ${f.proxima ? `<span class="pronto">${en ? "First harvest" : "Primera cosecha"} ${f.proxima}</span>`
@@ -318,9 +318,12 @@ function viewCafe() {
   return `<article class="prod" style="--pc:${p.color || "#2F5A3C"}">
     <div class="prod-top">
     <div class="prod-buy reveal">
-      <p class="eyebrow">${esc(tr(f.productor || t("por_confirmar")))}, ${esc(tr(f.finca || t("por_confirmar")))}</p>
+      <p class="eyebrow">${esc([conocido(f.productor) && tr(f.productor), conocido(f.finca) && tr(f.finca), f.municipio].filter(Boolean).join(" · ") || t("nav_cafes_esp"))}</p>
       <h1>${esc(tx(p.nombre))}</h1>
-      <p class="lede">${esc(tx(f.historia || { es: "", en: "" }))}</p>
+      <p class="lede">${esc(historiaPublica(f) || (f.municipio
+        ? (en ? `Whole bean coffee from ${f.municipio}, Norte de Santander${p.altitud ? `, grown at ${msnm(p.altitud)}` : ""}.`
+              : `Café en grano de ${f.municipio}, Norte de Santander${p.altitud ? `, cultivado a ${msnm(p.altitud)}` : ""}.`)
+        : (en ? "Whole bean coffee from Norte de Santander." : "Café en grano de Norte de Santander.")))}</p>
       ${compra}
     </div>
 

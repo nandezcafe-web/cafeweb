@@ -34,7 +34,7 @@ function portada(en) {
   const sello = en ? "2026 HARVEST · WHOLE BEAN · NORTE DE SANTANDER · " : "COSECHA 2026 · EN GRANO · NORTE DE SANTANDER · ";
   return `<section class="g-hero hero" aria-labelledby="portada-titulo">
     <div class="g-hero-txt">
-      <p class="g-kicker reveal"><em>${esc(CONFIG.marca.replace(" Café", ""))} ${esc(CONFIG.gang)}</em> · Chinácota, Norte de Santander</p>
+      <p class="g-kicker reveal"><em>${esc(CONFIG.marca)}</em> · Chinácota, Norte de Santander</p>
       <h1 id="portada-titulo">${pal(en ? "Whole bean coffee" : "Café en grano")}<em>${pal(en ? "with a first name." : "con nombre propio.", 3)}</em></h1>
       <p class="g-lede reveal" style="--i:3">${en
         ? "Three coffees from neighbouring farms. We roast them the week you order and ship them whole, so you grind at home and every cup tastes like the farm it came from."

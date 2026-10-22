@@ -114,10 +114,14 @@ function compartirLista() {
 function unirseComunidad() {
   const en = UI.lang === "en", el = $("#com-mail"), correo = (el?.value || "").trim();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) { toast(en ? "Check the email." : "Revisa el correo.", { type: "err" }); el?.focus(); return; }
-  S.espera.push({ id: nextId("CM"), producto: "comunidad", correo, fecha: isoToday() }); save();
-  el.value = "";
+  /* La Ley 1581 pide autorización previa y expresa para enviar publicidad: sin la casilla, no se registra */
+  const ok = $("#com-ok");
+  if (ok && !ok.checked) { toast(en ? "Tick the box to receive our emails." : "Marca la casilla para recibir nuestros correos.", { type: "err" }); ok.focus(); return; }
+  S.espera.push({ id: nextId("CM"), producto: "comunidad", correo, fecha: isoToday(), consentimiento: true }); save();
+  el.value = ""; if (ok) ok.checked = false;
   registrar("comunidad", { correo },
-    en ? `Hi, I want to join the ${CONFIG.marca} ${CONFIG.gang} community. My email: ${correo}` : `Hola, quiero unirme a la comunidad ${CONFIG.gang}. Mi correo: ${correo}`,
+    en ? `Hi, I want to join the ${CONFIG.comunidad} community and I agree to receive news and offers by email. My email: ${correo}`
+       : `Hola, quiero unirme a la comunidad ${CONFIG.comunidad} y acepto recibir noticias y ofertas por correo. Mi correo: ${correo}`,
     en ? `Community: ${correo}` : `Comunidad: ${correo}`);
 }
 
@@ -141,18 +145,19 @@ const FOOT = () => {
   const lista = (items) => items.map(([v, txt]) => `<a href="${ruta(v)}" data-act="go" data-to="${v}">${txt}</a>`).join("");
   return `<section class="g-comunidad" aria-labelledby="g-comunidad">
     <div>
-      <h2 id="g-comunidad">${en ? `Join the <em>${esc(CONFIG.gang)}</em> community` : `Únete a la comunidad <em>${esc(CONFIG.marca.replace(" Café", ""))} ${esc(CONFIG.gang)}</em>`}</h2>
+      <h2 id="g-comunidad">${en ? `Join the <em>${esc(CONFIG.comunidad)}</em> community` : `Únete a la comunidad <em>${esc(CONFIG.comunidad)}</em>`}</h2>
       <p>${en ? "Get the latest news and members-only offers." : "Recibe las últimas noticias y ofertas solo para miembros."}</p>
     </div>
     <form class="g-comunidad-form" data-form="comunidad" novalidate>
       <label class="lbl" for="com-mail">${en ? "Email" : "Correo electrónico"}</label>
       <div><input id="com-mail" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none" placeholder="${en ? "you@email.com" : "tu@correo.com"}">
         <button class="btn primary" type="submit">${en ? "Join" : "Unirme"}${icono("flecha", "ico")}</button></div>
+      <label class="g-consiente"><input type="checkbox" id="com-ok"> <span>${en ? `I agree to receive news and offers from ${esc(CONFIG.marca)} by email.` : `Acepto recibir noticias y ofertas de ${esc(CONFIG.marca)} por correo.`}</span></label>
       <small>${en ? "No spam. Unsubscribe whenever you like." : "Sin spam. Te sales cuando quieras."} <a href="${ruta("privacidad")}" data-act="go" data-to="privacidad">${en ? "Privacy policy" : "Política de privacidad"}</a></small>
     </form>
   </section>
   <footer class="foot">
-  <div class="foot-marca"><b>${esc(CONFIG.marca)} · ${esc(CONFIG.gang)}</b><span>Chinácota · ${esc(tx(CONFIG.lugar))}</span>
+  <div class="foot-marca"><b>${esc(CONFIG.marca)}</b><span>Chinácota · ${esc(tx(CONFIG.lugar))}</span>
     <a href="mailto:${CONFIG.correo}">${esc(CONFIG.correo)}</a>${CONFIG.whatsapp ? `<a href="https://wa.me/${CONFIG.whatsapp}" target="_blank" rel="noopener">WhatsApp +${CONFIG.whatsapp}</a>` : ""}
     ${redesHTML()}</div>
   <nav class="foot-links" aria-labelledby="pie-tienda"><p class="foot-tit" id="pie-tienda">${t("nav_tienda")}</p>${lista(tienda)}</nav>
@@ -186,6 +191,8 @@ function actualizarMeta() {
 function datosEstructurados(view, id) {
   const org = {
     "@type": "Organization", "@id": CONFIG.sitio + "/#organizacion", name: CONFIG.marca, url: CONFIG.sitio,
+    logo: CONFIG.sitio + "/img/marca/icono-512.png", image: CONFIG.sitio + "/img/marca/compartir.jpg",
+    sameAs: Object.values(CONFIG.redes).filter(Boolean),
     email: CONFIG.correo, address: { "@type": "PostalAddress", addressRegion: "Norte de Santander", addressCountry: "CO" },
     description: meta("inicio").d,
   };

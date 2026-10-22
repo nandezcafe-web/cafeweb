@@ -7,7 +7,10 @@
    ============================================================ */
 const CONFIG = {
   marca: "Nandez Café",
-  gang: "Coffee Gang",            // lo que dice el logo debajo de NANDEZ
+  /* El nombre: la empresa es Nandez Café (títulos, textos legales, Google).
+     "Coffee Gang" es lo que dice el logo debajo de NANDEZ: la comunidad y el merch. */
+  gang: "Coffee Gang",
+  comunidad: "Nandez Coffee Gang",
   /* Secciones apagadas hasta que estén listas: no salen en el menú, ni en el inicio,
      ni en el sitemap, y su dirección da 404. Para volver a mostrarlas, quitarlas de aquí. */
   ocultas: ["subasta", "diario"],
@@ -182,7 +185,7 @@ function seed() {
         ],
         presentacion: 250, precio: 0, stock: 0 },
 
-      { id: "P-003", fincaId: null, loteId: null, proximamente: true, color: "#C98A1E",
+      { id: "P-003", fincaId: null, loteId: null, proximamente: true, color: "#9A6610",
         nombre: { es: "Tercer café", en: "Third coffee" }, sub: { es: "Por confirmar · cosecha 2026", en: "To be confirmed · 2026 harvest" },
         variedad: "Por confirmar", proceso: "Por confirmar", tueste: { es: "Por confirmar", en: "To be confirmed" }, cosecha: "2026",
         sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que no pierda aroma.", en: "We ship it whole so it keeps its aroma." },
@@ -367,23 +370,23 @@ function precioPlan(p, conKit, seis) {
 const ACCESORIOS = [
   { id: "A-V60", grupo: "preparar", color: "#2F5A3C", proximamente: true, nombre: { es: "Gotero cónico tipo V60", en: "V60-style cone dripper" },
     desc: { es: "El método con el que arranca la Ruta Nandez.", en: "The method the Nandez route starts with." } },
-  { id: "A-FIL", grupo: "preparar", color: "#C98A1E", proximamente: true, nombre: { es: "Filtros de papel × 100", en: "Paper filters × 100" },
+  { id: "A-FIL", grupo: "preparar", color: "#9A6610", proximamente: true, nombre: { es: "Filtros de papel × 100", en: "Paper filters × 100" },
     desc: { es: "Para el gotero. Sin sabor a papel si los enjuagas antes.", en: "For the dripper. No paper taste if you rinse them first." } },
   { id: "A-MOL", grupo: "preparar", color: "#141210", proximamente: true, nombre: { es: "Molino manual de muela cónica", en: "Conical burr hand grinder" },
     desc: { es: "Porque el café va en grano: muele justo antes de prepararlo.", en: "The coffee ships whole bean: grind right before brewing." } },
   { id: "A-BAL", grupo: "preparar", color: "#2C4FA3", proximamente: true, nombre: { es: "Balanza con temporizador", en: "Scale with timer" },
     desc: { es: "Quince gramos, doscientos cincuenta mililitros, tres minutos.", en: "Fifteen grams, two hundred fifty millilitres, three minutes." } },
-  { id: "A-TET", grupo: "preparar", color: "#EF4724", proximamente: true, nombre: { es: "Tetera cuello de cisne", en: "Gooseneck kettle" },
+  { id: "A-TET", grupo: "preparar", color: "#C9381A", proximamente: true, nombre: { es: "Tetera cuello de cisne", en: "Gooseneck kettle" },
     desc: { es: "Para verter despacio y en círculos.", en: "To pour slowly, in circles." } },
   { id: "A-SRV", grupo: "preparar", color: "#6B645C", proximamente: true, nombre: { es: "Servidor de vidrio 600 ml", en: "600 ml glass server" },
     desc: { es: "Para dos tazas, o una muy larga.", en: "For two cups, or one very long one." } },
-  { id: "M-CAM", grupo: "merch", color: "#EF4724", proximamente: true, nombre: { es: "Camiseta Coffee Gang", en: "Coffee Gang T-shirt" },
+  { id: "M-CAM", grupo: "merch", color: "#C9381A", proximamente: true, nombre: { es: "Camiseta Coffee Gang", en: "Coffee Gang T-shirt" },
     desc: { es: "Diseño por confirmar.", en: "Design to be confirmed." } },
   { id: "M-GOR", grupo: "merch", color: "#141210", proximamente: true, nombre: { es: "Gorra Nandez", en: "Nandez cap" },
     desc: { es: "Diseño por confirmar.", en: "Design to be confirmed." } },
   { id: "M-TAZ", grupo: "merch", color: "#2F5A3C", proximamente: true, nombre: { es: "Taza de cerámica", en: "Ceramic mug" },
     desc: { es: "Diseño por confirmar.", en: "Design to be confirmed." } },
-  { id: "M-TOT", grupo: "merch", color: "#C98A1E", proximamente: true, nombre: { es: "Bolsa de tela", en: "Tote bag" },
+  { id: "M-TOT", grupo: "merch", color: "#9A6610", proximamente: true, nombre: { es: "Bolsa de tela", en: "Tote bag" },
     desc: { es: "Diseño por confirmar.", en: "Design to be confirmed." } },
 ];
 const itemById = (id) => prodById(id) || ACCESORIOS.find((a) => a.id === id);
@@ -401,6 +404,8 @@ const RUTAS = {
 };
 const slugEntrada = (e) => slug(tx(e.titulo)).slice(0, 60);
 /* ¿La sección está prendida? (ver CONFIG.ocultas). Una entrada del diario va con el diario. */
+const conocido = (s) => !!s && !/por confirmar|pendiente/i.test(String(s));
+const historiaPublica = (f) => (f && !f.pendiente && f.historia ? tx(f.historia) : "");
 const visible = (v) => !CONFIG.ocultas.includes(v === "entrada" ? "diario" : v);
 /* Qué pestaña del menú se marca en cada vista: todo lo de la tienda cae en "Tienda" */
 const seccionNav = (v) => (["tienda", "cafes", "cafe", "accesorios"].includes(v) ? "tienda" : v === "entrada" ? "diario" : v);
