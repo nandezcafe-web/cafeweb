@@ -430,11 +430,13 @@ function addCarrito(pid, g) {
 
 function renderTray() {
   const el = $("#tray");
-  if (!UI.carrito.length || $("#cart")?.open) { el.hidden = true; return; }
+  if (!UI.carrito.length || $("#cart")?.open) { el.hidden = true; return popPiso(); }
   el.hidden = false;
   const n = unidadesCarrito();
   el.innerHTML = `<span>${n} ${n === 1 ? (UI.lang === "en" ? "bag" : "bolsa") : (UI.lang === "en" ? "bags" : "bolsas")} · <b class="mono">${cop(totalCarrito())}</b></span>
     <button class="btn sm primary" data-act="carrito">${UI.lang === "en" ? "View order" : "Ver el pedido"}</button>`;
+  /* la bandeja acaba de cambiar de tamaño: el pop-up del bono se reacomoda encima */
+  popPiso();
 }
 
 function abrirCarrito() {

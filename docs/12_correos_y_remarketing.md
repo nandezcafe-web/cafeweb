@@ -45,6 +45,8 @@ Cuando la lista pase de unos cientos de personas activas, o se quieran automatiz
 ### La estrategia del bono
 
 - **10 % en la primera compra**, código personal `GANG-XXXXX`, un solo uso, vence a los **30 días**. Se cambia en `BONO` (Codigo.gs) y `BONO_PCT` (shop.js y operacion.js).
+- **Dónde se ofrece:** el formulario del pie, la página `/la-gang` y un pop-up. Los tres piden lo mismo —un correo y la casilla— y los tres terminan en la hoja: el código lo crea `bienvenida_`, nunca el navegador.
+- **El pop-up** sale abajo a un lado, no tapa la página y no se puede volver a ver si se cierra (45 días). Espera a que la visita muestre interés: 12 segundos como mínimo, y media página leída o medio minuto. No aparece si ya se apuntó, si ya tiene un bono puesto, si está en `/la-gang` —esa página es el mismo registro— o si no hay hoja conectada, porque entonces no habría bono que prometer. Tampoco va en el HTML armado: lo pinta el navegador, así que los buscadores no lo ven y no cuenta como anuncio que tapa la página. Se ajusta en `POP_*` (main.js).
 - **Por qué 10 % y no envío gratis:** el envío gratis ya existe desde $150.000; en una bolsa de $38.000 el 10 % son $3.800, menos que los $12.000 del envío, y empuja a llevar dos.
 - **Por qué con fecha:** sin vencimiento el bono se olvida; 30 días dejan pensar, el recordatorio del día 23 rescata a los indecisos.
 - **Por qué personal y por correo:** el código solo llega al buzón que se registró, así que también comprueba que el correo es real.

@@ -112,6 +112,19 @@ function compartirLista() {
   copiar(url);
 }
 
+/* Apunta un correo a la comunidad y le pide a la hoja la bienvenida con el bono.
+   La usan el formulario del pie y el pop-up del bono: un solo camino, para que
+   el código lo cree siempre la hoja (BONO en tools/correos/Codigo.gs) y nadie
+   reparta descuentos por su cuenta. */
+function apuntarComunidad(correo, listo) {
+  enviarAviso("comunidad", { correo, consentimiento: true }).then((ok) => {
+    /* solo se guarda si la hoja lo recibió: si no, no quedó apuntada en
+       ninguna parte y hay que poder intentarlo otra vez */
+    if (ok) { S.espera.push({ id: nextId("CM"), producto: "comunidad", correo, fecha: isoToday(), consentimiento: true }); save(); }
+    listo(ok);
+  });
+}
+
 /* La comunidad: un correo y listo. Se guarda como las listas de espera. */
 function unirseComunidad() {
   const en = UI.lang === "en", el = $("#com-mail"), correo = (el?.value || "").trim();
@@ -119,24 +132,131 @@ function unirseComunidad() {
   /* La Ley 1581 pide autorización previa y expresa para enviar publicidad: sin la casilla, no se registra */
   const ok = $("#com-ok");
   if (ok && !ok.checked) { toast(en ? "Tick the box to receive our emails." : "Marca la casilla para recibir nuestros correos.", { type: "err" }); ok.focus(); return; }
-  S.espera.push({ id: nextId("CM"), producto: "comunidad", correo, fecha: isoToday(), consentimiento: true }); save();
   /* Con la hoja conectada, queda registrado ahí mismo y el script le manda la bienvenida con el bono.
      Nunca se abre el correo: si falla, se puede intentar otra vez. */
   if (CONFIG.registro) {
     const btn = $('[data-form="comunidad"] button[type="submit"]'); if (btn) btn.disabled = true;
-    enviarAviso("comunidad", { correo, consentimiento: true }).then((listo) => {
+    apuntarComunidad(correo, (listo) => {
       if (btn) btn.disabled = false;
       if (!listo) return toast(en ? "It did not save. Try again in a moment." : "No se pudo guardar. Intenta otra vez en un momento.", { type: "err" });
       el.value = ""; if (ok) ok.checked = false;
+      popCerrar(false);
       toast(en ? `You are in. Check your inbox: your ${BONO_PCT} % welcome code is there.` : `Ya eres parte. Revisa tu correo: ahí está tu bono del ${BONO_PCT} %.`);
     });
     return;
   }
+  S.espera.push({ id: nextId("CM"), producto: "comunidad", correo, fecha: isoToday(), consentimiento: true }); save();
   el.value = ""; if (ok) ok.checked = false;
   registrar("comunidad", { correo, consentimiento: true },
     en ? `Hi, I want to join the ${CONFIG.comunidad} community and I agree to receive news and offers by email. My email: ${correo}`
        : `Hola, quiero unirme a la comunidad ${CONFIG.comunidad} y acepto recibir noticias y ofertas por correo. Mi correo: ${correo}`,
     en ? `Community: ${correo}` : `Comunidad: ${correo}`);
+}
+
+/* ---------- el pop-up del bono de bienvenida ----------
+   Ofrece el mismo bono del formulario del pie: lo crea la hoja y llega por
+   correo. Aquí no se inventa un descuento nuevo ni se reparte ningún código.
+
+   No va en el HTML armado: lo pinta el navegador, así que los buscadores no
+   lo ven. Y no sale de entrada: Google castiga el aviso que tapa la página en
+   cuanto abre, así que espera a que la visita muestre interés —media página
+   leída, o medio minuto— y nunca se pone encima del carrito. */
+const POP_KEY = "nandez-bono-pop";
+const POP_DIAS = 45;        /* si lo cierra, no vuelve a aparecer en 45 días */
+const POP_PISO = 12000;     /* nunca antes de 12 s */
+const POP_TECHO = 30000;    /* a los 30 s sale, aunque no haya bajado */
+const POP_LEIDO = 0.5;      /* o en cuanto lleve media página */
+
+/* Hay dos clases de "no": las de aquí no cambian durante la visita, así que
+   cuando una se cumple se deja de vigilar. */
+function popSobra() {
+  /* Sin la hoja conectada no hay bono que prometer: el script es quien lo crea */
+  if (!CONFIG.registro) return true;
+  if (UI.bono) return true;                                      /* ya tiene uno puesto en el carrito */
+  if (S.espera.some((e) => (e.producto === "comunidad" || e.producto === "gang") && e.consentimiento)) return true;
+  try { const v = JSON.parse(localStorage.getItem(POP_KEY)); if (v && Date.now() < v.hasta) return true; } catch {}
+  return false;
+}
+/* Las de aquí son del momento: se espera y se vuelve a mirar. */
+const popEstorba = () => UI.view === "gang"                      /* esa página ES este registro */
+  || !!document.querySelector("dialog[open]");                   /* el carrito o un modal manda */
+
+function popVigilar() {
+  if (popSobra() || $("#g-pop")) return;
+  const t0 = Date.now();
+  let reloj = 0;
+  const dejar = () => { removeEventListener("scroll", intentar); clearInterval(reloj); };
+  const intentar = () => {
+    if ($("#g-pop")) return;
+    if (popSobra()) return dejar();
+    if (popEstorba() || Date.now() - t0 < POP_PISO) return;
+    const alto = Math.max(document.documentElement.scrollHeight - innerHeight, 1);
+    if (scrollY / alto < POP_LEIDO && Date.now() - t0 < POP_TECHO) return;
+    dejar(); popAbrir();
+  };
+  addEventListener("scroll", intentar, { passive: true });
+  reloj = setInterval(intentar, 2000);
+}
+
+function popAbrir() {
+  const en = UI.lang === "en";
+  const el = document.createElement("aside");
+  el.className = "g-pop"; el.id = "g-pop";
+  el.setAttribute("aria-label", en ? `${BONO_PCT} % off your first order` : `${BONO_PCT} % en tu primer pedido`);
+  el.innerHTML = `<button class="g-pop-x" data-act="pop-no" aria-label="${en ? "Close" : "Cerrar"}">✕</button>
+    <p class="g-pop-pct"><b>${BONO_PCT} %</b><span>${en ? "off your<br>first order" : "en tu<br>primer pedido"}</span></p>
+    <div class="g-pop-dice">
+      <h2>${en ? "Get in the gang" : "Entra a la gang"}</h2>
+      <p>${en ? "Your code lands in your inbox, and we tell you about every drop two hours before everyone else."
+              : "Tu bono te llega al correo, y te avisamos de cada drop dos horas antes que a todos."}</p>
+      <form data-form="pop" novalidate>
+        <label class="lbl" for="pop-mail">${en ? "Email" : "Correo electrónico"}</label>
+        <div class="g-pop-fila">
+          <input id="pop-mail" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none" placeholder="${en ? "you@email.com" : "tu@correo.com"}">
+          <button class="btn primary" type="submit">${en ? "Get my code" : "Quiero mi bono"}</button>
+        </div>
+        <label class="g-pop-ok"><input type="checkbox" id="pop-ok"> <span>${en ? `I agree to receive news and offers from ${esc(CONFIG.marca)} by email.` : `Acepto recibir noticias y ofertas de ${esc(CONFIG.marca)} por correo.`}</span></label>
+        <small>${en ? "One use, 30 days." : "Un solo uso, 30 días."} <a href="${ruta("privacidad")}" data-act="go" data-to="privacidad">${en ? "Privacy policy" : "Política de privacidad"}</a></small>
+      </form>
+    </div>`;
+  document.body.append(el);
+  popPiso();
+  /* el foco no se roba: la visita estaba leyendo. Entra solo al tabular */
+  requestAnimationFrame(() => el.classList.add("in"));
+}
+/* La bandeja del carrito también vive abajo y crece cuando el texto se parte
+   en dos líneas: el pop-up se acomoda encima midiéndola, no a una altura fija
+   que un día deja de alcanzar. La llama renderTray() cada vez que cambia. */
+function popPiso() {
+  const el = $("#g-pop"), tr = $("#tray");
+  if (!el) return;
+  const alto = tr && !tr.hidden ? tr.getBoundingClientRect().height : 0;
+  el.style.setProperty("--g-pop-piso", (alto ? alto + 12 : 0) + "px");
+}
+
+/* Al cerrarlo a mano se recuerda, para no volver a preguntar en 45 días.
+   Cuando se apuntó, no: ya no cumple la condición de popPuede(). */
+function popCerrar(recordar = true) {
+  const el = $("#g-pop"); if (!el) return;
+  if (recordar) try { localStorage.setItem(POP_KEY, JSON.stringify({ hasta: Date.now() + POP_DIAS * 864e5 })); } catch {}
+  el.classList.remove("in");
+  setTimeout(() => el.remove(), 320);
+}
+
+function popApuntar() {
+  const en = UI.lang === "en", el = $("#pop-mail"), correo = (el?.value || "").trim(), ok = $("#pop-ok");
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) { toast(en ? "Check the email." : "Revisa el correo.", { type: "err" }); el?.focus(); return; }
+  /* La Ley 1581 pide la casilla antes de escribirle a nadie */
+  if (ok && !ok.checked) { toast(en ? "Tick the box to receive our emails." : "Marca la casilla para recibir nuestros correos.", { type: "err" }); ok.focus(); return; }
+  const btn = $('[data-form="pop"] button[type="submit"]'); if (btn) btn.disabled = true;
+  apuntarComunidad(correo, (listo) => {
+    if (!listo) { if (btn) btn.disabled = false; return toast(en ? "It did not save. Try again in a moment." : "No se pudo guardar. Intenta otra vez en un momento.", { type: "err" }); }
+    const caja = $("#g-pop .g-pop-dice");
+    if (caja) caja.innerHTML = `<h2>${en ? "You are in" : "Ya eres parte"}</h2>
+      <p>${en ? `Check your inbox: your ${BONO_PCT} % code is there, ready for your first order.`
+              : `Revisa tu correo: ahí está tu bono del ${BONO_PCT} %, listo para tu primer pedido.`}</p>`;
+    setTimeout(() => popCerrar(false), 5000);
+  });
 }
 
 /* Íconos de las redes. Si la dirección no está, el ícono se ve pero no lleva a ningún lado. */
@@ -432,6 +552,7 @@ document.addEventListener("click", (e) => {
     case "carrito": return abrirCarrito();
     case "quitar": return quitarDelCarrito(el.dataset.p, el.dataset.g);
     case "cart-close": return cerrarCarrito();
+    case "pop-no": return popCerrar();
     case "pedido-wa": return pedidoWA();
     case "pedido-mp": return pedidoMP();
     case "copiar": return copiar(el.dataset.texto);
@@ -463,10 +584,13 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && x.id === "au-custom") myBid(0);
   if (e.key === "Escape" && document.body.classList.contains("menu-abierto")) menu(false);
   if (e.key === "Escape" && document.body.classList.contains("mas-abierto")) { mas(false); $("#dock-mas")?.focus(); }
+  /* el pop-up no es modal: Escape solo lo cierra si se está dentro de él */
+  if (e.key === "Escape" && document.activeElement?.closest("#g-pop")) popCerrar();
 });
 document.addEventListener("submit", (e) => {
   if (e.target.matches?.('[data-form="comunidad"]')) { e.preventDefault(); unirseComunidad(); }
   if (e.target.matches?.('[data-form="gang"]')) { e.preventDefault(); entrarGang(); }
+  if (e.target.matches?.('[data-form="pop"]')) { e.preventDefault(); popApuntar(); }
 });
 $("#dlg").addEventListener("click", (e) => { if (e.target === $("#dlg")) closeModal(); });
 $("#cart")?.addEventListener("click", (e) => { if (e.target === $("#cart")) cerrarCarrito(); });
@@ -478,6 +602,7 @@ document.documentElement.classList.add("js");
 aplicarCfgGuardada();
 cargarCarrito();
 cargarBono();
+popVigilar();
 UI.au = newAuction();
 UI.lang = esIngles(location.pathname) ? "en" : "es";   // manda la URL, no lo guardado
 const r0 = vistaDeRuta(location.pathname);
