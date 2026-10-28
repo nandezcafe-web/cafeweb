@@ -1,7 +1,7 @@
 # Correos y remarketing, sin pagar
 
 **Fecha:** 22 de octubre de 2026
-**Para qué:** guardar cada correo que deja la gente en la página, verlos en el panel interno y escribirles campañas, con costo cero.
+**Para qué:** guardar cada correo que deja la gente en la página, darle la bienvenida con un bono, llevar pedidos, despachos y suscripciones, y escribir campañas, con costo cero.
 
 ---
 
@@ -25,8 +25,31 @@ Cuando la lista pase de unos cientos de personas activas, o se quieran automatiz
    - **Registros:** la bitácora completa de lo que llegó.
    - **Envíos:** cada campaña enviada.
    - **Entregas:** a quién le llegó cada campaña, para no repetirla.
+   - **Bonos:** el código de bienvenida de cada persona, cuándo vence y en qué pedido se usó.
+   - **Pedidos:** cada pedido de la tienda con su estado, pago, guía y transportadora.
+   - **Suscripciones:** plan, molienda, frecuencia, estado y fecha del próximo envío.
 3. **El panel interno**, pestaña **Correos**, muestra los contactos, los filtra por etiqueta, los exporta a CSV y envía campañas desde el Gmail de Nandez.
 4. **Cada correo** lleva la marca y un enlace firmado para darse de baja. Quien se da de baja no vuelve a recibir campañas, salvo que se una otra vez con la casilla.
+
+### Lo que pasa solo
+
+| Cuándo | Qué |
+|---|---|
+| Alguien se une a la comunidad con la casilla | Queda en la hoja al instante (ya no se abre el correo) y le llega la bienvenida con su bono |
+| Alguien hace un pedido | Queda en **Pedidos**; a Nandez le llega el aviso y al cliente la constancia |
+| En el panel, *Despachar* con la guía | Al cliente le llega la guía por correo |
+| En el panel, *Registrar envío* de una suscripción | Al suscriptor le llega la guía y la próxima fecha se corre 1 o 2 meses |
+| Cada mañana a las 7 | A `nandezcafe@gmail.com`: qué hay por despachar, qué suscripciones tocan en 3 días (o están atrasadas) y qué pedidos falta confirmar. Si no hay nada, no escribe |
+| Día 23 del bono sin usar | Recordatorio: «te quedan 7 días» (una sola vez) |
+
+### La estrategia del bono
+
+- **10 % en la primera compra**, código personal `GANG-XXXXX`, un solo uso, vence a los **30 días**. Se cambia en `BONO` (Codigo.gs) y `BONO_PCT` (shop.js y operacion.js).
+- **Por qué 10 % y no envío gratis:** el envío gratis ya existe desde $150.000; en una bolsa de $38.000 el 10 % son $3.800, menos que los $12.000 del envío, y empuja a llevar dos.
+- **Por qué con fecha:** sin vencimiento el bono se olvida; 30 días dejan pensar, el recordatorio del día 23 rescata a los indecisos.
+- **Por qué personal y por correo:** el código solo llega al buzón que se registró, así que también comprueba que el correo es real.
+- El botón del correo lleva a la tienda con el bono ya puesto en el carrito (`/cafes?bono=GANG-XXXXX`).
+- Qué medir: en el panel, pestaña **Pedidos**, «bonos usados de entregados». Por encima del 15 % va bien.
 
 ### La ley (1581 de 2012)
 
@@ -45,7 +68,10 @@ Cuando la lista pase de unos cientos de personas activas, o se quieran automatiz
    - Quién tiene acceso: **cualquier persona**.
    - Copiar la **URL de la aplicación web** (termina en `/exec`).
 6. Esa URL va en `CONFIG.registro`, en [prototipo/js/core.js](../prototipo/js/core.js). Después: `node tools/build.js`, commit y push.
-7. Abrir el panel interno → **Correos** → pegar la clave. Queda guardada en ese navegador.
+7. Abrir el panel interno → **Correos** → pegar la clave. Queda guardada en ese navegador. La pestaña **Pedidos** usa la misma.
+8. En el editor del script, *Configuración del proyecto* → **Zona horaria: (GMT-05:00) Bogotá**, para que el aviso de las 7 y las fechas sean de Colombia.
+
+Si el script ya estaba publicado con la versión anterior: pegar el archivo nuevo, ejecutar **configurar** otra vez (crea las hojas nuevas y el aviso diario, no toca lo que hay) y publicar una **nueva versión** de la misma implementación.
 
 Si más adelante se cambia el script, hay que publicar una **nueva versión** de la misma implementación (Implementar → Administrar implementaciones → editar), para que la URL no cambie.
 
@@ -55,7 +81,7 @@ Si más adelante se cambia el script, hay que publicar una **nueva versión** de
 node tools/correos/prueba.js tools/correos/Codigo.gs
 ```
 
-Imita la hoja, Gmail y las propiedades en memoria y revisa 23 casos: etiquetas, autorización, clave, baja firmada, cuota diaria.
+Imita la hoja, Gmail y las propiedades en memoria y revisa 56 casos: etiquetas, autorización, clave, baja firmada, cuota diaria, bienvenida y bono, pedidos, despachos, suscripciones y el aviso diario.
 
 ## 5. Cuidados
 

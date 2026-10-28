@@ -31,7 +31,7 @@ function viewLogin() {
       <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor">${[0, 72, 144, 216, 288].map((r) => `<ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(${r} 12 12)"/>`).join("")}</g><circle cx="12" cy="12" r="1.3" fill="var(--paper)"/></svg>
       <p class="eyebrow">${esc(CONFIG.marca)} · panel interno</p>
       <h1>Entrar</h1>
-      <p class="hint">Cotizador, inventario, clientes, correos y mercado. Esta parte no aparece en la página pública.</p>
+      <p class="hint">Pedidos, cotizador, inventario, clientes, correos y mercado. Esta parte no aparece en la página pública.</p>
       <form class="login-form" onsubmit="return false">
         <div class="field"><label class="lbl" for="lg-mail">Correo</label>
           <input id="lg-mail" class="input" type="email" autocomplete="username" placeholder="correo@dominio.com"></div>
@@ -55,8 +55,8 @@ async function entrar() {
 function salir() { try { sessionStorage.removeItem(AUTH.sesion); } catch {} UI.animate = true; render(); }
 
 /* ---------- panel ---------- */
-const ATABS = [["cotizador", "Cotizador"], ["inventario", "Inventario"], ["clientes", "Clientes"], ["correos", "Correos"], ["mercado", "Mercado"]];
-const APANELS = { cotizador: viewCotizador, inventario: viewInventario, clientes: viewClientes, correos: viewCorreos, mercado: viewMercado };
+const ATABS = [["pedidos", "Pedidos"], ["cotizador", "Cotizador"], ["inventario", "Inventario"], ["clientes", "Clientes"], ["correos", "Correos"], ["mercado", "Mercado"]];
+const APANELS = { pedidos: viewOperacion, cotizador: viewCotizador, inventario: viewInventario, clientes: viewClientes, correos: viewCorreos, mercado: viewMercado };
 
 function viewPanel() {
   const quieto = S.compras.reduce((s, c) => s + enJuego(c), 0);

@@ -10,6 +10,10 @@ const principal = (p) => p.variantes.find((x) => x.principal) || p.variantes[0];
 const saleDe = (p, v) => (v && v.sale) || p.sale;
 const saleNotaDe = (p, v) => (v && v.saleNota) || p.saleNota;
 const envioDe = (subtotal) => (subtotal >= CONFIG.envio.gratisDesde ? 0 : CONFIG.envio.costo);
+/* El bono de bienvenida de la comunidad. Debe ser el mismo BONO.pct de tools/correos/Codigo.gs,
+   que es quien lo crea y lo valida; aquí solo se anuncia. El envío gratis se mide antes del descuento. */
+const BONO_PCT = 10;
+const descuentoCarrito = () => (UI.bono ? Math.round((totalCarrito() * UI.bono.pct) / 100) : 0);
 
 /* ---------- tarjetas ---------- */
 /* ---------- la foto de cada café ----------
@@ -383,6 +387,40 @@ function cargarCarrito() {
     UI.carrito = v.filter((i) => { const p = prodById(i.id); return p && p.variantes.some((x) => x.g === i.g && x.stock > 0); });
   } catch {}
 }
+/* El bono: llega en el enlace del correo de bienvenida (?bono=GANG-XXXXX) o se escribe en el carrito.
+   Lo valida el script de la hoja; aquí solo se recuerda en el navegador hasta que se usa. */
+const BONO_KEY = "nandez-bono";
+function cargarBono() {
+  try { const b = JSON.parse(localStorage.getItem(BONO_KEY)); if (b && b.codigo && b.pct) UI.bono = b; } catch {}
+  const enlace = new URLSearchParams(location.search).get("bono");
+  if (!enlace) return;
+  history.replaceState(history.state, "", location.pathname + location.hash);
+  validarBono(enlace, true);
+}
+function validarBono(codigo, desdeEnlace) {
+  const en = UI.lang === "en", c = String(codigo || "").trim().toUpperCase();
+  if (!c) return;
+  if (!CONFIG.registro) return toast(en ? "Codes are not available yet." : "Los bonos todavía no están disponibles.", { type: "err" });
+  UI.bonoCargando = true; renderCarrito();
+  fetch(`${CONFIG.registro}?accion=bono&codigo=${encodeURIComponent(c)}`).then((r) => r.json()).catch(() => ({ ok: false, error: "red" }))
+    .then((j) => {
+      UI.bonoCargando = false;
+      if (j.ok) {
+        UI.bono = { codigo: j.codigo, pct: j.pct };
+        try { localStorage.setItem(BONO_KEY, JSON.stringify(UI.bono)); } catch {}
+        toast(en ? `Code ${j.codigo} applied: ${j.pct} % off this order.` : `Bono ${j.codigo} aplicado: ${j.pct} % menos en este pedido.`);
+      } else {
+        quitarBono(false);
+        toast({ usado: en ? "That code was already used." : "Ese bono ya se usó.", vencido: en ? "That code has expired." : "Ese bono ya venció.",
+          red: en ? "Could not check the code. Try again." : "No se pudo revisar el bono. Intenta otra vez." }[j.error]
+          || (en ? "That code does not exist." : "Ese código no existe."), { type: "err" });
+      }
+      renderCarrito(); renderTray();
+      if (j.ok && desdeEnlace && UI.carrito.length) abrirCarrito();
+    });
+}
+function quitarBono(pintar = true) { UI.bono = null; try { localStorage.removeItem(BONO_KEY); } catch {} if (pintar) renderCarrito(); }
+
 function addCarrito(pid, g) {
   const p = prodById(pid), v = p.variantes.find((x) => x.g === +g), c = enCarrito(p.id, v.g);
   if (c) { if (c.n < v.stock) c.n++; else return toast(UI.lang === "en" ? "No more of that size." : "No queda más de esa presentación.", { type: "err" }); }
@@ -416,7 +454,10 @@ function renderCarrito() {
     $("#cart-foot").innerHTML = "";
     return;
   }
-  const E = CONFIG.envio, envio = envioDe(totalCarrito()), falta = E.gratisDesde - totalCarrito();
+  const E = CONFIG.envio, envio = envioDe(totalCarrito()), falta = E.gratisDesde - totalCarrito(), desc = descuentoCarrito();
+  /* lo que ya escribió la persona sobrevive a que el carrito se vuelva a pintar */
+  const escrito = Object.fromEntries(["pd-nombre", "pd-ciudad", "pd-correo", "pd-tel", "pd-bono"].map((k) => [k, $("#" + k)?.value || ""]));
+  const val = (k) => (escrito[k] ? ` value="${esc(escrito[k])}"` : "");
   cuerpo.innerHTML = `
     <ul class="cart-items">${UI.carrito.map((i) => {
       const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
@@ -434,22 +475,29 @@ function renderCarrito() {
 
     <div class="cart-sumas">
       <div><span>Subtotal</span><b class="mono">${cop(totalCarrito())}</b></div>
+      ${desc ? `<div class="cart-bono-linea"><span>${en ? "Code" : "Bono"} ${esc(UI.bono.codigo)} · −${UI.bono.pct} %
+        <button class="cart-del" data-act="bono-quitar">${en ? "Remove" : "Quitar"}</button></span><b class="mono">−${cop(desc)}</b></div>` : ""}
       <div><span>${en ? "Shipping" : "Envío"}</span><b class="mono">${envio ? cop(envio) : (en ? "Free" : "Gratis")}</b></div>
-      <div class="cart-total"><span>${t("total")}</span><b class="mono">${cop(totalCarrito() + envio)}</b></div>
+      <div class="cart-total"><span>${t("total")}</span><b class="mono">${cop(totalCarrito() - desc + envio)}</b></div>
       <p class="hint">${envio
         ? (en ? `Add ${cop(falta)} more and shipping is free. ` : `Te faltan ${cop(falta)} para el envío gratis. `)
         : ""}${en ? "Arrives in " : "Llega en "}${tx(E.dias)} ${en ? "with " : "por "}${esc(E.transportadora)}${en ? ", anywhere in Colombia." : ", a cualquier ciudad de Colombia."}</p>
     </div>
 
     <div class="form-grid cart-form">
-      <div class="field"><label class="lbl" for="pd-nombre">${en ? "Name" : "Nombre o negocio"}</label><input id="pd-nombre" class="input" autocomplete="name" enterkeyhint="next"></div>
-      <div class="field"><label class="lbl" for="pd-ciudad">${en ? "City" : "Ciudad"}</label><input id="pd-ciudad" class="input" autocomplete="address-level2" enterkeyhint="next"></div>
-      <div class="field" style="grid-column:1/-1"><label class="lbl" for="pd-tel">${en ? "WhatsApp (to confirm your order)" : "WhatsApp (para confirmarte el pedido)"}</label><input id="pd-tel" class="input" type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="done" placeholder="300 000 0000"></div>
+      <div class="field"><label class="lbl" for="pd-nombre">${en ? "Name" : "Nombre o negocio"}</label><input id="pd-nombre" class="input" autocomplete="name" enterkeyhint="next"${val("pd-nombre")}></div>
+      <div class="field"><label class="lbl" for="pd-ciudad">${en ? "City" : "Ciudad"}</label><input id="pd-ciudad" class="input" autocomplete="address-level2" enterkeyhint="next"${val("pd-ciudad")}></div>
+      <div class="field"><label class="lbl" for="pd-correo">${en ? "Email (for the tracking number)" : "Correo (para mandarte la guía)"}</label><input id="pd-correo" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none" enterkeyhint="next"${val("pd-correo")}></div>
+      <div class="field"><label class="lbl" for="pd-tel">${en ? "WhatsApp (to confirm your order)" : "WhatsApp (para confirmarte el pedido)"}</label><input id="pd-tel" class="input" type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="done" placeholder="300 000 0000"${val("pd-tel")}></div>
+      ${CONFIG.registro && !UI.bono ? `<div class="field cart-bono" style="grid-column:1/-1"><label class="lbl" for="pd-bono">${en ? "Welcome code" : "Código de bono"}</label>
+        <div class="co-fila"><input id="pd-bono" class="input mono" autocapitalize="characters" autocomplete="off" placeholder="GANG-XXXXX"${val("pd-bono")}>
+          <button class="btn" data-act="bono-aplicar" ${UI.bonoCargando ? "disabled" : ""}>${UI.bonoCargando ? "…" : en ? "Apply" : "Aplicar"}</button></div></div>` : ""}
     </div>`;
   const pie = $("#cart-foot"), mp = !!CONFIG.pagos.mercadoPago;
   pie.innerHTML = `
     ${mp ? `<button class="btn primary" data-act="pedido-mp">${t("pagar_mp")}</button>` : ""}
-    <button class="btn ${mp ? "" : "primary"}" data-act="pedido-wa">${en ? `Send order by ${canalContacto()}` : `Enviar pedido por ${canalContacto()}`}</button>
+    <button class="btn ${mp ? "" : "primary"}" data-act="pedido-wa">${CONFIG.registro ? (en ? "Place the order" : "Hacer el pedido")
+      : en ? `Send order by ${canalContacto()}` : `Enviar pedido por ${canalContacto()}`}</button>
     <p class="hint">${mp
       ? (en ? "Card, PSE, Nequi or cash through Mercado Pago." : "Tarjeta, PSE, Nequi o efectivo con Mercado Pago.")
       : (en ? `No payment yet: we confirm the order and you pay by ${tx(CONFIG.pagos.manual)}.`
@@ -472,7 +520,11 @@ function datosPedido() {
   const nombre = $("#pd-nombre").value.trim(), ciudad = $("#pd-ciudad").value.trim(), en = UI.lang === "en";
   if (!nombre) { toast(en ? "Write your name." : "Escribe tu nombre.", { type: "err" }); $("#pd-nombre").focus(); return null; }
   if (!ciudad) { toast(en ? "Write the city it goes to." : "Escribe la ciudad a la que va.", { type: "err" }); $("#pd-ciudad").focus(); return null; }
-  return { nombre, ciudad, tel: $("#pd-tel").value.trim() };
+  const correo = ($("#pd-correo")?.value || "").trim().toLowerCase(), tel = $("#pd-tel").value.trim();
+  if (correo && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) { toast(en ? "Check the email." : "Revisa el correo.", { type: "err" }); $("#pd-correo").focus(); return null; }
+  /* sin WhatsApp ni correo no hay cómo confirmarle el pago */
+  if (CONFIG.registro && !correo && !tel) { toast(en ? "Leave your email or WhatsApp so we can confirm it." : "Déjanos tu correo o tu WhatsApp para confirmarte el pedido.", { type: "err" }); $("#pd-correo").focus(); return null; }
+  return { nombre, ciudad, tel, correo };
 }
 
 /* número de pedido que no choca entre clientes: fecha + cuatro letras al azar */
@@ -480,13 +532,14 @@ const numeroPedido = () => "NDZ-" + isoToday().slice(5).replace("-", "") + "-" +
 
 function registrarPedido(d, canal) {
   const cl = upsertCliente(d.nombre, d.ciudad, d.tel);
-  const subtotal = totalCarrito(), envio = envioDe(subtotal), total = subtotal + envio;
+  const subtotal = totalCarrito(), envio = envioDe(subtotal), descuento = descuentoCarrito(), total = subtotal - descuento + envio;
+  const bono = descuento ? UI.bono.codigo : "";
   const items = UI.carrito.map((i) => {
     const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
     return { id: i.id, nombre: i.nombre, n: i.n, precio: i.precio, forma: tx(saleDe(p, v)) };
   });
-  const pedido = { id: numeroPedido(), clienteId: cl.id, canal, nombre: d.nombre, ciudad: d.ciudad, tel: d.tel,
-    items, subtotal, envio, total, fecha: isoToday() };
+  const pedido = { id: numeroPedido(), clienteId: cl.id, canal, nombre: d.nombre, ciudad: d.ciudad, tel: d.tel, correo: d.correo,
+    items, subtotal, descuento, bono, envio, total, fecha: isoToday() };
   S.pedidos.unshift(pedido);
   UI.carrito.forEach((i) => {
     const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
@@ -499,13 +552,31 @@ function registrarPedido(d, canal) {
     `Hola ${CONFIG.marca}, quiero hacer el pedido ${pedido.id}:`,
     ...items.map((i) => `· ${i.n} × ${i.nombre} (${i.forma.toLowerCase()}) = ${cop(i.precio * i.n)}`),
     `Subtotal: ${cop(subtotal)}`,
+    ...(descuento ? [`Bono ${bono} (−${UI.bono.pct} %): −${cop(descuento)}`] : []),
     `Envío: ${envio ? cop(envio) : "gratis"}`,
     `Total: ${cop(total)}`,
-    `${d.nombre} · ${d.ciudad}${d.tel ? " · WhatsApp " + d.tel : ""}`,
+    `${d.nombre} · ${d.ciudad}${d.tel ? " · WhatsApp " + d.tel : ""}${d.correo ? " · " + d.correo : ""}`,
   ]);
-  UI.carrito = []; guardarCarrito(); save(); cerrarCarrito(); render();
-  enviarAviso("pedido", { ...pedido, texto });
-  return { pedido, texto };
+  UI.carrito = []; guardarCarrito(); if (bono) quitarBono(false); save(); cerrarCarrito(); render();
+  const guardado = enviarAviso("pedido", { ...pedido, texto });
+  return { pedido, texto, guardado };
+}
+
+/* Con la hoja conectada el pedido ya nos llegó: no hay que enviar nada más */
+function pedidoRecibido(pedido) {
+  const en = UI.lang === "en";
+  modal(`${en ? "Order" : "Pedido"} <em>${esc(pedido.id)}</em>`, `
+    <ol class="pasos-pedido">
+      <li><b>${en ? "We got it." : "Ya nos llegó."}</b>
+        <span>${pedido.correo ? (en ? `We sent a copy to ${esc(pedido.correo)}.` : `Te mandamos una copia a ${esc(pedido.correo)}.`)
+          : (en ? "Keep the order number." : "Guarda el número del pedido.")}</span></li>
+      <li><b>${en ? "We confirm and you pay." : "Te confirmamos y pagas."}</b>
+        <span>${en ? `We write to you with the total of ${cop(pedido.total)} and how to pay by ${tx(CONFIG.pagos.manual)}.` : `Te escribimos con el total de ${cop(pedido.total)} y cómo pagar por ${tx(CONFIG.pagos.manual)}.`}</span></li>
+      <li><b>${en ? "We ship it." : "Lo despachamos."}</b>
+        <span>${en ? `It arrives in ${tx(CONFIG.envio.dias)} with ${CONFIG.envio.transportadora}; the tracking number reaches your email.` : `Llega en ${tx(CONFIG.envio.dias)} por ${CONFIG.envio.transportadora}; la guía te llega al correo.`}</span></li>
+    </ol>
+    <div class="dlg-actions"><button class="btn primary" data-act="close">${en ? "Done" : "Listo"}</button></div>
+    <p class="hint">${en ? `Questions? Write to ${CONFIG.correo} with your order number.` : `¿Dudas? Escribe a ${CONFIG.correo} con tu número de pedido.`}</p>`, "narrow");
 }
 
 /* Después de pedir: número, qué sigue y el mensaje a la vista por si no se abrió */
@@ -529,7 +600,12 @@ function confirmacionPedido(pedido, texto) {
 
 function pedidoWA() {
   const d = datosPedido(); if (!d) return;
-  const { pedido, texto } = registrarPedido(d, CONFIG.whatsapp ? "whatsapp" : "correo");
+  const { pedido, texto, guardado } = registrarPedido(d, CONFIG.registro ? "web" : CONFIG.whatsapp ? "whatsapp" : "correo");
+  if (CONFIG.registro) {
+    /* si la hoja no respondió, el pedido no se pierde: sale por WhatsApp o correo como antes */
+    guardado.then((ok) => { if (ok) return pedidoRecibido(pedido); confirmacionPedido(pedido, texto); abrirContacto(texto, `Pedido ${pedido.id}`); });
+    return;
+  }
   confirmacionPedido(pedido, texto);
   abrirContacto(texto, `Pedido ${pedido.id}`);
 }
@@ -537,10 +613,12 @@ function pedidoWA() {
 /* Mercado Pago: link de pago por producto, link general, o /api/checkout (Checkout Pro) */
 async function pedidoMP() {
   const d = datosPedido(); if (!d) return;
-  const items = UI.carrito.map((i) => ({ id: `${i.id}-${i.g}`, title: i.nombre, quantity: i.n, unit_price: i.precio }));
+  /* Mercado Pago no recibe líneas negativas: el bono baja el precio de cada bolsa */
+  const factor = UI.bono ? 1 - UI.bono.pct / 100 : 1;
+  const items = UI.carrito.map((i) => ({ id: `${i.id}-${i.g}`, title: i.nombre, quantity: i.n, unit_price: Math.round(i.precio * factor) }));
   const envio = envioDe(totalCarrito());
   if (envio) items.push({ id: "envio", title: UI.lang === "en" ? "Shipping" : "Envío", quantity: 1, unit_price: envio });
-  const directo = UI.carrito.length === 1 && !envio && CONFIG.pagos.porProducto[`${UI.carrito[0].id}-${UI.carrito[0].g}`];
+  const directo = !UI.bono && UI.carrito.length === 1 && !envio && CONFIG.pagos.porProducto[`${UI.carrito[0].id}-${UI.carrito[0].g}`];
   const { pedido, texto } = registrarPedido(d, "mercadopago");
   if (directo) return void window.open(directo, "_blank", "noopener");
   const url = CONFIG.pagos.mercadoPago;
@@ -563,3 +641,13 @@ function copiar(texto) {
   const ok = () => toast(UI.lang === "en" ? "Copied." : "Copiado.");
   try { navigator.clipboard.writeText(texto).then(ok, () => {}); } catch {}
 }
+
+/* El bono en el carrito: el panel general deja pasar lo que no conoce */
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-act^='bono-']"); if (!el || el.disabled) return;
+  if (el.dataset.act === "bono-aplicar") validarBono($("#pd-bono")?.value);
+  if (el.dataset.act === "bono-quitar") quitarBono();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && e.target.id === "pd-bono") { e.preventDefault(); validarBono(e.target.value); }
+});
