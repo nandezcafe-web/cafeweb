@@ -120,6 +120,18 @@ function unirseComunidad() {
   const ok = $("#com-ok");
   if (ok && !ok.checked) { toast(en ? "Tick the box to receive our emails." : "Marca la casilla para recibir nuestros correos.", { type: "err" }); ok.focus(); return; }
   S.espera.push({ id: nextId("CM"), producto: "comunidad", correo, fecha: isoToday(), consentimiento: true }); save();
+  /* Con la hoja conectada, queda registrado ahí mismo y el script le manda la bienvenida con el bono.
+     Nunca se abre el correo: si falla, se puede intentar otra vez. */
+  if (CONFIG.registro) {
+    const btn = $('[data-form="comunidad"] button[type="submit"]'); if (btn) btn.disabled = true;
+    enviarAviso("comunidad", { correo, consentimiento: true }).then((listo) => {
+      if (btn) btn.disabled = false;
+      if (!listo) return toast(en ? "It did not save. Try again in a moment." : "No se pudo guardar. Intenta otra vez en un momento.", { type: "err" });
+      el.value = ""; if (ok) ok.checked = false;
+      toast(en ? `You are in. Check your inbox: your ${BONO_PCT} % welcome code is there.` : `Ya eres parte. Revisa tu correo: ahí está tu bono del ${BONO_PCT} %.`);
+    });
+    return;
+  }
   el.value = ""; if (ok) ok.checked = false;
   registrar("comunidad", { correo, consentimiento: true },
     en ? `Hi, I want to join the ${CONFIG.comunidad} community and I agree to receive news and offers by email. My email: ${correo}`
@@ -143,12 +155,17 @@ const FOOT = () => {
   const en = UI.lang === "en";
   const politicas = [["privacidad", en ? "Privacy policy" : "Política de privacidad"], ["envios", en ? "Refund policy" : "Política de reembolso"],
     ["contacto", en ? "Contact information" : "Información de contacto"], ["terminos", en ? "Terms of service" : "Términos del servicio"]];
-  const tienda = [["tienda", t("nav_tienda")], ["cafes", t("nav_cafes_esp")], ["accesorios", t("nav_accesorios")], ["suscripcion", t("nav_suscripcion")]];
+  const tienda = [["tienda", t("nav_tienda")], ["cafes", t("nav_cafes_esp")], ["accesorios", t("nav_accesorios")], ["suscripcion", t("nav_suscripcion")]]
+    .concat(visible("drops") ? [["drops", t("nav_drops")], ["gang", t("nav_gang")]] : []);
   const lista = (items) => items.map(([v, txt]) => `<a href="${ruta(v)}" data-act="go" data-to="${v}">${txt}</a>`).join("");
-  return `<section class="g-comunidad" aria-labelledby="g-comunidad">
+  /* En la página de la gang el registro ya está arriba: dos formularios de correo
+     en la misma página se pelean entre ellos, así que el del pie no se repite. */
+  const comunidad = UI.view === "gang" ? "" : `<section class="g-comunidad" aria-labelledby="g-comunidad">
     <div>
       <h2 id="g-comunidad">${en ? `Join the <em>${esc(CONFIG.comunidad)}</em> community` : `Únete a la comunidad <em>${esc(CONFIG.comunidad)}</em>`}</h2>
-      <p>${en ? "Get the latest news and members-only offers." : "Recibe las últimas noticias y ofertas solo para miembros."}</p>
+      <p>${CONFIG.registro
+        ? (en ? `Get the latest news, members-only offers and ${BONO_PCT} % off your first order.` : `Recibe las últimas noticias, ofertas solo para miembros y ${BONO_PCT} % menos en tu primer pedido.`)
+        : (en ? "Get the latest news and members-only offers." : "Recibe las últimas noticias y ofertas solo para miembros.")}</p>
     </div>
     <form class="g-comunidad-form" data-form="comunidad" novalidate>
       <label class="lbl" for="com-mail">${en ? "Email" : "Correo electrónico"}</label>
@@ -157,7 +174,8 @@ const FOOT = () => {
       <label class="g-consiente"><input type="checkbox" id="com-ok"> <span>${en ? `I agree to receive news and offers from ${esc(CONFIG.marca)} by email.` : `Acepto recibir noticias y ofertas de ${esc(CONFIG.marca)} por correo.`}</span></label>
       <small>${en ? "No spam. Unsubscribe whenever you like." : "Sin spam. Te sales cuando quieras."} <a href="${ruta("privacidad")}" data-act="go" data-to="privacidad">${en ? "Privacy policy" : "Política de privacidad"}</a></small>
     </form>
-  </section>
+  </section>`;
+  return `${comunidad}
   <footer class="foot">
   <div class="foot-marca"><b>${esc(CONFIG.marca)}</b><span>Chinácota · ${esc(tx(CONFIG.lugar))}</span>
     <a href="mailto:${CONFIG.correo}">${esc(CONFIG.correo)}</a>${CONFIG.whatsapp ? `<a href="https://wa.me/${CONFIG.whatsapp}" target="_blank" rel="noopener">WhatsApp +${CONFIG.whatsapp}</a>` : ""}
@@ -170,6 +188,7 @@ const FOOT = () => {
 };
 
 const VIEWS = { inicio: viewInicio, tienda: viewTienda, accesorios: viewAccesorios, cafes: viewCafes, cafe: viewCafe, subasta: viewSubasta, suscripcion: viewSuscripcion, diario: viewDiario, entrada: viewEntrada,
+  drops: viewDrops, drop: viewDrop, gang: viewGang,
   contacto: viewContacto, envios: viewEnvios, terminos: viewTerminos, privacidad: viewPrivacidad, noencontrada: viewNoEncontrada };
 
 function actualizarMeta() {
@@ -222,6 +241,25 @@ function datosEstructurados(view, id) {
     const e = S.entradas.find((x) => x.id === id) || S.entradas[0];
     grafo.push({ "@type": "Article", headline: tx(e.titulo), description: tx(e.resumen), datePublished: e.fecha,
       dateModified: e.fecha, author: { "@id": org["@id"] }, publisher: { "@id": org["@id"] }, inLanguage: UI.lang });
+  }
+  /* Las preguntas de drops, drop y gang salen en la página, visibles y abribles,
+     así que se declaran. Nunca se marca una pregunta que no esté en el HTML. */
+  const faqsDe = { drops: faqsDrops, drop: faqsDrop, gang: faqsGang }[view];
+  if (faqsDe) grafo.push({ "@type": "FAQPage", inLanguage: UI.lang,
+    mainEntity: faqsDe(UI.lang === "en").map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) });
+  /* El drop como evento de venta, solo si ya tiene fecha y precio reales:
+     un Event con fecha inventada es peor que no tener ninguno. */
+  if (view === "drop" && CONFIG.drop.fecha && CONFIG.drop.precio) {
+    const d = CONFIG.drop, en = UI.lang === "en";
+    grafo.push({ "@type": "SaleEvent", name: `Drop ${d.n} · ${CONFIG.comunidad}`,
+      startDate: dropFechaGang().toISOString(), endDate: new Date(d.fecha).toISOString(),
+      description: meta("drop").d, eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+      eventStatus: dropAgotado() ? "https://schema.org/EventCancelled" : "https://schema.org/EventScheduled",
+      location: { "@type": "VirtualLocation", url: CONFIG.sitio + ruta("drop") }, organizer: { "@id": org["@id"] },
+      offers: { "@type": "Offer", price: d.precio, priceCurrency: "COP",
+        availability: dropAgotado() ? "https://schema.org/SoldOut" : "https://schema.org/InStock",
+        url: CONFIG.sitio + ruta("drop"),
+        description: en ? `${d.gramos ? gramos(d.gramos) : ""} whole bean, numbered bag`.trim() : `${d.gramos ? gramos(d.gramos) : ""} en grano, bolsa numerada`.trim() } });
   }
   if (view === "subasta") grafo.push({ "@type": "Event", name: (UI.lang === "en" ? "Geisha coffee auction · " : "Subasta de café Geisha · ") + AU_LOTE.productor, startDate: new Date(UI.au.endsAt - 7 * 24 * 3600 * 1000).toISOString(), endDate: new Date(UI.au.endsAt).toISOString(),
     offers: { "@type": "Offer", price: UI.au.start, priceCurrency: "USD", description: UI.lang === "en" ? "Starting price per kg of green coffee" : "Precio de salida por kg de café verde" },
@@ -426,7 +464,10 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && document.body.classList.contains("menu-abierto")) menu(false);
   if (e.key === "Escape" && document.body.classList.contains("mas-abierto")) { mas(false); $("#dock-mas")?.focus(); }
 });
-document.addEventListener("submit", (e) => { if (e.target.matches?.('[data-form="comunidad"]')) { e.preventDefault(); unirseComunidad(); } });
+document.addEventListener("submit", (e) => {
+  if (e.target.matches?.('[data-form="comunidad"]')) { e.preventDefault(); unirseComunidad(); }
+  if (e.target.matches?.('[data-form="gang"]')) { e.preventDefault(); entrarGang(); }
+});
 $("#dlg").addEventListener("click", (e) => { if (e.target === $("#dlg")) closeModal(); });
 $("#cart")?.addEventListener("click", (e) => { if (e.target === $("#cart")) cerrarCarrito(); });
 $("#cart")?.addEventListener("close", () => renderTray());
@@ -436,6 +477,7 @@ window.addEventListener("popstate", () => { const r = vistaDeRuta(location.pathn
 document.documentElement.classList.add("js");
 aplicarCfgGuardada();
 cargarCarrito();
+cargarBono();
 UI.au = newAuction();
 UI.lang = esIngles(location.pathname) ? "en" : "es";   // manda la URL, no lo guardado
 const r0 = vistaDeRuta(location.pathname);

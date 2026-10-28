@@ -8,22 +8,25 @@ Le compramos café a fincas de Norte de Santander —cada una con su variedad—
 1. **Inicio** — los cafés a la venta, por qué cuestan lo que cuestan, las fincas aliadas y el recorrido de la finca a la bolsa.
 2. **Cafés** — un café por finca, con las fincas aliadas y la nuestra (primera cosecha 2027).
 3. **Ficha del café** — presentaciones, ficha con el nivel de verificación de cada dato, lo que le pagamos al productor frente a la referencia del día, receta y lista de espera.
-4. **Subasta** — el lote de Domingo Torres: reserva, pujas en vivo y extensión en los últimos 20 s.
-5. **Suscripción** — tres planes; mientras no haya cobro automático, recoge correos.
-6. **Diario** — blog, listo para los textos reales.
+4. **Drops** — cómo funciona un drop, el drop que viene y las preguntas de los drops. Cada drop tiene además su propia página (`/drop-001`), que no cambia de dirección ni cuando se agota: es la que va en la bolsa y en la bio.
+5. **La gang** — el registro: te avisamos cada drop y compras antes que todos. Los datos del drop se cambian en un solo sitio, `CONFIG.drop` (`prototipo/js/core.js`); lo que esté vacío la página lo muestra como "por confirmar".
+6. **Subasta** — el lote de Domingo Torres: reserva, pujas en vivo y extensión en los últimos 20 s.
+7. **Suscripción** — tres planes; mientras no haya cobro automático, recoge correos.
+8. **Diario** — blog, listo para los textos reales.
 
 **Interna — otra página, en `admin/`, con correo y contraseña. No se enlaza desde el sitio público.**
-7. **Cotizador** — cuánto paga el comité hoy, cuánto podemos pagar y con qué margen.
-8. **Inventario** — cada lote de la compra a la bolsa vendida, con costos reales y plata quieta.
-9. **Clientes** — quién compra, cada cuánto, qué prefiere y a quién llamar.
-10. **Correos** — quién dejó su correo, con qué etiqueta, y campañas de remarketing desde Gmail.
-11. **Mercado** — precio FNC, bolsa de Nueva York, TRM, tabla por factor y cuándo vender.
+9. **Pedidos** — lo que hay que confirmar y despachar, la guía de cada envío y cuándo toca cada suscripción.
+10. **Cotizador** — cuánto paga el comité hoy, cuánto podemos pagar y con qué margen.
+11. **Inventario** — cada lote de la compra a la bolsa vendida, con costos reales y plata quieta.
+12. **Clientes** — quién compra, cada cuánto, qué prefiere y a quién llamar.
+13. **Correos** — quién dejó su correo, con qué etiqueta, y campañas de remarketing desde Gmail.
+14. **Mercado** — precio FNC, bolsa de Nueva York, TRM, tabla por factor y cuándo vender.
 
 ## Documentos
 
 | Archivo | Contenido |
 |---|---|
-| [docs/12_correos_y_remarketing.md](docs/12_correos_y_remarketing.md) | Correos y remarketing gratis: Hoja de Google, Gmail y la pestaña Correos del panel |
+| [docs/12_correos_y_remarketing.md](docs/12_correos_y_remarketing.md) | Correos, bono de bienvenida, pedidos y suscripciones gratis: Hoja de Google, Gmail y las pestañas Pedidos y Correos del panel |
 | [docs/11_rediseno_editorial.md](docs/11_rediseno_editorial.md) | Rediseño Coffee Gang: crítica a coff.com.co, referentes, la línea gráfica y lo que falta decidir |
 | [docs/10_propuesta_suscripciones.md](docs/10_propuesta_suscripciones.md) | Suscripción con kit de bienvenida, dos formas de pagar y la Ruta Nandez |
 | [docs/09_prompt_auditoria.md](docs/09_prompt_auditoria.md) | Prompt listo para auditar la página con ojos frescos |
@@ -56,7 +59,7 @@ El código vive en `prototipo/js/` y la línea gráfica en `prototipo/styles.css
 node tools/build.js
 ```
 
-Eso genera **28 páginas HTML reales** (14 en español y 14 en inglés), la página `404.html`, `sitemap.xml`, `robots.txt`, `llms.txt`, la tienda en un solo archivo (`prototipo/nandez.html`) y el panel (`admin/index.html`). Vercel también lo corre en cada publicación (`buildCommand` en `vercel.json`), así que una página nunca queda desactualizada frente al código.
+Eso genera **30 páginas HTML reales** (15 en español y 15 en inglés), la página `404.html`, `sitemap.xml`, `robots.txt`, `llms.txt`, la tienda en un solo archivo (`prototipo/nandez.html`) y el panel (`admin/index.html`). Vercel también lo corre en cada publicación (`buildCommand` en `vercel.json`), así que una página nunca queda desactualizada frente al código.
 
 ### Lo que corre solo
 

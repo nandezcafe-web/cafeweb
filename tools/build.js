@@ -20,7 +20,7 @@ const css = cssBase + "\n" + read("gang.css");
 const mod = (f) => `/* ---- ${f}.js ---- */\n` + read(`js/${f}.js`);
 const MODS = ["core", "fases", "shop", "pages", "auction", "main"];
 /* huella de los archivos: obliga al navegador a bajar la versión nueva tras cada despliegue */
-const TODOS = ["core", "fases", "shop", "pages", "auction", "main", "quote", "inventory", "clients", "market", "correos", "admin"];
+const TODOS = ["core", "fases", "shop", "pages", "auction", "main", "quote", "inventory", "clients", "market", "correos", "operacion", "admin"];
 /* huella de las imágenes: si una foto cambia, cambia su dirección y ningún navegador sirve la vieja */
 const IMG_DIRS = ["grano", "portada", "productos", "marca"].map((d) => path.join(SRC, "img", d));
 const IMG_V = require("crypto").createHash("md5")
@@ -72,6 +72,8 @@ function paginas(ctx) {
   return [
     { view: "inicio", prio: "1.0" }, { view: "tienda", prio: "0.9" }, { view: "cafes", prio: "0.9" }, { view: "accesorios", prio: "0.7" },
     ...ids.p.map((id) => ({ view: "cafe", id, prio: "0.9" })),
+    /* El drop y la gang son el destino del "link en la bio": van arriba en el sitemap */
+    { view: "drops", prio: "0.9" }, { view: "drop", prio: "0.9" }, { view: "gang", prio: "0.8" },
     { view: "subasta", prio: "0.8" }, { view: "suscripcion", prio: "0.8" }, { view: "diario", prio: "0.7" },
     { view: "contacto", prio: "0.5" }, { view: "envios", prio: "0.5" }, { view: "terminos", prio: "0.3" }, { view: "privacidad", prio: "0.3" },
     ...ids.e.map((id) => ({ view: "entrada", id, prio: "0.6" })),
@@ -88,19 +90,29 @@ const IC = {
   pedido: '<path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>',
   mas: '<circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/>',
   tienda: '<path d="M4 9.5 5.5 4h13L20 9.5"/><path d="M4 9.5c0 1.5 1.2 2.5 2.7 2.5s2.6-1 2.6-2.5c0 1.5 1.2 2.5 2.7 2.5s2.7-1 2.7-2.5c0 1.5 1.1 2.5 2.6 2.5S20 11 20 9.5"/><path d="M5.5 12v8h13v-8M10 20v-5h4v5"/>',
+  /* el drop: una bolsa con su número · la gang: tres siluetas */
+  drops: '<path d="M7 7h10l1 12.5a1.6 1.6 0 0 1-1.6 1.5H7.6A1.6 1.6 0 0 1 6 19.5L7 7Z"/><path d="M9.2 7V4.6h5.6V7"/><path d="M10 14.5h4"/>',
+  gang: '<circle cx="12" cy="8.4" r="2.8"/><path d="M6.5 20v-1.4a5.5 5.5 0 0 1 11 0V20"/><path d="M4 13.6a3 3 0 0 1 1.6-1.1M20 13.6a3 3 0 0 0-1.6-1.1"/>',
   suscripcion: '<path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.7"/><path d="M20 4v4.7h-4.7"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 15.3"/><path d="M4 20v-4.7h4.7"/>',
 };
 const ic = (k) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]}</svg>`;
 function dockHTML(ctx, activa, lang) {
   const T = (k) => ev(ctx, `t(${JSON.stringify(k)})`), R = (v) => ev(ctx, `ruta(${JSON.stringify(v)})`);
   const ir = (v, k, extra = "") => `<a class="dock-it" href="${R(v)}" data-act="go" data-to="${v}"${v === activa ? ' aria-current="page"' : ""}>${ic(v)}${extra}<span data-i18n="${k}">${T(k)}</span></a>`;
-  const hoja = [["cafes", "nav_cafes_esp"], ["accesorios", "nav_accesorios"], ["diario", "nav_diario"], ["contacto", "nav_contacto"]]
+  /* El tercer botón del pulgar es el que más importa en el momento: el drop si está
+     prendido, la subasta si hay una en vivo, y si no, la suscripción. Lo que salga
+     de ahí baja a la hoja de "Más", para que no quede sin acceso. */
+  const slot3 = ev(ctx, 'visible("drops")') ? "drops" : ev(ctx, 'visible("subasta")') ? "subasta" : "suscripcion";
+  const hoja = [["gang", "nav_gang"], ["cafes", "nav_cafes_esp"], ["accesorios", "nav_accesorios"],
+    ...(slot3 === "suscripcion" ? [] : [["suscripcion", "nav_suscripcion"]]), ["diario", "nav_diario"], ["contacto", "nav_contacto"]]
     .filter(([v]) => ev(ctx, `visible(${JSON.stringify(v)})`))
     .map(([v, k]) => `<a class="tab" href="${R(v)}" data-act="go" data-to="${v}" data-i18n="${k}"${v === activa ? ' aria-current="page"' : ""}>${T(k)} </a>`).join("");
   return `<nav class="dock" aria-label="${lang === "en" ? "Quick access" : "Accesos"}">
   ${ir("inicio", "nav_inicio")}
   ${ir("tienda", "nav_tienda")}
-  ${ev(ctx, 'visible("subasta")') ? ir("subasta", "nav_subasta", '<span class="live-dot" id="dock-live"></span>') : ir("suscripcion", "nav_suscripcion")}
+  ${slot3 === "drops" ? ir("drops", "nav_drops")
+    : slot3 === "subasta" ? ir("subasta", "nav_subasta", '<span class="live-dot" id="dock-live"></span>')
+    : ir("suscripcion", "nav_suscripcion")}
   <button class="dock-it" id="dock-pedido" data-act="carrito">${ic("pedido")}<span class="dock-n" id="dock-n" hidden></span><span data-i18n="nav_pedido">${T("nav_pedido")}</span></button>
   <button class="dock-it" id="dock-mas" data-act="mas" aria-expanded="false" aria-controls="dock-hoja">${ic("mas")}<span data-i18n="nav_mas">${T("nav_mas")}</span></button>
 </nav>
@@ -114,7 +126,8 @@ function dockHTML(ctx, activa, lang) {
 }
 
 function navHTML(ctx, activa) {
-  const it = [["inicio", "nav_inicio"], ["tienda", "nav_tienda"], ["subasta", "nav_subasta"], ["suscripcion", "nav_suscripcion"], ["diario", "nav_diario"]]
+  const it = [["inicio", "nav_inicio"], ["drops", "nav_drops"], ["tienda", "nav_tienda"], ["gang", "nav_gang"],
+    ["subasta", "nav_subasta"], ["suscripcion", "nav_suscripcion"], ["diario", "nav_diario"]]
     .filter(([v]) => ev(ctx, `visible(${JSON.stringify(v)})`));
   const extra = { subasta: '<span class="live-dot" id="nav-live"></span><span class="mono nav-time" data-live-time></span>' };
   const R = (v) => ev(ctx, `ruta(${JSON.stringify(v)})`), T = (k) => ev(ctx, `t(${JSON.stringify(k)})`);
@@ -233,7 +246,10 @@ const urls = [];
     const rel = ev(ctx, `ruta(${JSON.stringify(pg.view)}, ${JSON.stringify(pg.id || null)}, ${JSON.stringify(lang)})`);
     const archivo = (rel === "/" ? "/index" : rel === "/en" ? "/en/index" : rel) + ".html";
     escribir(archivo.replace(/^\//, ""), pagina(ctx, pg, lang));
-    urls.push({ loc: ev(ctx, "CONFIG.sitio") + rel, prio: pg.prio, lang });
+    const sitioU = ev(ctx, "CONFIG.sitio");
+    const alt = { es: sitioU + ev(ctx, `ruta(${JSON.stringify(pg.view)}, ${JSON.stringify(pg.id || null)}, "es")`),
+                  en: sitioU + ev(ctx, `ruta(${JSON.stringify(pg.view)}, ${JSON.stringify(pg.id || null)}, "en")`) };
+    urls.push({ loc: sitioU + rel, prio: pg.prio, lang, alt });
   });
 });
 
@@ -241,10 +257,23 @@ const urls = [];
 escribir("404.html", pagina(mundo("es"), { view: "noencontrada" }, "es").replace("<head>", '<head>\n<meta name="robots" content="noindex">'));
 
 const sitio = ev(mundo("es"), "CONFIG.sitio");
+/* Cada dirección declara su par en el otro idioma (hreflang) y la versión por defecto:
+   así Google no trata el español y el inglés como dos páginas que compiten. */
+const alterna = (u) => [
+  `    <xhtml:link rel="alternate" hreflang="es" href="${u.alt.es}"/>`,
+  `    <xhtml:link rel="alternate" hreflang="en" href="${u.alt.en}"/>`,
+  `    <xhtml:link rel="alternate" hreflang="x-default" href="${u.alt.es}"/>`,
+].join("\n");
 escribir("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.w3.org/1999/xhtml/sitemap" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-</urlset>`.replace("<urlset xmlns=\"http://www.w3.org/1999/xhtml/sitemap\"", "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"")
-  .replace("</urlset>", urls.map((u) => `  <url><loc>${u.loc}</loc><lastmod>${hoy}</lastmod><priority>${u.prio}</priority></url>`).join("\n") + "\n</urlset>"));
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${urls.map((u) => `  <url>
+    <loc>${u.loc}</loc>
+${alterna(u)}
+    <lastmod>${hoy}</lastmod>
+    <priority>${u.prio}</priority>
+  </url>`).join("\n")}
+</urlset>
+`);
 
 /* para "agregar a la pantalla de inicio" en el celular */
 escribir("site.webmanifest", JSON.stringify({ name: "Nandez Coffee", short_name: "Nandez", start_url: "/", display: "standalone",
@@ -253,16 +282,26 @@ escribir("site.webmanifest", JSON.stringify({ name: "Nandez Coffee", short_name:
 
 escribir("robots.txt", `User-agent: *
 Allow: /
+Disallow: /api/
 
-# Los asistentes de IA son bienvenidos: el contenido está en el HTML
+# Los asistentes de IA son bienvenidos: el contenido está en el HTML.
+# Los dos grupos van aparte: unos entrenan e indexan, otros abren la página
+# en el momento en que alguien pregunta, y son los que terminan citándonos.
 User-agent: GPTBot
-Allow: /
 User-agent: ClaudeBot
-Allow: /
 User-agent: PerplexityBot
-Allow: /
 User-agent: Google-Extended
+User-agent: Applebot-Extended
 Allow: /
+Disallow: /api/
+
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: Applebot
+Allow: /
+Disallow: /api/
 
 Sitemap: ${sitio}/sitemap.xml
 `);
@@ -310,7 +349,7 @@ const unSolo = pagina(ctxEs, { view: "inicio" }, "es")
 escribir("nandez.html", unSolo);
 
 /* ---------- 5. panel interno ---------- */
-const panelJs = ["core", "quote", "inventory", "clients", "market", "correos", "admin"].map(mod).join("\n");
+const panelJs = ["core", "quote", "inventory", "clients", "market", "correos", "operacion", "admin"].map(mod).join("\n");
 const panel = `<!doctype html>
 <html lang="es">
 <head>

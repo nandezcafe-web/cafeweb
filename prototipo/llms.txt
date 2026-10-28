@@ -32,6 +32,9 @@ Sí. Vamos a la finca y medimos el factor de rendimiento y la humedad delante de
 - https://cafeweb-five.vercel.app/cafe-castillo-de-ragonvalia
 - https://cafeweb-five.vercel.app/cafe-tibo-b
 - https://cafeweb-five.vercel.app/cafe-tercer-cafe
+- https://cafeweb-five.vercel.app/drops
+- https://cafeweb-five.vercel.app/drop-001
+- https://cafeweb-five.vercel.app/la-gang
 - https://cafeweb-five.vercel.app/suscripcion
 - https://cafeweb-five.vercel.app/contacto
 - https://cafeweb-five.vercel.app/envios-y-devoluciones

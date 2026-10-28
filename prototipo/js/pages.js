@@ -164,6 +164,265 @@ function suscribirOk(id) {
 }
 
 /* ---------- diario ---------- */
+/* ============================================================
+   DROPS Y LA GANG
+   Un drop es un lote pequeño que sale un día, a una hora, y se acaba.
+   Las dos páginas son el destino del "link en la bio": acá llega la gente
+   de Instagram y de TikTok. Por eso cada una empieza diciendo en texto
+   plano qué vendemos —"café de especialidad en grano de fincas de Norte
+   de Santander, en lotes numerados"—: así un asistente que resuma la
+   página cita eso, y no deduce de la jerga.
+   Ningún dato del drop se escribe a mano acá: todo sale de CONFIG.drop,
+   y lo que falte se muestra como "por confirmar".
+   ============================================================ */
+
+/* El estado del drop en una palabra, para la cejilla y el aviso */
+function dropEstado(en) {
+  if (dropAgotado()) return en ? "sold out" : "agotado";
+  if (dropAbierto()) return en ? "open now" : "abierto";
+  const f = dropFecha();
+  return f ? (en ? "out " : "sale el ") + fmtFecha(CONFIG.drop.fecha) : (en ? "date to be confirmed" : "fecha por confirmar");
+}
+
+/* Cuántas bolsas y a cuánto. Sin los datos, lo dice. */
+function dropCifras(en) {
+  const d = CONFIG.drop;
+  return [
+    [en ? "Bags in the lot" : "Bolsas del lote", d.bolsas ? fmtNum(d.bolsas) : t("por_confirmar")],
+    [en ? "Size" : "Presentación", d.gramos ? gramos(d.gramos) + " · " + t("en_grano").toLowerCase() : t("en_grano")],
+    [en ? "Price" : "Precio", d.precio ? cop(d.precio) : t("por_confirmar")],
+    [en ? "Opens for the gang" : "Abre para la gang", dropFechaGang() ? fmtFecha(dropFechaGang().toISOString()) + " · " + horaDe(dropFechaGang()) : t("por_confirmar")],
+    [en ? "Opens for everyone" : "Abre para todos", dropFecha() ? fmtFecha(d.fecha) + " · " + horaDe(dropFecha()) : t("por_confirmar")],
+  ];
+}
+const horaDe = (f) => f.toLocaleTimeString(UI.lang === "en" ? "en-US" : "es-CO", { hour: "numeric", minute: "2-digit", timeZone: "America/Bogota" });
+
+/* Qué trae cada bolsa: el reporte del plug. Si el café del lote ya está
+   confirmado, los datos salen de su ficha; si no, cada fila dice que falta. */
+function reporteDelPlug(en) {
+  const p = dropCafe(), f = p ? fincaDe(p) : null, d = CONFIG.drop;
+  const dato = (v) => (conocido(v) && v ? esc(String(v)) : `<i class="pend">${t("por_confirmar")}</i>`);
+  const filas = [
+    [en ? "Farm" : "Finca", f && tr(f.finca)],
+    [en ? "Grown by" : "Lo cultivó", f && tr(f.productor)],
+    [en ? "Town" : "Municipio", f && f.municipio && f.municipio + ", Norte de Santander"],
+    [en ? "Altitude" : "Altura", p && p.altitud && msnm(p.altitud)],
+    [en ? "Variety" : "Variedad", p && p.variedad],
+    [en ? "Process" : "Proceso", p && p.proceso],
+    [en ? "Notes" : "Notas", p && tx(p.notas).join(", ")],
+    [en ? "SCA score" : "Puntaje SCA", p && p.puntaje],
+    [en ? "Roasted on" : "Tostado el", d.tostion && fmtFecha(d.tostion)],
+  ];
+  return `<table class="ficha-tabla">
+    <tbody>${filas.map(([k, v]) => `<tr><th scope="row">${k}</th><td class="fv">${dato(v)}</td></tr>`).join("")}</tbody></table>`;
+}
+
+/* Las preguntas de los drops. Son las que la gente escribe en el buscador
+   y las que un asistente responde citando la página. */
+function faqsHTML(items, en) {
+  return `<section class="section faqs g-sec">
+    <div class="section-head"><p class="eyebrow">${en ? "Questions" : "Preguntas"}</p>
+      <h2>${en ? "What people <em>ask us</em>" : "Lo que <em>nos preguntan</em>"}</h2>
+      <p class="faq-ayuda">${en ? "Is your question not here?" : "¿No está tu pregunta?"}
+        <a href="${ruta("contacto")}" data-act="go" data-to="contacto">${en ? "Write to us" : "Escríbenos"}</a></p></div>
+    <div class="faq-lista">${items.map(([q, a], i) => `<details class="faq"${i === 0 ? " open" : ""}><summary><h3>${esc(q)}</h3></summary><p>${esc(a)}</p></details>`).join("")}</div>
+  </section>`;
+}
+
+/* Las preguntas de cada página, aparte: la vista las pinta y datosEstructurados()
+   las declara como FAQPage desde la misma lista. Nunca se marca una pregunta que
+   no esté visible en la página. */
+function faqsDrops(en) {
+  const d = CONFIG.drop;
+  return en
+    ? [["What is a coffee drop?", "A drop is a small lot of coffee from a single farm that goes on sale on one day, at one hour, in a fixed number of numbered bags. When those bags run out, that lot is not roasted again. It works like a sneaker release: the date and the quantity are announced beforehand and nothing is restocked."],
+       ["Why do you sell in drops instead of having coffee all year?", "Because we buy one lot at a time from a farm we visit, and a lot is finite: a farm in Norte de Santander does not produce the same coffee every month. Selling the lot as a drop lets us tell you exactly which harvest you are drinking instead of mixing lots to keep a shelf full."],
+       ["How do I know when the next drop is?", `We announce it on Instagram and we tell the gang first. People in the gang get the link ${d.ventaja} hours before it opens to everyone.`],
+       ["Can I buy a coffee from a past drop?", "No. Each lot is roasted once and sold once. Coffees that stay available all the time are in the shop; drops are not restocked."]]
+    : [["¿Qué es un drop de café?", "Un drop es un lote pequeño de café de una sola finca que sale a la venta un día, a una hora, en una cantidad fija de bolsas numeradas. Cuando esas bolsas se acaban, ese lote no se vuelve a tostar. Funciona como un lanzamiento de sneakers: la fecha y la cantidad se anuncian antes y no hay reposición."],
+       ["¿Por qué venden en drops y no tienen café todo el año?", "Porque compramos lote por lote a fincas que visitamos, y un lote se acaba: una finca de Norte de Santander no produce el mismo café todos los meses. Vender el lote como drop nos deja decirte exactamente qué cosecha te estás tomando, en vez de mezclar lotes para tener el estante lleno."],
+       ["¿Cómo me entero del próximo drop?", `Lo anunciamos en Instagram y lo avisamos primero en la gang. Quien está en la gang recibe el link ${d.ventaja} horas antes de que abra para todo el mundo.`],
+       ["¿Puedo comprar un café de un drop pasado?", "No. Cada lote se tuesta una vez y se vende una vez. Los cafés que están disponibles todo el tiempo están en la tienda; los drops no se reponen."]];
+}
+
+function viewDrops() {
+  const en = UI.lang === "en", d = CONFIG.drop;
+  const pasos = en
+    ? [["We announce the lot", "One farm, one variety, with its data sheet and how many bags came out of it."],
+       ["It goes out on one day, at one hour", "The gang gets the link " + d.ventaja + " hours earlier. Then it opens for everyone."],
+       ["Every bag is numbered", `Bag 027 of ${d.bolsas ? fmtNum(d.bolsas) : "the lot"}, written by hand, with the plug's report on the back.`],
+       ["When it is gone, it is gone", "We do not roast that lot again. The next drop comes from another farm."]]
+    : [["Anunciamos el lote", "Una finca, una variedad, con su ficha y cuántas bolsas salieron."],
+       ["Sale un día y a una hora", `La gang recibe el link ${d.ventaja} horas antes. Después abre para todos.`],
+       ["Cada bolsa va numerada", `Bolsa 027 de ${d.bolsas ? fmtNum(d.bolsas) : "las del lote"}, escrita a mano, con el reporte del plug al reverso.`],
+       ["Cuando se acaba, se acaba", "Ese lote no se vuelve a tostar. El próximo drop viene de otra finca."]];
+  return `<div class="view-head">
+      <div><p class="eyebrow reveal">${t("nav_drops")} · ${dropEstado(en)}</p>
+        <h1 class="reveal" style="--i:1">${en ? "We do not have coffee all year. <em>We have drops.</em>" : "No tenemos café todo el año. <em>Tenemos drops.</em>"}</h1>
+        <p class="reveal" style="--i:2">${en
+          ? `${esc(CONFIG.comunidad)} sells specialty whole bean coffee from farms in Norte de Santander, Colombia, in small numbered lots. Each lot goes out on one day, at one hour, and runs out.`
+          : `${esc(CONFIG.comunidad)} vende café de especialidad en grano de fincas de Norte de Santander, Colombia, en lotes pequeños y numerados. Cada lote sale un día, a una hora, y se acaba.`}</p></div>
+    </div>
+
+    <section class="g-sec" aria-labelledby="dr-como">
+      <div class="g-head g-io"><span class="g-num">01</span><p class="g-kicker">${en ? "Four things, always the same" : "Cuatro cosas, siempre iguales"}</p>
+        <h2 id="dr-como">${en ? "How a <em>coffee drop</em> works" : "Cómo funciona <em>un drop de café</em>"}</h2></div>
+      <ol class="g-principios g-io" style="--i:1">${pasos.map(([tt, x]) => `<li><b>${esc(tt)}</b><span>${esc(x)}</span></li>`).join("")}</ol>
+    </section>
+
+    <section class="g-sec" aria-labelledby="dr-ahora">
+      <div class="g-head g-io"><span class="g-num">02</span><p class="g-kicker">${en ? "Right now" : "Ahora mismo"}</p>
+        <h2 id="dr-ahora">${en ? `Drop ${d.n}` : `Drop ${d.n}`}</h2>
+        <p>${en ? "The first lot of the gang." : "El primer lote de la gang."} ${dropAgotado()
+          ? (en ? "Sold out." : "Agotado.")
+          : dropAbierto() ? (en ? "Open now." : "Abierto ahora.")
+          : (d.fecha ? (en ? "Out " : "Sale el ") + fmtFecha(d.fecha) + "." : (en ? "Date and price to be confirmed." : "Fecha y precio por confirmar."))}</p>
+        <a class="g-link" href="${ruta("drop")}" data-act="go" data-to="drop">${en ? `See Drop ${d.n}` : `Ver el Drop ${d.n}`}</a></div>
+    </section>
+
+    ${faqsHTML(faqsDrops(en), en)}`;
+}
+
+function faqsDrop(en) {
+  const d = CONFIG.drop, E = CONFIG.envio;
+  return en
+    ? [["Is it whole bean or ground?", "Whole bean, always. Coffee ground in advance loses its aroma in days, and we would rather you ground it when you brew it. If you have no grinder, write to us before you order and we work it out."],
+       ["Do you ship to my city?", `We ship across Colombia from Cúcuta with ${E.transportadora}. It costs ${cop(E.costo)} and takes ${tx(E.dias)}; from ${cop(E.gratisDesde)} shipping is free.`],
+       ["How long does a bag last?", `A 250 g bag makes between 14 and 16 cups at 15 to 18 g per cup. Drink it within a month of the roast date, which is printed on the back of every bag.`],
+       [`Why only ${d.bolsas ? fmtNum(d.bolsas) + " bags" : "this many bags"}?`, "Because that is what the lot gave. We buy one lot from one farm, and we do not mix in coffee from somewhere else to make it last longer."]]
+    : [["¿Viene en grano o molido?", "En grano, siempre. El café molido con antelación pierde el aroma en días, y preferimos que lo muelas al momento. Si no tienes molino, escríbenos antes de pedir y lo resolvemos."],
+       ["¿Hacen envíos a mi ciudad?", `Enviamos a todo el país desde Cúcuta con ${E.transportadora}. Cuesta ${cop(E.costo)} y llega en ${tx(E.dias)}; desde ${cop(E.gratisDesde)} el envío va gratis.`],
+       ["¿Cuánto me dura la bolsa?", `Una bolsa de 250 g da entre 14 y 16 tazas, con 15 a 18 g por taza. Tómatelo antes de un mes desde la fecha de tostión, que va impresa al reverso de cada bolsa.`],
+       [`¿Por qué solo ${d.bolsas ? fmtNum(d.bolsas) + " bolsas" : "salen tan pocas"}?`, "Porque es lo que dio el lote. Le compramos un lote a una finca y no le mezclamos café de otra parte para que rinda más."]];
+}
+
+function viewDrop() {
+  const en = UI.lang === "en", d = CONFIG.drop, p = dropCafe(), E = CONFIG.envio;
+  const agotado = dropAgotado(), abierto = dropAbierto();
+  const comprar = agotado
+    ? `<div class="pronto-aviso">
+        <b>${t("agotado")}</b>
+        <p>${en ? `Drop ${d.n} is gone and we are not roasting more of that lot. The next drop comes from another farm, and the gang hears it first.`
+                : `El Drop ${d.n} se acabó y no vamos a tostar más de ese lote. El próximo drop viene de otra finca, y la gang se entera primero.`}</p>
+        <button class="btn primary" data-act="go" data-to="gang">${t("drop_entrar")}</button></div>`
+    : abierto && p
+      ? `<div class="buy-row">
+          <div><b class="precio-grande mono">${cop(d.precio || p.variantes[0].precio)}</b><small>${d.gramos ? gramos(d.gramos) : gramos(p.variantes[0].g)}${d.bolsas ? ` · ${fmtNum(dropRestantes())} ${en ? "left" : "quedan"}` : ""}</small></div>
+          <button class="btn primary lg" data-act="add" data-p="${p.id}" data-g="${d.gramos || p.variantes[0].g}">${t("drop_asegurar")}</button>
+        </div>
+        <p class="hint">${en ? `Ships from Cúcuta within Colombia in ${tx(E.dias)} · ${cop(E.costo)}, free from ${cop(E.gratisDesde)}`
+                             : `Sale de Cúcuta y llega en ${tx(E.dias)} · envío ${cop(E.costo)}, gratis desde ${cop(E.gratisDesde)}`}</p>`
+      : `<div class="pronto-aviso">
+          <b>${d.fecha ? (en ? "Out " : "Sale el ") + fmtFecha(d.fecha) : t("por_confirmar")}</b>
+          <p>${en ? `The gang gets the link ${d.ventaja} hours before it opens to everyone. Joining is free.`
+                  : `La gang recibe el link ${d.ventaja} horas antes de que abra para todos. Entrar es gratis.`}</p>
+          <button class="btn primary" data-act="go" data-to="gang">${t("drop_entrar")}</button></div>`;
+  const preguntas = faqsDrop(en);
+  return `<article class="prod">
+    <div class="prod-top">
+    <div class="prod-buy reveal">
+      <p class="eyebrow">Drop ${d.n} · ${dropEstado(en)}</p>
+      <h1>${agotado ? (en ? "Gone. <em>Thanks, gang.</em>" : "Se acabó. <em>Gracias, gang.</em>")
+                     : (en ? `Drop ${d.n}. <em>One farm, counted bags.</em>` : `Drop ${d.n}. <em>Una finca, bolsas contadas.</em>`)}</h1>
+      <p class="lede">${en
+        ? `Whole bean specialty coffee from one farm in Norte de Santander, Colombia, in numbered bags. Every bag says which farm it came from, how high it grew and when it was roasted.`
+        : `Café de especialidad en grano de una sola finca de Norte de Santander, Colombia, en bolsas numeradas. Cada bolsa dice de qué finca vino, a qué altura creció y cuándo se tostó.`}</p>
+      ${comprar}
+    </div>
+    <div class="prod-art reveal" style="--i:1">
+      <div class="prod-escena"><span class="g-pronto">Drop ${d.n}<i>${en ? "numbered bags" : "bolsas numeradas"}</i></span></div>
+      <div class="foto-pend">${en ? "Photo of the bag and the farm" : "Foto de la bolsa y de la finca"}</div>
+    </div>
+    </div>
+
+    <section class="prod-ficha reveal" style="--i:2" aria-labelledby="dp-reporte">
+      <div class="section-head"><p class="eyebrow">${en ? "The plug's report" : "El reporte del plug"}</p>
+        <h2 id="dp-reporte">${en ? "Where this one <em>comes from</em>" : "De dónde <em>sale este</em>"}</h2>
+        <p>${en ? "The same report that goes on the back of the bag. A row with nothing in it is a number we have not checked yet; we do not fill it in by guessing."
+                : "El mismo reporte que va al reverso de la bolsa. Una fila vacía es un dato que todavía no comprobamos, y no lo llenamos a la adivina."}</p></div>
+      ${reporteDelPlug(en)}
+    </section>
+
+    <section class="prod-ficha reveal" style="--i:3" aria-labelledby="dp-cifras">
+      <div class="section-head"><p class="eyebrow">${en ? "Quantity and price" : "Cantidad y precio"}</p>
+        <h2 id="dp-cifras">${en ? "How many, <em>and at what price</em>" : "Cuántas, <em>y a cuánto</em>"}</h2></div>
+      <table class="ficha-tabla"><tbody>${dropCifras(en).map(([k, v]) => `<tr><th scope="row">${k}</th><td class="fv">${esc(v)}</td></tr>`).join("")}</tbody></table>
+      <p class="hint"><a href="${ruta("drops")}" data-act="go" data-to="drops">${en ? "How a drop works" : "Cómo funciona un drop"}</a> · <a href="${ruta("gang")}" data-act="go" data-to="gang">${en ? "Join the gang" : "Entrar a la gang"}</a></p>
+    </section>
+
+    ${faqsHTML(preguntas, en)}</article>`;
+}
+
+function faqsGang(en) {
+  return en
+    ? [["How much does it cost to join the gang?", "Nothing. You leave your email, we tell you about each drop and you buy before everyone else. There is no fee and no minimum purchase."],
+       ["What will you send me?", `Drops, restocks and gang things. Nothing else: no daily emails and no offers from anybody else. ${CONFIG.comunidad} is the only one who writes to you.`],
+       ["How do I leave?", "Every email has an unsubscribe link, and you can also write to us and we take you off the list the same day."],
+       ["Do I have to buy to stay in?", "No. You can be in the gang for years without buying. The early access is there whenever you want to use it."]]
+    : [["¿Cuánto cuesta entrar a la gang?", "Nada. Dejas tu correo, te avisamos de cada drop y compras antes que todos. No hay cuota ni compra mínima."],
+       ["¿Qué me van a mandar?", `Drops, restocks y cosas de la gang. Nada más: ni correos todos los días ni ofertas de terceros. Solo te escribe ${CONFIG.comunidad}.`],
+       ["¿Cómo me salgo?", "Cada correo trae el enlace para darte de baja, y también puedes escribirnos y te sacamos de la lista el mismo día."],
+       ["¿Tengo que comprar para seguir adentro?", "No. Puedes estar en la gang años sin comprar. El acceso anticipado está ahí el día que lo quieras usar."]];
+}
+
+function viewGang() {
+  const en = UI.lang === "en", d = CONFIG.drop;
+  const ventajas = en
+    ? [["You hear it first", "The date and the hour of each drop reach you before they are public."],
+       [`You buy ${d.ventaja} hours earlier`, "The buying link opens for the gang first. Then it opens for everyone else."],
+       ["You get a member number", "It comes in the card inside your first bag, and it does not change."]]
+    : [["Te enteras primero", "La fecha y la hora de cada drop te llegan antes de que sean públicas."],
+       [`Compras ${d.ventaja} horas antes`, "El link de compra abre primero para la gang. Después abre para todo el mundo."],
+       ["Tienes número de miembro", "Te llega en la tarjeta que va dentro de tu primera bolsa, y no cambia."]];
+  const preguntas = faqsGang(en);
+  return `<div class="view-head">
+      <div><p class="eyebrow reveal">${t("nav_gang")}</p>
+        <h1 class="reveal" style="--i:1">${en ? "The gang <em>hears it first.</em>" : "La gang <em>se entera primero.</em>"}</h1>
+        <p class="reveal" style="--i:2">${en
+          ? `The gang is the mailing list of ${esc(CONFIG.comunidad)}, the coffee brand from Norte de Santander, Colombia, that sells in numbered drops. Joining is free: you get each drop before it is public and you buy ${d.ventaja} hours earlier.`
+          : `La gang es la lista de correo de ${esc(CONFIG.comunidad)}, la marca de café de Norte de Santander, Colombia, que vende en drops numerados. Entrar es gratis: te llega cada drop antes de que sea público y compras ${d.ventaja} horas antes.`}</p></div>
+    </div>
+
+    <section class="g-sec" aria-labelledby="gg-que">
+      <div class="g-head g-io"><span class="g-num">01</span><p class="g-kicker">${en ? "What you get" : "Qué te da"}</p>
+        <h2 id="gg-que">${en ? "Three things, <em>and no fee.</em>" : "Tres cosas, <em>y ninguna cuota.</em>"}</h2></div>
+      <ol class="g-principios g-io" style="--i:1">${ventajas.map(([tt, x]) => `<li><b>${esc(tt)}</b><span>${esc(x)}</span></li>`).join("")}</ol>
+    </section>
+
+    <section class="g-comunidad" aria-labelledby="gg-entrar">
+      <div>
+        <h2 id="gg-entrar">${en ? "Join <em>the gang</em>" : "Entra a <em>la gang</em>"}</h2>
+        <p>${en ? `One email and you are in. ${d.fecha ? `Drop ${d.n} goes out ${fmtFecha(d.fecha)}.` : `Drop ${d.n} has no date yet: you will be the first to know.`}`
+                : `Un correo y ya estás. ${d.fecha ? `El Drop ${d.n} sale el ${fmtFecha(d.fecha)}.` : `El Drop ${d.n} todavía no tiene fecha: vas a ser de los primeros en saberlo.`}`}</p>
+      </div>
+      <form class="g-comunidad-form" data-form="gang" novalidate>
+        <label class="lbl" for="gang-mail">${en ? "Email" : "Correo electrónico"}</label>
+        <div><input id="gang-mail" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none" placeholder="${en ? "you@email.com" : "tu@correo.com"}">
+          <button class="btn primary" type="submit">${t("drop_entrar")}${icono("flecha", "ico")}</button></div>
+        <label class="g-consiente"><input type="checkbox" id="gang-ok"> <span>${en ? `I agree to receive drops and news from ${esc(CONFIG.marca)} by email.` : `Acepto recibir los drops y noticias de ${esc(CONFIG.marca)} por correo.`}</span></label>
+        <small>${en ? "No spam: just drops and restocks. Leave whenever you like." : "Sin spam: solo drops y restocks. Te sales cuando quieras."}
+          <a href="${ruta("privacidad")}" data-act="go" data-to="privacidad">${en ? "Privacy policy" : "Política de privacidad"}</a></small>
+      </form>
+    </section>
+
+    ${faqsHTML(preguntas, en)}`;
+}
+
+/* Entrar a la gang: el correo se guarda igual que las listas de espera, con su
+   propia etiqueta, para que en el panel se vea quién es de la gang. */
+function entrarGang() {
+  const en = UI.lang === "en";
+  const correo = ($("#gang-mail")?.value || "").trim(), ok = $("#gang-ok")?.checked;
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) return toast(en ? "Check your email address." : "Revisa tu correo.", { type: "err" });
+  if (!ok) return toast(en ? "Tick the box to join." : "Marca la casilla para entrar.", { type: "err" });
+  S.espera.push({ id: nextId("GA"), producto: "gang", correo, fecha: isoToday(), consentimiento: true }); save();
+  registrar("gang", { correo, consentimiento: true },
+    en ? `Hi, I want to join the gang of ${CONFIG.comunidad} and I agree to receive the drops by email. My email: ${correo}`
+       : `Hola, quiero entrar a la gang de ${CONFIG.comunidad} y acepto recibir los drops por correo. Mi correo: ${correo}`,
+    `${CONFIG.comunidad} · ${en ? "the gang" : "la gang"}`);
+  const btn = $('[data-form="gang"] button[type="submit"]'); if (btn) btn.disabled = true;
+}
+
 function viewDiario() {
   const en = UI.lang === "en";
   return `<div class="view-head">

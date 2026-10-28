@@ -14,6 +14,24 @@ const CONFIG = {
   /* Secciones apagadas hasta que estén listas: no salen en el menú, ni en el inicio,
      ni en el sitemap, y su dirección da 404. Para volver a mostrarlas, quitarlas de aquí. */
   ocultas: ["subasta", "diario"],
+  /* EL DROP QUE VIENE. Un lote pequeño que sale un día, a una hora, y se acaba.
+     Mientras un dato esté vacío, la página dice "por confirmar": no se inventa ninguno.
+     - estado: "expectativa" (anunciado, sin abrir) · "abierto" (se puede comprar) · "agotado"
+     - fecha: cuando abre AL PÚBLICO, en hora de Colombia. La gang compra `ventaja` horas antes.
+     - cafe: el id del café del lote (S.productos), cuando se sepa cuál es.
+     Sin fecha no se publica el dato estructurado del evento ni la cuenta regresiva. */
+  drop: {
+    n: "001",
+    estado: "expectativa",
+    fecha: "",            // "2026-11-19T19:00:00-05:00"
+    ventaja: 2,           // horas que la gang compra antes que el resto
+    bolsas: 0,            // 80
+    vendidas: 0,
+    gramos: 0,            // 250
+    precio: 0,            // 38000
+    cafe: "",             // "C-CAS-250" cuando se confirme el lote
+    tostion: "",          // "2026-11-16"
+  },
   /* La lista para tomar café, la de Nandez. El id es lo que va después de /playlist/
      en el enlace de Spotify. */
   spotify: { playlist: "304MmcqXlTA1ZhuYo81OWR", nombre: "Coffee & chill" },
@@ -84,6 +102,9 @@ const T = {
   nav_pedido: { es: "Pedido", en: "Order" }, nav_mas: { es: "Más", en: "More" },
   nav_tienda: { es: "Tienda", en: "Shop" }, nav_cafes_esp: { es: "Cafés de especialidad", en: "Specialty coffee" },
   nav_accesorios: { es: "Accesorios y merch", en: "Gear and merch" },
+  nav_drops: { es: "Drops", en: "Drops" }, nav_gang: { es: "La gang", en: "The gang" },
+  drop_entrar: { es: "Entrar a la gang", en: "Join the gang" },
+  drop_asegurar: { es: "Asegurar la mía", en: "Get mine" },
   comprar: { es: "Comprar", en: "Buy" }, agregar: { es: "Agregar al pedido", en: "Add to order" },
   ver_cafe: { es: "Ver el café", en: "View coffee" }, agotado: { es: "Agotado", en: "Sold out" },
   pedido: { es: "Tu pedido", en: "Your order" }, total: { es: "Total", en: "Total" },
@@ -272,7 +293,7 @@ function idiomaGuardado() { try { return localStorage.getItem("nandez-lang"); } 
 
 let S = load() || seed();
 const UI = { view: "inicio", lang: idiomaGuardado() || (navigator.language || "es").slice(0, 2) === "en" ? "en" : "es",
-  atab: "cotizador", animate: true, carrito: [], au: null, q: null, cafe: null, entrada: null };
+  atab: "pedidos", animate: true, carrito: [], au: null, q: null, cafe: null, entrada: null };
 
 /* ---------- utilidades ---------- */
 const $ = (s, r = document) => r.querySelector(s);
@@ -285,7 +306,16 @@ const usd = (n) => "USD " + Number(n || 0).toLocaleString(UI.lang === "en" ? "en
 const usdLb = (n) => "USD " + (Number(n || 0) / 2.20462).toLocaleString(UI.lang === "en" ? "en-US" : "es-CO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "/lb";
 const copK =(n) => (Math.abs(n) >= 1e6 ? "$" + fmtNum(n / 1e6, 1) + " M" : cop(n));
 const isoToday = () => new Date().toISOString().slice(0, 10);
-const fmtFecha = (iso) => iso ? new Date(iso + "T00:00:00").toLocaleDateString(UI.lang === "en" ? "en-GB" : "es-CO", { day: "numeric", month: "short", year: "numeric" }) : "";
+/* Acepta "2026-11-19" y también "2026-11-19T19:00:00-05:00" (la hora del drop).
+   Cuando la fecha trae hora, se lee en hora de Colombia: el día del drop es el
+   mismo se vea desde Bogotá o desde Berlín. */
+const fmtFecha = (iso) => {
+  if (!iso) return "";
+  const soloDia = /^\d{4}-\d{2}-\d{2}$/.test(String(iso));
+  const opt = { day: "numeric", month: "short", year: "numeric" };
+  if (!soloDia) opt.timeZone = "America/Bogota";
+  return new Date(soloDia ? iso + "T00:00:00" : iso).toLocaleDateString(UI.lang === "en" ? "en-GB" : "es-CO", opt);
+};
 const slug = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 const nextId = (p) => `${p}-${S.seq++}`;
 const num = (id, def = 0) => { const el = $("#" + id); const v = el ? parseFloat(el.value) : NaN; return isNaN(v) ? def : v; };
@@ -402,23 +432,37 @@ CONFIG.sitio = "https://cafeweb-five.vercel.app";   // cambiar cuando haya domin
 
 const RUTAS = {
   es: { inicio: "", tienda: "tienda", accesorios: "accesorios", cafes: "cafes", cafe: "cafe", subasta: "subasta", suscripcion: "suscripcion", diario: "diario", entrada: "diario",
+        drops: "drops", drop: "drop", gang: "la-gang",
         contacto: "contacto", envios: "envios-y-devoluciones", terminos: "terminos", privacidad: "privacidad" },
   en: { inicio: "", tienda: "shop", accesorios: "accessories", cafes: "coffees", cafe: "coffee", subasta: "auction", suscripcion: "subscription", diario: "journal", entrada: "journal",
+        drops: "drops", drop: "drop", gang: "the-gang",
         contacto: "contact", envios: "shipping-and-returns", terminos: "terms", privacidad: "privacy" },
 };
 const slugEntrada = (e) => slug(tx(e.titulo)).slice(0, 60);
 /* ¿La sección está prendida? (ver CONFIG.ocultas). Una entrada del diario va con el diario. */
 const conocido = (s) => !!s && !/por confirmar|pendiente/i.test(String(s));
 const historiaPublica = (f) => (f && !f.pendiente && f.historia ? tx(f.historia) : "");
-const visible = (v) => !CONFIG.ocultas.includes(v === "entrada" ? "diario" : v);
+const visible = (v) => !CONFIG.ocultas.includes(v === "entrada" ? "diario" : v === "drop" ? "drops" : v);
 /* Qué pestaña del menú se marca en cada vista: todo lo de la tienda cae en "Tienda" */
-const seccionNav = (v) => (["tienda", "cafes", "cafe", "accesorios"].includes(v) ? "tienda" : v === "entrada" ? "diario" : v);
+const seccionNav = (v) => (["tienda", "cafes", "cafe", "accesorios"].includes(v) ? "tienda" : v === "entrada" ? "diario" : v === "drop" ? "drops" : v);
+/* El drop: sus datos y en qué momento está. Un dato en cero es un dato que falta. */
+const D = () => CONFIG.drop;
+const dropFecha = () => (D().fecha ? new Date(D().fecha) : null);
+/* La hora en que abre para la gang: la ventaja antes de la apertura pública */
+const dropFechaGang = () => { const f = dropFecha(); return f ? new Date(f.getTime() - D().ventaja * 3600 * 1000) : null; };
+const dropRestantes = () => Math.max(0, (D().bolsas || 0) - (D().vendidas || 0));
+const dropAgotado = () => D().estado === "agotado" || (D().bolsas > 0 && dropRestantes() === 0);
+const dropAbierto = () => D().estado === "abierto" && !dropAgotado();
+const dropCafe = () => (D().cafe ? prodById(D().cafe) : null);
 
 function ruta(view, id, lang) {
   const L = lang || UI.lang, base = L === "en" ? "/en/" : "/";
   const enIdioma = (o) => (o && typeof o === "object" ? (o[L] ?? o.es) : o);
   const R = RUTAS[L] || RUTAS.es;
   if (view === "cafe" && id) { const p = prodById(id); return p ? base + R.cafe + "-" + slug(enIdioma(p.nombre)) : base + R.cafes; }
+  /* El drop lleva su número en la dirección (/drop-001) y esa dirección no cambia nunca:
+     es la que va en la bolsa, en la bio y en el canal de WhatsApp. */
+  if (view === "drop") return base + R.drop + "-" + (id || CONFIG.drop.n);
   if (view === "entrada" && id) { const e = S.entradas.find((x) => x.id === id); return e ? base + R.entrada + "-" + slug(enIdioma(e.titulo)).slice(0, 60) : base + R.diario; }
   /* sin barra final: Vercel redirige /en/ a /en (trailingSlash: false) y la dirección oficial no debe redirigir */
   const out = base + (R[view] ?? "");
@@ -429,12 +473,16 @@ const esIngles = (path) => /^\/en(\/|$)/.test(String(path));
 function vistaDeRuta(path) {
   const p = String(path).replace(/^\/(en(\/|$))?/, "").replace(/\.html$/, "").replace(/\/$/, "");
   if (!p || p === "index" || p.endsWith("nandez")) return { view: "inicio" };   // nandez.html: la tienda en un archivo
+  /* /drop-001: si el número no es el del drop de ahora, lleva al listado en vez de dar 404.
+     Una dirección de drop que alguien guardó o imprimió no se rompe. */
+  if (p.startsWith("drop-")) { if (!visible("drops")) return { view: "noencontrada" };
+    return p.slice(5) === CONFIG.drop.n ? { view: "drop" } : { view: "drops" }; }
   const pre = ["cafe-", "coffee-"].find((x) => p.startsWith(x));
   if (pre) { const s = p.slice(pre.length), pr = S.productos.find((x) => slug(x.nombre.es) === s || slug(x.nombre.en) === s); return pr ? { view: "cafe", id: pr.id } : { view: "cafes" }; }
   const preE = ["diario-", "journal-"].find((x) => p.startsWith(x));
   if (preE) { if (!visible("diario")) return { view: "noencontrada" };
     const s = p.slice(preE.length), e = S.entradas.find((x) => slug(x.titulo.es).slice(0, 60) === s || slug(x.titulo.en).slice(0, 60) === s); return e ? { view: "entrada", id: e.id } : { view: "diario" }; }
-  for (const R of [RUTAS.es, RUTAS.en]) { const v = Object.keys(R).find((k) => R[k] === p && k !== "cafe" && k !== "entrada"); if (v) return visible(v) ? { view: v } : { view: "noencontrada" }; }
+  for (const R of [RUTAS.es, RUTAS.en]) { const v = Object.keys(R).find((k) => R[k] === p && !["cafe", "entrada", "drop"].includes(k)); if (v) return visible(v) ? { view: v } : { view: "noencontrada" }; }
   return { view: "noencontrada" };
 }
 
@@ -500,6 +548,38 @@ function meta(view, id) {
           d: "Freshly roasted Colombian specialty coffee every month, from COP 68,000. One or two farms per shipment, with the lot data sheet. Cancel anytime." }
       : { t: "Suscripción de café colombiano · " + marca,
           d: "Café especial recién tostado cada mes, desde $68.000. Una o dos fincas por envío, con la ficha del lote. Cancelas cuando quieras." },
+    /* Drops y gang: el título y la descripción llevan las palabras que la gente busca
+       ("café de finca", "lotes numerados", "Norte de Santander"); la jerga de la marca
+       va en el H1 y en el cuerpo. Las dos cosas caben sin pelearse. */
+    drops: en
+      ? { t: "Drops: single farm coffee in numbered lots · " + marca,
+          d: "Every drop is a small lot from one farm in Norte de Santander: out on one day, at one hour, each bag numbered. When it is gone, it is gone." }
+      : { t: "Drops: café de finca en lotes numerados · " + marca,
+          d: "Cada drop es un lote pequeño de una finca de Norte de Santander: sale un día y a una hora, con su número de bolsa, y cuando se acaba no vuelve." },
+    drop: (() => {
+      const d = CONFIG.drop, n = d.n, f = dropCafe(), mun = (f && fincaDe(f).municipio) || "";
+      const cuantas = d.bolsas ? fmtNum(d.bolsas) + (en ? " numbered bags" : " bolsas numeradas") : (en ? "numbered bags" : "bolsas numeradas");
+      if (dropAgotado()) return en
+        ? { t: `Drop ${n} · sold out · ${marca}`,
+            d: `Drop ${n} sold out: ${cuantas} of whole bean coffee from Norte de Santander, and we are not roasting more of that lot. The next drop is announced in the gang first.` }
+        : { t: `Drop ${n} · agotado · ${marca}`,
+            d: `El Drop ${n} se agotó: eran ${cuantas} de café en grano de Norte de Santander y no vamos a tostar más de ese lote. El próximo se avisa primero en la gang.` };
+      if (!d.fecha || !d.precio) return en
+        ? { t: `Drop ${n} · single farm coffee from Norte de Santander · ${marca}`,
+            d: `Drop ${n}: whole bean coffee from one farm in Norte de Santander, in ${cuantas}. Date and price to be confirmed — join the gang and you hear it first.` }
+        : { t: `Drop ${n} · café de finca de Norte de Santander · ${marca}`,
+            d: `Drop ${n}: café en grano de una sola finca de Norte de Santander, en ${cuantas}. Fecha y precio por confirmar: entra a la gang y te enteras primero.` };
+      return en
+        ? { t: `Drop ${n} · ${cuantas}${mun ? " from " + mun : ""} · ${marca}`,
+            d: `Drop ${n}: ${cuantas} of whole bean coffee${mun ? " from " + mun + ", Norte de Santander" : ""}, at ${cop(d.precio)}. Out ${fmtFecha(d.fecha)}; the gang buys ${d.ventaja} hours earlier.` }
+        : { t: `Drop ${n} · ${cuantas}${mun ? " de " + mun : ""} · ${marca}`,
+            d: `Drop ${n}: ${cuantas} de café en grano${mun ? " de " + mun + ", Norte de Santander" : ""}, a ${cop(d.precio)}. Sale el ${fmtFecha(d.fecha)} y la gang compra ${d.ventaja} horas antes.` };
+    })(),
+    gang: en
+      ? { t: `The gang: buy the drop ${CONFIG.drop.ventaja} hours early · ` + marca,
+          d: `Joining the gang is free: we tell you about every coffee drop and you buy ${CONFIG.drop.ventaja} hours before everyone else. No spam, just drops and restocks.` }
+      : { t: `La gang: compra el drop ${CONFIG.drop.ventaja} horas antes · ` + marca,
+          d: `Entrar a la gang es gratis: te avisamos cada drop de café y compras ${CONFIG.drop.ventaja} horas antes que todos. Sin spam, solo drops y restocks.` },
     diario: en
       ? { t: "Journal: buying coffee in Norte de Santander · " + marca,
           d: "Farm visits, prices, yield factor, processing and brewing: what we learn buying coffee straight from growers in Norte de Santander." }

@@ -145,7 +145,7 @@ body[data-view=subasta] .foot{border-color:#6a4630;color:#c9b497}
 
 /* view head / segmented */
 .view-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;padding-block:8px 24px;border-bottom:1px solid var(--line);margin-bottom:26px}
-.view-head h2{font-size:clamp(2.1rem,4.8vw,3.8rem);line-height:1}
+.view-head h1,.view-head h2{font-size:clamp(2.1rem,4.8vw,3.8rem);line-height:1}
 .view-head p{margin:10px 0 0;color:var(--ink-2)}
 .seg{display:inline-flex;background:var(--paper-2);border-radius:999px;padding:4px;gap:2px;flex-wrap:wrap}
 .seg button{border:0;background:transparent;padding:8px 14px;border-radius:999px;font:600 13px var(--sans);color:var(--ink-2);cursor:pointer;display:flex;gap:6px;align-items:center}
@@ -1443,6 +1443,25 @@ html[lang=en] .ruta li::before{content:"Month " counter(ruta)}
 .co-hist-t{margin-top:8px}
 .co-hist{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:13.5px;color:var(--ink-2)}
 
+/* ---- panel: pedidos, despachos y suscripciones ---- */
+.op-tit{font-size:1.6rem;margin:8px 0 -8px}
+.op-alerta{border-color:var(--cherry)}.op-alerta .co-n{color:var(--cherry)}
+.op-tabla{min-width:860px}
+.op-tabla td,.op-tabla th{vertical-align:top}
+.op-tabla small{display:block;margin-top:3px;font:400 12.5px var(--sans);color:var(--ink-3)}
+.op-tabla small.err{color:var(--cherry)}
+.op-prod{font-size:13.5px;line-height:1.5}
+.op-acc{white-space:nowrap}.op-acc .btn{margin:0 4px 4px 0}
+.op-estado{display:inline-block;padding:2px 9px;border-radius:999px;border:1px solid var(--line);font:600 12px var(--sans);white-space:nowrap}
+.op-nuevo,.op-sub-espera{border-color:var(--doc);color:var(--doc)}
+.op-pagado{background:var(--cherry);border-color:var(--cherry);color:#fff}
+.op-despachado,.op-sub-activa{border-color:var(--leaf);color:var(--leaf)}
+.op-entregado,.op-cancelado,.op-sub-pausada,.op-sub-cancelada{color:var(--ink-3)}
+.op-tarde{color:var(--cherry);font-weight:600}
+.op-bono{display:grid;gap:10px;padding:22px}.op-bono h3{font-size:1.4rem}.op-bono p{margin:0}
+.cart-bono-linea{color:var(--leaf)}.cart-bono-linea .cart-del{margin-left:8px}
+.cart-bono .co-fila .input{min-width:0}
+
 /* sala de subasta */
 .auction{color:#E6D7C3}
 .auction .kicker{color:#c9b497}
@@ -1596,6 +1615,24 @@ const CONFIG = {
   /* Secciones apagadas hasta que estén listas: no salen en el menú, ni en el inicio,
      ni en el sitemap, y su dirección da 404. Para volver a mostrarlas, quitarlas de aquí. */
   ocultas: ["subasta", "diario"],
+  /* EL DROP QUE VIENE. Un lote pequeño que sale un día, a una hora, y se acaba.
+     Mientras un dato esté vacío, la página dice "por confirmar": no se inventa ninguno.
+     - estado: "expectativa" (anunciado, sin abrir) · "abierto" (se puede comprar) · "agotado"
+     - fecha: cuando abre AL PÚBLICO, en hora de Colombia. La gang compra `ventaja` horas antes.
+     - cafe: el id del café del lote (S.productos), cuando se sepa cuál es.
+     Sin fecha no se publica el dato estructurado del evento ni la cuenta regresiva. */
+  drop: {
+    n: "001",
+    estado: "expectativa",
+    fecha: "",            // "2026-11-19T19:00:00-05:00"
+    ventaja: 2,           // horas que la gang compra antes que el resto
+    bolsas: 0,            // 80
+    vendidas: 0,
+    gramos: 0,            // 250
+    precio: 0,            // 38000
+    cafe: "",             // "C-CAS-250" cuando se confirme el lote
+    tostion: "",          // "2026-11-16"
+  },
   /* La lista para tomar café, la de Nandez. El id es lo que va después de /playlist/
      en el enlace de Spotify. */
   spotify: { playlist: "304MmcqXlTA1ZhuYo81OWR", nombre: "Coffee & chill" },
@@ -1666,6 +1703,9 @@ const T = {
   nav_pedido: { es: "Pedido", en: "Order" }, nav_mas: { es: "Más", en: "More" },
   nav_tienda: { es: "Tienda", en: "Shop" }, nav_cafes_esp: { es: "Cafés de especialidad", en: "Specialty coffee" },
   nav_accesorios: { es: "Accesorios y merch", en: "Gear and merch" },
+  nav_drops: { es: "Drops", en: "Drops" }, nav_gang: { es: "La gang", en: "The gang" },
+  drop_entrar: { es: "Entrar a la gang", en: "Join the gang" },
+  drop_asegurar: { es: "Asegurar la mía", en: "Get mine" },
   comprar: { es: "Comprar", en: "Buy" }, agregar: { es: "Agregar al pedido", en: "Add to order" },
   ver_cafe: { es: "Ver el café", en: "View coffee" }, agotado: { es: "Agotado", en: "Sold out" },
   pedido: { es: "Tu pedido", en: "Your order" }, total: { es: "Total", en: "Total" },
@@ -1854,7 +1894,7 @@ function idiomaGuardado() { try { return localStorage.getItem("nandez-lang"); } 
 
 let S = load() || seed();
 const UI = { view: "inicio", lang: idiomaGuardado() || (navigator.language || "es").slice(0, 2) === "en" ? "en" : "es",
-  atab: "cotizador", animate: true, carrito: [], au: null, q: null, cafe: null, entrada: null };
+  atab: "pedidos", animate: true, carrito: [], au: null, q: null, cafe: null, entrada: null };
 
 /* ---------- utilidades ---------- */
 const $ = (s, r = document) => r.querySelector(s);
@@ -1867,7 +1907,16 @@ const usd = (n) => "USD " + Number(n || 0).toLocaleString(UI.lang === "en" ? "en
 const usdLb = (n) => "USD " + (Number(n || 0) / 2.20462).toLocaleString(UI.lang === "en" ? "en-US" : "es-CO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "/lb";
 const copK =(n) => (Math.abs(n) >= 1e6 ? "$" + fmtNum(n / 1e6, 1) + " M" : cop(n));
 const isoToday = () => new Date().toISOString().slice(0, 10);
-const fmtFecha = (iso) => iso ? new Date(iso + "T00:00:00").toLocaleDateString(UI.lang === "en" ? "en-GB" : "es-CO", { day: "numeric", month: "short", year: "numeric" }) : "";
+/* Acepta "2026-11-19" y también "2026-11-19T19:00:00-05:00" (la hora del drop).
+   Cuando la fecha trae hora, se lee en hora de Colombia: el día del drop es el
+   mismo se vea desde Bogotá o desde Berlín. */
+const fmtFecha = (iso) => {
+  if (!iso) return "";
+  const soloDia = /^\d{4}-\d{2}-\d{2}$/.test(String(iso));
+  const opt = { day: "numeric", month: "short", year: "numeric" };
+  if (!soloDia) opt.timeZone = "America/Bogota";
+  return new Date(soloDia ? iso + "T00:00:00" : iso).toLocaleDateString(UI.lang === "en" ? "en-GB" : "es-CO", opt);
+};
 const slug = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 const nextId = (p) => `${p}-${S.seq++}`;
 const num = (id, def = 0) => { const el = $("#" + id); const v = el ? parseFloat(el.value) : NaN; return isNaN(v) ? def : v; };
@@ -1984,23 +2033,37 @@ CONFIG.sitio = "https://cafeweb-five.vercel.app";   // cambiar cuando haya domin
 
 const RUTAS = {
   es: { inicio: "", tienda: "tienda", accesorios: "accesorios", cafes: "cafes", cafe: "cafe", subasta: "subasta", suscripcion: "suscripcion", diario: "diario", entrada: "diario",
+        drops: "drops", drop: "drop", gang: "la-gang",
         contacto: "contacto", envios: "envios-y-devoluciones", terminos: "terminos", privacidad: "privacidad" },
   en: { inicio: "", tienda: "shop", accesorios: "accessories", cafes: "coffees", cafe: "coffee", subasta: "auction", suscripcion: "subscription", diario: "journal", entrada: "journal",
+        drops: "drops", drop: "drop", gang: "the-gang",
         contacto: "contact", envios: "shipping-and-returns", terminos: "terms", privacidad: "privacy" },
 };
 const slugEntrada = (e) => slug(tx(e.titulo)).slice(0, 60);
 /* ¿La sección está prendida? (ver CONFIG.ocultas). Una entrada del diario va con el diario. */
 const conocido = (s) => !!s && !/por confirmar|pendiente/i.test(String(s));
 const historiaPublica = (f) => (f && !f.pendiente && f.historia ? tx(f.historia) : "");
-const visible = (v) => !CONFIG.ocultas.includes(v === "entrada" ? "diario" : v);
+const visible = (v) => !CONFIG.ocultas.includes(v === "entrada" ? "diario" : v === "drop" ? "drops" : v);
 /* Qué pestaña del menú se marca en cada vista: todo lo de la tienda cae en "Tienda" */
-const seccionNav = (v) => (["tienda", "cafes", "cafe", "accesorios"].includes(v) ? "tienda" : v === "entrada" ? "diario" : v);
+const seccionNav = (v) => (["tienda", "cafes", "cafe", "accesorios"].includes(v) ? "tienda" : v === "entrada" ? "diario" : v === "drop" ? "drops" : v);
+/* El drop: sus datos y en qué momento está. Un dato en cero es un dato que falta. */
+const D = () => CONFIG.drop;
+const dropFecha = () => (D().fecha ? new Date(D().fecha) : null);
+/* La hora en que abre para la gang: la ventaja antes de la apertura pública */
+const dropFechaGang = () => { const f = dropFecha(); return f ? new Date(f.getTime() - D().ventaja * 3600 * 1000) : null; };
+const dropRestantes = () => Math.max(0, (D().bolsas || 0) - (D().vendidas || 0));
+const dropAgotado = () => D().estado === "agotado" || (D().bolsas > 0 && dropRestantes() === 0);
+const dropAbierto = () => D().estado === "abierto" && !dropAgotado();
+const dropCafe = () => (D().cafe ? prodById(D().cafe) : null);
 
 function ruta(view, id, lang) {
   const L = lang || UI.lang, base = L === "en" ? "/en/" : "/";
   const enIdioma = (o) => (o && typeof o === "object" ? (o[L] ?? o.es) : o);
   const R = RUTAS[L] || RUTAS.es;
   if (view === "cafe" && id) { const p = prodById(id); return p ? base + R.cafe + "-" + slug(enIdioma(p.nombre)) : base + R.cafes; }
+  /* El drop lleva su número en la dirección (/drop-001) y esa dirección no cambia nunca:
+     es la que va en la bolsa, en la bio y en el canal de WhatsApp. */
+  if (view === "drop") return base + R.drop + "-" + (id || CONFIG.drop.n);
   if (view === "entrada" && id) { const e = S.entradas.find((x) => x.id === id); return e ? base + R.entrada + "-" + slug(enIdioma(e.titulo)).slice(0, 60) : base + R.diario; }
   /* sin barra final: Vercel redirige /en/ a /en (trailingSlash: false) y la dirección oficial no debe redirigir */
   const out = base + (R[view] ?? "");
@@ -2011,12 +2074,16 @@ const esIngles = (path) => /^\/en(\/|$)/.test(String(path));
 function vistaDeRuta(path) {
   const p = String(path).replace(/^\/(en(\/|$))?/, "").replace(/\.html$/, "").replace(/\/$/, "");
   if (!p || p === "index" || p.endsWith("nandez")) return { view: "inicio" };   // nandez.html: la tienda en un archivo
+  /* /drop-001: si el número no es el del drop de ahora, lleva al listado en vez de dar 404.
+     Una dirección de drop que alguien guardó o imprimió no se rompe. */
+  if (p.startsWith("drop-")) { if (!visible("drops")) return { view: "noencontrada" };
+    return p.slice(5) === CONFIG.drop.n ? { view: "drop" } : { view: "drops" }; }
   const pre = ["cafe-", "coffee-"].find((x) => p.startsWith(x));
   if (pre) { const s = p.slice(pre.length), pr = S.productos.find((x) => slug(x.nombre.es) === s || slug(x.nombre.en) === s); return pr ? { view: "cafe", id: pr.id } : { view: "cafes" }; }
   const preE = ["diario-", "journal-"].find((x) => p.startsWith(x));
   if (preE) { if (!visible("diario")) return { view: "noencontrada" };
     const s = p.slice(preE.length), e = S.entradas.find((x) => slug(x.titulo.es).slice(0, 60) === s || slug(x.titulo.en).slice(0, 60) === s); return e ? { view: "entrada", id: e.id } : { view: "diario" }; }
-  for (const R of [RUTAS.es, RUTAS.en]) { const v = Object.keys(R).find((k) => R[k] === p && k !== "cafe" && k !== "entrada"); if (v) return visible(v) ? { view: v } : { view: "noencontrada" }; }
+  for (const R of [RUTAS.es, RUTAS.en]) { const v = Object.keys(R).find((k) => R[k] === p && !["cafe", "entrada", "drop"].includes(k)); if (v) return visible(v) ? { view: v } : { view: "noencontrada" }; }
   return { view: "noencontrada" };
 }
 
@@ -2082,6 +2149,38 @@ function meta(view, id) {
           d: "Freshly roasted Colombian specialty coffee every month, from COP 68,000. One or two farms per shipment, with the lot data sheet. Cancel anytime." }
       : { t: "Suscripción de café colombiano · " + marca,
           d: "Café especial recién tostado cada mes, desde $68.000. Una o dos fincas por envío, con la ficha del lote. Cancelas cuando quieras." },
+    /* Drops y gang: el título y la descripción llevan las palabras que la gente busca
+       ("café de finca", "lotes numerados", "Norte de Santander"); la jerga de la marca
+       va en el H1 y en el cuerpo. Las dos cosas caben sin pelearse. */
+    drops: en
+      ? { t: "Drops: single farm coffee in numbered lots · " + marca,
+          d: "Every drop is a small lot from one farm in Norte de Santander: out on one day, at one hour, each bag numbered. When it is gone, it is gone." }
+      : { t: "Drops: café de finca en lotes numerados · " + marca,
+          d: "Cada drop es un lote pequeño de una finca de Norte de Santander: sale un día y a una hora, con su número de bolsa, y cuando se acaba no vuelve." },
+    drop: (() => {
+      const d = CONFIG.drop, n = d.n, f = dropCafe(), mun = (f && fincaDe(f).municipio) || "";
+      const cuantas = d.bolsas ? fmtNum(d.bolsas) + (en ? " numbered bags" : " bolsas numeradas") : (en ? "numbered bags" : "bolsas numeradas");
+      if (dropAgotado()) return en
+        ? { t: `Drop ${n} · sold out · ${marca}`,
+            d: `Drop ${n} sold out: ${cuantas} of whole bean coffee from Norte de Santander, and we are not roasting more of that lot. The next drop is announced in the gang first.` }
+        : { t: `Drop ${n} · agotado · ${marca}`,
+            d: `El Drop ${n} se agotó: eran ${cuantas} de café en grano de Norte de Santander y no vamos a tostar más de ese lote. El próximo se avisa primero en la gang.` };
+      if (!d.fecha || !d.precio) return en
+        ? { t: `Drop ${n} · single farm coffee from Norte de Santander · ${marca}`,
+            d: `Drop ${n}: whole bean coffee from one farm in Norte de Santander, in ${cuantas}. Date and price to be confirmed — join the gang and you hear it first.` }
+        : { t: `Drop ${n} · café de finca de Norte de Santander · ${marca}`,
+            d: `Drop ${n}: café en grano de una sola finca de Norte de Santander, en ${cuantas}. Fecha y precio por confirmar: entra a la gang y te enteras primero.` };
+      return en
+        ? { t: `Drop ${n} · ${cuantas}${mun ? " from " + mun : ""} · ${marca}`,
+            d: `Drop ${n}: ${cuantas} of whole bean coffee${mun ? " from " + mun + ", Norte de Santander" : ""}, at ${cop(d.precio)}. Out ${fmtFecha(d.fecha)}; the gang buys ${d.ventaja} hours earlier.` }
+        : { t: `Drop ${n} · ${cuantas}${mun ? " de " + mun : ""} · ${marca}`,
+            d: `Drop ${n}: ${cuantas} de café en grano${mun ? " de " + mun + ", Norte de Santander" : ""}, a ${cop(d.precio)}. Sale el ${fmtFecha(d.fecha)} y la gang compra ${d.ventaja} horas antes.` };
+    })(),
+    gang: en
+      ? { t: `The gang: buy the drop ${CONFIG.drop.ventaja} hours early · ` + marca,
+          d: `Joining the gang is free: we tell you about every coffee drop and you buy ${CONFIG.drop.ventaja} hours before everyone else. No spam, just drops and restocks.` }
+      : { t: `La gang: compra el drop ${CONFIG.drop.ventaja} horas antes · ` + marca,
+          d: `Entrar a la gang es gratis: te avisamos cada drop de café y compras ${CONFIG.drop.ventaja} horas antes que todos. Sin spam, solo drops y restocks.` },
     diario: en
       ? { t: "Journal: buying coffee in Norte de Santander · " + marca,
           d: "Farm visits, prices, yield factor, processing and brewing: what we learn buying coffee straight from growers in Norte de Santander." }
@@ -3045,6 +3144,191 @@ document.addEventListener("input", (e) => {
   if (e.target.id === "co-mensaje") CO.borrador.mensaje = e.target.value;
 });
 
+/* ---- operacion.js ---- */
+/* ============================================================
+   PANEL · PEDIDOS, DESPACHOS Y SUSCRIPCIONES
+   Lo que llega de la tienda vive en la misma Hoja de Google que los
+   correos (tools/correos/Codigo.gs) y se lee con la misma clave.
+   - Pedidos: nuevo → pagado → despachado (con guía, le llega al
+     cliente por correo) → entregado.
+   - Suscripciones: en espera (dejó el correo) → activa (pagó, con la
+     fecha del primer envío). Cada envío registrado corre la fecha
+     1 o 2 meses y le manda la guía al suscriptor.
+   Cada mañana el script le escribe a Nandez lo que toca despachar.
+   ============================================================ */
+const OP = { datos: null, cargando: false, error: null, filtro: "pendientes" };
+const OP_ESTADOS = {
+  nuevo: { txt: "Por confirmar", sig: "pagado", accion: "Marcar pagado" },
+  pagado: { txt: "Por despachar", sig: "despachado", accion: "Despachar" },
+  despachado: { txt: "En camino", sig: "entregado", accion: "Entregado" },
+  entregado: { txt: "Entregado" },
+  cancelado: { txt: "Cancelado" },
+};
+const SUB_ESTADOS = { espera: "En espera", activa: "Activa", pausada: "Pausada", cancelada: "Cancelada" };
+const opDia = (v) => (v ? String(v).slice(0, 10) : "");
+const opDias = (v) => Math.round((new Date(opDia(v) + "T00:00:00") - new Date(isoToday() + "T00:00:00")) / 864e5);
+const opPlan = (id) => { const p = PLANES.find((x) => x.id === id) || (CAFETERIA.id === id ? CAFETERIA : null); return p ? tx(p.nombre) : id; };
+
+function opCargar() {
+  if (!CONFIG.registro || !coClave()) return;
+  OP.cargando = true; OP.error = null; render();
+  fetch(CONFIG.registro + "?accion=operacion&clave=" + encodeURIComponent(coClave()))
+    .then((r) => r.json())
+    .then((j) => {
+      OP.cargando = false;
+      if (!j.ok) OP.error = j.error === "clave" ? "La clave no coincide. Cámbiala en la pestaña Correos." : "El script respondió con un error.";
+      else OP.datos = j;
+      render();
+    })
+    .catch(() => { OP.cargando = false; OP.error = "No se pudo conectar con la hoja. Si el script se actualizó, publica una versión nueva de la implementación."; render(); });
+}
+function opMandar(cuerpo, listo) {
+  closeModal();
+  return fetch(CONFIG.registro, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ clave: coClave(), ...cuerpo }) })
+    .then((r) => r.json())
+    .then((j) => { if (!j.ok) throw new Error(j.error); toast(listo(j)); opCargar(); })
+    .catch(() => toast("No se guardó. Revisa la conexión y vuelve a intentar.", { type: "err" }));
+}
+
+function viewOperacion() {
+  if (!CONFIG.registro || !coClave()) return `<section class="co-vacio">
+      <p class="eyebrow">Pedidos</p><h2>Primero, conecta la hoja</h2>
+      <p class="hint">Los pedidos y las suscripciones se guardan en la misma Hoja de Google que los correos. Conéctala en la pestaña <b>Correos</b> y vuelve aquí.</p>
+      <div class="co-fila"><button class="btn primary" data-act="atab" data-tab="correos">Ir a Correos</button></div></section>`;
+  if (!OP.datos && !OP.cargando && !OP.error) setTimeout(opCargar, 0);
+  if (!OP.datos) return `<section class="co-vacio"><p class="eyebrow">Pedidos</p>
+      <h2>${OP.error ? "No se pudo cargar" : "Cargando pedidos…"}</h2>
+      ${OP.error ? `<p class="err">${esc(OP.error)}</p><div class="co-fila"><button class="btn" data-act="op-cargar">Intentar otra vez</button></div>` : ""}</section>`;
+
+  const { pedidos, suscripciones: subs, bonos } = OP.datos;
+  const porConfirmar = pedidos.filter((p) => p.estado === "nuevo"), porDespachar = pedidos.filter((p) => p.estado === "pagado");
+  const activas = subs.filter((s) => s.estado === "activa").sort((a, b) => opDia(a.proximo).localeCompare(opDia(b.proximo)));
+  const tocan = activas.filter((s) => s.proximo && opDias(s.proximo) <= 7);
+  const kpi = (n, txt, alerta) => `<div class="mkt${alerta && n ? " op-alerta" : ""}"><small>${txt}</small><b class="mono co-n">${fmtNum(n)}</b></div>`;
+  const filtros = [["pendientes", "Pendientes", porConfirmar.length + porDespachar.length], ["todos", "Todos", pedidos.length],
+    ...Object.entries(OP_ESTADOS).map(([k, v]) => [k, v.txt, pedidos.filter((p) => p.estado === k).length])];
+  const lista = pedidos.filter((p) => OP.filtro === "todos" || (OP.filtro === "pendientes" ? ["nuevo", "pagado"].includes(p.estado) : p.estado === OP.filtro));
+
+  return `<section class="co op">
+    <div class="section-head co-head"><p class="eyebrow">Pedidos y despachos</p>
+      <h2>Lo que hay que <em>despachar</em></h2>
+      <p class="hint">Cada pedido de la tienda llega aquí. Cuando lo despachas con la guía, al cliente le llega por correo. Cada mañana a las 7 te llega a ${esc(CONFIG.correo)} el resumen de lo que toca.</p>
+      <div class="co-fila"><button class="btn sm" data-act="op-cargar">${OP.cargando ? "Actualizando…" : "Actualizar"}</button>
+        <a class="btn sm" href="${esc(OP.datos.hoja)}" target="_blank" rel="noopener">Abrir la hoja</a></div></div>
+
+    <div class="mkt-grid">${kpi(porConfirmar.length, "Por confirmar el pago", true)}${kpi(porDespachar.length, "Por despachar", true)}
+      ${kpi(tocan.length, "Suscripciones en 7 días", true)}${kpi(bonos.usados, `Bonos usados de ${fmtNum(bonos.entregados)}`)}</div>
+
+    <h3 class="op-tit">Pedidos</h3>
+    <div class="co-etiquetas" role="group" aria-label="Filtrar pedidos">
+      ${filtros.map(([k, txt, n]) => `<button class="chip" aria-pressed="${OP.filtro === k}" data-act="op-filtro" data-id="${k}">${txt} · ${n}</button>`).join("")}</div>
+    <div class="table-scroll"><table class="b2b-tabla co-tabla op-tabla">
+      <thead><tr><th>Pedido</th><th>Cliente</th><th>Productos</th><th>Total</th><th>Estado</th><th></th></tr></thead>
+      <tbody>${lista.length ? lista.map((p) => {
+        const e = OP_ESTADOS[p.estado] || { txt: p.estado };
+        return `<tr>
+        <th scope="row"><span class="mono">${esc(p.id)}</span><small>${coFecha(p.fecha)}</small></th>
+        <td>${esc(p.nombre)}<small>${esc([p.ciudad, p.tel && "WA " + p.tel, p.correo].filter(Boolean).join(" · "))}</small></td>
+        <td class="op-prod">${esc(p.productos).replace(/\n/g, "<br>")}${p.notas ? `<small class="err">${esc(p.notas)}</small>` : ""}</td>
+        <td class="mono">${cop(p.total)}${p.bono ? `<small>bono ${esc(p.bono)} −${cop(p.descuento)}</small>` : ""}</td>
+        <td><span class="op-estado op-${esc(p.estado)}">${esc(e.txt)}</span>${p.guia ? `<small>${esc(p.transportadora)} · ${esc(p.guia)}</small>` : ""}</td>
+        <td class="op-acc">${e.sig ? `<button class="btn sm ${p.estado === "pagado" ? "primary" : ""}" data-act="op-avanzar" data-id="${esc(p.id)}">${e.accion}</button>` : ""}
+          ${p.estado === "nuevo" ? `<button class="btn sm" data-act="op-cancelar" data-id="${esc(p.id)}">Cancelar</button>` : ""}
+          ${p.tel ? `<a class="btn sm" href="https://wa.me/57${esc(String(p.tel).replace(/\D/g, "").replace(/^57(?=\d{10}$)/, ""))}" target="_blank" rel="noopener">WhatsApp</a>` : ""}</td></tr>`;
+      }).join("") : `<tr><td colspan="6" class="hint">Nada por aquí${OP.filtro === "pendientes" ? ": todo está despachado" : ""}.</td></tr>`}</tbody></table></div>
+
+    <h3 class="op-tit">Suscripciones</h3>
+    <p class="hint">Mientras no haya cobro automático, quien se suscribe queda <b>en espera</b>. Cuando pague, actívala con la fecha del primer envío.</p>
+    <div class="table-scroll"><table class="b2b-tabla co-tabla op-tabla">
+      <thead><tr><th>Suscriptor</th><th>Plan</th><th>Molienda</th><th>Próximo envío</th><th>Estado</th><th></th></tr></thead>
+      <tbody>${subs.length ? [...activas, ...subs.filter((s) => s.estado !== "activa")].map((s) => {
+        const d = s.proximo ? opDias(s.proximo) : null;
+        const cuando = s.estado !== "activa" || d == null ? "—"
+          : d < 0 ? `<span class="op-tarde">Atrasado ${-d} ${-d === 1 ? "día" : "días"}</span>` : d === 0 ? `<span class="op-tarde">Hoy</span>` : `${coFecha(s.proximo)}<small>en ${d} ${d === 1 ? "día" : "días"}</small>`;
+        return `<tr>
+        <th scope="row">${esc(s.correo)}<small>${esc(s.ciudad || "")}</small></th>
+        <td>${esc(opPlan(s.plan))}<small>${esc(s.pago)} · ${Number(s.cada) === 2 ? "cada 2 meses" : "cada mes"}${s.kit === "sí" ? " · con kit" : ""}</small></td>
+        <td>${esc(s.molienda || "—")}</td>
+        <td class="mono">${cuando}${s.envios ? `<small>${fmtNum(s.envios)} enviados</small>` : ""}</td>
+        <td><span class="op-estado op-sub-${esc(s.estado)}">${esc(SUB_ESTADOS[s.estado] || s.estado)}</span></td>
+        <td class="op-acc">${s.estado === "activa" ? `<button class="btn sm ${d != null && d <= 3 ? "primary" : ""}" data-act="op-sub-envio" data-id="${s.fila}">Registrar envío</button>
+            <button class="btn sm" data-act="op-sub" data-id="${s.fila}" data-estado="pausada">Pausar</button>`
+          : s.estado === "cancelada" ? "" : `<button class="btn sm" data-act="op-sub-activar" data-id="${s.fila}">${s.estado === "pausada" ? "Reanudar" : "Activar"}</button>`}</td></tr>`;
+      }).join("") : `<tr><td colspan="6" class="hint">Todavía nadie se ha suscrito.</td></tr>`}</tbody></table></div>
+
+    <section class="wpanel op-bono">
+      <h3>El bono de bienvenida</h3>
+      <p class="hint">A quien se une a la comunidad le llega solo un correo con un código de ${BONO_PCT_PANEL} % para su primer pedido, que vence a los 30 días. A los 23 días, si no lo ha usado, le llega un recordatorio.</p>
+      <p><b class="mono">${fmtNum(bonos.entregados)}</b> entregados · <b class="mono">${fmtNum(bonos.usados)}</b> usados
+        (${bonos.entregados ? fmtNum((bonos.usados / bonos.entregados) * 100) : 0} %) · <b class="mono">${fmtNum(bonos.vigentes)}</b> vigentes sin usar
+        ${bonos.sinEnviar ? ` · <span class="err">${fmtNum(bonos.sinEnviar)} esperan cupo de Gmail (salen mañana)</span>` : ""}</p>
+    </section>
+  </section>`;
+}
+/* El panel no carga la tienda: el porcentaje es el mismo BONO.pct de Codigo.gs */
+const BONO_PCT_PANEL = 10;
+
+function opAvanzar(id) {
+  const p = OP.datos.pedidos.find((x) => x.id === id); if (!p) return;
+  const sig = OP_ESTADOS[p.estado]?.sig;
+  if (sig !== "despachado") return opMandar({ accion: "pedido", id, estado: sig }, () => `${id}: ${OP_ESTADOS[sig].txt.toLowerCase()}.`);
+  modal(`Despachar <em>${esc(id)}</em>`, `
+    <p class="hint">${esc(p.nombre)} · ${esc(p.ciudad)}<br>${esc(p.productos).replace(/\n/g, "<br>")}</p>
+    <div class="form-grid">
+      <div class="field"><label class="lbl" for="op-transp">Transportadora</label><input id="op-transp" class="input" value="${esc(CONFIG.envio.transportadora)}"></div>
+      <div class="field"><label class="lbl" for="op-guia">Número de guía</label><input id="op-guia" class="input mono" autocomplete="off"></div></div>
+    <p class="hint">${p.correo ? `A ${esc(p.correo)} le llega la guía por correo.` : "Este pedido no dejó correo: mándale la guía por WhatsApp."}</p>
+    <div class="dlg-actions"><button class="btn" data-act="close">Cancelar</button><button class="btn primary" data-act="op-despachar-ok" data-id="${esc(id)}">Despachado</button></div>`, "narrow");
+}
+function opSubEnvio(fila) {
+  const s = OP.datos.suscripciones.find((x) => x.fila === +fila); if (!s) return;
+  modal("Registrar envío", `
+    <p class="hint">${esc(s.correo)} · ${esc(opPlan(s.plan))} · molienda ${esc(s.molienda)}<br>La próxima fecha se corre ${Number(s.cada) === 2 ? "dos meses" : "un mes"}.</p>
+    <div class="form-grid">
+      <div class="field"><label class="lbl" for="op-transp">Transportadora</label><input id="op-transp" class="input" value="${esc(CONFIG.envio.transportadora)}"></div>
+      <div class="field"><label class="lbl" for="op-guia">Número de guía</label><input id="op-guia" class="input mono" autocomplete="off"></div></div>
+    <div class="dlg-actions"><button class="btn" data-act="close">Cancelar</button><button class="btn primary" data-act="op-sub-envio-ok" data-id="${s.fila}">Enviado</button></div>`, "narrow");
+}
+function opSubActivar(fila) {
+  const s = OP.datos.suscripciones.find((x) => x.fila === +fila); if (!s) return;
+  modal(`${s.estado === "pausada" ? "Reanudar" : "Activar"} la suscripción`, `
+    <p class="hint">${esc(s.correo)} · ${esc(opPlan(s.plan))}. Actívala cuando haya pagado.</p>
+    <div class="field"><label class="lbl" for="op-proximo">Fecha del ${s.envios ? "próximo" : "primer"} envío</label><input id="op-proximo" class="input" type="date" value="${isoToday()}"></div>
+    <div class="dlg-actions"><button class="btn" data-act="close">Cancelar</button><button class="btn primary" data-act="op-sub-activar-ok" data-id="${s.fila}">Activar</button></div>`, "narrow");
+}
+const opGuia = () => ({ transportadora: ($("#op-transp")?.value || "").trim(), guia: ($("#op-guia")?.value || "").trim() });
+const opAviso = (j) => (j.avisado ? " Le llegó la guía por correo." : "");
+
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-act^='op-']"); if (!el || el.disabled) return;
+  const id = el.dataset.id;
+  switch (el.dataset.act) {
+    case "op-cargar": OP.error = null; return opCargar();
+    case "op-filtro": OP.filtro = id; return render();
+    case "op-avanzar": return opAvanzar(id);
+    case "op-cancelar":
+      return modal("Cancelar el pedido", `<p class="hint">El pedido <b>${esc(id)}</b> queda cancelado. No se le avisa al cliente.</p>
+        <div class="dlg-actions"><button class="btn" data-act="close">Volver</button><button class="btn primary" data-act="op-cancelar-ok" data-id="${esc(id)}">Sí, cancelar</button></div>`, "narrow");
+    case "op-cancelar-ok": return opMandar({ accion: "pedido", id, estado: "cancelado" }, () => `${id} cancelado.`);
+    case "op-despachar-ok": {
+      const g = opGuia(); if (!g.guia) return toast("Escribe el número de guía.", { type: "err" });
+      return opMandar({ accion: "pedido", id, estado: "despachado", ...g }, (j) => `${id} despachado.${opAviso(j)}`);
+    }
+    case "op-sub-envio": return opSubEnvio(id);
+    case "op-sub-envio-ok": {
+      const g = opGuia(); if (!g.guia) return toast("Escribe el número de guía.", { type: "err" });
+      return opMandar({ accion: "sub-envio", fila: +id, ...g }, (j) => `Envío registrado. El próximo: ${coFecha(j.proximo)}.${opAviso(j)}`);
+    }
+    case "op-sub-activar": return opSubActivar(id);
+    case "op-sub-activar-ok": {
+      const f = $("#op-proximo")?.value; if (!f) return toast("Escoge la fecha.", { type: "err" });
+      return opMandar({ accion: "suscripcion", fila: +id, estado: "activa", proximo: f }, () => `Suscripción activa. Primer envío: ${coFecha(f)}.`);
+    }
+    case "op-sub": return opMandar({ accion: "suscripcion", fila: +id, estado: el.dataset.estado }, () => "Suscripción pausada.");
+  }
+});
+
 /* ---- admin.js ---- */
 /* ============================================================
    PANEL INTERNO · aplicación aparte, no va en la página pública
@@ -3079,7 +3363,7 @@ function viewLogin() {
       <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor">${[0, 72, 144, 216, 288].map((r) => `<ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(${r} 12 12)"/>`).join("")}</g><circle cx="12" cy="12" r="1.3" fill="var(--paper)"/></svg>
       <p class="eyebrow">${esc(CONFIG.marca)} · panel interno</p>
       <h1>Entrar</h1>
-      <p class="hint">Cotizador, inventario, clientes, correos y mercado. Esta parte no aparece en la página pública.</p>
+      <p class="hint">Pedidos, cotizador, inventario, clientes, correos y mercado. Esta parte no aparece en la página pública.</p>
       <form class="login-form" onsubmit="return false">
         <div class="field"><label class="lbl" for="lg-mail">Correo</label>
           <input id="lg-mail" class="input" type="email" autocomplete="username" placeholder="correo@dominio.com"></div>
@@ -3103,8 +3387,8 @@ async function entrar() {
 function salir() { try { sessionStorage.removeItem(AUTH.sesion); } catch {} UI.animate = true; render(); }
 
 /* ---------- panel ---------- */
-const ATABS = [["cotizador", "Cotizador"], ["inventario", "Inventario"], ["clientes", "Clientes"], ["correos", "Correos"], ["mercado", "Mercado"]];
-const APANELS = { cotizador: viewCotizador, inventario: viewInventario, clientes: viewClientes, correos: viewCorreos, mercado: viewMercado };
+const ATABS = [["pedidos", "Pedidos"], ["cotizador", "Cotizador"], ["inventario", "Inventario"], ["clientes", "Clientes"], ["correos", "Correos"], ["mercado", "Mercado"]];
+const APANELS = { pedidos: viewOperacion, cotizador: viewCotizador, inventario: viewInventario, clientes: viewClientes, correos: viewCorreos, mercado: viewMercado };
 
 function viewPanel() {
   const quieto = S.compras.reduce((s, c) => s + enJuego(c), 0);

@@ -37,8 +37,8 @@ body[data-view=subasta] h1 em,body[data-view=subasta] h2 em,body[data-view=subas
 .eyebrow{color:var(--ink);font-weight:600;font-size:11px}
 .eyebrow::before{content:"";width:18px;height:1px;background:var(--cherry)}
 body[data-view=subasta] .eyebrow{color:var(--crema)}
-.section-head h2,.view-head h2{font-size:clamp(2.2rem,5.4vw,4.4rem);text-transform:uppercase;letter-spacing:-.035em}
-.section-head h2 em,.view-head h2 em{text-transform:none;font-size:.92em}
+.section-head h2,.view-head h1,.view-head h2{font-size:clamp(2.2rem,5.4vw,4.4rem);text-transform:uppercase;letter-spacing:-.035em}
+.section-head h2 em,.view-head h1 em,.view-head h2 em{text-transform:none;font-size:.92em}
 .section-head p,.view-head p{font-size:1.05rem;color:var(--ink-2);max-width:56ch}
 .view-head{border-bottom:1px solid var(--ink)}
 .lede,.portada-lede{font-family:var(--sans)}

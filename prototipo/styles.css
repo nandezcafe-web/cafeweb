@@ -134,7 +134,7 @@ body[data-view=subasta] .foot{border-color:#6a4630;color:#c9b497}
 
 /* view head / segmented */
 .view-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;padding-block:8px 24px;border-bottom:1px solid var(--line);margin-bottom:26px}
-.view-head h2{font-size:clamp(2.1rem,4.8vw,3.8rem);line-height:1}
+.view-head h1,.view-head h2{font-size:clamp(2.1rem,4.8vw,3.8rem);line-height:1}
 .view-head p{margin:10px 0 0;color:var(--ink-2)}
 .seg{display:inline-flex;background:var(--paper-2);border-radius:999px;padding:4px;gap:2px;flex-wrap:wrap}
 .seg button{border:0;background:transparent;padding:8px 14px;border-radius:999px;font:600 13px var(--sans);color:var(--ink-2);cursor:pointer;display:flex;gap:6px;align-items:center}
@@ -1431,3 +1431,22 @@ html[lang=en] .ruta li::before{content:"Month " counter(ruta)}
 .co-resultado{margin:0;font-weight:600;color:var(--ink)}
 .co-hist-t{margin-top:8px}
 .co-hist{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:13.5px;color:var(--ink-2)}
+
+/* ---- panel: pedidos, despachos y suscripciones ---- */
+.op-tit{font-size:1.6rem;margin:8px 0 -8px}
+.op-alerta{border-color:var(--cherry)}.op-alerta .co-n{color:var(--cherry)}
+.op-tabla{min-width:860px}
+.op-tabla td,.op-tabla th{vertical-align:top}
+.op-tabla small{display:block;margin-top:3px;font:400 12.5px var(--sans);color:var(--ink-3)}
+.op-tabla small.err{color:var(--cherry)}
+.op-prod{font-size:13.5px;line-height:1.5}
+.op-acc{white-space:nowrap}.op-acc .btn{margin:0 4px 4px 0}
+.op-estado{display:inline-block;padding:2px 9px;border-radius:999px;border:1px solid var(--line);font:600 12px var(--sans);white-space:nowrap}
+.op-nuevo,.op-sub-espera{border-color:var(--doc);color:var(--doc)}
+.op-pagado{background:var(--cherry);border-color:var(--cherry);color:#fff}
+.op-despachado,.op-sub-activa{border-color:var(--leaf);color:var(--leaf)}
+.op-entregado,.op-cancelado,.op-sub-pausada,.op-sub-cancelada{color:var(--ink-3)}
+.op-tarde{color:var(--cherry);font-weight:600}
+.op-bono{display:grid;gap:10px;padding:22px}.op-bono h3{font-size:1.4rem}.op-bono p{margin:0}
+.cart-bono-linea{color:var(--leaf)}.cart-bono-linea .cart-del{margin-left:8px}
+.cart-bono .co-fila .input{min-width:0}

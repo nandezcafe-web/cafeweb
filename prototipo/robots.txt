@@ -1,14 +1,24 @@
 User-agent: *
 Allow: /
+Disallow: /api/
 
-# Los asistentes de IA son bienvenidos: el contenido está en el HTML
+# Los asistentes de IA son bienvenidos: el contenido está en el HTML.
+# Los dos grupos van aparte: unos entrenan e indexan, otros abren la página
+# en el momento en que alguien pregunta, y son los que terminan citándonos.
 User-agent: GPTBot
-Allow: /
 User-agent: ClaudeBot
-Allow: /
 User-agent: PerplexityBot
-Allow: /
 User-agent: Google-Extended
+User-agent: Applebot-Extended
 Allow: /
+Disallow: /api/
+
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: Applebot
+Allow: /
+Disallow: /api/
 
 Sitemap: https://cafeweb-five.vercel.app/sitemap.xml
