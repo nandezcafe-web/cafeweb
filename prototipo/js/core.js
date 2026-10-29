@@ -59,7 +59,7 @@ const CONFIG = {
   /* La hoja de contactos de Nandez (Google Apps Script, gratis): la dirección que termina en /exec.
      Con ella, comunidad, listas de espera, suscripción, cotizaciones y pedidos se guardan solos
      y se ven en la pestaña Correos del panel. Puesta en marcha: docs/12_correos_y_remarketing.md */
-  registro: "",
+  registro: "https://script.google.com/macros/s/AKfycbxfJa4ulz1ClLRG2cMHle2rt25wGaUYfIDQ4Ej4AqtMcG6jZiwS6s9TGGBnsBbBHsvuDg/exec",
   /* Suscripción: cuándo se tuesta y despacha cada mes. POR CONFIRMAR con el tostador. */
   suscripcion: { despacho: { es: "la primera semana de cada mes", en: "the first week of every month" } },
   /* Subasta: para compradores y coleccionistas del exterior, en dólares por kilo de café verde.
