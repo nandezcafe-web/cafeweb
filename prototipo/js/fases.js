@@ -38,7 +38,7 @@ function portada(en) {
   return `<section class="g-hero hero" aria-labelledby="portada-titulo">
     <div class="g-hero-txt">
       <p class="g-kicker reveal"><em>${esc(CONFIG.marca)}</em> · Chinácota, Norte de Santander</p>
-      <h1 id="portada-titulo">${pal(en ? "Your plug for" : "Tu plug de")}<em>${pal(en ? "single farm coffee." : "café de finca.", 3)}</em></h1>
+      <h1 id="portada-titulo">${pal(en ? "Your plug for" : "Tu plug de")} <em>${pal(en ? "single farm coffee." : "café de finca.", 3)}</em></h1>
       <p class="g-lede reveal" style="--i:3">${en
         ? "We buy small lots in the mountains of Norte de Santander and roast them under our own name. Two whole bean and the blend, ground. The Coffee Gang hears about every one first."
         : "Compramos lotes pequeños en las montañas de Norte de Santander y los tostamos con nuestro nombre. Dos en grano y el blend, molido. El Coffee Gang se entera primero."}</p>

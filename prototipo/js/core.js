@@ -520,9 +520,9 @@ function meta(view, id) {
   const M = {
     inicio: en
       ? { t: marca + " · Single origin Colombian coffee from Norte de Santander",
-          d: "A coffee-growing family from Chinácota, Colombia. We buy the best lots from farms across Norte de Santander and roast them under our name: one farm per coffee, with altitude, variety, process and cupping score for each lot." }
+          d: "A coffee-growing family from Chinácota, Colombia. We buy small lots from farms across Norte de Santander and roast them under our own name: two single farm coffees, whole bean, and a ground blend of the two." }
       : { t: marca + " · Café de origen de Norte de Santander",
-          d: "Familia cafetera de Chinácota. Le compramos los mejores lotes a fincas de Norte de Santander y los tostamos con nuestra marca: un café por finca, con su altura, su variedad, su proceso y su puntaje de catación." },
+          d: "Familia cafetera de Chinácota. Compramos lotes pequeños en fincas de Norte de Santander y los tostamos con nuestro nombre: dos cafés de una sola finca, en grano, y un blend molido de los dos." },
     tienda: en
       ? { t: "Shop · " + marca, d: "Specialty coffee from Norte de Santander, whole bean and ground, plus brewing gear and Coffee Gang merch." }
       : { t: "Tienda · " + marca, d: "Café de especialidad de Norte de Santander, en grano y molido, accesorios para prepararlo y merch Coffee Gang." },
