@@ -5247,7 +5247,7 @@ function popAbrir() {
   el.innerHTML = `<button class="g-pop-x" data-act="pop-no" aria-label="${en ? "Close" : "Cerrar"}">✕</button>
     <p class="g-pop-pct"><b>${BONO_PCT} %</b><span>${en ? "off your<br>first order" : "en tu<br>primer pedido"}</span></p>
     <div class="g-pop-dice">
-      <h2>${en ? "Get in the gang" : "Entra a la gang"}</h2>
+      <h2>${en ? `Join <em>${esc(CONFIG.comunidad)}</em>` : `Entra a <em>${esc(CONFIG.comunidad)}</em>`}</h2>
       <p>${en ? "Your code lands in your inbox, and we tell you about every drop two hours before everyone else."
               : "Tu bono te llega al correo, y te avisamos de cada drop dos horas antes que a todos."}</p>
       <form data-form="pop" novalidate>

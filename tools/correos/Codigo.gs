@@ -180,13 +180,13 @@ function mandarBienvenida_(h, fila) {
   const codigo = String(f[0]), correo = String(f[1]), vence = fecha_(f[4], en);
   const enlace = SITIO + (en ? "/en/coffees" : "/cafes") + "?bono=" + codigo;
   const texto = en
-    ? "You are now part of " + COMUNIDAD + ".\n\nWe buy coffee from farms in Norte de Santander —Chinácota, Toledo and Ragonvalia— and roast it so it reaches you with the farm's name and what we paid the grower.\n\nFor your first order, " + f[2] + " % off with this code:"
-    : "Ya eres parte de " + COMUNIDAD + ".\n\nLe compramos café a fincas de Norte de Santander —Chinácota, Toledo y Ragonvalia— y lo tostamos para que te llegue con el nombre de la finca y lo que le pagamos al productor.\n\nPara tu primer pedido, " + f[2] + " % menos con este código:";
+    ? "Welcome to " + COMUNIDAD + ".\n\nYou now have a plug for farm coffee: coffee from Norte de Santander that reaches your door with a name of its own. The farm, the grower, the altitude, the process and the roast date, on every bag.\n\nAs a member of " + COMUNIDAD + " you hear about every drop before anyone else. And your first bag is " + f[2] + " % off with this code:"
+    : "Bienvenido a " + COMUNIDAD + ".\n\nAhora tienes un plug de café de finca: café de Norte de Santander que llega a tu casa con nombre propio. La finca, quien la cultiva, la altura, el proceso y la fecha de tostión, en cada bolsa.\n\nComo miembro de " + COMUNIDAD + " te enteras de cada drop antes que nadie. Y tu primera bolsa tiene " + f[2] + " % menos con este código:";
   const despues = en
-    ? "It is valid until " + vence + ", for one order. The button already puts it in your cart.\n\nNot sure which coffee to start with? Reply to this email and tell us how you brew it. A person reads it."
-    : "Vale hasta el " + vence + ", para un pedido. El botón ya lo deja puesto en tu carrito.\n\n¿No sabes con cuál café empezar? Responde este correo y cuéntanos cómo lo preparas. Lo lee una persona.";
-  const html = cuerpo_(texto) + codigoHtml_(codigo) + boton_(enlace, en ? "Choose my coffee" : "Escoger mi café") + cuerpo_(despues);
-  MailApp.sendEmail({ to: correo, name: MARCA, subject: en ? "Welcome to the Gang: " + f[2] + " % off your first coffee" : "Bienvenido a la Gang: " + f[2] + " % en tu primer café",
+    ? "It is yours until " + vence + ", for one order. The button gets it ready in your cart: you just pick the coffee.\n\nHow do you brew at home? Reply and we will tell you where to start. A real person reads it."
+    : "Es tuyo hasta el " + vence + ", para un pedido. El botón lo deja listo en tu carrito: tú solo escoges el café.\n\n¿Cómo lo preparas en casa? Respóndenos y te decimos con cuál empezar. Del otro lado te lee una persona.";
+  const html = cuerpo_(texto) + codigoHtml_(codigo) + boton_(enlace, en ? "Order my first bag" : "Pedir mi primera bolsa") + cuerpo_(despues);
+  MailApp.sendEmail({ to: correo, name: MARCA, subject: en ? "Welcome to " + COMUNIDAD + ": " + f[2] + " % off your first bag" : "Bienvenido a " + COMUNIDAD + ": tu primera bolsa con " + f[2] + " %",
     htmlBody: marco_(html, pieComunidad_(correo, en)),
     body: texto + "\n\n" + codigo + "\n\n" + despues + "\n\n" + enlace + "\n\n—\n" + MARCA + "\n" + (en ? "Unsubscribe: " : "Para no recibir más correos: ") + enlaceBaja_(correo) });
   h.getRange(fila, 6).setValue(new Date());
@@ -457,10 +457,10 @@ function diario() {
     if (f[8] || hoy < masDias_(f[3], BONO.recordarA) || MailApp.getRemainingDailyQuota() < 2) continue;
     const en = f[9] === "en", quedan = Math.round((dia_(f[4]) - hoy) / 864e5), enlace = SITIO + (en ? "/en/coffees" : "/cafes") + "?bono=" + f[0];
     const texto = en
-      ? "Your " + f[2] + " % welcome code is still waiting, and it has " + quedan + " days left."
-      : "Tu bono de bienvenida del " + f[2] + " % sigue esperando, y le quedan " + quedan + " días.";
-    MailApp.sendEmail({ to: correo, name: MARCA, subject: en ? "Your " + f[2] + " % ends in " + quedan + " days" : "Tu " + f[2] + " % vence en " + quedan + " días",
-      htmlBody: marco_(cuerpo_(texto) + codigoHtml_(String(f[0])) + boton_(enlace, en ? "Use it now" : "Usarlo ahora"), pieComunidad_(correo, en)),
+      ? "Your first bag of " + MARCA + " is still waiting for you. The " + f[2] + " % you got when you joined " + COMUNIDAD + " ends in " + quedan + " days."
+      : "Tu primera bolsa de " + MARCA + " sigue esperándote. El " + f[2] + " % que te dimos al entrar a " + COMUNIDAD + " vence en " + quedan + " días.";
+    MailApp.sendEmail({ to: correo, name: MARCA, subject: en ? COMUNIDAD + ": your " + f[2] + " % ends in " + quedan + " days" : COMUNIDAD + ": tu " + f[2] + " % vence en " + quedan + " días",
+      htmlBody: marco_(cuerpo_(texto) + codigoHtml_(String(f[0])) + boton_(enlace, en ? "Order my coffee" : "Pedir mi café"), pieComunidad_(correo, en)),
       body: texto + "\n\n" + f[0] + "\n" + enlace + "\n\n—\n" + MARCA + "\n" + (en ? "Unsubscribe: " : "Para no recibir más correos: ") + enlaceBaja_(correo) });
     hb.getRange(i + 1, 9).setValue(new Date());
   }
