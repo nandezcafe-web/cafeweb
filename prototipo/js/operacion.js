@@ -82,7 +82,9 @@ function viewOperacion() {
         const e = OP_ESTADOS[p.estado] || { txt: p.estado };
         return `<tr>
         <th scope="row"><span class="mono">${esc(p.id)}</span><small>${coFecha(p.fecha)}</small></th>
-        <td>${esc(p.nombre)}<small>${esc([p.ciudad, p.tel && "WA " + p.tel, p.correo].filter(Boolean).join(" · "))}</small></td>
+        <td>${esc(p.nombre)}${p.documento ? `<small class="mono">CC/NIT ${esc(p.documento)}</small>` : ""}
+          ${p.direccion ? `<small>${esc([p.direccion, p.detalle].filter(Boolean).join(" · "))}</small>` : ""}
+          <small>${esc([[p.ciudad, p.departamento].filter(Boolean).join(", "), p.tel && "tel " + p.tel, p.correo].filter(Boolean).join(" · "))}</small></td>
         <td class="op-prod">${esc(p.productos).replace(/\n/g, "<br>")}${p.notas ? `<small class="err">${esc(p.notas)}</small>` : ""}</td>
         <td class="mono">${cop(p.total)}${p.bono ? `<small>bono ${esc(p.bono)} −${cop(p.descuento)}</small>` : ""}</td>
         <td><span class="op-estado op-${esc(p.estado)}">${esc(e.txt)}</span>${p.guia ? `<small>${esc(p.transportadora)} · ${esc(p.guia)}</small>` : ""}</td>
@@ -126,8 +128,13 @@ function opAvanzar(id) {
   const p = OP.datos.pedidos.find((x) => x.id === id); if (!p) return;
   const sig = OP_ESTADOS[p.estado]?.sig;
   if (sig !== "despachado") return opMandar({ accion: "pedido", id, estado: sig }, () => `${id}: ${OP_ESTADOS[sig].txt.toLowerCase()}.`);
+  /* lo que hay que copiar en la guía, junto y en el orden en que lo piden */
+  const destino = [p.nombre + (p.documento ? " · CC/NIT " + p.documento : ""), p.direccion, p.detalle,
+    [p.ciudad, p.departamento].filter(Boolean).join(", "), p.tel && "tel " + p.tel].filter(Boolean);
   modal(`Despachar <em>${esc(id)}</em>`, `
-    <p class="hint">${esc(p.nombre)} · ${esc(p.ciudad)}<br>${esc(p.productos).replace(/\n/g, "<br>")}</p>
+    <pre class="pre">${esc(destino.join("\n"))}</pre>
+    <p class="hint">${esc(p.productos).replace(/\n/g, "<br>")}</p>
+    ${p.direccion ? "" : `<p class="hint err">Este pedido es de antes de que la página pidiera la dirección: pídesela por WhatsApp.</p>`}
     <div class="form-grid">
       <div class="field"><label class="lbl" for="op-transp">Transportadora</label><input id="op-transp" class="input" value="${esc(CONFIG.envio.transportadora)}"></div>
       <div class="field"><label class="lbl" for="op-guia">Número de guía</label><input id="op-guia" class="input mono" autocomplete="off"></div></div>

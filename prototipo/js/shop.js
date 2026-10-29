@@ -384,7 +384,13 @@ function cargarCarrito() {
   try {
     const v = JSON.parse(localStorage.getItem(CART_KEY));
     if (!Array.isArray(v)) return;
-    UI.carrito = v.filter((i) => { const p = prodById(i.id); return p && p.variantes.some((x) => x.g === i.g && x.stock > 0); });
+    /* El precio se vuelve a leer del producto: un carrito guardado antes de un
+       cambio de precio cobraría el viejo. La presentación que ya no existe se cae.
+       El nombre no se toca: esto corre antes de que la URL fije el idioma. */
+    UI.carrito = v.flatMap((i) => {
+      const p = prodById(i.id), x = p && p.variantes.find((y) => y.g === i.g && y.stock > 0);
+      return x ? [{ ...i, precio: x.precio }] : [];
+    });
   } catch {}
 }
 /* El bono: llega en el enlace del correo de bienvenida (?bono=GANG-XXXXX) o se escribe en el carrito.
@@ -516,7 +522,8 @@ function renderCarrito() {
   }
   const E = CONFIG.envio, envio = envioDe(totalCarrito()), falta = E.gratisDesde - totalCarrito(), desc = descuentoCarrito();
   /* lo que ya escribió la persona sobrevive a que el carrito se vuelva a pintar */
-  const escrito = Object.fromEntries(["pd-nombre", "pd-ciudad", "pd-correo", "pd-tel", "pd-bono"].map((k) => [k, $("#" + k)?.value || ""]));
+  const escrito = Object.fromEntries(["pd-nombre", "pd-apellidos", "pd-documento", "pd-tel", "pd-direccion", "pd-detalle",
+    "pd-ciudad", "pd-depto", "pd-correo", "pd-bono"].map((k) => [k, $("#" + k)?.value || ""]));
   const val = (k) => (escrito[k] ? ` value="${esc(escrito[k])}"` : "");
   cuerpo.innerHTML = `
     <ul class="cart-items">${UI.carrito.map((i) => {
@@ -545,10 +552,18 @@ function renderCarrito() {
     </div>
 
     <div class="form-grid cart-form">
-      <div class="field"><label class="lbl" for="pd-nombre">${en ? "Name" : "Nombre o negocio"}</label><input id="pd-nombre" class="input" autocomplete="name" enterkeyhint="next"${val("pd-nombre")}></div>
+      <div class="field"><label class="lbl" for="pd-nombre">${en ? "Name" : "Nombre"}</label><input id="pd-nombre" class="input" autocomplete="given-name" enterkeyhint="next"${val("pd-nombre")}></div>
+      <div class="field"><label class="lbl" for="pd-apellidos">${en ? "Last name" : "Apellidos"}</label><input id="pd-apellidos" class="input" autocomplete="family-name" enterkeyhint="next"${val("pd-apellidos")}></div>
+      <div class="field"><label class="lbl" for="pd-documento">${en ? "ID or tax number" : "Cédula o NIT"}</label><input id="pd-documento" class="input mono" inputmode="numeric" autocomplete="off" enterkeyhint="next"${val("pd-documento")}></div>
+      <div class="field"><label class="lbl" for="pd-tel">${en ? "Phone (the courier calls it)" : "Teléfono (al que llama el mensajero)"}</label><input id="pd-tel" class="input" type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="next" placeholder="300 000 0000"${val("pd-tel")}></div>
+      <div class="field" style="grid-column:1/-1"><label class="lbl" for="pd-direccion">${en ? "Address" : "Dirección"}</label><input id="pd-direccion" class="input" autocomplete="street-address" enterkeyhint="next" placeholder="${en ? "Calle 10 # 5-23" : "Calle 10 # 5-23"}"${val("pd-direccion")}></div>
+      <div class="field" style="grid-column:1/-1"><label class="lbl" for="pd-detalle">${en ? "Neighbourhood, apartment or directions (optional)" : "Barrio, apartamento o indicaciones (opcional)"}</label><input id="pd-detalle" class="input" autocomplete="address-line2" enterkeyhint="next"${val("pd-detalle")}></div>
       <div class="field"><label class="lbl" for="pd-ciudad">${en ? "City" : "Ciudad"}</label><input id="pd-ciudad" class="input" autocomplete="address-level2" enterkeyhint="next"${val("pd-ciudad")}></div>
-      <div class="field"><label class="lbl" for="pd-correo">${en ? "Email (for the tracking number)" : "Correo (para mandarte la guía)"}</label><input id="pd-correo" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none" enterkeyhint="next"${val("pd-correo")}></div>
-      <div class="field"><label class="lbl" for="pd-tel">${en ? "WhatsApp (to confirm your order)" : "WhatsApp (para confirmarte el pedido)"}</label><input id="pd-tel" class="input" type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="done" placeholder="300 000 0000"${val("pd-tel")}></div>
+      <div class="field"><label class="lbl" for="pd-depto">${en ? "Department" : "Departamento"}</label>
+        <select id="pd-depto" class="input" autocomplete="address-level1">
+          <option value="">${en ? "Choose" : "Escoge"}</option>
+          ${DEPARTAMENTOS.map((x) => `<option${x === escrito["pd-depto"] ? " selected" : ""}>${esc(x)}</option>`).join("")}</select></div>
+      <div class="field" style="grid-column:1/-1"><label class="lbl" for="pd-correo">${en ? "Email (for the tracking number)" : "Correo (para mandarte la guía)"}</label><input id="pd-correo" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none" enterkeyhint="done"${val("pd-correo")}></div>
       ${CONFIG.registro && !UI.bono ? `<div class="field cart-bono" style="grid-column:1/-1"><label class="lbl" for="pd-bono">${en ? "Welcome code" : "Código de bono"}</label>
         <div class="co-fila"><input id="pd-bono" class="input mono" autocapitalize="characters" autocomplete="off" placeholder="GANG-XXXXX"${val("pd-bono")}>
           <button class="btn" data-act="bono-aplicar" ${UI.bonoCargando ? "disabled" : ""}>${UI.bonoCargando ? "…" : en ? "Apply" : "Aplicar"}</button></div></div>` : ""}
@@ -577,29 +592,40 @@ function quitarDelCarrito(pid, g) {
   guardarCarrito(); renderCarrito(); renderNav(); renderTray();
 }
 
+/* Lo que la transportadora necesita para hacer la guía. El teléfono ya no es
+   opcional: el mensajero llama antes de entregar. El correo sí, porque la guía
+   también se puede mandar por WhatsApp. */
 function datosPedido() {
-  const nombre = $("#pd-nombre").value.trim(), ciudad = $("#pd-ciudad").value.trim(), en = UI.lang === "en";
-  if (!nombre) { toast(en ? "Write your name." : "Escribe tu nombre.", { type: "err" }); $("#pd-nombre").focus(); return null; }
-  if (!ciudad) { toast(en ? "Write the city it goes to." : "Escribe la ciudad a la que va.", { type: "err" }); $("#pd-ciudad").focus(); return null; }
-  const correo = ($("#pd-correo")?.value || "").trim().toLowerCase(), tel = $("#pd-tel").value.trim();
-  if (correo && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) { toast(en ? "Check the email." : "Revisa el correo.", { type: "err" }); $("#pd-correo").focus(); return null; }
-  /* sin WhatsApp ni correo no hay cómo confirmarle el pago */
-  if (CONFIG.registro && !correo && !tel) { toast(en ? "Leave your email or WhatsApp so we can confirm it." : "Déjanos tu correo o tu WhatsApp para confirmarte el pedido.", { type: "err" }); $("#pd-correo").focus(); return null; }
-  return { nombre, ciudad, tel, correo };
+  const en = UI.lang === "en", v = (id) => ($("#" + id)?.value || "").trim();
+  const falta = (id, msg) => { toast(msg, { type: "err" }); $("#" + id)?.focus(); return null; };
+  const d = { nombre: v("pd-nombre"), apellidos: v("pd-apellidos"), documento: v("pd-documento"), tel: v("pd-tel"),
+    direccion: v("pd-direccion"), detalle: v("pd-detalle"), ciudad: v("pd-ciudad"), departamento: v("pd-depto"),
+    correo: v("pd-correo").toLowerCase() };
+  if (!d.nombre) return falta("pd-nombre", en ? "Write your name." : "Escribe tu nombre.");
+  if (!d.apellidos) return falta("pd-apellidos", en ? "Write your last name." : "Escribe tus apellidos.");
+  if (d.documento.replace(/\D/g, "").length < 5) return falta("pd-documento", en ? "Check the ID or tax number." : "Revisa la cédula o el NIT.");
+  if (d.tel.replace(/\D/g, "").length < 7) return falta("pd-tel", en ? "Leave a phone the courier can call." : "Deja un teléfono al que pueda llamar el mensajero.");
+  if (!d.direccion) return falta("pd-direccion", en ? "Write the address it goes to." : "Escribe la dirección a la que va.");
+  if (!d.ciudad) return falta("pd-ciudad", en ? "Write the city it goes to." : "Escribe la ciudad a la que va.");
+  if (!d.departamento) return falta("pd-depto", en ? "Choose the department." : "Escoge el departamento.");
+  if (d.correo && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.correo)) return falta("pd-correo", en ? "Check the email." : "Revisa el correo.");
+  return d;
 }
 
 /* número de pedido que no choca entre clientes: fecha + cuatro letras al azar */
 const numeroPedido = () => "NDZ-" + isoToday().slice(5).replace("-", "") + "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
 
 function registrarPedido(d, canal) {
-  const cl = upsertCliente(d.nombre, d.ciudad, d.tel);
+  const nombre = [d.nombre, d.apellidos].filter(Boolean).join(" ");
+  const cl = upsertCliente(nombre, d.ciudad, d.tel);
   const subtotal = totalCarrito(), envio = envioDe(subtotal), descuento = descuentoCarrito(), total = subtotal - descuento + envio;
   const bono = descuento ? UI.bono.codigo : "";
   const items = UI.carrito.map((i) => {
     const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
     return { id: i.id, nombre: i.nombre, n: i.n, precio: i.precio, forma: tx(saleDe(p, v)) };
   });
-  const pedido = { id: numeroPedido(), clienteId: cl.id, canal, nombre: d.nombre, ciudad: d.ciudad, tel: d.tel, correo: d.correo,
+  const pedido = { id: numeroPedido(), clienteId: cl.id, canal, nombre, documento: d.documento, direccion: d.direccion,
+    detalle: d.detalle, ciudad: d.ciudad, departamento: d.departamento, tel: d.tel, correo: d.correo,
     items, subtotal, descuento, bono, envio, total, fecha: isoToday() };
   S.pedidos.unshift(pedido);
   UI.carrito.forEach((i) => {
@@ -616,7 +642,9 @@ function registrarPedido(d, canal) {
     ...(descuento ? [`Bono ${bono} (−${UI.bono.pct} %): −${cop(descuento)}`] : []),
     `Envío: ${envio ? cop(envio) : "gratis"}`,
     `Total: ${cop(total)}`,
-    `${d.nombre} · ${d.ciudad}${d.tel ? " · WhatsApp " + d.tel : ""}${d.correo ? " · " + d.correo : ""}`,
+    `${nombre} · CC/NIT ${d.documento}`,
+    `${d.direccion}${d.detalle ? " · " + d.detalle : ""}`,
+    `${d.ciudad}, ${d.departamento} · tel ${d.tel}${d.correo ? " · " + d.correo : ""}`,
   ]);
   UI.carrito = []; guardarCarrito(); if (bono) quitarBono(false); save(); cerrarCarrito(); render();
   const guardado = enviarAviso("pedido", { ...pedido, texto });

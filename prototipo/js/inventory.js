@@ -85,8 +85,8 @@ function loteCard(c, i) {
 const PASOS = {
   trilla: { titulo: "Registrar trilla", campos: [["kgVerde", "Café verde obtenido (kg)", (c) => Math.round(kgExcelso(c.kg, c.factor) * 10) / 10], ["costo", "Costo de la trilla (COP)", (c) => Math.round(c.kg * COSTOS.trilla)]], estado: "TRILLADO" },
   tueste: { titulo: "Registrar tueste", campos: [["kgTostado", "Café tostado obtenido (kg)", (c) => Math.round(c.kgVerde * (1 - COSTOS.mermaTueste / 100) * 10) / 10], ["costo", "Costo del tueste (COP)", (c) => Math.round(c.kgVerde * COSTOS.tueste)]], estado: "TOSTADO" },
-  empaque: { titulo: "Registrar empaque", campos: [["presentacion", "Presentación (gramos)", () => 250], ["precioVenta", "Precio de venta por bolsa (COP)", () => 38000], ["costo", "Costo de empaque y etiquetas (COP)", (c) => Math.round((c.kgTostado * 1000 / 250) * COSTOS.empaque)]], estado: "EMPACADO" },
-  venta: { titulo: "Registrar venta directa", campos: [["bolsas", "Bolsas vendidas", () => 10], ["precio", "Precio por bolsa (COP)", (c) => c.precioVenta || 38000]], estado: "EMPACADO" },
+  empaque: { titulo: "Registrar empaque", campos: [["presentacion", "Presentación (gramos)", () => 250], ["precioVenta", "Precio de venta por bolsa (COP)", () => 40000], ["costo", "Costo de empaque y etiquetas (COP)", (c) => Math.round((c.kgTostado * 1000 / 250) * COSTOS.empaque)]], estado: "EMPACADO" },
+  venta: { titulo: "Registrar venta directa", campos: [["bolsas", "Bolsas vendidas", () => 10], ["precio", "Precio por bolsa (COP)", (c) => c.precioVenta || 40000]], estado: "EMPACADO" },
 };
 
 function invPaso(id, paso) {

@@ -231,7 +231,7 @@ dialog.drawer{border-left:1px solid var(--ink)}
 .foot-marca span,.foot-nota{color:var(--ink-3);font-size:13px}
 .foot-links a{font:600 11.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;text-decoration:none;border-bottom:1px solid transparent}
 .foot-links a:hover{color:var(--cherry);border-bottom-color:var(--cherry)}
-.g-wordmark{grid-column:1/-1;display:grid;margin:22px 0 0;overflow:hidden;line-height:.78;user-select:none;pointer-events:none}
+.g-wordmark{display:grid;margin:0;overflow:hidden;line-height:.78;user-select:none;pointer-events:none}
 .g-wordmark b{font:800 clamp(5rem,21.5vw,19rem)/.8 var(--display);letter-spacing:-.055em;text-transform:uppercase;color:var(--cherry);margin-bottom:-.12em;white-space:nowrap}
 .g-wordmark small{font:600 clamp(.9rem,2.4vw,1.6rem) var(--display);letter-spacing:.32em;text-transform:uppercase;color:var(--ink);margin:0 0 6px .3em}
 body[data-view=subasta] .foot{border-top-color:rgba(245,240,230,.3)}
@@ -662,3 +662,8 @@ body:has(dialog[open]) .g-pop{opacity:0;transform:translateY(8px);pointer-events
   .g-pop-dice h2{font-size:21px}
 }
 @media (prefers-reduced-motion:reduce){.g-pop{transition:opacity .15s;transform:none}}
+
+/* El final del pie, en una sola banda: antes el © y el letrero se leían como
+   dos secciones distintas. */
+.foot-fin{grid-column:1/-1;display:grid;gap:10px;justify-items:start;margin-top:22px}
+.foot-fin .foot-nota{grid-column:auto}

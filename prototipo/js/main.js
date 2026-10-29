@@ -47,17 +47,9 @@ function viewInicio() {
     </div>
   </section>
 
-  <section class="g-sec" aria-labelledby="g-fincas">
-    ${cabeza("03", en ? "The neighbours" : "Los vecinos",
-      `<span id="g-fincas">${en ? "Where each <em>bag comes from.</em>" : "De dónde viene <em>cada bolsa.</em>"}</span>`,
-      en ? "Chinácota, Toledo and Ragonvalia: mountains between 1,500 and 1,950 metres, with cold nights that ripen the cherry slowly. In 2027 the first harvest from our own farm joins them."
-         : "Chinácota, Toledo y Ragonvalia: montañas entre 1.500 y 1.950 metros, con noches frías que maduran el grano despacio. En 2027 se suma la primera cosecha de nuestra propia finca.")}
-    <div class="fincas">${S.fincas.map((f, i) => fincaCard(f, i)).join("")}</div>
-  </section>
-
   <section class="g-sub g-io" aria-labelledby="g-sus">
     <div>
-      <p class="g-kicker"><span class="g-num">04</span> &nbsp; ${t("nav_suscripcion")}</p>
+      <p class="g-kicker"><span class="g-num">03</span> &nbsp; ${t("nav_suscripcion")}</p>
       <h2 id="g-sus">${en ? "If you like it, <em>we bring it every month.</em>" : "Si te gusta, <em>te lo llevamos cada mes.</em>"}</h2>
       <p>${en ? "Coffee from the harvest, filters and a new recipe every month. The first box brings the kit to brew it, and the Nandez route teaches you a method a month."
               : "Café de la cosecha, filtros y una receta nueva cada mes. La primera caja trae el kit para prepararlo, y la Ruta Nandez te enseña un método al mes."}</p>
@@ -69,7 +61,7 @@ function viewInicio() {
   ${musica(en)}
 
   ${visible("diario") ? `<section class="g-sec" aria-labelledby="g-diario">
-    ${cabeza("06", t("nav_diario"),
+    ${cabeza("05", t("nav_diario"),
       `<span id="g-diario">${en ? "What we learn <em>buying coffee.</em>" : "Lo que aprendemos <em>comprando café.</em>"}</span>`, "",
       `<a class="g-link" href="${ruta("diario")}" data-act="go" data-to="diario">${en ? "All the entries" : "Todas las entradas"}</a>`)}
     <div class="g-diario">${S.entradas.slice(0, 3).map((e, i) => `<article class="g-io" style="--i:${i}">
@@ -89,7 +81,7 @@ function musica(en) {
   const url = `https://open.spotify.com/playlist/${L.playlist}`;
   return `<section class="g-sec g-musica" aria-labelledby="g-musica">
     <div class="g-musica-txt g-io">
-      <p class="g-kicker"><span class="g-num">05</span> &nbsp; ${en ? "To go with it" : "Para acompañar"}</p>
+      <p class="g-kicker"><span class="g-num">04</span> &nbsp; ${en ? "To go with it" : "Para acompañar"}</p>
       <h2 id="g-musica">${en ? "Music to <em>drink coffee to.</em>" : "Música para <em>tomar café.</em>"}</h2>
       <p>${en ? "A list for grinding, brewing and staying a while. Put it on, share it, and tell us what it is missing."
               : "Una lista para moler, colar y quedarse un rato. Ponla, compártela y dinos qué le falta."}</p>
@@ -300,11 +292,13 @@ const FOOT = () => {
   <div class="foot-marca"><b>${esc(CONFIG.marca)}</b><span>Chinácota · ${esc(tx(CONFIG.lugar))}</span>
     <a href="mailto:${CONFIG.correo}">${esc(CONFIG.correo)}</a>${CONFIG.whatsapp ? `<a href="https://wa.me/${CONFIG.whatsapp}" target="_blank" rel="noopener">WhatsApp +${CONFIG.whatsapp}</a>` : ""}
     ${redesHTML()}</div>
-  <nav class="foot-links" aria-labelledby="pie-tienda"><p class="foot-tit" id="pie-tienda">${t("nav_tienda")}</p>${lista(tienda)}</nav>
+  <nav class="foot-links" aria-labelledby="pie-tienda"><p class="foot-tit" id="pie-tienda">${en ? "Catalogue" : "Catálogo"}</p>${lista(tienda)}</nav>
   <nav class="foot-links" aria-labelledby="pie-ayuda"><p class="foot-tit" id="pie-ayuda">${en ? "Help" : "Ayuda"}</p>${lista(politicas)}</nav>
-  <small class="foot-nota">© ${new Date().getFullYear()} ${esc(CONFIG.marca)} · ${en ? "Prototype with example data: photos, texts and prices to be confirmed." : "Prototipo con datos de ejemplo: fotos, textos y precios por confirmar."}</small>
-  ${demo() ? `<button class="btn sm" data-act="reset-demo">${en ? "Reset demo data" : "Reiniciar datos de la demo"}</button>` : ""}
-  <p class="g-wordmark" aria-hidden="true"><b>Nandez</b><small>${esc(CONFIG.gang)}</small></p></footer>`;
+  <div class="foot-fin">
+    <p class="g-wordmark" aria-hidden="true"><b>Nandez</b><small>${esc(CONFIG.gang)}</small></p>
+    <small class="foot-nota">© ${new Date().getFullYear()} ${esc(CONFIG.marca)} · Chinácota · ${esc(tx(CONFIG.lugar))}</small>
+    ${demo() ? `<button class="btn sm" data-act="reset-demo">${en ? "Reset demo data" : "Reiniciar datos de la demo"}</button>` : ""}
+  </div></footer>`;
 };
 
 const VIEWS = { inicio: viewInicio, tienda: viewTienda, accesorios: viewAccesorios, cafes: viewCafes, cafe: viewCafe, subasta: viewSubasta, suscripcion: viewSuscripcion, diario: viewDiario, entrada: viewEntrada,

@@ -50,13 +50,25 @@ function viewSuscripcion() {
 
   return `<div class="view-head">
       <div><p class="eyebrow reveal">${en ? "Subscription" : "Suscripción"}${abierta ? "" : (en ? " · opening soon" : " · abrimos pronto")}</p>
-        <h2 class="reveal" style="--i:1">${en ? "Coffee at home, <em>and how to brew it</em>" : "Café en tu casa, <em>y cómo prepararlo</em>"}</h2>
+        <h2 class="reveal" style="--i:1">${en ? "For your bar, <em>and for your house</em>" : "Para tu barra, <em>y para tu casa</em>"}</h2>
         <p class="reveal" style="--i:2">${en
-          ? "The first box brings the kit to brew at home. Every month after that, coffee from our farms, its filters and a new recipe."
-          : "La primera caja trae el kit para preparar en casa. Cada mes después, café de nuestras fincas, sus filtros y una receta nueva."}
+          ? "Kilos for cafés, roasted to your profile, with shipping included. And boxes for home, with the filters and a new recipe every month."
+          : "Kilos para cafeterías, con la tostión a tu perfil y el envío incluido. Y cajas para la casa, con los filtros y una receta nueva cada mes."}
           ${abierta ? "" : (en ? " We are not charging yet: leave your email and we will send you the payment link the day it opens."
                                : " Todavía no cobramos: deja tu correo y te mandamos el link de pago el día que abramos.")}</p></div>
     </div>
+
+    <section class="section">
+      <div class="section-head"><p class="eyebrow">${en ? "For cafés" : "Para cafeterías"}</p>
+        <h2>${en ? "Your house coffee, <em>every month</em>" : "El café de tu barra, <em>cada mes</em>"}</h2></div>
+      <article class="plan plan-cafeteria">
+        <h3>${esc(tx(CAFETERIA.nombre))}</h3>
+        <p class="plan-precio"><b class="mono">${cop(CAFETERIA.mes)}</b><small>${t("mes")}</small></p>
+        <p class="hint">${esc(tx(CAFETERIA.desc))}</p>
+        <ul class="plan-lista">${tx(CAFETERIA.incluye).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+        <button class="btn" data-act="sub" data-id="${CAFETERIA.id}">${CONFIG.pagos.suscripcion[CAFETERIA.id] ? t("suscribirme") : (en ? "Notify me when it opens" : "Avísame cuando abra")}</button>
+      </article>
+    </section>
 
     <div class="sub-opciones reveal" style="--i:3">
       <div class="seg" role="group" aria-label="${en ? "Kit" : "Kit"}">
@@ -95,18 +107,7 @@ function viewSuscripcion() {
       <ol class="ruta">${ruta.map(([a, b]) => `<li><b>${esc(a)}</b><span>${esc(b)}</span></li>`).join("")}</ol>
       <ul class="ruta-comunidad">${comunidad.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
     </section>
-
-    <section class="section">
-      <div class="section-head"><p class="eyebrow">${en ? "For cafés" : "Para cafeterías"}</p>
-        <h2>${en ? "Your house coffee, <em>every month</em>" : "El café de tu barra, <em>cada mes</em>"}</h2></div>
-      <article class="plan plan-cafeteria">
-        <h3>${esc(tx(CAFETERIA.nombre))}</h3>
-        <p class="plan-precio"><b class="mono">${cop(CAFETERIA.mes)}</b><small>${t("mes")}</small></p>
-        <p class="hint">${esc(tx(CAFETERIA.desc))}</p>
-        <ul class="plan-lista">${tx(CAFETERIA.incluye).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
-        <button class="btn" data-act="sub" data-id="${CAFETERIA.id}">${CONFIG.pagos.suscripcion[CAFETERIA.id] ? t("suscribirme") : (en ? "Notify me when it opens" : "Avísame cuando abra")}</button>
-      </article>
-    </section>`;
+`;
 }
 
 function subOpcion(k, v) {

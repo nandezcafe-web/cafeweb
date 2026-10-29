@@ -30,9 +30,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=56f45d83">
-<link rel="stylesheet" href="/auction.css?v=56f45d83">
-<link rel="stylesheet" href="/gang.css?v=56f45d83">
+<link rel="stylesheet" href="/styles.css?v=7c78da3a">
+<link rel="stylesheet" href="/auction.css?v=7c78da3a">
+<link rel="stylesheet" href="/gang.css?v=7c78da3a">
 <script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Coffee","url":"https://cafeweb-five.vercel.app","logo":"https://cafeweb-five.vercel.app/img/marca/icono-512.png","image":"https://cafeweb-five.vercel.app/img/marca/compartir.jpg","sameAs":["https://www.instagram.com/nandezcafe/","https://www.facebook.com/profile.php?id=61594868961438","https://www.youtube.com/@N%C3%A1ndezCaf%C3%A9"],"email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"Familia cafetera de Chinácota. Le compramos los mejores lotes a fincas de Norte de Santander y los tostamos con nuestra marca: un café por finca, con su altura, su variedad, su proceso y su puntaje de catación."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Coffee","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"es"}]}</script>
 </head>
 <body data-view="suscripcion">
@@ -44,9 +44,7 @@
     <nav class="tabs" id="nav-principal" aria-label="Secciones">
       <span class="tab-luz" aria-hidden="true"></span>
       <a class="tab" href="/" data-act="go" data-to="inicio" data-i18n="nav_inicio">Inicio </a>
-      <a class="tab" href="/drops" data-act="go" data-to="drops" data-i18n="nav_drops">Drops </a>
       <div class="tab-grupo"><a class="tab" href="/tienda" data-act="go" data-to="tienda" data-i18n="nav_tienda" aria-haspopup="true">Tienda </a><div class="tab-sub"><a href="/cafes" data-act="go" data-to="cafes" data-i18n="nav_cafes_esp">Cafés de especialidad</a><a href="/accesorios" data-act="go" data-to="accesorios" data-i18n="nav_accesorios">Accesorios y merch</a></div></div>
-      <a class="tab" href="/la-gang" data-act="go" data-to="gang" data-i18n="nav_gang">La gang </a>
       <a class="tab" href="/suscripcion" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion" aria-current="page">Suscripción </a>
     </nav>
     <button class="cart-btn" id="cart-btn" data-act="carrito" aria-label="Pedido">
@@ -65,12 +63,12 @@
 <nav class="dock" aria-label="Accesos">
   <a class="dock-it" href="/" data-act="go" data-to="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4Z"/></svg><span data-i18n="nav_inicio">Inicio</span></a>
   <a class="dock-it" href="/tienda" data-act="go" data-to="tienda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5 5.5 4h13L20 9.5"/><path d="M4 9.5c0 1.5 1.2 2.5 2.7 2.5s2.6-1 2.6-2.5c0 1.5 1.2 2.5 2.7 2.5s2.7-1 2.7-2.5c0 1.5 1.1 2.5 2.6 2.5S20 11 20 9.5"/><path d="M5.5 12v8h13v-8M10 20v-5h4v5"/></svg><span data-i18n="nav_tienda">Tienda</span></a>
-  <a class="dock-it" href="/drops" data-act="go" data-to="drops"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10l1 12.5a1.6 1.6 0 0 1-1.6 1.5H7.6A1.6 1.6 0 0 1 6 19.5L7 7Z"/><path d="M9.2 7V4.6h5.6V7"/><path d="M10 14.5h4"/></svg><span data-i18n="nav_drops">Drops</span></a>
+  <a class="dock-it" href="/suscripcion" data-act="go" data-to="suscripcion" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.7"/><path d="M20 4v4.7h-4.7"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 15.3"/><path d="M4 20v-4.7h4.7"/></svg><span data-i18n="nav_suscripcion">Suscripción</span></a>
   <button class="dock-it" id="dock-pedido" data-act="carrito"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg><span class="dock-n" id="dock-n" hidden></span><span data-i18n="nav_pedido">Pedido</span></button>
   <button class="dock-it" id="dock-mas" data-act="mas" aria-expanded="false" aria-controls="dock-hoja"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/></svg><span data-i18n="nav_mas">Más</span></button>
 </nav>
 <div class="dock-hoja" id="dock-hoja" hidden>
-  <a class="tab" href="/la-gang" data-act="go" data-to="gang" data-i18n="nav_gang">La gang </a><a class="tab" href="/cafes" data-act="go" data-to="cafes" data-i18n="nav_cafes_esp">Cafés de especialidad </a><a class="tab" href="/accesorios" data-act="go" data-to="accesorios" data-i18n="nav_accesorios">Accesorios y merch </a><a class="tab" href="/suscripcion" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion" aria-current="page">Suscripción </a><a class="tab" href="/contacto" data-act="go" data-to="contacto" data-i18n="nav_contacto">Contacto </a>
+  <a class="tab" href="/cafes" data-act="go" data-to="cafes" data-i18n="nav_cafes_esp">Cafés de especialidad </a><a class="tab" href="/accesorios" data-act="go" data-to="accesorios" data-i18n="nav_accesorios">Accesorios y merch </a><a class="tab" href="/contacto" data-act="go" data-to="contacto" data-i18n="nav_contacto">Contacto </a>
   <div class="lang" role="group" aria-label="Idioma">
     <button data-act="lang" data-lang="es" aria-pressed="true">Español</button>
     <button data-act="lang" data-lang="en" aria-pressed="false">English</button>
@@ -79,10 +77,22 @@
 
 <main class="wrap calm" id="view"><div class="view-head">
       <div><p class="eyebrow reveal">Suscripción · abrimos pronto</p>
-        <h2 class="reveal" style="--i:1">Café en tu casa, <em>y cómo prepararlo</em></h2>
-        <p class="reveal" style="--i:2">La primera caja trae el kit para preparar en casa. Cada mes después, café de nuestras fincas, sus filtros y una receta nueva.
+        <h2 class="reveal" style="--i:1">Para tu barra, <em>y para tu casa</em></h2>
+        <p class="reveal" style="--i:2">Kilos para cafeterías, con la tostión a tu perfil y el envío incluido. Y cajas para la casa, con los filtros y una receta nueva cada mes.
            Todavía no cobramos: deja tu correo y te mandamos el link de pago el día que abramos.</p></div>
     </div>
+
+    <section class="section">
+      <div class="section-head"><p class="eyebrow">Para cafeterías</p>
+        <h2>El café de tu barra, <em>cada mes</em></h2></div>
+      <article class="plan plan-cafeteria">
+        <h3>Cafetería</h3>
+        <p class="plan-precio"><b class="mono">$240.000</b><small>al mes</small></p>
+        <p class="hint">Dos kilos de Castillo en grano cada mes, con el envío y la tostión a tu perfil. Si necesitas más, lo cotizamos.</p>
+        <ul class="plan-lista"><li>2 kg en grano cada mes</li><li>Envío incluido</li><li>Tostión a tu perfil</li><li>Material para tu carta</li><li>¿Más de 2 kg? Te cotizamos</li></ul>
+        <button class="btn" data-act="sub" data-id="cafeteria">Avísame cuando abra</button>
+      </article>
+    </section>
 
     <div class="sub-opciones reveal" style="--i:3">
       <div class="seg" role="group" aria-label="Kit">
@@ -138,18 +148,7 @@
       <ol class="ruta"><li><b>Gotero, lo básico</b><span>15 g, 250 ml, 93 °C, tres minutos.</span></li><li><b>La molienda cambia la taza</b><span>El mismo café con dos moliendas, lado a lado.</span></li><li><b>La greca, bien hecha</b><span>El método de la casa colombiana, sin amargor.</span></li><li><b>Cold brew en casa</b><span>Solo un frasco y una noche en la nevera.</span></li><li><b>Prensa francesa</b><span>Cuerpo y aceites: otra forma de probar una finca.</span></li><li><b>Cata de dos fincas</b><span>Los dos cafés lado a lado, con rueda de sabores.</span></li></ol>
       <ul class="ruta-comunidad"><li>Una comunidad de WhatsApp para suscriptores</li><li>Una clase en vivo cada mes, preparando el café de la caja</li><li>Un pasaporte de métodos que se sella con cada uno que aprendes</li></ul>
     </section>
-
-    <section class="section">
-      <div class="section-head"><p class="eyebrow">Para cafeterías</p>
-        <h2>El café de tu barra, <em>cada mes</em></h2></div>
-      <article class="plan plan-cafeteria">
-        <h3>Cafetería</h3>
-        <p class="plan-precio"><b class="mono">$240.000</b><small>al mes</small></p>
-        <p class="hint">Dos kilos de Castillo en grano al mes: $120.000 el kilo, frente a $132.000 suelto.</p>
-        <ul class="plan-lista"><li>2 kg en grano cada mes</li><li>Envío incluido</li><li>Tostión a tu perfil</li><li>Material para tu carta</li><li>¿Más de 2 kg? Te cotizamos</li></ul>
-        <button class="btn" data-act="sub" data-id="cafeteria">Avísame cuando abra</button>
-      </article>
-    </section><section class="g-comunidad" aria-labelledby="g-comunidad">
+<section class="g-comunidad" aria-labelledby="g-comunidad">
     <div>
       <h2 id="g-comunidad">Únete a la comunidad <em>Nandez Coffee Gang</em></h2>
       <p>Recibe las últimas noticias y ofertas solo para miembros.</p>
@@ -166,11 +165,13 @@
   <div class="foot-marca"><b>Nandez Coffee</b><span>Chinácota · Norte de Santander, Colombia</span>
     <a href="mailto:nandezcafe@gmail.com">nandezcafe@gmail.com</a>
     <div class="g-redes-fila"><ul class="g-redes"><li><a href="https://www.instagram.com/nandezcafe/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none"/></svg></a></li><li><a href="https://www.facebook.com/profile.php?id=61594868961438" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 21v-7.5h2.6l.4-3H14V8.6c0-.9.3-1.5 1.6-1.5H17V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.3H8.3v3H11V21"/></svg></a></li><li><a href="https://www.youtube.com/@N%C3%A1ndezCaf%C3%A9" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10 9.2 5 2.8-5 2.8Z" fill="currentColor"/></svg></a></li></ul></div></div>
-  <nav class="foot-links" aria-labelledby="pie-tienda"><p class="foot-tit" id="pie-tienda">Tienda</p><a href="/tienda" data-act="go" data-to="tienda">Tienda</a><a href="/cafes" data-act="go" data-to="cafes">Cafés de especialidad</a><a href="/accesorios" data-act="go" data-to="accesorios">Accesorios y merch</a><a href="/suscripcion" data-act="go" data-to="suscripcion">Suscripción</a><a href="/drops" data-act="go" data-to="drops">Drops</a><a href="/la-gang" data-act="go" data-to="gang">La gang</a></nav>
+  <nav class="foot-links" aria-labelledby="pie-tienda"><p class="foot-tit" id="pie-tienda">Catálogo</p><a href="/tienda" data-act="go" data-to="tienda">Tienda</a><a href="/cafes" data-act="go" data-to="cafes">Cafés de especialidad</a><a href="/accesorios" data-act="go" data-to="accesorios">Accesorios y merch</a><a href="/suscripcion" data-act="go" data-to="suscripcion">Suscripción</a></nav>
   <nav class="foot-links" aria-labelledby="pie-ayuda"><p class="foot-tit" id="pie-ayuda">Ayuda</p><a href="/privacidad" data-act="go" data-to="privacidad">Política de privacidad</a><a href="/envios-y-devoluciones" data-act="go" data-to="envios">Política de reembolso</a><a href="/contacto" data-act="go" data-to="contacto">Información de contacto</a><a href="/terminos" data-act="go" data-to="terminos">Términos del servicio</a></nav>
-  <small class="foot-nota">© 2026 Nandez Coffee · Prototipo con datos de ejemplo: fotos, textos y precios por confirmar.</small>
-  
-  <p class="g-wordmark" aria-hidden="true"><b>Nandez</b><small>Coffee Gang</small></p></footer></main>
+  <div class="foot-fin">
+    <p class="g-wordmark" aria-hidden="true"><b>Nandez</b><small>Coffee Gang</small></p>
+    <small class="foot-nota">© 2026 Nandez Coffee · Chinácota · Norte de Santander, Colombia</small>
+    
+  </div></footer></main>
 
 <div class="tray" id="tray" hidden></div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
@@ -186,11 +187,11 @@
 </dialog>
 
 <script>window.IMG_V = "1af1081b";</script>
-<script src="/js/core.js?v=56f45d83"></script>
-<script src="/js/fases.js?v=56f45d83"></script>
-<script src="/js/shop.js?v=56f45d83"></script>
-<script src="/js/pages.js?v=56f45d83"></script>
-<script src="/js/auction.js?v=56f45d83"></script>
-<script src="/js/main.js?v=56f45d83"></script>
+<script src="/js/core.js?v=7c78da3a"></script>
+<script src="/js/fases.js?v=7c78da3a"></script>
+<script src="/js/shop.js?v=7c78da3a"></script>
+<script src="/js/pages.js?v=7c78da3a"></script>
+<script src="/js/auction.js?v=7c78da3a"></script>
+<script src="/js/main.js?v=7c78da3a"></script>
 </body>
 </html>

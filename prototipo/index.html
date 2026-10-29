@@ -30,9 +30,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=56f45d83">
-<link rel="stylesheet" href="/auction.css?v=56f45d83">
-<link rel="stylesheet" href="/gang.css?v=56f45d83">
+<link rel="stylesheet" href="/styles.css?v=7c78da3a">
+<link rel="stylesheet" href="/auction.css?v=7c78da3a">
+<link rel="stylesheet" href="/gang.css?v=7c78da3a">
 <script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Coffee","url":"https://cafeweb-five.vercel.app","logo":"https://cafeweb-five.vercel.app/img/marca/icono-512.png","image":"https://cafeweb-five.vercel.app/img/marca/compartir.jpg","sameAs":["https://www.instagram.com/nandezcafe/","https://www.facebook.com/profile.php?id=61594868961438","https://www.youtube.com/@N%C3%A1ndezCaf%C3%A9"],"email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"Familia cafetera de Chinácota. Le compramos los mejores lotes a fincas de Norte de Santander y los tostamos con nuestra marca: un café por finca, con su altura, su variedad, su proceso y su puntaje de catación."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Coffee","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"es"}]}</script>
 </head>
 <body data-view="inicio">
@@ -44,9 +44,7 @@
     <nav class="tabs" id="nav-principal" aria-label="Secciones">
       <span class="tab-luz" aria-hidden="true"></span>
       <a class="tab" href="/" data-act="go" data-to="inicio" data-i18n="nav_inicio" aria-current="page">Inicio </a>
-      <a class="tab" href="/drops" data-act="go" data-to="drops" data-i18n="nav_drops">Drops </a>
       <div class="tab-grupo"><a class="tab" href="/tienda" data-act="go" data-to="tienda" data-i18n="nav_tienda" aria-haspopup="true">Tienda </a><div class="tab-sub"><a href="/cafes" data-act="go" data-to="cafes" data-i18n="nav_cafes_esp">Cafés de especialidad</a><a href="/accesorios" data-act="go" data-to="accesorios" data-i18n="nav_accesorios">Accesorios y merch</a></div></div>
-      <a class="tab" href="/la-gang" data-act="go" data-to="gang" data-i18n="nav_gang">La gang </a>
       <a class="tab" href="/suscripcion" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Suscripción </a>
     </nav>
     <button class="cart-btn" id="cart-btn" data-act="carrito" aria-label="Pedido">
@@ -65,12 +63,12 @@
 <nav class="dock" aria-label="Accesos">
   <a class="dock-it" href="/" data-act="go" data-to="inicio" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4Z"/></svg><span data-i18n="nav_inicio">Inicio</span></a>
   <a class="dock-it" href="/tienda" data-act="go" data-to="tienda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5 5.5 4h13L20 9.5"/><path d="M4 9.5c0 1.5 1.2 2.5 2.7 2.5s2.6-1 2.6-2.5c0 1.5 1.2 2.5 2.7 2.5s2.7-1 2.7-2.5c0 1.5 1.1 2.5 2.6 2.5S20 11 20 9.5"/><path d="M5.5 12v8h13v-8M10 20v-5h4v5"/></svg><span data-i18n="nav_tienda">Tienda</span></a>
-  <a class="dock-it" href="/drops" data-act="go" data-to="drops"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10l1 12.5a1.6 1.6 0 0 1-1.6 1.5H7.6A1.6 1.6 0 0 1 6 19.5L7 7Z"/><path d="M9.2 7V4.6h5.6V7"/><path d="M10 14.5h4"/></svg><span data-i18n="nav_drops">Drops</span></a>
+  <a class="dock-it" href="/suscripcion" data-act="go" data-to="suscripcion"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.7"/><path d="M20 4v4.7h-4.7"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 15.3"/><path d="M4 20v-4.7h4.7"/></svg><span data-i18n="nav_suscripcion">Suscripción</span></a>
   <button class="dock-it" id="dock-pedido" data-act="carrito"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg><span class="dock-n" id="dock-n" hidden></span><span data-i18n="nav_pedido">Pedido</span></button>
   <button class="dock-it" id="dock-mas" data-act="mas" aria-expanded="false" aria-controls="dock-hoja"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/></svg><span data-i18n="nav_mas">Más</span></button>
 </nav>
 <div class="dock-hoja" id="dock-hoja" hidden>
-  <a class="tab" href="/la-gang" data-act="go" data-to="gang" data-i18n="nav_gang">La gang </a><a class="tab" href="/cafes" data-act="go" data-to="cafes" data-i18n="nav_cafes_esp">Cafés de especialidad </a><a class="tab" href="/accesorios" data-act="go" data-to="accesorios" data-i18n="nav_accesorios">Accesorios y merch </a><a class="tab" href="/suscripcion" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Suscripción </a><a class="tab" href="/contacto" data-act="go" data-to="contacto" data-i18n="nav_contacto">Contacto </a>
+  <a class="tab" href="/cafes" data-act="go" data-to="cafes" data-i18n="nav_cafes_esp">Cafés de especialidad </a><a class="tab" href="/accesorios" data-act="go" data-to="accesorios" data-i18n="nav_accesorios">Accesorios y merch </a><a class="tab" href="/contacto" data-act="go" data-to="contacto" data-i18n="nav_contacto">Contacto </a>
   <div class="lang" role="group" aria-label="Idioma">
     <button data-act="lang" data-lang="es" aria-pressed="true">Español</button>
     <button data-act="lang" data-lang="en" aria-pressed="false">English</button>
@@ -81,13 +79,13 @@
   <section class="g-hero hero" aria-labelledby="portada-titulo">
     <div class="g-hero-txt">
       <p class="g-kicker reveal"><em>Nandez Coffee</em> · Chinácota, Norte de Santander</p>
-      <h1 id="portada-titulo"><span class="pal" style="--w:0">Café</span> <span class="pal" style="--w:1">en</span> <span class="pal" style="--w:2">grano</span><em><span class="pal" style="--w:3">con</span> <span class="pal" style="--w:4">nombre</span> <span class="pal" style="--w:5">propio.</span></em></h1>
-      <p class="g-lede reveal" style="--i:3">Tres cafés de fincas vecinas de Norte de Santander, todos con tostión media: dos de una sola finca, en grano, para que los muelas en casa, y un blend de los dos, molido y listo para preparar.</p>
+      <h1 id="portada-titulo"><span class="pal" style="--w:0">Tu</span> <span class="pal" style="--w:1">plug</span> <span class="pal" style="--w:2">de</span><em><span class="pal" style="--w:3">café</span> <span class="pal" style="--w:4">de</span> <span class="pal" style="--w:5">finca.</span></em></h1>
+      <p class="g-lede reveal" style="--i:3">Compramos lotes pequeños en las montañas de Norte de Santander y los tostamos con nuestro nombre. Dos en grano y el blend, molido. El Coffee Gang se entera primero.</p>
       <div class="g-cta reveal" style="--i:4">
         <button class="btn primary lg" data-act="go" data-to="cafes">Ver los cafés<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
         <a class="g-link" href="/suscripcion" data-act="go" data-to="suscripcion">La suscripción</a>
       </div>
-      <ul class="g-hechos reveal" style="--i:5"><li><b>1.500 a 1.950 msnm</b><small>fincas vecinas</small></li><li><b>Tostión media</b><small>los tres</small></li><li><b>En grano o molido</b><small>tú escoges</small></li></ul>
+      <ul class="g-hechos reveal" style="--i:5"><li><b>$40.000</b><small>los 250 g</small></li><li><b>Tostión media</b><small>los tres</small></li><li><b>En grano o molido</b><small>tú escoges</small></li></ul>
     </div>
     <div class="g-hero-art reveal" style="--i:2" data-act="cafe" data-id="P-CAS" role="button" tabindex="0" aria-label="Castillo de Ragonvalia">
       <p class="g-hero-tag">Disponible ahora<b>Castillo de Ragonvalia</b></p>
@@ -98,7 +96,7 @@
         <circle cx="100" cy="100" r="92"/><circle cx="100" cy="100" r="4" style="fill:currentColor"/><text><textPath href="#g-arco">COSECHA 2026 · TOSTIÓN MEDIA · NORTE DE SANTANDER · </textPath></text></svg>
     </div>
   </section>
-  <div class="g-ticker" aria-label="En corto"><div class="g-ticker-track"><span>Tostión <em>media</em></span><span>Cultivado entre <em>1.500 y 1.950</em> metros</span><span><em>En grano</em> o molido</span><span>Cosecha <em>2026</em></span><span>Chinácota · Toledo · Ragonvalia</span><span>Envío gratis desde <em>$150.000</em></span><span>Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027</span><span>Norte de Santander · <em>Coffee Gang</em></span><span>Tostión <em>media</em></span><span>Cultivado entre <em>1.500 y 1.950</em> metros</span><span><em>En grano</em> o molido</span><span>Cosecha <em>2026</em></span><span>Chinácota · Toledo · Ragonvalia</span><span>Envío gratis desde <em>$150.000</em></span><span>Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027</span><span>Norte de Santander · <em>Coffee Gang</em></span></div></div>
+  <div class="g-ticker" aria-label="En corto"><div class="g-ticker-track"><span>Tostión <em>media</em></span><span>La bolsa de 250 g, <em>$40.000</em></span><span><em>En grano</em> o molido</span><span>Cosecha <em>2026</em></span><span>Montañas de <em>Norte de Santander</em></span><span>Envío gratis desde <em>$120.000</em></span><span>Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027</span><span><em>Coffee Gang</em></span><span>Tostión <em>media</em></span><span>La bolsa de 250 g, <em>$40.000</em></span><span><em>En grano</em> o molido</span><span>Cosecha <em>2026</em></span><span>Montañas de <em>Norte de Santander</em></span><span>Envío gratis desde <em>$120.000</em></span><span>Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027</span><span><em>Coffee Gang</em></span></div></div>
 
   <section class="g-sec" id="cafes" aria-labelledby="g-cafes">
     <div class="g-head g-io">
@@ -116,7 +114,7 @@
       <p class="g-kicker">Lote Ragonvalia · 1.550 msnm</p>
       <h3>Castillo de Ragonvalia</h3>
       <p class="g-notas">Panela · Chocolate · Naranja</p>
-      <div class="g-prod-foot"><b class="mono">$38.000</b><small>250 g · en grano</small>
+      <div class="g-prod-foot"><b class="mono">$40.000</b><small>250 g · en grano</small>
         <button class="btn primary sm" data-act="add" data-p="P-CAS" data-g="250" >Agregar al pedido</button></div>
     </div></article><article class="g-prod g-io pronto" style="--pc:#2C4FA3;--i:1">
     <div class="g-prod-art" data-act="cafe" data-id="P-PAR" role="button" tabindex="0" aria-label="El Paraíso">
@@ -152,76 +150,9 @@
     </div>
   </section>
 
-  <section class="g-sec" aria-labelledby="g-fincas">
-    <div class="g-head g-io">
-      <span class="g-num">03</span><p class="g-kicker">Los vecinos</p>
-      <h2><span id="g-fincas">De dónde viene <em>cada bolsa.</em></span></h2><p>Chinácota, Toledo y Ragonvalia: montañas entre 1.500 y 1.950 metros, con noches frías que maduran el grano despacio. En 2027 se suma la primera cosecha de nuestra propia finca.</p></div>
-    <div class="fincas"><article class="finca reveal " style="--i:0">
-    <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0 120 L0.0 107.3 L27.1 108.8 L54.3 96.7 L81.4 93.4 L108.6 94.6 L135.7 87.4 L162.9 78.9 L190.0 83.0 L217.1 70.6 L244.3 67.8 L271.4 67.8 L298.6 76.8 L325.7 80.2 L352.9 77.3 L380.0 84.1 L380 120 Z" fill="#6a5646" opacity="0.22"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 110.2 L108.6 106.6 L135.7 100.8 L162.9 92.0 L190.0 75.5 L217.1 71.3 L244.3 63.7 L271.4 57.5 L298.6 63.4 L325.7 77.3 L352.9 80.3 L380.0 94.7 L380 120 Z" fill="#6a5646" opacity="0.8"/>
-    <line x1="0" x2="380" y1="53.400000000000006" y2="53.400000000000006" stroke="rgba(74,46,27,.45)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
-  </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span></div>
-    <div class="finca-body">
-      <p class="kicker">Toledo · 1.950 msnm</p>
-      <h3>Finca por confirmar</h3>
-      <p class="finca-prod">Domingo Torres <span class="excl">exclusivo</span></p>
-      
-      <div class="finca-foot">
-        <span class="var-chip">Geisha</span>
-        
-      </div>
-    </div></article><article class="finca reveal " style="--i:1">
-    <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 113.8 L81.4 117.4 L108.6 112.4 L135.7 101.7 L162.9 94.8 L190.0 101.2 L217.1 102.4 L244.3 104.5 L271.4 99.6 L298.6 109.7 L325.7 117.9 L352.9 114.6 L380.0 120.0 L380 120 Z" fill="#6a5646" opacity="0.22"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 117.7 L108.6 105.3 L135.7 98.8 L162.9 92.3 L190.0 81.6 L217.1 86.4 L244.3 98.6 L271.4 104.9 L298.6 114.3 L325.7 120.0 L352.9 120.0 L380.0 120.0 L380 120 Z" fill="#6a5646" opacity="0.8"/>
-    <line x1="0" x2="380" y1="80.4" y2="80.4" stroke="rgba(74,46,27,.45)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
-  </svg><span class="alt-label" style="top:67.0%">1.500 msnm</span></div>
-    <div class="finca-body">
-      <p class="kicker">Palocolorado, Chinácota · altura por confirmar</p>
-      <h3>Finca El Paraíso</h3>
-      
-      
-      <div class="finca-foot">
-        <span class="var-chip">Cenicafé 1</span>
-        <button class="btn sm" data-act="cafe" data-id="P-PAR">Ver el café</button>
-      </div>
-    </div></article><article class="finca reveal " style="--i:2">
-    <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 119.9 L108.6 117.6 L135.7 111.7 L162.9 104.8 L190.0 97.9 L217.1 106.5 L244.3 99.8 L271.4 91.8 L298.6 93.1 L325.7 96.3 L352.9 105.6 L380.0 106.0 L380 120 Z" fill="#6a5646" opacity="0.22"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 120.0 L108.6 120.0 L135.7 120.0 L162.9 108.9 L190.0 99.8 L217.1 95.8 L244.3 81.5 L271.4 81.6 L298.6 90.7 L325.7 99.6 L352.9 105.9 L380.0 112.1 L380 120 Z" fill="#6a5646" opacity="0.8"/>
-    <line x1="0" x2="380" y1="77.4" y2="77.4" stroke="rgba(74,46,27,.45)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
-  </svg><span class="alt-label" style="top:64.5%">1.550 msnm</span></div>
-    <div class="finca-body">
-      <p class="kicker">Ragonvalia · 1.550 msnm</p>
-      <h3>Lote Ragonvalia</h3>
-      
-      
-      <div class="finca-foot">
-        <span class="var-chip">Castillo</span>
-        <button class="btn sm" data-act="cafe" data-id="P-CAS">Ver el café</button>
-      </div>
-    </div></article><article class="finca reveal propia" style="--i:3">
-    <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0 120 L0.0 113.9 L27.1 112.0 L54.3 109.9 L81.4 95.4 L108.6 90.3 L135.7 90.3 L162.9 82.4 L190.0 81.5 L217.1 86.8 L244.3 86.1 L271.4 92.9 L298.6 91.0 L325.7 98.9 L352.9 96.3 L380.0 103.6 L380 120 Z" fill="#6a5646" opacity="0.22"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 119.9 L81.4 107.7 L108.6 101.8 L135.7 90.4 L162.9 85.0 L190.0 75.7 L217.1 65.4 L244.3 78.9 L271.4 86.6 L298.6 91.1 L325.7 103.5 L352.9 117.0 L380.0 120.0 L380 120 Z" fill="#6a5646" opacity="0.8"/>
-    <line x1="0" x2="380" y1="65.4" y2="65.4" stroke="rgba(74,46,27,.45)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
-  </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span></div>
-    <div class="finca-body">
-      <p class="kicker">Chinácota · 1.750 msnm</p>
-      <h3>Nuestra finca</h3>
-      <p class="finca-prod">Familia Nandez <span class="excl">exclusivo</span></p>
-      <p class="hint">5.000 plantas de Geisha sembradas por la familia. La primera cosecha con nuestro nombre sale en 2027.</p>
-      <div class="finca-foot">
-        <span class="var-chip">Geisha</span>
-        <span class="pronto">Primera cosecha 2027</span>
-      </div>
-    </div></article></div>
-  </section>
-
   <section class="g-sub g-io" aria-labelledby="g-sus">
     <div>
-      <p class="g-kicker"><span class="g-num">04</span> &nbsp; Suscripción</p>
+      <p class="g-kicker"><span class="g-num">03</span> &nbsp; Suscripción</p>
       <h2 id="g-sus">Si te gusta, <em>te lo llevamos cada mes.</em></h2>
       <p>Café de la cosecha, filtros y una receta nueva cada mes. La primera caja trae el kit para prepararlo, y la Ruta Nandez te enseña un método al mes.</p>
       <button class="btn claro lg" data-act="go" data-to="suscripcion">Ver los planes<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
@@ -231,7 +162,7 @@
 
   <section class="g-sec g-musica" aria-labelledby="g-musica">
     <div class="g-musica-txt g-io">
-      <p class="g-kicker"><span class="g-num">05</span> &nbsp; Para acompañar</p>
+      <p class="g-kicker"><span class="g-num">04</span> &nbsp; Para acompañar</p>
       <h2 id="g-musica">Música para <em>tomar café.</em></h2>
       <p>Una lista para moler, colar y quedarse un rato. Ponla, compártela y dinos qué le falta.</p>
       <div class="g-musica-cta">
@@ -263,11 +194,13 @@
   <div class="foot-marca"><b>Nandez Coffee</b><span>Chinácota · Norte de Santander, Colombia</span>
     <a href="mailto:nandezcafe@gmail.com">nandezcafe@gmail.com</a>
     <div class="g-redes-fila"><ul class="g-redes"><li><a href="https://www.instagram.com/nandezcafe/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none"/></svg></a></li><li><a href="https://www.facebook.com/profile.php?id=61594868961438" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 21v-7.5h2.6l.4-3H14V8.6c0-.9.3-1.5 1.6-1.5H17V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.3H8.3v3H11V21"/></svg></a></li><li><a href="https://www.youtube.com/@N%C3%A1ndezCaf%C3%A9" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10 9.2 5 2.8-5 2.8Z" fill="currentColor"/></svg></a></li></ul></div></div>
-  <nav class="foot-links" aria-labelledby="pie-tienda"><p class="foot-tit" id="pie-tienda">Tienda</p><a href="/tienda" data-act="go" data-to="tienda">Tienda</a><a href="/cafes" data-act="go" data-to="cafes">Cafés de especialidad</a><a href="/accesorios" data-act="go" data-to="accesorios">Accesorios y merch</a><a href="/suscripcion" data-act="go" data-to="suscripcion">Suscripción</a><a href="/drops" data-act="go" data-to="drops">Drops</a><a href="/la-gang" data-act="go" data-to="gang">La gang</a></nav>
+  <nav class="foot-links" aria-labelledby="pie-tienda"><p class="foot-tit" id="pie-tienda">Catálogo</p><a href="/tienda" data-act="go" data-to="tienda">Tienda</a><a href="/cafes" data-act="go" data-to="cafes">Cafés de especialidad</a><a href="/accesorios" data-act="go" data-to="accesorios">Accesorios y merch</a><a href="/suscripcion" data-act="go" data-to="suscripcion">Suscripción</a></nav>
   <nav class="foot-links" aria-labelledby="pie-ayuda"><p class="foot-tit" id="pie-ayuda">Ayuda</p><a href="/privacidad" data-act="go" data-to="privacidad">Política de privacidad</a><a href="/envios-y-devoluciones" data-act="go" data-to="envios">Política de reembolso</a><a href="/contacto" data-act="go" data-to="contacto">Información de contacto</a><a href="/terminos" data-act="go" data-to="terminos">Términos del servicio</a></nav>
-  <small class="foot-nota">© 2026 Nandez Coffee · Prototipo con datos de ejemplo: fotos, textos y precios por confirmar.</small>
-  
-  <p class="g-wordmark" aria-hidden="true"><b>Nandez</b><small>Coffee Gang</small></p></footer></main>
+  <div class="foot-fin">
+    <p class="g-wordmark" aria-hidden="true"><b>Nandez</b><small>Coffee Gang</small></p>
+    <small class="foot-nota">© 2026 Nandez Coffee · Chinácota · Norte de Santander, Colombia</small>
+    
+  </div></footer></main>
 
 <div class="tray" id="tray" hidden></div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
@@ -283,11 +216,11 @@
 </dialog>
 
 <script>window.IMG_V = "1af1081b";</script>
-<script src="/js/core.js?v=56f45d83"></script>
-<script src="/js/fases.js?v=56f45d83"></script>
-<script src="/js/shop.js?v=56f45d83"></script>
-<script src="/js/pages.js?v=56f45d83"></script>
-<script src="/js/auction.js?v=56f45d83"></script>
-<script src="/js/main.js?v=56f45d83"></script>
+<script src="/js/core.js?v=7c78da3a"></script>
+<script src="/js/fases.js?v=7c78da3a"></script>
+<script src="/js/shop.js?v=7c78da3a"></script>
+<script src="/js/pages.js?v=7c78da3a"></script>
+<script src="/js/auction.js?v=7c78da3a"></script>
+<script src="/js/main.js?v=7c78da3a"></script>
 </body>
 </html>

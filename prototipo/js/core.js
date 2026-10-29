@@ -13,7 +13,7 @@ const CONFIG = {
   comunidad: "Nandez Coffee Gang",
   /* Secciones apagadas hasta que estén listas: no salen en el menú, ni en el inicio,
      ni en el sitemap, y su dirección da 404. Para volver a mostrarlas, quitarlas de aquí. */
-  ocultas: ["subasta", "diario"],
+  ocultas: ["subasta", "diario", "drops", "gang"],
   /* EL DROP QUE VIENE. Un lote pequeño que sale un día, a una hora, y se acaba.
      Mientras un dato esté vacío, la página dice "por confirmar": no se inventa ninguno.
      - estado: "expectativa" (anunciado, sin abrir) · "abierto" (se puede comprar) · "agotado"
@@ -68,7 +68,7 @@ const CONFIG = {
   /* Envíos. Referencia del mercado: las tiendas de café en Colombia cobran
      entre $9.000 y $12.000 y regalan el envío desde $150.000.
      Ver docs/08_envios.md antes de cambiar estos números. */
-  envio: { costo: 12000, gratisDesde: 150000, dias: { es: "2 a 5 días hábiles", en: "2 to 5 business days" },
+  envio: { costo: 12000, gratisDesde: 120000, dias: { es: "2 a 5 días hábiles", en: "2 to 5 business days" },
            transportadora: "Interrapidísimo", contraentrega: false },
   /* Pagos. Mientras no haya links, el pedido sale por WhatsApp o correo.
      Ver docs/06_pagos_y_suscripciones.md */
@@ -82,6 +82,13 @@ const CONFIG = {
     manual: { es: "transferencia bancaria o Nequi", en: "bank transfer or Nequi" },
   },
 };
+
+/* Los 32 departamentos y Bogotá: la transportadora los pide para la guía, y
+   "Chinácota" o "San Vicente" existen en más de un departamento. */
+const DEPARTAMENTOS = ["Amazonas", "Antioquia", "Arauca", "Atlántico", "Bogotá D.C.", "Bolívar", "Boyacá", "Caldas", "Caquetá",
+  "Casanare", "Cauca", "Cesar", "Chocó", "Córdoba", "Cundinamarca", "Guainía", "Guaviare", "Huila", "La Guajira", "Magdalena",
+  "Meta", "Nariño", "Norte de Santander", "Putumayo", "Quindío", "Risaralda", "San Andrés y Providencia", "Santander",
+  "Sucre", "Tolima", "Valle del Cauca", "Vaupés", "Vichada"];
 
 const COSTOS = { transporte: 300, trilla: 500, tueste: 5000, empaque: 1300, indirectos: 8,
   mermaTueste: 17, cerezaAPergamino: 5, margenObjetivo: 35, primaSugerida: 15 };
@@ -188,11 +195,12 @@ function seed() {
         },
         pago: { pagadoKg: 17000, referenciaKg: 16040, fecha: "2026-09-12" },
         receta: { metodo: "Prensa francesa", dosis: "30 g", agua: "500 ml", temp: "94 °C", tiempo: "4:00", molienda: { es: "Gruesa", en: "Coarse" } },
+        /* Por ahora solo la bolsa de 250 g. El kilo se cotiza según la cantidad,
+           y eso vive en el plan Cafetería de la suscripción. */
         variantes: [
-          { g: 250, precio: 38000, label: { es: "Bolsa", en: "Bag" }, nota: { es: "el de todos los días", en: "the everyday one" }, stock: 90, principal: true },
-          { g: 1000, precio: 132000, label: { es: "Kilo", en: "Kilo" }, nota: { es: "para cafeterías", en: "for cafés" }, stock: 14 },
+          { g: 250, precio: 40000, label: { es: "Bolsa", en: "Bag" }, nota: { es: "unas 16 tazas", en: "about 16 cups" }, stock: 90, principal: true },
         ],
-        presentacion: 250, precio: 38000, stock: 90 },
+        presentacion: 250, precio: 40000, stock: 90 },
 
       /* Castillo y El Paraíso van EN GRANO, cada uno de su finca. El tercero es un blend de
          los dos, MOLIDO en molienda media. Los tres llevan tostión media. El Paraíso y el blend
@@ -399,8 +407,8 @@ const PLANES = [
             en: ["2 × 250 g whole bean, from two farms", "40 filters", "A brewing extra every three months", "The month's recipe and video", "Early access to every new lot"] } },
 ];
 const CAFETERIA = { id: "cafeteria", nombre: { es: "Cafetería", en: "Café" }, mes: 240000,
-  desc: { es: "Dos kilos de Castillo en grano al mes: $120.000 el kilo, frente a $132.000 suelto.",
-          en: "Two kilos of whole bean Castillo a month: COP 120,000 per kilo, against 132,000 bought loose." },
+  desc: { es: "Dos kilos de Castillo en grano cada mes, con el envío y la tostión a tu perfil. Si necesitas más, lo cotizamos.",
+          en: "Two kilos of whole bean Castillo a month, shipping and your roast profile included. Need more, we quote it." },
   incluye: { es: ["2 kg en grano cada mes", "Envío incluido", "Tostión a tu perfil", "Material para tu carta", "¿Más de 2 kg? Te cotizamos"],
              en: ["2 kg whole bean monthly", "Shipping included", "Roast to your profile", "Menu material", "More than 2 kg? Ask for a quote"] } };
 
@@ -618,8 +626,10 @@ const FAQ = [
     a: { es: "Es la calificación de un catador certificado sobre 100 puntos. Desde 80 se considera café especial y desde 86 es excepcional. Publicamos quién hizo la catación y en qué fecha, porque el puntaje envejece junto con el café.",
          en: "It is a certified cupper's score out of 100. From 80 it counts as specialty and from 86 it is exceptional. We publish who cupped it and when, because the score ages along with the coffee." } },
   { q: { es: "¿Por qué se cultiva buen café en Norte de Santander?", en: "Why is good coffee grown in Norte de Santander?" },
-    a: { es: "Las fincas de Chinácota, Toledo y Ragonvalia están entre 1.500 y 1.950 metros, con noches frías que maduran el grano despacio. Es una región menos conocida que Huila o Nariño, y por eso todavía se consiguen microlotes excepcionales a precios sensatos.",
-         en: "Farms in Chinácota, Toledo and Ragonvalia sit between 1,500 and 1,950 metres, with cold nights that ripen the cherry slowly. It is a lesser known region than Huila or Nariño, so exceptional microlots can still be found at sensible prices." } },
+    /* Sin alturas ni municipios hasta que estén confirmados los de cada finca:
+       esta respuesta la leen los asistentes de IA desde llms.txt. */
+    a: { es: "Son montañas con noches frías, que maduran el grano despacio. Es una región menos conocida que Huila o Nariño, y por eso todavía se consiguen microlotes excepcionales a precios sensatos. La altura y la vereda de cada finca van en la ficha de su café.",
+         en: "These are mountains with cold nights, which ripen the cherry slowly. It is a lesser known region than Huila or Nariño, so exceptional microlots can still be found at sensible prices. Each farm's altitude and village are on its coffee's data sheet." } },
   { q: { es: "¿Cómo funciona una subasta de café?", en: "How does a coffee auction work?" },
     a: { es: "Se publica un lote pequeño con su puntaje y su ficha, se abre con un precio de salida y los compradores pujan en dólares por kilo de café verde. Se adjudica solo si se alcanza el precio de reserva y participan al menos tres compradores distintos.",
          en: "A small lot is published with its score and data sheet, opens at a starting price and buyers bid in US dollars per kilo of green coffee. It is awarded only if the reserve price is met and at least three different buyers take part." } },

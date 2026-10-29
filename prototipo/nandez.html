@@ -1864,7 +1864,7 @@ dialog.drawer{border-left:1px solid var(--ink)}
 .foot-marca span,.foot-nota{color:var(--ink-3);font-size:13px}
 .foot-links a{font:600 11.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;text-decoration:none;border-bottom:1px solid transparent}
 .foot-links a:hover{color:var(--cherry);border-bottom-color:var(--cherry)}
-.g-wordmark{grid-column:1/-1;display:grid;margin:22px 0 0;overflow:hidden;line-height:.78;user-select:none;pointer-events:none}
+.g-wordmark{display:grid;margin:0;overflow:hidden;line-height:.78;user-select:none;pointer-events:none}
 .g-wordmark b{font:800 clamp(5rem,21.5vw,19rem)/.8 var(--display);letter-spacing:-.055em;text-transform:uppercase;color:var(--cherry);margin-bottom:-.12em;white-space:nowrap}
 .g-wordmark small{font:600 clamp(.9rem,2.4vw,1.6rem) var(--display);letter-spacing:.32em;text-transform:uppercase;color:var(--ink);margin:0 0 6px .3em}
 body[data-view=subasta] .foot{border-top-color:rgba(245,240,230,.3)}
@@ -2296,6 +2296,11 @@ body:has(dialog[open]) .g-pop{opacity:0;transform:translateY(8px);pointer-events
 }
 @media (prefers-reduced-motion:reduce){.g-pop{transition:opacity .15s;transform:none}}
 
+/* El final del pie, en una sola banda: antes el © y el letrero se leían como
+   dos secciones distintas. */
+.foot-fin{grid-column:1/-1;display:grid;gap:10px;justify-items:start;margin-top:22px}
+.foot-fin .foot-nota{grid-column:auto}
+
 </style>
 <script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Coffee","url":"https://cafeweb-five.vercel.app","logo":"https://cafeweb-five.vercel.app/img/marca/icono-512.png","image":"https://cafeweb-five.vercel.app/img/marca/compartir.jpg","sameAs":["https://www.instagram.com/nandezcafe/","https://www.facebook.com/profile.php?id=61594868961438","https://www.youtube.com/@N%C3%A1ndezCaf%C3%A9"],"email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"Familia cafetera de Chinácota. Le compramos los mejores lotes a fincas de Norte de Santander y los tostamos con nuestra marca: un café por finca, con su altura, su variedad, su proceso y su puntaje de catación."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Coffee","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"es"}]}</script>
 </head>
@@ -2308,9 +2313,7 @@ body:has(dialog[open]) .g-pop{opacity:0;transform:translateY(8px);pointer-events
     <nav class="tabs" id="nav-principal" aria-label="Secciones">
       <span class="tab-luz" aria-hidden="true"></span>
       <a class="tab" href="/" data-act="go" data-to="inicio" data-i18n="nav_inicio" aria-current="page">Inicio </a>
-      <a class="tab" href="/drops" data-act="go" data-to="drops" data-i18n="nav_drops">Drops </a>
       <div class="tab-grupo"><a class="tab" href="/tienda" data-act="go" data-to="tienda" data-i18n="nav_tienda" aria-haspopup="true">Tienda </a><div class="tab-sub"><a href="/cafes" data-act="go" data-to="cafes" data-i18n="nav_cafes_esp">Cafés de especialidad</a><a href="/accesorios" data-act="go" data-to="accesorios" data-i18n="nav_accesorios">Accesorios y merch</a></div></div>
-      <a class="tab" href="/la-gang" data-act="go" data-to="gang" data-i18n="nav_gang">La gang </a>
       <a class="tab" href="/suscripcion" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Suscripción </a>
     </nav>
     <button class="cart-btn" id="cart-btn" data-act="carrito" aria-label="Pedido">
@@ -2329,12 +2332,12 @@ body:has(dialog[open]) .g-pop{opacity:0;transform:translateY(8px);pointer-events
 <nav class="dock" aria-label="Accesos">
   <a class="dock-it" href="/" data-act="go" data-to="inicio" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4Z"/></svg><span data-i18n="nav_inicio">Inicio</span></a>
   <a class="dock-it" href="/tienda" data-act="go" data-to="tienda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5 5.5 4h13L20 9.5"/><path d="M4 9.5c0 1.5 1.2 2.5 2.7 2.5s2.6-1 2.6-2.5c0 1.5 1.2 2.5 2.7 2.5s2.7-1 2.7-2.5c0 1.5 1.1 2.5 2.6 2.5S20 11 20 9.5"/><path d="M5.5 12v8h13v-8M10 20v-5h4v5"/></svg><span data-i18n="nav_tienda">Tienda</span></a>
-  <a class="dock-it" href="/drops" data-act="go" data-to="drops"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10l1 12.5a1.6 1.6 0 0 1-1.6 1.5H7.6A1.6 1.6 0 0 1 6 19.5L7 7Z"/><path d="M9.2 7V4.6h5.6V7"/><path d="M10 14.5h4"/></svg><span data-i18n="nav_drops">Drops</span></a>
+  <a class="dock-it" href="/suscripcion" data-act="go" data-to="suscripcion"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.7"/><path d="M20 4v4.7h-4.7"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 15.3"/><path d="M4 20v-4.7h4.7"/></svg><span data-i18n="nav_suscripcion">Suscripción</span></a>
   <button class="dock-it" id="dock-pedido" data-act="carrito"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg><span class="dock-n" id="dock-n" hidden></span><span data-i18n="nav_pedido">Pedido</span></button>
   <button class="dock-it" id="dock-mas" data-act="mas" aria-expanded="false" aria-controls="dock-hoja"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/></svg><span data-i18n="nav_mas">Más</span></button>
 </nav>
 <div class="dock-hoja" id="dock-hoja" hidden>
-  <a class="tab" href="/la-gang" data-act="go" data-to="gang" data-i18n="nav_gang">La gang </a><a class="tab" href="/cafes" data-act="go" data-to="cafes" data-i18n="nav_cafes_esp">Cafés de especialidad </a><a class="tab" href="/accesorios" data-act="go" data-to="accesorios" data-i18n="nav_accesorios">Accesorios y merch </a><a class="tab" href="/suscripcion" data-act="go" data-to="suscripcion" data-i18n="nav_suscripcion">Suscripción </a><a class="tab" href="/contacto" data-act="go" data-to="contacto" data-i18n="nav_contacto">Contacto </a>
+  <a class="tab" href="/cafes" data-act="go" data-to="cafes" data-i18n="nav_cafes_esp">Cafés de especialidad </a><a class="tab" href="/accesorios" data-act="go" data-to="accesorios" data-i18n="nav_accesorios">Accesorios y merch </a><a class="tab" href="/contacto" data-act="go" data-to="contacto" data-i18n="nav_contacto">Contacto </a>
   <div class="lang" role="group" aria-label="Idioma">
     <button data-act="lang" data-lang="es" aria-pressed="true">Español</button>
     <button data-act="lang" data-lang="en" aria-pressed="false">English</button>
@@ -2345,13 +2348,13 @@ body:has(dialog[open]) .g-pop{opacity:0;transform:translateY(8px);pointer-events
   <section class="g-hero hero" aria-labelledby="portada-titulo">
     <div class="g-hero-txt">
       <p class="g-kicker reveal"><em>Nandez Coffee</em> · Chinácota, Norte de Santander</p>
-      <h1 id="portada-titulo"><span class="pal" style="--w:0">Café</span> <span class="pal" style="--w:1">en</span> <span class="pal" style="--w:2">grano</span><em><span class="pal" style="--w:3">con</span> <span class="pal" style="--w:4">nombre</span> <span class="pal" style="--w:5">propio.</span></em></h1>
-      <p class="g-lede reveal" style="--i:3">Tres cafés de fincas vecinas de Norte de Santander, todos con tostión media: dos de una sola finca, en grano, para que los muelas en casa, y un blend de los dos, molido y listo para preparar.</p>
+      <h1 id="portada-titulo"><span class="pal" style="--w:0">Tu</span> <span class="pal" style="--w:1">plug</span> <span class="pal" style="--w:2">de</span><em><span class="pal" style="--w:3">café</span> <span class="pal" style="--w:4">de</span> <span class="pal" style="--w:5">finca.</span></em></h1>
+      <p class="g-lede reveal" style="--i:3">Compramos lotes pequeños en las montañas de Norte de Santander y los tostamos con nuestro nombre. Dos en grano y el blend, molido. El Coffee Gang se entera primero.</p>
       <div class="g-cta reveal" style="--i:4">
         <button class="btn primary lg" data-act="go" data-to="cafes">Ver los cafés<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
         <a class="g-link" href="/suscripcion" data-act="go" data-to="suscripcion">La suscripción</a>
       </div>
-      <ul class="g-hechos reveal" style="--i:5"><li><b>1.500 a 1.950 msnm</b><small>fincas vecinas</small></li><li><b>Tostión media</b><small>los tres</small></li><li><b>En grano o molido</b><small>tú escoges</small></li></ul>
+      <ul class="g-hechos reveal" style="--i:5"><li><b>$40.000</b><small>los 250 g</small></li><li><b>Tostión media</b><small>los tres</small></li><li><b>En grano o molido</b><small>tú escoges</small></li></ul>
     </div>
     <div class="g-hero-art reveal" style="--i:2" data-act="cafe" data-id="P-CAS" role="button" tabindex="0" aria-label="Castillo de Ragonvalia">
       <p class="g-hero-tag">Disponible ahora<b>Castillo de Ragonvalia</b></p>
@@ -2361,7 +2364,7 @@ body:has(dialog[open]) .g-pop{opacity:0;transform:translateY(8px);pointer-events
         <circle cx="100" cy="100" r="92"/><circle cx="100" cy="100" r="4" style="fill:currentColor"/><text><textPath href="#g-arco">COSECHA 2026 · TOSTIÓN MEDIA · NORTE DE SANTANDER · </textPath></text></svg>
     </div>
   </section>
-  <div class="g-ticker" aria-label="En corto"><div class="g-ticker-track"><span>Tostión <em>media</em></span><span>Cultivado entre <em>1.500 y 1.950</em> metros</span><span><em>En grano</em> o molido</span><span>Cosecha <em>2026</em></span><span>Chinácota · Toledo · Ragonvalia</span><span>Envío gratis desde <em>$150.000</em></span><span>Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027</span><span>Norte de Santander · <em>Coffee Gang</em></span><span>Tostión <em>media</em></span><span>Cultivado entre <em>1.500 y 1.950</em> metros</span><span><em>En grano</em> o molido</span><span>Cosecha <em>2026</em></span><span>Chinácota · Toledo · Ragonvalia</span><span>Envío gratis desde <em>$150.000</em></span><span>Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027</span><span>Norte de Santander · <em>Coffee Gang</em></span></div></div>
+  <div class="g-ticker" aria-label="En corto"><div class="g-ticker-track"><span>Tostión <em>media</em></span><span>La bolsa de 250 g, <em>$40.000</em></span><span><em>En grano</em> o molido</span><span>Cosecha <em>2026</em></span><span>Montañas de <em>Norte de Santander</em></span><span>Envío gratis desde <em>$120.000</em></span><span>Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027</span><span><em>Coffee Gang</em></span><span>Tostión <em>media</em></span><span>La bolsa de 250 g, <em>$40.000</em></span><span><em>En grano</em> o molido</span><span>Cosecha <em>2026</em></span><span>Montañas de <em>Norte de Santander</em></span><span>Envío gratis desde <em>$120.000</em></span><span>Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027</span><span><em>Coffee Gang</em></span></div></div>
 
   <section class="g-sec" id="cafes" aria-labelledby="g-cafes">
     <div class="g-head g-io">
@@ -2378,7 +2381,7 @@ body:has(dialog[open]) .g-pop{opacity:0;transform:translateY(8px);pointer-events
       <p class="g-kicker">Lote Ragonvalia · 1.550 msnm</p>
       <h3>Castillo de Ragonvalia</h3>
       <p class="g-notas">Panela · Chocolate · Naranja</p>
-      <div class="g-prod-foot"><b class="mono">$38.000</b><small>250 g · en grano</small>
+      <div class="g-prod-foot"><b class="mono">$40.000</b><small>250 g · en grano</small>
         <button class="btn primary sm" data-act="add" data-p="P-CAS" data-g="250" >Agregar al pedido</button></div>
     </div></article><article class="g-prod g-io pronto" style="--pc:#2C4FA3;--i:1">
     <div class="g-prod-art" data-act="cafe" data-id="P-PAR" role="button" tabindex="0" aria-label="El Paraíso">
@@ -2414,76 +2417,9 @@ body:has(dialog[open]) .g-pop{opacity:0;transform:translateY(8px);pointer-events
     </div>
   </section>
 
-  <section class="g-sec" aria-labelledby="g-fincas">
-    <div class="g-head g-io">
-      <span class="g-num">03</span><p class="g-kicker">Los vecinos</p>
-      <h2><span id="g-fincas">De dónde viene <em>cada bolsa.</em></span></h2><p>Chinácota, Toledo y Ragonvalia: montañas entre 1.500 y 1.950 metros, con noches frías que maduran el grano despacio. En 2027 se suma la primera cosecha de nuestra propia finca.</p></div>
-    <div class="fincas"><article class="finca reveal " style="--i:0">
-    <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0 120 L0.0 107.3 L27.1 108.8 L54.3 96.7 L81.4 93.4 L108.6 94.6 L135.7 87.4 L162.9 78.9 L190.0 83.0 L217.1 70.6 L244.3 67.8 L271.4 67.8 L298.6 76.8 L325.7 80.2 L352.9 77.3 L380.0 84.1 L380 120 Z" fill="#6a5646" opacity="0.22"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 110.2 L108.6 106.6 L135.7 100.8 L162.9 92.0 L190.0 75.5 L217.1 71.3 L244.3 63.7 L271.4 57.5 L298.6 63.4 L325.7 77.3 L352.9 80.3 L380.0 94.7 L380 120 Z" fill="#6a5646" opacity="0.8"/>
-    <line x1="0" x2="380" y1="53.400000000000006" y2="53.400000000000006" stroke="rgba(74,46,27,.45)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
-  </svg><span class="alt-label" style="top:44.5%">1.950 msnm</span></div>
-    <div class="finca-body">
-      <p class="kicker">Toledo · 1.950 msnm</p>
-      <h3>Finca por confirmar</h3>
-      <p class="finca-prod">Domingo Torres <span class="excl">exclusivo</span></p>
-      
-      <div class="finca-foot">
-        <span class="var-chip">Geisha</span>
-        
-      </div>
-    </div></article><article class="finca reveal " style="--i:1">
-    <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 113.8 L81.4 117.4 L108.6 112.4 L135.7 101.7 L162.9 94.8 L190.0 101.2 L217.1 102.4 L244.3 104.5 L271.4 99.6 L298.6 109.7 L325.7 117.9 L352.9 114.6 L380.0 120.0 L380 120 Z" fill="#6a5646" opacity="0.22"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 117.7 L108.6 105.3 L135.7 98.8 L162.9 92.3 L190.0 81.6 L217.1 86.4 L244.3 98.6 L271.4 104.9 L298.6 114.3 L325.7 120.0 L352.9 120.0 L380.0 120.0 L380 120 Z" fill="#6a5646" opacity="0.8"/>
-    <line x1="0" x2="380" y1="80.4" y2="80.4" stroke="rgba(74,46,27,.45)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
-  </svg><span class="alt-label" style="top:67.0%">1.500 msnm</span></div>
-    <div class="finca-body">
-      <p class="kicker">Palocolorado, Chinácota · altura por confirmar</p>
-      <h3>Finca El Paraíso</h3>
-      
-      
-      <div class="finca-foot">
-        <span class="var-chip">Cenicafé 1</span>
-        <button class="btn sm" data-act="cafe" data-id="P-PAR">Ver el café</button>
-      </div>
-    </div></article><article class="finca reveal " style="--i:2">
-    <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 119.9 L108.6 117.6 L135.7 111.7 L162.9 104.8 L190.0 97.9 L217.1 106.5 L244.3 99.8 L271.4 91.8 L298.6 93.1 L325.7 96.3 L352.9 105.6 L380.0 106.0 L380 120 Z" fill="#6a5646" opacity="0.22"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 120.0 L81.4 120.0 L108.6 120.0 L135.7 120.0 L162.9 108.9 L190.0 99.8 L217.1 95.8 L244.3 81.5 L271.4 81.6 L298.6 90.7 L325.7 99.6 L352.9 105.9 L380.0 112.1 L380 120 Z" fill="#6a5646" opacity="0.8"/>
-    <line x1="0" x2="380" y1="77.4" y2="77.4" stroke="rgba(74,46,27,.45)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
-  </svg><span class="alt-label" style="top:64.5%">1.550 msnm</span></div>
-    <div class="finca-body">
-      <p class="kicker">Ragonvalia · 1.550 msnm</p>
-      <h3>Lote Ragonvalia</h3>
-      
-      
-      <div class="finca-foot">
-        <span class="var-chip">Castillo</span>
-        <button class="btn sm" data-act="cafe" data-id="P-CAS">Ver el café</button>
-      </div>
-    </div></article><article class="finca reveal propia" style="--i:3">
-    <div class="finca-art"><svg viewBox="0 0 380 120" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0 120 L0.0 113.9 L27.1 112.0 L54.3 109.9 L81.4 95.4 L108.6 90.3 L135.7 90.3 L162.9 82.4 L190.0 81.5 L217.1 86.8 L244.3 86.1 L271.4 92.9 L298.6 91.0 L325.7 98.9 L352.9 96.3 L380.0 103.6 L380 120 Z" fill="#6a5646" opacity="0.22"/>
-    <path class="front" d="M0 120 L0.0 120.0 L27.1 120.0 L54.3 119.9 L81.4 107.7 L108.6 101.8 L135.7 90.4 L162.9 85.0 L190.0 75.7 L217.1 65.4 L244.3 78.9 L271.4 86.6 L298.6 91.1 L325.7 103.5 L352.9 117.0 L380.0 120.0 L380 120 Z" fill="#6a5646" opacity="0.8"/>
-    <line x1="0" x2="380" y1="65.4" y2="65.4" stroke="rgba(74,46,27,.45)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
-  </svg><span class="alt-label" style="top:54.5%">1.750 msnm</span></div>
-    <div class="finca-body">
-      <p class="kicker">Chinácota · 1.750 msnm</p>
-      <h3>Nuestra finca</h3>
-      <p class="finca-prod">Familia Nandez <span class="excl">exclusivo</span></p>
-      <p class="hint">5.000 plantas de Geisha sembradas por la familia. La primera cosecha con nuestro nombre sale en 2027.</p>
-      <div class="finca-foot">
-        <span class="var-chip">Geisha</span>
-        <span class="pronto">Primera cosecha 2027</span>
-      </div>
-    </div></article></div>
-  </section>
-
   <section class="g-sub g-io" aria-labelledby="g-sus">
     <div>
-      <p class="g-kicker"><span class="g-num">04</span> &nbsp; Suscripción</p>
+      <p class="g-kicker"><span class="g-num">03</span> &nbsp; Suscripción</p>
       <h2 id="g-sus">Si te gusta, <em>te lo llevamos cada mes.</em></h2>
       <p>Café de la cosecha, filtros y una receta nueva cada mes. La primera caja trae el kit para prepararlo, y la Ruta Nandez te enseña un método al mes.</p>
       <button class="btn claro lg" data-act="go" data-to="suscripcion">Ver los planes<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
@@ -2493,7 +2429,7 @@ body:has(dialog[open]) .g-pop{opacity:0;transform:translateY(8px);pointer-events
 
   <section class="g-sec g-musica" aria-labelledby="g-musica">
     <div class="g-musica-txt g-io">
-      <p class="g-kicker"><span class="g-num">05</span> &nbsp; Para acompañar</p>
+      <p class="g-kicker"><span class="g-num">04</span> &nbsp; Para acompañar</p>
       <h2 id="g-musica">Música para <em>tomar café.</em></h2>
       <p>Una lista para moler, colar y quedarse un rato. Ponla, compártela y dinos qué le falta.</p>
       <div class="g-musica-cta">
@@ -2525,11 +2461,13 @@ body:has(dialog[open]) .g-pop{opacity:0;transform:translateY(8px);pointer-events
   <div class="foot-marca"><b>Nandez Coffee</b><span>Chinácota · Norte de Santander, Colombia</span>
     <a href="mailto:nandezcafe@gmail.com">nandezcafe@gmail.com</a>
     <div class="g-redes-fila"><ul class="g-redes"><li><a href="https://www.instagram.com/nandezcafe/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none"/></svg></a></li><li><a href="https://www.facebook.com/profile.php?id=61594868961438" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 21v-7.5h2.6l.4-3H14V8.6c0-.9.3-1.5 1.6-1.5H17V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.3H8.3v3H11V21"/></svg></a></li><li><a href="https://www.youtube.com/@N%C3%A1ndezCaf%C3%A9" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10 9.2 5 2.8-5 2.8Z" fill="currentColor"/></svg></a></li></ul></div></div>
-  <nav class="foot-links" aria-labelledby="pie-tienda"><p class="foot-tit" id="pie-tienda">Tienda</p><a href="/tienda" data-act="go" data-to="tienda">Tienda</a><a href="/cafes" data-act="go" data-to="cafes">Cafés de especialidad</a><a href="/accesorios" data-act="go" data-to="accesorios">Accesorios y merch</a><a href="/suscripcion" data-act="go" data-to="suscripcion">Suscripción</a><a href="/drops" data-act="go" data-to="drops">Drops</a><a href="/la-gang" data-act="go" data-to="gang">La gang</a></nav>
+  <nav class="foot-links" aria-labelledby="pie-tienda"><p class="foot-tit" id="pie-tienda">Catálogo</p><a href="/tienda" data-act="go" data-to="tienda">Tienda</a><a href="/cafes" data-act="go" data-to="cafes">Cafés de especialidad</a><a href="/accesorios" data-act="go" data-to="accesorios">Accesorios y merch</a><a href="/suscripcion" data-act="go" data-to="suscripcion">Suscripción</a></nav>
   <nav class="foot-links" aria-labelledby="pie-ayuda"><p class="foot-tit" id="pie-ayuda">Ayuda</p><a href="/privacidad" data-act="go" data-to="privacidad">Política de privacidad</a><a href="/envios-y-devoluciones" data-act="go" data-to="envios">Política de reembolso</a><a href="/contacto" data-act="go" data-to="contacto">Información de contacto</a><a href="/terminos" data-act="go" data-to="terminos">Términos del servicio</a></nav>
-  <small class="foot-nota">© 2026 Nandez Coffee · Prototipo con datos de ejemplo: fotos, textos y precios por confirmar.</small>
-  
-  <p class="g-wordmark" aria-hidden="true"><b>Nandez</b><small>Coffee Gang</small></p></footer></main>
+  <div class="foot-fin">
+    <p class="g-wordmark" aria-hidden="true"><b>Nandez</b><small>Coffee Gang</small></p>
+    <small class="foot-nota">© 2026 Nandez Coffee · Chinácota · Norte de Santander, Colombia</small>
+    
+  </div></footer></main>
 
 <div class="tray" id="tray" hidden></div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
@@ -2563,7 +2501,7 @@ const CONFIG = {
   comunidad: "Nandez Coffee Gang",
   /* Secciones apagadas hasta que estén listas: no salen en el menú, ni en el inicio,
      ni en el sitemap, y su dirección da 404. Para volver a mostrarlas, quitarlas de aquí. */
-  ocultas: ["subasta", "diario"],
+  ocultas: ["subasta", "diario", "drops", "gang"],
   /* EL DROP QUE VIENE. Un lote pequeño que sale un día, a una hora, y se acaba.
      Mientras un dato esté vacío, la página dice "por confirmar": no se inventa ninguno.
      - estado: "expectativa" (anunciado, sin abrir) · "abierto" (se puede comprar) · "agotado"
@@ -2618,7 +2556,7 @@ const CONFIG = {
   /* Envíos. Referencia del mercado: las tiendas de café en Colombia cobran
      entre $9.000 y $12.000 y regalan el envío desde $150.000.
      Ver docs/08_envios.md antes de cambiar estos números. */
-  envio: { costo: 12000, gratisDesde: 150000, dias: { es: "2 a 5 días hábiles", en: "2 to 5 business days" },
+  envio: { costo: 12000, gratisDesde: 120000, dias: { es: "2 a 5 días hábiles", en: "2 to 5 business days" },
            transportadora: "Interrapidísimo", contraentrega: false },
   /* Pagos. Mientras no haya links, el pedido sale por WhatsApp o correo.
      Ver docs/06_pagos_y_suscripciones.md */
@@ -2632,6 +2570,13 @@ const CONFIG = {
     manual: { es: "transferencia bancaria o Nequi", en: "bank transfer or Nequi" },
   },
 };
+
+/* Los 32 departamentos y Bogotá: la transportadora los pide para la guía, y
+   "Chinácota" o "San Vicente" existen en más de un departamento. */
+const DEPARTAMENTOS = ["Amazonas", "Antioquia", "Arauca", "Atlántico", "Bogotá D.C.", "Bolívar", "Boyacá", "Caldas", "Caquetá",
+  "Casanare", "Cauca", "Cesar", "Chocó", "Córdoba", "Cundinamarca", "Guainía", "Guaviare", "Huila", "La Guajira", "Magdalena",
+  "Meta", "Nariño", "Norte de Santander", "Putumayo", "Quindío", "Risaralda", "San Andrés y Providencia", "Santander",
+  "Sucre", "Tolima", "Valle del Cauca", "Vaupés", "Vichada"];
 
 const COSTOS = { transporte: 300, trilla: 500, tueste: 5000, empaque: 1300, indirectos: 8,
   mermaTueste: 17, cerezaAPergamino: 5, margenObjetivo: 35, primaSugerida: 15 };
@@ -2738,11 +2683,12 @@ function seed() {
         },
         pago: { pagadoKg: 17000, referenciaKg: 16040, fecha: "2026-09-12" },
         receta: { metodo: "Prensa francesa", dosis: "30 g", agua: "500 ml", temp: "94 °C", tiempo: "4:00", molienda: { es: "Gruesa", en: "Coarse" } },
+        /* Por ahora solo la bolsa de 250 g. El kilo se cotiza según la cantidad,
+           y eso vive en el plan Cafetería de la suscripción. */
         variantes: [
-          { g: 250, precio: 38000, label: { es: "Bolsa", en: "Bag" }, nota: { es: "el de todos los días", en: "the everyday one" }, stock: 90, principal: true },
-          { g: 1000, precio: 132000, label: { es: "Kilo", en: "Kilo" }, nota: { es: "para cafeterías", en: "for cafés" }, stock: 14 },
+          { g: 250, precio: 40000, label: { es: "Bolsa", en: "Bag" }, nota: { es: "unas 16 tazas", en: "about 16 cups" }, stock: 90, principal: true },
         ],
-        presentacion: 250, precio: 38000, stock: 90 },
+        presentacion: 250, precio: 40000, stock: 90 },
 
       /* Castillo y El Paraíso van EN GRANO, cada uno de su finca. El tercero es un blend de
          los dos, MOLIDO en molienda media. Los tres llevan tostión media. El Paraíso y el blend
@@ -2949,8 +2895,8 @@ const PLANES = [
             en: ["2 × 250 g whole bean, from two farms", "40 filters", "A brewing extra every three months", "The month's recipe and video", "Early access to every new lot"] } },
 ];
 const CAFETERIA = { id: "cafeteria", nombre: { es: "Cafetería", en: "Café" }, mes: 240000,
-  desc: { es: "Dos kilos de Castillo en grano al mes: $120.000 el kilo, frente a $132.000 suelto.",
-          en: "Two kilos of whole bean Castillo a month: COP 120,000 per kilo, against 132,000 bought loose." },
+  desc: { es: "Dos kilos de Castillo en grano cada mes, con el envío y la tostión a tu perfil. Si necesitas más, lo cotizamos.",
+          en: "Two kilos of whole bean Castillo a month, shipping and your roast profile included. Need more, we quote it." },
   incluye: { es: ["2 kg en grano cada mes", "Envío incluido", "Tostión a tu perfil", "Material para tu carta", "¿Más de 2 kg? Te cotizamos"],
              en: ["2 kg whole bean monthly", "Shipping included", "Roast to your profile", "Menu material", "More than 2 kg? Ask for a quote"] } };
 
@@ -3168,8 +3114,10 @@ const FAQ = [
     a: { es: "Es la calificación de un catador certificado sobre 100 puntos. Desde 80 se considera café especial y desde 86 es excepcional. Publicamos quién hizo la catación y en qué fecha, porque el puntaje envejece junto con el café.",
          en: "It is a certified cupper's score out of 100. From 80 it counts as specialty and from 86 it is exceptional. We publish who cupped it and when, because the score ages along with the coffee." } },
   { q: { es: "¿Por qué se cultiva buen café en Norte de Santander?", en: "Why is good coffee grown in Norte de Santander?" },
-    a: { es: "Las fincas de Chinácota, Toledo y Ragonvalia están entre 1.500 y 1.950 metros, con noches frías que maduran el grano despacio. Es una región menos conocida que Huila o Nariño, y por eso todavía se consiguen microlotes excepcionales a precios sensatos.",
-         en: "Farms in Chinácota, Toledo and Ragonvalia sit between 1,500 and 1,950 metres, with cold nights that ripen the cherry slowly. It is a lesser known region than Huila or Nariño, so exceptional microlots can still be found at sensible prices." } },
+    /* Sin alturas ni municipios hasta que estén confirmados los de cada finca:
+       esta respuesta la leen los asistentes de IA desde llms.txt. */
+    a: { es: "Son montañas con noches frías, que maduran el grano despacio. Es una región menos conocida que Huila o Nariño, y por eso todavía se consiguen microlotes excepcionales a precios sensatos. La altura y la vereda de cada finca van en la ficha de su café.",
+         en: "These are mountains with cold nights, which ripen the cherry slowly. It is a lesser known region than Huila or Nariño, so exceptional microlots can still be found at sensible prices. Each farm's altitude and village are on its coffee's data sheet." } },
   { q: { es: "¿Cómo funciona una subasta de café?", en: "How does a coffee auction work?" },
     a: { es: "Se publica un lote pequeño con su puntaje y su ficha, se abre con un precio de salida y los compradores pujan en dólares por kilo de café verde. Se adjudica solo si se alcanza el precio de reserva y participan al menos tres compradores distintos.",
          en: "A small lot is published with its score and data sheet, opens at a starting price and buyers bid in US dollars per kilo of green coffee. It is awarded only if the reserve price is met and at least three different buyers take part." } },
@@ -3294,17 +3242,20 @@ const icono = (k, clase = "") => `<svg class="${clase}" viewBox="0 0 24 24" fill
 
 function portada(en) {
   const p = S.productos.find((x) => !x.proximamente) || S.productos[0];
+  /* El precio sale del producto, no se escribe aquí: así no se queda viejo.
+     La altura no va: la de cada finca está por confirmar y un rango inventado miente. */
+  const vb = principal(p);
   const hechos = en
-    ? [["1,500 to 1,950 m", "above sea level"], ["Medium roast", "all three"], ["Whole bean or ground", "you choose"]]
-    : [["1.500 a 1.950 msnm", "fincas vecinas"], ["Tostión media", "los tres"], ["En grano o molido", "tú escoges"]];
+    ? [[cop(vb.precio), "per 250 g"], ["Medium roast", "all three"], ["Whole bean or ground", "you choose"]]
+    : [[cop(vb.precio), "los 250 g"], ["Tostión media", "los tres"], ["En grano o molido", "tú escoges"]];
   const sello = en ? "2026 HARVEST · MEDIUM ROAST · NORTE DE SANTANDER · " : "COSECHA 2026 · TOSTIÓN MEDIA · NORTE DE SANTANDER · ";
   return `<section class="g-hero hero" aria-labelledby="portada-titulo">
     <div class="g-hero-txt">
       <p class="g-kicker reveal"><em>${esc(CONFIG.marca)}</em> · Chinácota, Norte de Santander</p>
-      <h1 id="portada-titulo">${pal(en ? "Whole bean coffee" : "Café en grano")}<em>${pal(en ? "with a first name." : "con nombre propio.", 3)}</em></h1>
+      <h1 id="portada-titulo">${pal(en ? "Your plug for" : "Tu plug de")}<em>${pal(en ? "single farm coffee." : "café de finca.", 3)}</em></h1>
       <p class="g-lede reveal" style="--i:3">${en
-        ? "Three coffees from neighbouring farms in Norte de Santander, all medium roast: two from a single farm, whole bean, so you grind them at home, and a blend of the two, ground and ready to brew."
-        : "Tres cafés de fincas vecinas de Norte de Santander, todos con tostión media: dos de una sola finca, en grano, para que los muelas en casa, y un blend de los dos, molido y listo para preparar."}</p>
+        ? "We buy small lots in the mountains of Norte de Santander and roast them under our own name. Two whole bean and the blend, ground. The Coffee Gang hears about every one first."
+        : "Compramos lotes pequeños en las montañas de Norte de Santander y los tostamos con nuestro nombre. Dos en grano y el blend, molido. El Coffee Gang se entera primero."}</p>
       <div class="g-cta reveal" style="--i:4">
         <button class="btn primary lg" data-act="go" data-to="cafes">${en ? "See the coffees" : "Ver los cafés"}${icono("flecha", "ico")}</button>
         <a class="g-link" href="${ruta("suscripcion")}" data-act="go" data-to="suscripcion">${en ? "The subscription" : "La suscripción"}</a>
@@ -3324,13 +3275,18 @@ function portada(en) {
    mercado: la carga, la bolsa y el dólar son datos internos y viven en el panel.
    Corre despacio y se detiene al pasar el cursor. */
 function cinta(en) {
+  /* Ni la altura ni los municipios: la finca de cada café está por confirmar y
+     un rango o un pueblo equivocado se lee como mentira. El precio sale del
+     producto, no se escribe aquí. */
+  const pc = S.productos.find((x) => !x.proximamente) || S.productos[0];
+  const bolsa = cop(principal(pc).precio);
   const items = en
-    ? [`<em>Medium</em> roast`, `Grown at <em>1,500 to 1,950</em> metres`, `<em>Whole bean</em> or ground`, `<em>2026</em> harvest`,
-       `Chinácota · Toledo · Ragonvalia`, `Free shipping from <em>${cop(CONFIG.envio.gratisDesde)}</em>`,
-       `Our own farm: <em>5,000</em> Geisha plants, first harvest 2027`, `Norte de Santander · <em>${CONFIG.gang}</em>`]
-    : [`Tostión <em>media</em>`, `Cultivado entre <em>1.500 y 1.950</em> metros`, `<em>En grano</em> o molido`, `Cosecha <em>2026</em>`,
-       `Chinácota · Toledo · Ragonvalia`, `Envío gratis desde <em>${cop(CONFIG.envio.gratisDesde)}</em>`,
-       `Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027`, `Norte de Santander · <em>${CONFIG.gang}</em>`];
+    ? [`<em>Medium</em> roast`, `The 250 g bag, <em>${bolsa}</em>`, `<em>Whole bean</em> or ground`, `<em>2026</em> harvest`,
+       `Mountains of <em>Norte de Santander</em>`, `Free shipping from <em>${cop(CONFIG.envio.gratisDesde)}</em>`,
+       `Our own farm: <em>5,000</em> Geisha plants, first harvest 2027`, `<em>${CONFIG.gang}</em>`]
+    : [`Tostión <em>media</em>`, `La bolsa de 250 g, <em>${bolsa}</em>`, `<em>En grano</em> o molido`, `Cosecha <em>2026</em>`,
+       `Montañas de <em>Norte de Santander</em>`, `Envío gratis desde <em>${cop(CONFIG.envio.gratisDesde)}</em>`,
+       `Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027`, `<em>${CONFIG.gang}</em>`];
   const fila = items.map((x) => `<span>${x}</span>`).join("");
   return `<div class="g-ticker" aria-label="${en ? "At a glance" : "En corto"}"><div class="g-ticker-track">${fila}${fila}</div></div>`;
 }
@@ -3821,7 +3777,13 @@ function cargarCarrito() {
   try {
     const v = JSON.parse(localStorage.getItem(CART_KEY));
     if (!Array.isArray(v)) return;
-    UI.carrito = v.filter((i) => { const p = prodById(i.id); return p && p.variantes.some((x) => x.g === i.g && x.stock > 0); });
+    /* El precio se vuelve a leer del producto: un carrito guardado antes de un
+       cambio de precio cobraría el viejo. La presentación que ya no existe se cae.
+       El nombre no se toca: esto corre antes de que la URL fije el idioma. */
+    UI.carrito = v.flatMap((i) => {
+      const p = prodById(i.id), x = p && p.variantes.find((y) => y.g === i.g && y.stock > 0);
+      return x ? [{ ...i, precio: x.precio }] : [];
+    });
   } catch {}
 }
 /* El bono: llega en el enlace del correo de bienvenida (?bono=GANG-XXXXX) o se escribe en el carrito.
@@ -3953,7 +3915,8 @@ function renderCarrito() {
   }
   const E = CONFIG.envio, envio = envioDe(totalCarrito()), falta = E.gratisDesde - totalCarrito(), desc = descuentoCarrito();
   /* lo que ya escribió la persona sobrevive a que el carrito se vuelva a pintar */
-  const escrito = Object.fromEntries(["pd-nombre", "pd-ciudad", "pd-correo", "pd-tel", "pd-bono"].map((k) => [k, $("#" + k)?.value || ""]));
+  const escrito = Object.fromEntries(["pd-nombre", "pd-apellidos", "pd-documento", "pd-tel", "pd-direccion", "pd-detalle",
+    "pd-ciudad", "pd-depto", "pd-correo", "pd-bono"].map((k) => [k, $("#" + k)?.value || ""]));
   const val = (k) => (escrito[k] ? ` value="${esc(escrito[k])}"` : "");
   cuerpo.innerHTML = `
     <ul class="cart-items">${UI.carrito.map((i) => {
@@ -3982,10 +3945,18 @@ function renderCarrito() {
     </div>
 
     <div class="form-grid cart-form">
-      <div class="field"><label class="lbl" for="pd-nombre">${en ? "Name" : "Nombre o negocio"}</label><input id="pd-nombre" class="input" autocomplete="name" enterkeyhint="next"${val("pd-nombre")}></div>
+      <div class="field"><label class="lbl" for="pd-nombre">${en ? "Name" : "Nombre"}</label><input id="pd-nombre" class="input" autocomplete="given-name" enterkeyhint="next"${val("pd-nombre")}></div>
+      <div class="field"><label class="lbl" for="pd-apellidos">${en ? "Last name" : "Apellidos"}</label><input id="pd-apellidos" class="input" autocomplete="family-name" enterkeyhint="next"${val("pd-apellidos")}></div>
+      <div class="field"><label class="lbl" for="pd-documento">${en ? "ID or tax number" : "Cédula o NIT"}</label><input id="pd-documento" class="input mono" inputmode="numeric" autocomplete="off" enterkeyhint="next"${val("pd-documento")}></div>
+      <div class="field"><label class="lbl" for="pd-tel">${en ? "Phone (the courier calls it)" : "Teléfono (al que llama el mensajero)"}</label><input id="pd-tel" class="input" type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="next" placeholder="300 000 0000"${val("pd-tel")}></div>
+      <div class="field" style="grid-column:1/-1"><label class="lbl" for="pd-direccion">${en ? "Address" : "Dirección"}</label><input id="pd-direccion" class="input" autocomplete="street-address" enterkeyhint="next" placeholder="${en ? "Calle 10 # 5-23" : "Calle 10 # 5-23"}"${val("pd-direccion")}></div>
+      <div class="field" style="grid-column:1/-1"><label class="lbl" for="pd-detalle">${en ? "Neighbourhood, apartment or directions (optional)" : "Barrio, apartamento o indicaciones (opcional)"}</label><input id="pd-detalle" class="input" autocomplete="address-line2" enterkeyhint="next"${val("pd-detalle")}></div>
       <div class="field"><label class="lbl" for="pd-ciudad">${en ? "City" : "Ciudad"}</label><input id="pd-ciudad" class="input" autocomplete="address-level2" enterkeyhint="next"${val("pd-ciudad")}></div>
-      <div class="field"><label class="lbl" for="pd-correo">${en ? "Email (for the tracking number)" : "Correo (para mandarte la guía)"}</label><input id="pd-correo" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none" enterkeyhint="next"${val("pd-correo")}></div>
-      <div class="field"><label class="lbl" for="pd-tel">${en ? "WhatsApp (to confirm your order)" : "WhatsApp (para confirmarte el pedido)"}</label><input id="pd-tel" class="input" type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="done" placeholder="300 000 0000"${val("pd-tel")}></div>
+      <div class="field"><label class="lbl" for="pd-depto">${en ? "Department" : "Departamento"}</label>
+        <select id="pd-depto" class="input" autocomplete="address-level1">
+          <option value="">${en ? "Choose" : "Escoge"}</option>
+          ${DEPARTAMENTOS.map((x) => `<option${x === escrito["pd-depto"] ? " selected" : ""}>${esc(x)}</option>`).join("")}</select></div>
+      <div class="field" style="grid-column:1/-1"><label class="lbl" for="pd-correo">${en ? "Email (for the tracking number)" : "Correo (para mandarte la guía)"}</label><input id="pd-correo" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none" enterkeyhint="done"${val("pd-correo")}></div>
       ${CONFIG.registro && !UI.bono ? `<div class="field cart-bono" style="grid-column:1/-1"><label class="lbl" for="pd-bono">${en ? "Welcome code" : "Código de bono"}</label>
         <div class="co-fila"><input id="pd-bono" class="input mono" autocapitalize="characters" autocomplete="off" placeholder="GANG-XXXXX"${val("pd-bono")}>
           <button class="btn" data-act="bono-aplicar" ${UI.bonoCargando ? "disabled" : ""}>${UI.bonoCargando ? "…" : en ? "Apply" : "Aplicar"}</button></div></div>` : ""}
@@ -4014,29 +3985,40 @@ function quitarDelCarrito(pid, g) {
   guardarCarrito(); renderCarrito(); renderNav(); renderTray();
 }
 
+/* Lo que la transportadora necesita para hacer la guía. El teléfono ya no es
+   opcional: el mensajero llama antes de entregar. El correo sí, porque la guía
+   también se puede mandar por WhatsApp. */
 function datosPedido() {
-  const nombre = $("#pd-nombre").value.trim(), ciudad = $("#pd-ciudad").value.trim(), en = UI.lang === "en";
-  if (!nombre) { toast(en ? "Write your name." : "Escribe tu nombre.", { type: "err" }); $("#pd-nombre").focus(); return null; }
-  if (!ciudad) { toast(en ? "Write the city it goes to." : "Escribe la ciudad a la que va.", { type: "err" }); $("#pd-ciudad").focus(); return null; }
-  const correo = ($("#pd-correo")?.value || "").trim().toLowerCase(), tel = $("#pd-tel").value.trim();
-  if (correo && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) { toast(en ? "Check the email." : "Revisa el correo.", { type: "err" }); $("#pd-correo").focus(); return null; }
-  /* sin WhatsApp ni correo no hay cómo confirmarle el pago */
-  if (CONFIG.registro && !correo && !tel) { toast(en ? "Leave your email or WhatsApp so we can confirm it." : "Déjanos tu correo o tu WhatsApp para confirmarte el pedido.", { type: "err" }); $("#pd-correo").focus(); return null; }
-  return { nombre, ciudad, tel, correo };
+  const en = UI.lang === "en", v = (id) => ($("#" + id)?.value || "").trim();
+  const falta = (id, msg) => { toast(msg, { type: "err" }); $("#" + id)?.focus(); return null; };
+  const d = { nombre: v("pd-nombre"), apellidos: v("pd-apellidos"), documento: v("pd-documento"), tel: v("pd-tel"),
+    direccion: v("pd-direccion"), detalle: v("pd-detalle"), ciudad: v("pd-ciudad"), departamento: v("pd-depto"),
+    correo: v("pd-correo").toLowerCase() };
+  if (!d.nombre) return falta("pd-nombre", en ? "Write your name." : "Escribe tu nombre.");
+  if (!d.apellidos) return falta("pd-apellidos", en ? "Write your last name." : "Escribe tus apellidos.");
+  if (d.documento.replace(/\D/g, "").length < 5) return falta("pd-documento", en ? "Check the ID or tax number." : "Revisa la cédula o el NIT.");
+  if (d.tel.replace(/\D/g, "").length < 7) return falta("pd-tel", en ? "Leave a phone the courier can call." : "Deja un teléfono al que pueda llamar el mensajero.");
+  if (!d.direccion) return falta("pd-direccion", en ? "Write the address it goes to." : "Escribe la dirección a la que va.");
+  if (!d.ciudad) return falta("pd-ciudad", en ? "Write the city it goes to." : "Escribe la ciudad a la que va.");
+  if (!d.departamento) return falta("pd-depto", en ? "Choose the department." : "Escoge el departamento.");
+  if (d.correo && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.correo)) return falta("pd-correo", en ? "Check the email." : "Revisa el correo.");
+  return d;
 }
 
 /* número de pedido que no choca entre clientes: fecha + cuatro letras al azar */
 const numeroPedido = () => "NDZ-" + isoToday().slice(5).replace("-", "") + "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
 
 function registrarPedido(d, canal) {
-  const cl = upsertCliente(d.nombre, d.ciudad, d.tel);
+  const nombre = [d.nombre, d.apellidos].filter(Boolean).join(" ");
+  const cl = upsertCliente(nombre, d.ciudad, d.tel);
   const subtotal = totalCarrito(), envio = envioDe(subtotal), descuento = descuentoCarrito(), total = subtotal - descuento + envio;
   const bono = descuento ? UI.bono.codigo : "";
   const items = UI.carrito.map((i) => {
     const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
     return { id: i.id, nombre: i.nombre, n: i.n, precio: i.precio, forma: tx(saleDe(p, v)) };
   });
-  const pedido = { id: numeroPedido(), clienteId: cl.id, canal, nombre: d.nombre, ciudad: d.ciudad, tel: d.tel, correo: d.correo,
+  const pedido = { id: numeroPedido(), clienteId: cl.id, canal, nombre, documento: d.documento, direccion: d.direccion,
+    detalle: d.detalle, ciudad: d.ciudad, departamento: d.departamento, tel: d.tel, correo: d.correo,
     items, subtotal, descuento, bono, envio, total, fecha: isoToday() };
   S.pedidos.unshift(pedido);
   UI.carrito.forEach((i) => {
@@ -4053,7 +4035,9 @@ function registrarPedido(d, canal) {
     ...(descuento ? [`Bono ${bono} (−${UI.bono.pct} %): −${cop(descuento)}`] : []),
     `Envío: ${envio ? cop(envio) : "gratis"}`,
     `Total: ${cop(total)}`,
-    `${d.nombre} · ${d.ciudad}${d.tel ? " · WhatsApp " + d.tel : ""}${d.correo ? " · " + d.correo : ""}`,
+    `${nombre} · CC/NIT ${d.documento}`,
+    `${d.direccion}${d.detalle ? " · " + d.detalle : ""}`,
+    `${d.ciudad}, ${d.departamento} · tel ${d.tel}${d.correo ? " · " + d.correo : ""}`,
   ]);
   UI.carrito = []; guardarCarrito(); if (bono) quitarBono(false); save(); cerrarCarrito(); render();
   const guardado = enviarAviso("pedido", { ...pedido, texto });
@@ -4232,13 +4216,25 @@ function viewSuscripcion() {
 
   return `<div class="view-head">
       <div><p class="eyebrow reveal">${en ? "Subscription" : "Suscripción"}${abierta ? "" : (en ? " · opening soon" : " · abrimos pronto")}</p>
-        <h2 class="reveal" style="--i:1">${en ? "Coffee at home, <em>and how to brew it</em>" : "Café en tu casa, <em>y cómo prepararlo</em>"}</h2>
+        <h2 class="reveal" style="--i:1">${en ? "For your bar, <em>and for your house</em>" : "Para tu barra, <em>y para tu casa</em>"}</h2>
         <p class="reveal" style="--i:2">${en
-          ? "The first box brings the kit to brew at home. Every month after that, coffee from our farms, its filters and a new recipe."
-          : "La primera caja trae el kit para preparar en casa. Cada mes después, café de nuestras fincas, sus filtros y una receta nueva."}
+          ? "Kilos for cafés, roasted to your profile, with shipping included. And boxes for home, with the filters and a new recipe every month."
+          : "Kilos para cafeterías, con la tostión a tu perfil y el envío incluido. Y cajas para la casa, con los filtros y una receta nueva cada mes."}
           ${abierta ? "" : (en ? " We are not charging yet: leave your email and we will send you the payment link the day it opens."
                                : " Todavía no cobramos: deja tu correo y te mandamos el link de pago el día que abramos.")}</p></div>
     </div>
+
+    <section class="section">
+      <div class="section-head"><p class="eyebrow">${en ? "For cafés" : "Para cafeterías"}</p>
+        <h2>${en ? "Your house coffee, <em>every month</em>" : "El café de tu barra, <em>cada mes</em>"}</h2></div>
+      <article class="plan plan-cafeteria">
+        <h3>${esc(tx(CAFETERIA.nombre))}</h3>
+        <p class="plan-precio"><b class="mono">${cop(CAFETERIA.mes)}</b><small>${t("mes")}</small></p>
+        <p class="hint">${esc(tx(CAFETERIA.desc))}</p>
+        <ul class="plan-lista">${tx(CAFETERIA.incluye).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+        <button class="btn" data-act="sub" data-id="${CAFETERIA.id}">${CONFIG.pagos.suscripcion[CAFETERIA.id] ? t("suscribirme") : (en ? "Notify me when it opens" : "Avísame cuando abra")}</button>
+      </article>
+    </section>
 
     <div class="sub-opciones reveal" style="--i:3">
       <div class="seg" role="group" aria-label="${en ? "Kit" : "Kit"}">
@@ -4277,18 +4273,7 @@ function viewSuscripcion() {
       <ol class="ruta">${ruta.map(([a, b]) => `<li><b>${esc(a)}</b><span>${esc(b)}</span></li>`).join("")}</ol>
       <ul class="ruta-comunidad">${comunidad.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
     </section>
-
-    <section class="section">
-      <div class="section-head"><p class="eyebrow">${en ? "For cafés" : "Para cafeterías"}</p>
-        <h2>${en ? "Your house coffee, <em>every month</em>" : "El café de tu barra, <em>cada mes</em>"}</h2></div>
-      <article class="plan plan-cafeteria">
-        <h3>${esc(tx(CAFETERIA.nombre))}</h3>
-        <p class="plan-precio"><b class="mono">${cop(CAFETERIA.mes)}</b><small>${t("mes")}</small></p>
-        <p class="hint">${esc(tx(CAFETERIA.desc))}</p>
-        <ul class="plan-lista">${tx(CAFETERIA.incluye).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
-        <button class="btn" data-act="sub" data-id="${CAFETERIA.id}">${CONFIG.pagos.suscripcion[CAFETERIA.id] ? t("suscribirme") : (en ? "Notify me when it opens" : "Avísame cuando abra")}</button>
-      </article>
-    </section>`;
+`;
 }
 
 function subOpcion(k, v) {
@@ -5073,17 +5058,9 @@ function viewInicio() {
     </div>
   </section>
 
-  <section class="g-sec" aria-labelledby="g-fincas">
-    ${cabeza("03", en ? "The neighbours" : "Los vecinos",
-      `<span id="g-fincas">${en ? "Where each <em>bag comes from.</em>" : "De dónde viene <em>cada bolsa.</em>"}</span>`,
-      en ? "Chinácota, Toledo and Ragonvalia: mountains between 1,500 and 1,950 metres, with cold nights that ripen the cherry slowly. In 2027 the first harvest from our own farm joins them."
-         : "Chinácota, Toledo y Ragonvalia: montañas entre 1.500 y 1.950 metros, con noches frías que maduran el grano despacio. En 2027 se suma la primera cosecha de nuestra propia finca.")}
-    <div class="fincas">${S.fincas.map((f, i) => fincaCard(f, i)).join("")}</div>
-  </section>
-
   <section class="g-sub g-io" aria-labelledby="g-sus">
     <div>
-      <p class="g-kicker"><span class="g-num">04</span> &nbsp; ${t("nav_suscripcion")}</p>
+      <p class="g-kicker"><span class="g-num">03</span> &nbsp; ${t("nav_suscripcion")}</p>
       <h2 id="g-sus">${en ? "If you like it, <em>we bring it every month.</em>" : "Si te gusta, <em>te lo llevamos cada mes.</em>"}</h2>
       <p>${en ? "Coffee from the harvest, filters and a new recipe every month. The first box brings the kit to brew it, and the Nandez route teaches you a method a month."
               : "Café de la cosecha, filtros y una receta nueva cada mes. La primera caja trae el kit para prepararlo, y la Ruta Nandez te enseña un método al mes."}</p>
@@ -5095,7 +5072,7 @@ function viewInicio() {
   ${musica(en)}
 
   ${visible("diario") ? `<section class="g-sec" aria-labelledby="g-diario">
-    ${cabeza("06", t("nav_diario"),
+    ${cabeza("05", t("nav_diario"),
       `<span id="g-diario">${en ? "What we learn <em>buying coffee.</em>" : "Lo que aprendemos <em>comprando café.</em>"}</span>`, "",
       `<a class="g-link" href="${ruta("diario")}" data-act="go" data-to="diario">${en ? "All the entries" : "Todas las entradas"}</a>`)}
     <div class="g-diario">${S.entradas.slice(0, 3).map((e, i) => `<article class="g-io" style="--i:${i}">
@@ -5115,7 +5092,7 @@ function musica(en) {
   const url = `https://open.spotify.com/playlist/${L.playlist}`;
   return `<section class="g-sec g-musica" aria-labelledby="g-musica">
     <div class="g-musica-txt g-io">
-      <p class="g-kicker"><span class="g-num">05</span> &nbsp; ${en ? "To go with it" : "Para acompañar"}</p>
+      <p class="g-kicker"><span class="g-num">04</span> &nbsp; ${en ? "To go with it" : "Para acompañar"}</p>
       <h2 id="g-musica">${en ? "Music to <em>drink coffee to.</em>" : "Música para <em>tomar café.</em>"}</h2>
       <p>${en ? "A list for grinding, brewing and staying a while. Put it on, share it, and tell us what it is missing."
               : "Una lista para moler, colar y quedarse un rato. Ponla, compártela y dinos qué le falta."}</p>
@@ -5326,11 +5303,13 @@ const FOOT = () => {
   <div class="foot-marca"><b>${esc(CONFIG.marca)}</b><span>Chinácota · ${esc(tx(CONFIG.lugar))}</span>
     <a href="mailto:${CONFIG.correo}">${esc(CONFIG.correo)}</a>${CONFIG.whatsapp ? `<a href="https://wa.me/${CONFIG.whatsapp}" target="_blank" rel="noopener">WhatsApp +${CONFIG.whatsapp}</a>` : ""}
     ${redesHTML()}</div>
-  <nav class="foot-links" aria-labelledby="pie-tienda"><p class="foot-tit" id="pie-tienda">${t("nav_tienda")}</p>${lista(tienda)}</nav>
+  <nav class="foot-links" aria-labelledby="pie-tienda"><p class="foot-tit" id="pie-tienda">${en ? "Catalogue" : "Catálogo"}</p>${lista(tienda)}</nav>
   <nav class="foot-links" aria-labelledby="pie-ayuda"><p class="foot-tit" id="pie-ayuda">${en ? "Help" : "Ayuda"}</p>${lista(politicas)}</nav>
-  <small class="foot-nota">© ${new Date().getFullYear()} ${esc(CONFIG.marca)} · ${en ? "Prototype with example data: photos, texts and prices to be confirmed." : "Prototipo con datos de ejemplo: fotos, textos y precios por confirmar."}</small>
-  ${demo() ? `<button class="btn sm" data-act="reset-demo">${en ? "Reset demo data" : "Reiniciar datos de la demo"}</button>` : ""}
-  <p class="g-wordmark" aria-hidden="true"><b>Nandez</b><small>${esc(CONFIG.gang)}</small></p></footer>`;
+  <div class="foot-fin">
+    <p class="g-wordmark" aria-hidden="true"><b>Nandez</b><small>${esc(CONFIG.gang)}</small></p>
+    <small class="foot-nota">© ${new Date().getFullYear()} ${esc(CONFIG.marca)} · Chinácota · ${esc(tx(CONFIG.lugar))}</small>
+    ${demo() ? `<button class="btn sm" data-act="reset-demo">${en ? "Reset demo data" : "Reiniciar datos de la demo"}</button>` : ""}
+  </div></footer>`;
 };
 
 const VIEWS = { inicio: viewInicio, tienda: viewTienda, accesorios: viewAccesorios, cafes: viewCafes, cafe: viewCafe, subasta: viewSubasta, suscripcion: viewSuscripcion, diario: viewDiario, entrada: viewEntrada,
