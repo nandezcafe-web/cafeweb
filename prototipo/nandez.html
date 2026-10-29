@@ -2251,30 +2251,32 @@ h1 em,h2 em{color:var(--marca)}
 
 /* ============================================================
    EL POP-UP DEL BONO DE BIENVENIDA
-   Aparece abajo, a un lado. No es un modal: no tapa lo que se está
-   leyendo, no roba el foco y no traba el scroll. Google castiga el
-   aviso que cubre la página, y de todas formas aquí se está leyendo.
-   Quién lo ve y cuándo se decide en popPuede() (js/main.js).
+   Aparece en el centro, con un velo detrás: en una esquina la gente lo
+   pasaba de largo y lo que más importa es recoger el correo. Se cierra
+   con la ✕, tocando el velo o con Escape.
+   Quién lo ve y cuándo se decide en popSobra() (js/main.js).
    ============================================================ */
-.g-pop{position:fixed;z-index:80;left:20px;bottom:calc(20px + var(--g-pop-piso,0px));width:min(412px,calc(100vw - 40px));
-  display:flex;gap:16px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--card);
-  box-shadow:0 26px 54px -20px rgba(29,20,15,.5);
-  opacity:0;transform:translateY(14px) scale(.985);
+/* En el centro de la pantalla, con un velo detrás: en una esquina se pasaba por alto. */
+.g-pop-velo{position:fixed;inset:0;z-index:79;background:rgba(20,18,16,.55);opacity:0;transition:opacity .3s var(--ease-out);cursor:pointer}
+.g-pop-velo.in{opacity:1}
+.g-pop{position:fixed;z-index:80;left:50%;top:50%;width:min(520px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;
+  display:flex;gap:20px;padding:28px 26px 24px;border:1px solid var(--line);border-radius:18px;background:var(--card);
+  box-shadow:0 30px 70px -20px rgba(29,20,15,.6);
+  opacity:0;transform:translate(-50%,calc(-50% + 14px)) scale(.97);
   transition:opacity .3s var(--ease-out),transform .34s var(--ease-out)}
-.g-pop.in{opacity:1;transform:none}
-/* mientras el carrito o un modal estén abiertos, el pop-up se quita de en
-   medio: detrás del velo solo estorba */
-body:has(dialog[open]) .g-pop{opacity:0;transform:translateY(8px);pointer-events:none}
+.g-pop.in{opacity:1;transform:translate(-50%,-50%)}
+/* mientras el carrito o un modal estén abiertos, el pop-up se quita de en medio */
+body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
 .g-pop-x{position:absolute;top:7px;right:7px;width:30px;height:30px;display:grid;place-items:center;border:0;
   border-radius:50%;background:none;color:var(--ink-3);font-size:13px;line-height:1;cursor:pointer;
   transition:background .2s var(--ease-out),color .2s var(--ease-out)}
 .g-pop-x:hover{background:var(--paper-2);color:var(--ink)}
 /* el número es la marca de hallazgo: va en terracota, sin fondo de color */
 .g-pop-pct{flex:0 0 auto;width:96px;margin:0;padding-top:2px;text-align:center}
-.g-pop-pct b{display:block;font:italic 40px/1 var(--serif);color:var(--cherry)}
+.g-pop-pct b{display:block;font:italic 48px/1 var(--serif);color:var(--cherry)}
 .g-pop-pct span{display:block;margin-top:5px;font:600 10px/1.35 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
 .g-pop-dice{min-width:0;flex:1}
-.g-pop-dice h2{margin:0 0 5px;padding-right:22px;font:italic 23px/1.1 var(--serif);color:var(--ink)}
+.g-pop-dice h2{margin:0 0 6px;padding-right:22px;font:italic 28px/1.1 var(--serif);color:var(--ink)}
 .g-pop-dice>p{margin:0 0 13px;font-size:13.5px;line-height:1.5;color:var(--ink-2)}
 .g-pop-dice .lbl{display:block;margin-bottom:5px}
 /* el correo y el botón van uno encima del otro: en una tarjeta de 412 px
@@ -2287,16 +2289,15 @@ body:has(dialog[open]) .g-pop{opacity:0;transform:translateY(8px);pointer-events
 .g-pop-nuevo .g-pop-pct b{font-size:30px}
 .g-pop-nuevo .g-pop-fila{margin-top:2px}
 
-/* En el móvil va abajo, encima del dock; y si la bandeja del carrito está
-   puesta, sube para no pelearse con ella. */
-@media (max-width:860px){
-  .g-pop{left:10px;right:10px;width:auto;gap:14px;padding:16px;border-radius:20px;
-    bottom:calc(86px + var(--g-pop-piso,0px) + env(safe-area-inset-bottom,0px))}
-  .g-pop-pct{width:86px}
+/* En el móvil el número va arriba y el formulario a todo el ancho */
+@media (max-width:560px){
+  .g-pop{flex-direction:column;gap:6px;padding:22px 18px 18px}
+  .g-pop-pct{width:auto;display:flex;align-items:baseline;gap:10px;text-align:left}
+  .g-pop-pct span br{display:none}
   .g-pop-pct b{font-size:34px}
   .g-pop-dice h2{font-size:21px}
 }
-@media (prefers-reduced-motion:reduce){.g-pop{transition:opacity .15s;transform:none}}
+@media (prefers-reduced-motion:reduce){.g-pop{transition:opacity .15s;transform:translate(-50%,-50%)}}
 
 /* El final del pie, en una sola banda: antes el © y el letrero se leían como
    dos secciones distintas. */
@@ -2351,7 +2352,7 @@ body:has(dialog[open]) .g-pop{opacity:0;transform:translateY(8px);pointer-events
     <div class="g-hero-txt">
       <p class="g-kicker reveal"><em>Nandez Coffee</em> · Chinácota, Norte de Santander</p>
       <h1 id="portada-titulo"><span class="pal" style="--w:0">Tu</span> <span class="pal" style="--w:1">plug</span> <span class="pal" style="--w:2">de</span> <em><span class="pal" style="--w:3">café</span> <span class="pal" style="--w:4">de</span> <span class="pal" style="--w:5">finca.</span></em></h1>
-      <p class="g-lede reveal" style="--i:3">Compramos lotes pequeños en las montañas de Norte de Santander y los tostamos con nuestro nombre. Dos en grano y el blend, molido. El Coffee Gang se entera primero.</p>
+      <p class="g-lede reveal" style="--i:3">Compramos lotes pequeños en las montañas de Norte de Santander y los tostamos con nuestro nombre. Dos en grano y el blend, molido. Nandez Coffee Gang se entera primero.</p>
       <div class="g-cta reveal" style="--i:4">
         <button class="btn primary lg" data-act="go" data-to="cafes">Ver los cafés<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
         <a class="g-link" href="/suscripcion" data-act="go" data-to="suscripcion">La suscripción</a>
@@ -2366,7 +2367,7 @@ body:has(dialog[open]) .g-pop{opacity:0;transform:translateY(8px);pointer-events
         <circle cx="100" cy="100" r="92"/><circle cx="100" cy="100" r="4" style="fill:currentColor"/><text><textPath href="#g-arco">COSECHA 2026 · TOSTIÓN MEDIA · NORTE DE SANTANDER · </textPath></text></svg>
     </div>
   </section>
-  <div class="g-ticker" aria-label="En corto"><div class="g-ticker-track"><span>Tostión <em>media</em></span><span>La bolsa de 250 g, <em>$40.000</em></span><span><em>En grano</em> o molido</span><span>Cosecha <em>2026</em></span><span>Montañas de <em>Norte de Santander</em></span><span>Envío gratis desde <em>$120.000</em></span><span>Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027</span><span><em>Coffee Gang</em></span><span>Tostión <em>media</em></span><span>La bolsa de 250 g, <em>$40.000</em></span><span><em>En grano</em> o molido</span><span>Cosecha <em>2026</em></span><span>Montañas de <em>Norte de Santander</em></span><span>Envío gratis desde <em>$120.000</em></span><span>Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027</span><span><em>Coffee Gang</em></span></div></div>
+  <div class="g-ticker" aria-label="En corto"><div class="g-ticker-track"><span>Tostión <em>media</em></span><span>La bolsa de 250 g, <em>$40.000</em></span><span><em>En grano</em> o molido</span><span>Cosecha <em>2026</em></span><span>Montañas de <em>Norte de Santander</em></span><span>Envío gratis desde <em>$120.000</em></span><span>Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027</span><span><em>Nandez Coffee Gang</em></span><span>Tostión <em>media</em></span><span>La bolsa de 250 g, <em>$40.000</em></span><span><em>En grano</em> o molido</span><span>Cosecha <em>2026</em></span><span>Montañas de <em>Norte de Santander</em></span><span>Envío gratis desde <em>$120.000</em></span><span>Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027</span><span><em>Nandez Coffee Gang</em></span></div></div>
 
   <section class="g-sec" id="cafes" aria-labelledby="g-cafes">
     <div class="g-head g-io">
@@ -2601,8 +2602,8 @@ const T = {
   nav_pedido: { es: "Pedido", en: "Order" }, nav_mas: { es: "Más", en: "More" },
   nav_tienda: { es: "Tienda", en: "Shop" }, nav_cafes_esp: { es: "Cafés de especialidad", en: "Specialty coffee" },
   nav_accesorios: { es: "Accesorios y merch", en: "Gear and merch" },
-  nav_drops: { es: "Drops", en: "Drops" }, nav_gang: { es: "La gang", en: "The gang" },
-  drop_entrar: { es: "Entrar a la gang", en: "Join the gang" },
+  nav_drops: { es: "Drops", en: "Drops" }, nav_gang: { es: CONFIG.comunidad, en: CONFIG.comunidad },
+  drop_entrar: { es: `Entrar a ${CONFIG.comunidad}`, en: `Join ${CONFIG.comunidad}` },
   drop_asegurar: { es: "Asegurar la mía", en: "Get mine" },
   comprar: { es: "Comprar", en: "Buy" }, agregar: { es: "Agregar al pedido", en: "Add to order" },
   ver_cafe: { es: "Ver el café", en: "View coffee" }, agotado: { es: "Agotado", en: "Sold out" },
@@ -2927,7 +2928,7 @@ const ACCESORIOS = [
     desc: { es: "Para verter despacio y en círculos.", en: "To pour slowly, in circles." } },
   { id: "A-SRV", grupo: "preparar", color: "#6B645C", proximamente: true, nombre: { es: "Servidor de vidrio 600 ml", en: "600 ml glass server" },
     desc: { es: "Para dos tazas, o una muy larga.", en: "For two cups, or one very long one." } },
-  { id: "M-CAM", grupo: "merch", color: "#C9381A", proximamente: true, nombre: { es: "Camiseta Coffee Gang", en: "Coffee Gang T-shirt" },
+  { id: "M-CAM", grupo: "merch", color: "#C9381A", proximamente: true, nombre: { es: "Camiseta Nandez Coffee Gang", en: "Nandez Coffee Gang T-shirt" },
     desc: { es: "Diseño por confirmar.", en: "Design to be confirmed." } },
   { id: "M-GOR", grupo: "merch", color: "#141210", proximamente: true, nombre: { es: "Gorra Nandez", en: "Nandez cap" },
     desc: { es: "Diseño por confirmar.", en: "Design to be confirmed." } },
@@ -2945,10 +2946,10 @@ CONFIG.sitio = "https://cafeweb-five.vercel.app";   // cambiar cuando haya domin
 
 const RUTAS = {
   es: { inicio: "", tienda: "tienda", accesorios: "accesorios", cafes: "cafes", cafe: "cafe", subasta: "subasta", suscripcion: "suscripcion", diario: "diario", entrada: "diario",
-        drops: "drops", drop: "drop", gang: "la-gang",
+        drops: "drops", drop: "drop", gang: "nandez-coffee-gang",
         contacto: "contacto", envios: "envios-y-devoluciones", terminos: "terminos", privacidad: "privacidad" },
   en: { inicio: "", tienda: "shop", accesorios: "accessories", cafes: "coffees", cafe: "coffee", subasta: "auction", suscripcion: "subscription", diario: "journal", entrada: "journal",
-        drops: "drops", drop: "drop", gang: "the-gang",
+        drops: "drops", drop: "drop", gang: "nandez-coffee-gang",
         contacto: "contact", envios: "shipping-and-returns", terminos: "terms", privacidad: "privacy" },
 };
 const slugEntrada = (e) => slug(tx(e.titulo)).slice(0, 60);
@@ -3014,15 +3015,15 @@ function meta(view, id) {
       : { t: marca + " · Café de origen de Norte de Santander",
           d: "Familia cafetera de Chinácota. Compramos lotes pequeños en fincas de Norte de Santander y los tostamos con nuestro nombre: dos cafés de una sola finca, en grano, y un blend molido de los dos." },
     tienda: en
-      ? { t: "Shop · " + marca, d: "Specialty coffee from Norte de Santander, whole bean and ground, plus brewing gear and Coffee Gang merch." }
-      : { t: "Tienda · " + marca, d: "Café de especialidad de Norte de Santander, en grano y molido, accesorios para prepararlo y merch Coffee Gang." },
+      ? { t: "Shop · " + marca, d: "Specialty coffee from Norte de Santander, whole bean and ground, plus brewing gear and Nandez Coffee Gang merch." }
+      : { t: "Tienda · " + marca, d: "Café de especialidad de Norte de Santander, en grano y molido, accesorios para prepararlo y merch Nandez Coffee Gang." },
     accesorios: en
       ? (conPreparar()
-          ? { t: "Brewing gear and merch · " + marca, d: "Cone dripper, filters, hand grinder, scale, gooseneck kettle and Coffee Gang merch. Coming soon: leave your email." }
-          : { t: "Coffee Gang merch · " + marca, d: "T-shirt, cap, mug and tote bag from Nandez Coffee Gang. Coming soon: leave your email and we tell you the day it is out." })
+          ? { t: "Brewing gear and merch · " + marca, d: "Cone dripper, filters, hand grinder, scale, gooseneck kettle and Nandez Coffee Gang merch. Coming soon: leave your email." }
+          : { t: "Nandez Coffee Gang merch", d: "T-shirt, cap, mug and tote bag from Nandez Coffee Gang. Coming soon: leave your email and we tell you the day it is out." })
       : (conPreparar()
-          ? { t: "Accesorios y merch · " + marca, d: "Gotero, filtros, molino manual, balanza, tetera cuello de cisne y merch Coffee Gang. Próximamente: deja tu correo." }
-          : { t: "Merch Coffee Gang · " + marca, d: "Camiseta, gorra, taza y bolsa de tela de Nandez Coffee Gang. Próximamente: deja tu correo y te avisamos el día que salga." }),
+          ? { t: "Accesorios y merch · " + marca, d: "Gotero, filtros, molino manual, balanza, tetera cuello de cisne y merch Nandez Coffee Gang. Próximamente: deja tu correo." }
+          : { t: "Merch Nandez Coffee Gang", d: "Camiseta, gorra, taza y bolsa de tela de Nandez Coffee Gang. Próximamente: deja tu correo y te avisamos el día que salga." }),
     cafes: en
       ? { t: "Specialty coffee · " + marca,
           d: "Three medium roast coffees from Norte de Santander: Castillo from Ragonvalia and El Paraíso (Cenicafé 1, Chinácota), whole bean, and a ground blend of the two. Shipped countrywide." }
@@ -3074,25 +3075,25 @@ function meta(view, id) {
       const cuantas = d.bolsas ? fmtNum(d.bolsas) + (en ? " numbered bags" : " bolsas numeradas") : (en ? "numbered bags" : "bolsas numeradas");
       if (dropAgotado()) return en
         ? { t: `Drop ${n} · sold out · ${marca}`,
-            d: `Drop ${n} sold out: ${cuantas} of whole bean coffee from Norte de Santander, and we are not roasting more of that lot. The next drop is announced in the gang first.` }
+            d: `Drop ${n} sold out: ${cuantas} of whole bean coffee from Norte de Santander, and we are not roasting more of that lot. The next drop is announced in ${CONFIG.comunidad} first.` }
         : { t: `Drop ${n} · agotado · ${marca}`,
-            d: `El Drop ${n} se agotó: eran ${cuantas} de café en grano de Norte de Santander y no vamos a tostar más de ese lote. El próximo se avisa primero en la gang.` };
+            d: `El Drop ${n} se agotó: eran ${cuantas} de café en grano de Norte de Santander y no vamos a tostar más de ese lote. El próximo se avisa primero en ${CONFIG.comunidad}.` };
       if (!d.fecha || !d.precio) return en
         ? { t: `Drop ${n} · single farm coffee from Norte de Santander · ${marca}`,
-            d: `Drop ${n}: whole bean coffee from one farm in Norte de Santander, in ${cuantas}. Date and price to be confirmed — join the gang and you hear it first.` }
+            d: `Drop ${n}: whole bean coffee from one farm in Norte de Santander, in ${cuantas}. Date and price to be confirmed — join ${CONFIG.comunidad} and you hear it first.` }
         : { t: `Drop ${n} · café de finca de Norte de Santander · ${marca}`,
-            d: `Drop ${n}: café en grano de una sola finca de Norte de Santander, en ${cuantas}. Fecha y precio por confirmar: entra a la gang y te enteras primero.` };
+            d: `Drop ${n}: café en grano de una sola finca de Norte de Santander, en ${cuantas}. Fecha y precio por confirmar: entra a ${CONFIG.comunidad} y te enteras primero.` };
       return en
         ? { t: `Drop ${n} · ${cuantas}${mun ? " from " + mun : ""} · ${marca}`,
-            d: `Drop ${n}: ${cuantas} of whole bean coffee${mun ? " from " + mun + ", Norte de Santander" : ""}, at ${cop(d.precio)}. Out ${fmtFecha(d.fecha)}; the gang buys ${d.ventaja} hours earlier.` }
+            d: `Drop ${n}: ${cuantas} of whole bean coffee${mun ? " from " + mun + ", Norte de Santander" : ""}, at ${cop(d.precio)}. Out ${fmtFecha(d.fecha)}; ${CONFIG.comunidad} buys ${d.ventaja} hours earlier.` }
         : { t: `Drop ${n} · ${cuantas}${mun ? " de " + mun : ""} · ${marca}`,
-            d: `Drop ${n}: ${cuantas} de café en grano${mun ? " de " + mun + ", Norte de Santander" : ""}, a ${cop(d.precio)}. Sale el ${fmtFecha(d.fecha)} y la gang compra ${d.ventaja} horas antes.` };
+            d: `Drop ${n}: ${cuantas} de café en grano${mun ? " de " + mun + ", Norte de Santander" : ""}, a ${cop(d.precio)}. Sale el ${fmtFecha(d.fecha)} y ${CONFIG.comunidad} compra ${d.ventaja} horas antes.` };
     })(),
     gang: en
-      ? { t: `The gang: buy the drop ${CONFIG.drop.ventaja} hours early · ` + marca,
-          d: `Joining the gang is free: we tell you about every coffee drop and you buy ${CONFIG.drop.ventaja} hours before everyone else. No spam, just drops and restocks.` }
-      : { t: `La gang: compra el drop ${CONFIG.drop.ventaja} horas antes · ` + marca,
-          d: `Entrar a la gang es gratis: te avisamos cada drop de café y compras ${CONFIG.drop.ventaja} horas antes que todos. Sin spam, solo drops y restocks.` },
+      ? { t: `${CONFIG.comunidad}: buy the drop ${CONFIG.drop.ventaja} hours early`,
+          d: `Joining ${CONFIG.comunidad} is free: we tell you about every coffee drop and you buy ${CONFIG.drop.ventaja} hours before everyone else. No spam, just drops and restocks.` }
+      : { t: `${CONFIG.comunidad}: compra el drop ${CONFIG.drop.ventaja} horas antes`,
+          d: `Entrar a ${CONFIG.comunidad} es gratis: te avisamos cada drop de café y compras ${CONFIG.drop.ventaja} horas antes que todos. Sin spam, solo drops y restocks.` },
     diario: en
       ? { t: "Journal: buying coffee in Norte de Santander · " + marca,
           d: "Farm visits, prices, yield factor, processing and brewing: what we learn buying coffee straight from growers in Norte de Santander." }
@@ -3256,8 +3257,8 @@ function portada(en) {
       <p class="g-kicker reveal"><em>${esc(CONFIG.marca)}</em> · Chinácota, Norte de Santander</p>
       <h1 id="portada-titulo">${pal(en ? "Your plug for" : "Tu plug de")} <em>${pal(en ? "single farm coffee." : "café de finca.", 3)}</em></h1>
       <p class="g-lede reveal" style="--i:3">${en
-        ? "We buy small lots in the mountains of Norte de Santander and roast them under our own name. Two whole bean and the blend, ground. The Coffee Gang hears about every one first."
-        : "Compramos lotes pequeños en las montañas de Norte de Santander y los tostamos con nuestro nombre. Dos en grano y el blend, molido. El Coffee Gang se entera primero."}</p>
+        ? "We buy small lots in the mountains of Norte de Santander and roast them under our own name. Two whole bean and the blend, ground. Nandez Coffee Gang hears about every one first."
+        : "Compramos lotes pequeños en las montañas de Norte de Santander y los tostamos con nuestro nombre. Dos en grano y el blend, molido. Nandez Coffee Gang se entera primero."}</p>
       <div class="g-cta reveal" style="--i:4">
         <button class="btn primary lg" data-act="go" data-to="cafes">${en ? "See the coffees" : "Ver los cafés"}${icono("flecha", "ico")}</button>
         <a class="g-link" href="${ruta("suscripcion")}" data-act="go" data-to="suscripcion">${en ? "The subscription" : "La suscripción"}</a>
@@ -3285,10 +3286,10 @@ function cinta(en) {
   const items = en
     ? [`<em>Medium</em> roast`, `The 250 g bag, <em>${bolsa}</em>`, `<em>Whole bean</em> or ground`, `<em>2026</em> harvest`,
        `Mountains of <em>Norte de Santander</em>`, `Free shipping from <em>${cop(CONFIG.envio.gratisDesde)}</em>`,
-       `Our own farm: <em>5,000</em> Geisha plants, first harvest 2027`, `<em>${CONFIG.gang}</em>`]
+       `Our own farm: <em>5,000</em> Geisha plants, first harvest 2027`, `<em>${CONFIG.comunidad}</em>`]
     : [`Tostión <em>media</em>`, `La bolsa de 250 g, <em>${bolsa}</em>`, `<em>En grano</em> o molido`, `Cosecha <em>2026</em>`,
        `Montañas de <em>Norte de Santander</em>`, `Envío gratis desde <em>${cop(CONFIG.envio.gratisDesde)}</em>`,
-       `Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027`, `<em>${CONFIG.gang}</em>`];
+       `Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027`, `<em>${CONFIG.comunidad}</em>`];
   const fila = items.map((x) => `<span>${x}</span>`).join("");
   return `<div class="g-ticker" aria-label="${en ? "At a glance" : "En corto"}"><div class="g-ticker-track">${fila}${fila}</div></div>`;
 }
@@ -3610,8 +3611,8 @@ function viewTienda() {
     <div class="view-head">
       <div><p class="eyebrow reveal">${t("nav_tienda")}</p>
         <h1 class="reveal" style="--i:1">${en ? "Everything <em>from the house</em>" : "Todo lo <em>de la casa</em>"}</h1>
-        <p class="reveal" style="--i:2">${en ? "Whole bean coffee from neighbouring farms, the gear to brew it and Coffee Gang merch."
-          : "Café en grano de fincas vecinas, lo necesario para prepararlo y el merch Coffee Gang."}</p></div>
+        <p class="reveal" style="--i:2">${en ? "Whole bean coffee from neighbouring farms, the gear to brew it and Nandez Coffee Gang merch."
+          : "Café en grano de fincas vecinas, lo necesario para prepararlo y el merch Nandez Coffee Gang."}</p></div>
     </div>
     <div class="g-puertas">
       <a class="g-puerta reveal" style="--pc:${p.color || "#2F5A3C"};--i:3" href="${ruta("cafes")}" data-act="go" data-to="cafes">
@@ -3619,11 +3620,11 @@ function viewTienda() {
         <span class="g-puerta-txt"><small>01 · ${n} ${en ? "whole bean coffees" : "cafés en grano"}${ya < n ? ` · ${ya} ${en ? "on sale" : "a la venta"}` : ""}</small>
           <b>${t("nav_cafes_esp")}</b><i>${en ? "One farm each, always whole bean." : "Una finca cada uno, siempre en grano."}</i></span></a>
       <a class="g-puerta oscura reveal" style="--i:4" href="${ruta("accesorios")}" data-act="go" data-to="accesorios">
-        <span class="g-puerta-art"><span class="g-pronto">Coffee Gang<i>${t("proximamente")}</i></span></span>
+        <span class="g-puerta-art"><span class="g-pronto">Nandez Coffee Gang<i>${t("proximamente")}</i></span></span>
         <span class="g-puerta-txt"><small>02 · ${accesoriosVisibles().length} ${en ? "pieces" : "piezas"} · ${t("proximamente").toLowerCase()}</small>
           <b>${t("nav_accesorios")}</b><i>${conPreparar()
             ? (en ? "Dripper, grinder, kettle, and things to wear." : "Gotero, molino, tetera, y algo para ponerse.")
-            : (en ? "T-shirt, cap, mug and tote bag from the gang." : "Camiseta, gorra, taza y bolsa de tela del gang.")}</i></span></a>
+            : (en ? `T-shirt, cap, mug and tote bag from ${CONFIG.comunidad}.` : `Camiseta, gorra, taza y bolsa de tela de ${CONFIG.comunidad}.`)}</i></span></a>
     </div>`;
 }
 
@@ -3641,13 +3642,13 @@ function accesorioCard(a, i = 0) {
 
 function viewAccesorios() {
   const en = UI.lang === "en", prep = conPreparar();
-  const grupos = [["preparar", en ? "To brew at home" : "Para preparar en casa"], ["merch", "Merch " + esc(CONFIG.gang)]]
+  const grupos = [["preparar", en ? "To brew at home" : "Para preparar en casa"], ["merch", "Merch " + esc(CONFIG.comunidad)]]
     .filter(([g]) => CONFIG.accesoriosVisibles.includes(g));
   return `${subnavTienda("accesorios")}
     <div class="view-head">
       <div><p class="eyebrow reveal">${t("nav_tienda")} · ${t("nav_accesorios")}</p>
         <h1 class="reveal" style="--i:1">${prep ? (en ? "To brew it, <em>and to wear it</em>" : "Para prepararlo, <em>y para ponértelo</em>")
-                                              : (en ? "Wear the <em>gang</em>" : "Ponte el <em>gang</em>")}</h1>
+                                              : (en ? `Wear <em>${CONFIG.comunidad}</em>` : `Ponte <em>${CONFIG.comunidad}</em>`)}</h1>
         <p class="reveal" style="--i:2">${en ? "We are choosing each piece. Leave your email on the ones you want and we tell you the day they are out, with their price."
           : "Estamos escogiendo cada pieza. Deja tu correo en las que quieras y te avisamos el día que salgan, con su precio."}</p></div>
     </div>
@@ -4398,7 +4399,7 @@ function dropCifras(en) {
     [en ? "Bags in the lot" : "Bolsas del lote", d.bolsas ? fmtNum(d.bolsas) : t("por_confirmar")],
     [en ? "Size" : "Presentación", d.gramos ? gramos(d.gramos) + " · " + t("en_grano").toLowerCase() : t("en_grano")],
     [en ? "Price" : "Precio", d.precio ? cop(d.precio) : t("por_confirmar")],
-    [en ? "Opens for the gang" : "Abre para la gang", dropFechaGang() ? fmtFecha(dropFechaGang().toISOString()) + " · " + horaDe(dropFechaGang()) : t("por_confirmar")],
+    [en ? `Opens for ${CONFIG.comunidad}` : `Abre para ${CONFIG.comunidad}`, dropFechaGang() ? fmtFecha(dropFechaGang().toISOString()) + " · " + horaDe(dropFechaGang()) : t("por_confirmar")],
     [en ? "Opens for everyone" : "Abre para todos", dropFecha() ? fmtFecha(d.fecha) + " · " + horaDe(dropFecha()) : t("por_confirmar")],
   ];
 }
@@ -4444,11 +4445,11 @@ function faqsDrops(en) {
   return en
     ? [["What is a coffee drop?", "A drop is a small lot of coffee from a single farm that goes on sale on one day, at one hour, in a fixed number of numbered bags. When those bags run out, that lot is not roasted again. It works like a sneaker release: the date and the quantity are announced beforehand and nothing is restocked."],
        ["Why do you sell in drops instead of having coffee all year?", "Because we buy one lot at a time from a farm we visit, and a lot is finite: a farm in Norte de Santander does not produce the same coffee every month. Selling the lot as a drop lets us tell you exactly which harvest you are drinking instead of mixing lots to keep a shelf full."],
-       ["How do I know when the next drop is?", `We announce it on Instagram and we tell the gang first. People in the gang get the link ${d.ventaja} hours before it opens to everyone.`],
+       ["How do I know when the next drop is?", `We announce it on Instagram and we tell ${CONFIG.comunidad} first. Members get the link ${d.ventaja} hours before it opens to everyone.`],
        ["Can I buy a coffee from a past drop?", "No. Each lot is roasted once and sold once. Coffees that stay available all the time are in the shop; drops are not restocked."]]
     : [["¿Qué es un drop de café?", "Un drop es un lote pequeño de café de una sola finca que sale a la venta un día, a una hora, en una cantidad fija de bolsas numeradas. Cuando esas bolsas se acaban, ese lote no se vuelve a tostar. Funciona como un lanzamiento de sneakers: la fecha y la cantidad se anuncian antes y no hay reposición."],
        ["¿Por qué venden en drops y no tienen café todo el año?", "Porque compramos lote por lote a fincas que visitamos, y un lote se acaba: una finca de Norte de Santander no produce el mismo café todos los meses. Vender el lote como drop nos deja decirte exactamente qué cosecha te estás tomando, en vez de mezclar lotes para tener el estante lleno."],
-       ["¿Cómo me entero del próximo drop?", `Lo anunciamos en Instagram y lo avisamos primero en la gang. Quien está en la gang recibe el link ${d.ventaja} horas antes de que abra para todo el mundo.`],
+       ["¿Cómo me entero del próximo drop?", `Lo anunciamos en Instagram y lo avisamos primero en ${CONFIG.comunidad}. Quien es miembro recibe el link ${d.ventaja} horas antes de que abra para todo el mundo.`],
        ["¿Puedo comprar un café de un drop pasado?", "No. Cada lote se tuesta una vez y se vende una vez. Los cafés que están disponibles todo el tiempo están en la tienda; los drops no se reponen."]];
 }
 
@@ -4456,11 +4457,11 @@ function viewDrops() {
   const en = UI.lang === "en", d = CONFIG.drop;
   const pasos = en
     ? [["We announce the lot", "One farm, one variety, with its data sheet and how many bags came out of it."],
-       ["It goes out on one day, at one hour", "The gang gets the link " + d.ventaja + " hours earlier. Then it opens for everyone."],
+       ["It goes out on one day, at one hour", `${CONFIG.comunidad} gets the link ${d.ventaja} hours earlier. Then it opens for everyone.`],
        ["Every bag is numbered", `Bag 027 of ${d.bolsas ? fmtNum(d.bolsas) : "the lot"}, written by hand, with the plug's report on the back.`],
        ["When it is gone, it is gone", "We do not roast that lot again. The next drop comes from another farm."]]
     : [["Anunciamos el lote", "Una finca, una variedad, con su ficha y cuántas bolsas salieron."],
-       ["Sale un día y a una hora", `La gang recibe el link ${d.ventaja} horas antes. Después abre para todos.`],
+       ["Sale un día y a una hora", `${CONFIG.comunidad} recibe el link ${d.ventaja} horas antes. Después abre para todos.`],
        ["Cada bolsa va numerada", `Bolsa 027 de ${d.bolsas ? fmtNum(d.bolsas) : "las del lote"}, escrita a mano, con el reporte del plug al reverso.`],
        ["Cuando se acaba, se acaba", "Ese lote no se vuelve a tostar. El próximo drop viene de otra finca."]];
   return `<div class="view-head">
@@ -4480,7 +4481,7 @@ function viewDrops() {
     <section class="g-sec" aria-labelledby="dr-ahora">
       <div class="g-head g-io"><span class="g-num">02</span><p class="g-kicker">${en ? "Right now" : "Ahora mismo"}</p>
         <h2 id="dr-ahora">${en ? `Drop ${d.n}` : `Drop ${d.n}`}</h2>
-        <p>${en ? "The first lot of the gang." : "El primer lote de la gang."} ${dropAgotado()
+        <p>${en ? `The first lot of ${CONFIG.comunidad}.` : `El primer lote de ${CONFIG.comunidad}.`} ${dropAgotado()
           ? (en ? "Sold out." : "Agotado.")
           : dropAbierto() ? (en ? "Open now." : "Abierto ahora.")
           : (d.fecha ? (en ? "Out " : "Sale el ") + fmtFecha(d.fecha) + "." : (en ? "Date and price to be confirmed." : "Fecha y precio por confirmar."))}</p>
@@ -4509,8 +4510,8 @@ function viewDrop() {
   const comprar = agotado
     ? `<div class="pronto-aviso">
         <b>${t("agotado")}</b>
-        <p>${en ? `Drop ${d.n} is gone and we are not roasting more of that lot. The next drop comes from another farm, and the gang hears it first.`
-                : `El Drop ${d.n} se acabó y no vamos a tostar más de ese lote. El próximo drop viene de otra finca, y la gang se entera primero.`}</p>
+        <p>${en ? `Drop ${d.n} is gone and we are not roasting more of that lot. The next drop comes from another farm, and ${CONFIG.comunidad} hears it first.`
+                : `El Drop ${d.n} se acabó y no vamos a tostar más de ese lote. El próximo drop viene de otra finca, y ${CONFIG.comunidad} se entera primero.`}</p>
         <button class="btn primary" data-act="go" data-to="gang">${t("drop_entrar")}</button></div>`
     : abierto && p
       ? `<div class="buy-row">
@@ -4521,15 +4522,15 @@ function viewDrop() {
                              : `Sale de Cúcuta y llega en ${tx(E.dias)} · envío ${cop(E.costo)}, gratis desde ${cop(E.gratisDesde)}`}</p>`
       : `<div class="pronto-aviso">
           <b>${d.fecha ? (en ? "Out " : "Sale el ") + fmtFecha(d.fecha) : t("por_confirmar")}</b>
-          <p>${en ? `The gang gets the link ${d.ventaja} hours before it opens to everyone. Joining is free.`
-                  : `La gang recibe el link ${d.ventaja} horas antes de que abra para todos. Entrar es gratis.`}</p>
+          <p>${en ? `${CONFIG.comunidad} gets the link ${d.ventaja} hours before it opens to everyone. Joining is free.`
+                  : `${CONFIG.comunidad} recibe el link ${d.ventaja} horas antes de que abra para todos. Entrar es gratis.`}</p>
           <button class="btn primary" data-act="go" data-to="gang">${t("drop_entrar")}</button></div>`;
   const preguntas = faqsDrop(en);
   return `<article class="prod">
     <div class="prod-top">
     <div class="prod-buy reveal">
       <p class="eyebrow">Drop ${d.n} · ${dropEstado(en)}</p>
-      <h1>${agotado ? (en ? "Gone. <em>Thanks, gang.</em>" : "Se acabó. <em>Gracias, gang.</em>")
+      <h1>${agotado ? (en ? `Gone. <em>Thanks, ${CONFIG.comunidad}.</em>` : `Se acabó. <em>Gracias, ${CONFIG.comunidad}.</em>`)
                      : (en ? `Drop ${d.n}. <em>One farm, counted bags.</em>` : `Drop ${d.n}. <em>Una finca, bolsas contadas.</em>`)}</h1>
       <p class="lede">${en
         ? `Whole bean specialty coffee from one farm in Norte de Santander, Colombia, in numbered bags. Every bag says which farm it came from, how high it grew and when it was roasted.`
@@ -4554,7 +4555,7 @@ function viewDrop() {
       <div class="section-head"><p class="eyebrow">${en ? "Quantity and price" : "Cantidad y precio"}</p>
         <h2 id="dp-cifras">${en ? "How many, <em>and at what price</em>" : "Cuántas, <em>y a cuánto</em>"}</h2></div>
       <table class="ficha-tabla"><tbody>${dropCifras(en).map(([k, v]) => `<tr><th scope="row">${k}</th><td class="fv">${esc(v)}</td></tr>`).join("")}</tbody></table>
-      <p class="hint"><a href="${ruta("drops")}" data-act="go" data-to="drops">${en ? "How a drop works" : "Cómo funciona un drop"}</a> · <a href="${ruta("gang")}" data-act="go" data-to="gang">${en ? "Join the gang" : "Entrar a la gang"}</a></p>
+      <p class="hint"><a href="${ruta("drops")}" data-act="go" data-to="drops">${en ? "How a drop works" : "Cómo funciona un drop"}</a> · <a href="${ruta("gang")}" data-act="go" data-to="gang">${t("drop_entrar")}</a></p>
     </section>
 
     ${faqsHTML(preguntas, en)}</article>`;
@@ -4562,32 +4563,32 @@ function viewDrop() {
 
 function faqsGang(en) {
   return en
-    ? [["How much does it cost to join the gang?", "Nothing. You leave your email, we tell you about each drop and you buy before everyone else. There is no fee and no minimum purchase."],
+    ? [[`How much does it cost to join ${CONFIG.comunidad}?`, "Nothing. You leave your email, we tell you about each drop and you buy before everyone else. There is no fee and no minimum purchase."],
        ["What will you send me?", `Drops, restocks and gang things. Nothing else: no daily emails and no offers from anybody else. ${CONFIG.comunidad} is the only one who writes to you.`],
        ["How do I leave?", "Every email has an unsubscribe link, and you can also write to us and we take you off the list the same day."],
-       ["Do I have to buy to stay in?", "No. You can be in the gang for years without buying. The early access is there whenever you want to use it."]]
-    : [["¿Cuánto cuesta entrar a la gang?", "Nada. Dejas tu correo, te avisamos de cada drop y compras antes que todos. No hay cuota ni compra mínima."],
-       ["¿Qué me van a mandar?", `Drops, restocks y cosas de la gang. Nada más: ni correos todos los días ni ofertas de terceros. Solo te escribe ${CONFIG.comunidad}.`],
+       ["Do I have to buy to stay in?", "No. You can be a member for years without buying. The early access is there whenever you want to use it."]]
+    : [[`¿Cuánto cuesta entrar a ${CONFIG.comunidad}?`, "Nada. Dejas tu correo, te avisamos de cada drop y compras antes que todos. No hay cuota ni compra mínima."],
+       ["¿Qué me van a mandar?", `Drops, restocks y novedades de ${CONFIG.comunidad}. Nada más: ni correos todos los días ni ofertas de terceros. Solo te escribe ${CONFIG.comunidad}.`],
        ["¿Cómo me salgo?", "Cada correo trae el enlace para darte de baja, y también puedes escribirnos y te sacamos de la lista el mismo día."],
-       ["¿Tengo que comprar para seguir adentro?", "No. Puedes estar en la gang años sin comprar. El acceso anticipado está ahí el día que lo quieras usar."]];
+       ["¿Tengo que comprar para seguir adentro?", "No. Puedes ser miembro años sin comprar. El acceso anticipado está ahí el día que lo quieras usar."]];
 }
 
 function viewGang() {
   const en = UI.lang === "en", d = CONFIG.drop;
   const ventajas = en
     ? [["You hear it first", "The date and the hour of each drop reach you before they are public."],
-       [`You buy ${d.ventaja} hours earlier`, "The buying link opens for the gang first. Then it opens for everyone else."],
+       [`You buy ${d.ventaja} hours earlier`, `The buying link opens for ${CONFIG.comunidad} first. Then it opens for everyone else.`],
        ["You get a member number", "It comes in the card inside your first bag, and it does not change."]]
     : [["Te enteras primero", "La fecha y la hora de cada drop te llegan antes de que sean públicas."],
-       [`Compras ${d.ventaja} horas antes`, "El link de compra abre primero para la gang. Después abre para todo el mundo."],
+       [`Compras ${d.ventaja} horas antes`, `El link de compra abre primero para ${CONFIG.comunidad}. Después abre para todo el mundo.`],
        ["Tienes número de miembro", "Te llega en la tarjeta que va dentro de tu primera bolsa, y no cambia."]];
   const preguntas = faqsGang(en);
   return `<div class="view-head">
       <div><p class="eyebrow reveal">${t("nav_gang")}</p>
-        <h1 class="reveal" style="--i:1">${en ? "The gang <em>hears it first.</em>" : "La gang <em>se entera primero.</em>"}</h1>
+        <h1 class="reveal" style="--i:1">${en ? `${CONFIG.comunidad} <em>hears it first.</em>` : `${CONFIG.comunidad} <em>se entera primero.</em>`}</h1>
         <p class="reveal" style="--i:2">${en
-          ? `The gang is the mailing list of ${esc(CONFIG.comunidad)}, the coffee brand from Norte de Santander, Colombia, that sells in numbered drops. Joining is free: you get each drop before it is public and you buy ${d.ventaja} hours earlier.`
-          : `La gang es la lista de correo de ${esc(CONFIG.comunidad)}, la marca de café de Norte de Santander, Colombia, que vende en drops numerados. Entrar es gratis: te llega cada drop antes de que sea público y compras ${d.ventaja} horas antes.`}</p></div>
+          ? `${esc(CONFIG.comunidad)} is the mailing list of ${esc(CONFIG.marca)}, the coffee brand from Norte de Santander, Colombia, that sells in numbered drops. Joining is free: you get each drop before it is public and you buy ${d.ventaja} hours earlier.`
+          : `${esc(CONFIG.comunidad)} es la lista de correo de ${esc(CONFIG.marca)}, la marca de café de Norte de Santander, Colombia, que vende en drops numerados. Entrar es gratis: te llega cada drop antes de que sea público y compras ${d.ventaja} horas antes.`}</p></div>
     </div>
 
     <section class="g-sec" aria-labelledby="gg-que">
@@ -4598,7 +4599,7 @@ function viewGang() {
 
     <section class="g-comunidad" aria-labelledby="gg-entrar">
       <div>
-        <h2 id="gg-entrar">${en ? "Join <em>the gang</em>" : "Entra a <em>la gang</em>"}</h2>
+        <h2 id="gg-entrar">${en ? `Join <em>${esc(CONFIG.comunidad)}</em>` : `Entra a <em>${esc(CONFIG.comunidad)}</em>`}</h2>
         <p>${en ? `One email and you are in. ${d.fecha ? `Drop ${d.n} goes out ${fmtFecha(d.fecha)}.` : `Drop ${d.n} has no date yet: you will be the first to know.`}`
                 : `Un correo y ya estás. ${d.fecha ? `El Drop ${d.n} sale el ${fmtFecha(d.fecha)}.` : `El Drop ${d.n} todavía no tiene fecha: vas a ser de los primeros en saberlo.`}`}</p>
       </div>
@@ -4625,9 +4626,9 @@ function entrarGang() {
   S.espera.push({ id: nextId("GA"), producto: "gang", correo, fecha: isoToday(), consentimiento: true }); save();
   popPausa(POP_MIEMBRO);   /* ya es miembro: el pop-up vuelve en un mes, con algo nuevo */
   registrar("gang", { correo, consentimiento: true },
-    en ? `Hi, I want to join the gang of ${CONFIG.comunidad} and I agree to receive the drops by email. My email: ${correo}`
-       : `Hola, quiero entrar a la gang de ${CONFIG.comunidad} y acepto recibir los drops por correo. Mi correo: ${correo}`,
-    `${CONFIG.comunidad} · ${en ? "the gang" : "la gang"}`);
+    en ? `Hi, I want to join ${CONFIG.comunidad} and I agree to receive the drops by email. My email: ${correo}`
+       : `Hola, quiero entrar a ${CONFIG.comunidad} y acepto recibir los drops por correo. Mi correo: ${correo}`,
+    CONFIG.comunidad);
   const btn = $('[data-form="gang"] button[type="submit"]'); if (btn) btn.disabled = true;
 }
 
@@ -5198,9 +5199,9 @@ function unirseComunidad() {
 }
 
 /* ---------- el pop-up: el bono para quien llega, la novedad para quien ya es miembro ----------
-   Lo más importante es recoger el correo, así que sale pronto: a los POP_ESPERA
-   de la primera visita. Es una tarjeta en una esquina, no una ventana que tape
-   la página (eso es lo que Google castiga), y nunca va encima del carrito.
+   Lo más importante es recoger el correo, así que sale pronto (a los POP_ESPERA
+   de la primera visita) y en el centro de la pantalla, con un velo detrás:
+   en una esquina se pasaba por alto. Nunca va encima del carrito.
    - Quien no se ha registrado ve el bono. Lo crea la hoja y llega por correo:
      aquí no se inventa un descuento ni se reparte ningún código.
      Si lo cierra sin registrarse, vuelve en POP_CERRADO días.
@@ -5209,7 +5210,7 @@ function unirseComunidad() {
      de un toque con el correo que ya dejó. Si no hay nada nuevo, no sale.
    No va en el HTML armado: lo pinta el navegador, así que los buscadores no lo ven. */
 const POP_KEY = "nandez-bono-pop";
-const POP_ESPERA = 4000;    /* a los 4 s de llegar */
+const POP_ESPERA = 3000;    /* a los 3 s: con la carga, nunca pasa de 5 */
 const POP_CERRADO = 7;      /* lo cerró sin registrarse: vuelve en una semana */
 const POP_MIEMBRO = 30;     /* ya es miembro: una novedad al mes */
 
@@ -5249,8 +5250,13 @@ function popVigilar() {
   setTimeout(intentar, POP_ESPERA);
 }
 
+/* Va en el centro, con un velo detrás: en una esquina pasaba de largo.
+   Tocar el velo lo cierra, igual que la ✕ y Escape. */
 function popMontar(el) {
-  document.body.append(el);
+  const velo = document.createElement("div");
+  velo.className = "g-pop-velo"; velo.id = "g-pop-velo"; velo.dataset.act = "pop-no";
+  document.body.append(velo, el);
+  requestAnimationFrame(() => velo.classList.add("in"));
   popPiso();
   /* el foco no se roba: la visita estaba leyendo. Entra solo al tabular */
   requestAnimationFrame(() => el.classList.add("in"));
@@ -5262,7 +5268,7 @@ function popAbrir() {
   el.className = "g-pop"; el.id = "g-pop";
   el.setAttribute("aria-label", en ? `${BONO_PCT} % off your first order` : `${BONO_PCT} % en tu primer pedido`);
   el.innerHTML = `<button class="g-pop-x" data-act="pop-no" aria-label="${en ? "Close" : "Cerrar"}">✕</button>
-    <p class="g-pop-pct"><b>${BONO_PCT} %</b><span>${en ? "off your<br>first order" : "en tu<br>primer pedido"}</span></p>
+    <p class="g-pop-pct"><b>${BONO_PCT} %</b><span>${en ? "off your <br>first order" : "en tu <br>primer pedido"}</span></p>
     <div class="g-pop-dice">
       <h2>${en ? `Join <em>${esc(CONFIG.comunidad)}</em>` : `Entra a <em>${esc(CONFIG.comunidad)}</em>`}</h2>
       <p>${en ? "Your code lands in your inbox, and you hear about every drop, new coffee and event before anyone else."
@@ -5338,8 +5344,9 @@ function popPiso() {
 function popCerrar(recordar = true) {
   const el = $("#g-pop"); if (!el) return;
   if (recordar && !el.classList.contains("g-pop-nuevo")) popPausa(POP_CERRADO);
-  el.classList.remove("in");
-  setTimeout(() => el.remove(), 320);
+  const velo = $("#g-pop-velo");
+  el.classList.remove("in"); velo?.classList.remove("in");
+  setTimeout(() => { el.remove(); velo?.remove(); }, 320);
 }
 
 function popApuntar() {
@@ -5686,8 +5693,8 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && x.id === "au-custom") myBid(0);
   if (e.key === "Escape" && document.body.classList.contains("menu-abierto")) menu(false);
   if (e.key === "Escape" && document.body.classList.contains("mas-abierto")) { mas(false); $("#dock-mas")?.focus(); }
-  /* el pop-up no es modal: Escape solo lo cierra si se está dentro de él */
-  if (e.key === "Escape" && document.activeElement?.closest("#g-pop")) popCerrar();
+  /* Escape cierra el pop-up, como la ✕ y el velo */
+  if (e.key === "Escape" && $("#g-pop")) popCerrar();
 });
 document.addEventListener("submit", (e) => {
   if (e.target.matches?.('[data-form="comunidad"]')) { e.preventDefault(); unirseComunidad(); }

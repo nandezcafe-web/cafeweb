@@ -40,8 +40,8 @@ function portada(en) {
       <p class="g-kicker reveal"><em>${esc(CONFIG.marca)}</em> · Chinácota, Norte de Santander</p>
       <h1 id="portada-titulo">${pal(en ? "Your plug for" : "Tu plug de")} <em>${pal(en ? "single farm coffee." : "café de finca.", 3)}</em></h1>
       <p class="g-lede reveal" style="--i:3">${en
-        ? "We buy small lots in the mountains of Norte de Santander and roast them under our own name. Two whole bean and the blend, ground. The Coffee Gang hears about every one first."
-        : "Compramos lotes pequeños en las montañas de Norte de Santander y los tostamos con nuestro nombre. Dos en grano y el blend, molido. El Coffee Gang se entera primero."}</p>
+        ? "We buy small lots in the mountains of Norte de Santander and roast them under our own name. Two whole bean and the blend, ground. Nandez Coffee Gang hears about every one first."
+        : "Compramos lotes pequeños en las montañas de Norte de Santander y los tostamos con nuestro nombre. Dos en grano y el blend, molido. Nandez Coffee Gang se entera primero."}</p>
       <div class="g-cta reveal" style="--i:4">
         <button class="btn primary lg" data-act="go" data-to="cafes">${en ? "See the coffees" : "Ver los cafés"}${icono("flecha", "ico")}</button>
         <a class="g-link" href="${ruta("suscripcion")}" data-act="go" data-to="suscripcion">${en ? "The subscription" : "La suscripción"}</a>
@@ -69,10 +69,10 @@ function cinta(en) {
   const items = en
     ? [`<em>Medium</em> roast`, `The 250 g bag, <em>${bolsa}</em>`, `<em>Whole bean</em> or ground`, `<em>2026</em> harvest`,
        `Mountains of <em>Norte de Santander</em>`, `Free shipping from <em>${cop(CONFIG.envio.gratisDesde)}</em>`,
-       `Our own farm: <em>5,000</em> Geisha plants, first harvest 2027`, `<em>${CONFIG.gang}</em>`]
+       `Our own farm: <em>5,000</em> Geisha plants, first harvest 2027`, `<em>${CONFIG.comunidad}</em>`]
     : [`Tostión <em>media</em>`, `La bolsa de 250 g, <em>${bolsa}</em>`, `<em>En grano</em> o molido`, `Cosecha <em>2026</em>`,
        `Montañas de <em>Norte de Santander</em>`, `Envío gratis desde <em>${cop(CONFIG.envio.gratisDesde)}</em>`,
-       `Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027`, `<em>${CONFIG.gang}</em>`];
+       `Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027`, `<em>${CONFIG.comunidad}</em>`];
   const fila = items.map((x) => `<span>${x}</span>`).join("");
   return `<div class="g-ticker" aria-label="${en ? "At a glance" : "En corto"}"><div class="g-ticker-track">${fila}${fila}</div></div>`;
 }

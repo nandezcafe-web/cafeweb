@@ -111,8 +111,8 @@ const T = {
   nav_pedido: { es: "Pedido", en: "Order" }, nav_mas: { es: "Más", en: "More" },
   nav_tienda: { es: "Tienda", en: "Shop" }, nav_cafes_esp: { es: "Cafés de especialidad", en: "Specialty coffee" },
   nav_accesorios: { es: "Accesorios y merch", en: "Gear and merch" },
-  nav_drops: { es: "Drops", en: "Drops" }, nav_gang: { es: "La gang", en: "The gang" },
-  drop_entrar: { es: "Entrar a la gang", en: "Join the gang" },
+  nav_drops: { es: "Drops", en: "Drops" }, nav_gang: { es: CONFIG.comunidad, en: CONFIG.comunidad },
+  drop_entrar: { es: `Entrar a ${CONFIG.comunidad}`, en: `Join ${CONFIG.comunidad}` },
   drop_asegurar: { es: "Asegurar la mía", en: "Get mine" },
   comprar: { es: "Comprar", en: "Buy" }, agregar: { es: "Agregar al pedido", en: "Add to order" },
   ver_cafe: { es: "Ver el café", en: "View coffee" }, agotado: { es: "Agotado", en: "Sold out" },
@@ -437,7 +437,7 @@ const ACCESORIOS = [
     desc: { es: "Para verter despacio y en círculos.", en: "To pour slowly, in circles." } },
   { id: "A-SRV", grupo: "preparar", color: "#6B645C", proximamente: true, nombre: { es: "Servidor de vidrio 600 ml", en: "600 ml glass server" },
     desc: { es: "Para dos tazas, o una muy larga.", en: "For two cups, or one very long one." } },
-  { id: "M-CAM", grupo: "merch", color: "#C9381A", proximamente: true, nombre: { es: "Camiseta Coffee Gang", en: "Coffee Gang T-shirt" },
+  { id: "M-CAM", grupo: "merch", color: "#C9381A", proximamente: true, nombre: { es: "Camiseta Nandez Coffee Gang", en: "Nandez Coffee Gang T-shirt" },
     desc: { es: "Diseño por confirmar.", en: "Design to be confirmed." } },
   { id: "M-GOR", grupo: "merch", color: "#141210", proximamente: true, nombre: { es: "Gorra Nandez", en: "Nandez cap" },
     desc: { es: "Diseño por confirmar.", en: "Design to be confirmed." } },
@@ -455,10 +455,10 @@ CONFIG.sitio = "https://cafeweb-five.vercel.app";   // cambiar cuando haya domin
 
 const RUTAS = {
   es: { inicio: "", tienda: "tienda", accesorios: "accesorios", cafes: "cafes", cafe: "cafe", subasta: "subasta", suscripcion: "suscripcion", diario: "diario", entrada: "diario",
-        drops: "drops", drop: "drop", gang: "la-gang",
+        drops: "drops", drop: "drop", gang: "nandez-coffee-gang",
         contacto: "contacto", envios: "envios-y-devoluciones", terminos: "terminos", privacidad: "privacidad" },
   en: { inicio: "", tienda: "shop", accesorios: "accessories", cafes: "coffees", cafe: "coffee", subasta: "auction", suscripcion: "subscription", diario: "journal", entrada: "journal",
-        drops: "drops", drop: "drop", gang: "the-gang",
+        drops: "drops", drop: "drop", gang: "nandez-coffee-gang",
         contacto: "contact", envios: "shipping-and-returns", terminos: "terms", privacidad: "privacy" },
 };
 const slugEntrada = (e) => slug(tx(e.titulo)).slice(0, 60);
@@ -524,15 +524,15 @@ function meta(view, id) {
       : { t: marca + " · Café de origen de Norte de Santander",
           d: "Familia cafetera de Chinácota. Compramos lotes pequeños en fincas de Norte de Santander y los tostamos con nuestro nombre: dos cafés de una sola finca, en grano, y un blend molido de los dos." },
     tienda: en
-      ? { t: "Shop · " + marca, d: "Specialty coffee from Norte de Santander, whole bean and ground, plus brewing gear and Coffee Gang merch." }
-      : { t: "Tienda · " + marca, d: "Café de especialidad de Norte de Santander, en grano y molido, accesorios para prepararlo y merch Coffee Gang." },
+      ? { t: "Shop · " + marca, d: "Specialty coffee from Norte de Santander, whole bean and ground, plus brewing gear and Nandez Coffee Gang merch." }
+      : { t: "Tienda · " + marca, d: "Café de especialidad de Norte de Santander, en grano y molido, accesorios para prepararlo y merch Nandez Coffee Gang." },
     accesorios: en
       ? (conPreparar()
-          ? { t: "Brewing gear and merch · " + marca, d: "Cone dripper, filters, hand grinder, scale, gooseneck kettle and Coffee Gang merch. Coming soon: leave your email." }
-          : { t: "Coffee Gang merch · " + marca, d: "T-shirt, cap, mug and tote bag from Nandez Coffee Gang. Coming soon: leave your email and we tell you the day it is out." })
+          ? { t: "Brewing gear and merch · " + marca, d: "Cone dripper, filters, hand grinder, scale, gooseneck kettle and Nandez Coffee Gang merch. Coming soon: leave your email." }
+          : { t: "Nandez Coffee Gang merch", d: "T-shirt, cap, mug and tote bag from Nandez Coffee Gang. Coming soon: leave your email and we tell you the day it is out." })
       : (conPreparar()
-          ? { t: "Accesorios y merch · " + marca, d: "Gotero, filtros, molino manual, balanza, tetera cuello de cisne y merch Coffee Gang. Próximamente: deja tu correo." }
-          : { t: "Merch Coffee Gang · " + marca, d: "Camiseta, gorra, taza y bolsa de tela de Nandez Coffee Gang. Próximamente: deja tu correo y te avisamos el día que salga." }),
+          ? { t: "Accesorios y merch · " + marca, d: "Gotero, filtros, molino manual, balanza, tetera cuello de cisne y merch Nandez Coffee Gang. Próximamente: deja tu correo." }
+          : { t: "Merch Nandez Coffee Gang", d: "Camiseta, gorra, taza y bolsa de tela de Nandez Coffee Gang. Próximamente: deja tu correo y te avisamos el día que salga." }),
     cafes: en
       ? { t: "Specialty coffee · " + marca,
           d: "Three medium roast coffees from Norte de Santander: Castillo from Ragonvalia and El Paraíso (Cenicafé 1, Chinácota), whole bean, and a ground blend of the two. Shipped countrywide." }
@@ -584,25 +584,25 @@ function meta(view, id) {
       const cuantas = d.bolsas ? fmtNum(d.bolsas) + (en ? " numbered bags" : " bolsas numeradas") : (en ? "numbered bags" : "bolsas numeradas");
       if (dropAgotado()) return en
         ? { t: `Drop ${n} · sold out · ${marca}`,
-            d: `Drop ${n} sold out: ${cuantas} of whole bean coffee from Norte de Santander, and we are not roasting more of that lot. The next drop is announced in the gang first.` }
+            d: `Drop ${n} sold out: ${cuantas} of whole bean coffee from Norte de Santander, and we are not roasting more of that lot. The next drop is announced in ${CONFIG.comunidad} first.` }
         : { t: `Drop ${n} · agotado · ${marca}`,
-            d: `El Drop ${n} se agotó: eran ${cuantas} de café en grano de Norte de Santander y no vamos a tostar más de ese lote. El próximo se avisa primero en la gang.` };
+            d: `El Drop ${n} se agotó: eran ${cuantas} de café en grano de Norte de Santander y no vamos a tostar más de ese lote. El próximo se avisa primero en ${CONFIG.comunidad}.` };
       if (!d.fecha || !d.precio) return en
         ? { t: `Drop ${n} · single farm coffee from Norte de Santander · ${marca}`,
-            d: `Drop ${n}: whole bean coffee from one farm in Norte de Santander, in ${cuantas}. Date and price to be confirmed — join the gang and you hear it first.` }
+            d: `Drop ${n}: whole bean coffee from one farm in Norte de Santander, in ${cuantas}. Date and price to be confirmed — join ${CONFIG.comunidad} and you hear it first.` }
         : { t: `Drop ${n} · café de finca de Norte de Santander · ${marca}`,
-            d: `Drop ${n}: café en grano de una sola finca de Norte de Santander, en ${cuantas}. Fecha y precio por confirmar: entra a la gang y te enteras primero.` };
+            d: `Drop ${n}: café en grano de una sola finca de Norte de Santander, en ${cuantas}. Fecha y precio por confirmar: entra a ${CONFIG.comunidad} y te enteras primero.` };
       return en
         ? { t: `Drop ${n} · ${cuantas}${mun ? " from " + mun : ""} · ${marca}`,
-            d: `Drop ${n}: ${cuantas} of whole bean coffee${mun ? " from " + mun + ", Norte de Santander" : ""}, at ${cop(d.precio)}. Out ${fmtFecha(d.fecha)}; the gang buys ${d.ventaja} hours earlier.` }
+            d: `Drop ${n}: ${cuantas} of whole bean coffee${mun ? " from " + mun + ", Norte de Santander" : ""}, at ${cop(d.precio)}. Out ${fmtFecha(d.fecha)}; ${CONFIG.comunidad} buys ${d.ventaja} hours earlier.` }
         : { t: `Drop ${n} · ${cuantas}${mun ? " de " + mun : ""} · ${marca}`,
-            d: `Drop ${n}: ${cuantas} de café en grano${mun ? " de " + mun + ", Norte de Santander" : ""}, a ${cop(d.precio)}. Sale el ${fmtFecha(d.fecha)} y la gang compra ${d.ventaja} horas antes.` };
+            d: `Drop ${n}: ${cuantas} de café en grano${mun ? " de " + mun + ", Norte de Santander" : ""}, a ${cop(d.precio)}. Sale el ${fmtFecha(d.fecha)} y ${CONFIG.comunidad} compra ${d.ventaja} horas antes.` };
     })(),
     gang: en
-      ? { t: `The gang: buy the drop ${CONFIG.drop.ventaja} hours early · ` + marca,
-          d: `Joining the gang is free: we tell you about every coffee drop and you buy ${CONFIG.drop.ventaja} hours before everyone else. No spam, just drops and restocks.` }
-      : { t: `La gang: compra el drop ${CONFIG.drop.ventaja} horas antes · ` + marca,
-          d: `Entrar a la gang es gratis: te avisamos cada drop de café y compras ${CONFIG.drop.ventaja} horas antes que todos. Sin spam, solo drops y restocks.` },
+      ? { t: `${CONFIG.comunidad}: buy the drop ${CONFIG.drop.ventaja} hours early`,
+          d: `Joining ${CONFIG.comunidad} is free: we tell you about every coffee drop and you buy ${CONFIG.drop.ventaja} hours before everyone else. No spam, just drops and restocks.` }
+      : { t: `${CONFIG.comunidad}: compra el drop ${CONFIG.drop.ventaja} horas antes`,
+          d: `Entrar a ${CONFIG.comunidad} es gratis: te avisamos cada drop de café y compras ${CONFIG.drop.ventaja} horas antes que todos. Sin spam, solo drops y restocks.` },
     diario: en
       ? { t: "Journal: buying coffee in Norte de Santander · " + marca,
           d: "Farm visits, prices, yield factor, processing and brewing: what we learn buying coffee straight from growers in Norte de Santander." }

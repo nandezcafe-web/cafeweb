@@ -315,7 +315,7 @@ const llms = ev(c0, [
   '"## Qué vendemos",',
   '...S.productos.map((p) => "- " + tx(p.nombre) + (p.proximamente ? " (" + tx(p.sub) + "): tostión media, " + (esMolido(p) ? "molido" : "en grano") + "; ficha y precio por confirmar, lista de espera (" : ": variedad " + p.variedad + ", proceso " + p.proceso + ", " + p.altitud + " msnm, " + p.puntaje + " puntos SCA, en grano, desde " + cop(p.variantes[0].precio) + " (") + CONFIG.sitio + ruta("cafe", p.id, "es") + ")"),',
   '...(visible("subasta") ? ["- Subasta en vivo de un microlote Geisha de Toledo (" + CONFIG.sitio + "/subasta)"] : []),',
-  '"- " + (conPreparar() ? "Accesorios para preparar en casa y merch Coffee Gang" : "Merch Coffee Gang") + ", próximamente (" + CONFIG.sitio + ruta("accesorios", null, "es") + ")",',
+  '"- " + (conPreparar() ? "Accesorios para preparar en casa y merch Nandez Coffee Gang" : "Merch Nandez Coffee Gang") + ", próximamente (" + CONFIG.sitio + ruta("accesorios", null, "es") + ")",',
   '"- Suscripción mensual desde " + cop(PLANES[0].mes) + ", con kit de bienvenida para preparar en casa, filtros y una receta cada mes (" + CONFIG.sitio + "/suscripcion)", "",',
   '"## Cómo trabajamos",',
   '"- Dos cafés de una sola finca, en grano, y un blend de los dos, molido; los tres con tostión media. Cada dato (altura, variedad, proceso, puntaje) dice quién lo comprobó y cuándo.",',

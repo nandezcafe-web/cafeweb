@@ -146,9 +146,9 @@ function unirseComunidad() {
 }
 
 /* ---------- el pop-up: el bono para quien llega, la novedad para quien ya es miembro ----------
-   Lo más importante es recoger el correo, así que sale pronto: a los POP_ESPERA
-   de la primera visita. Es una tarjeta en una esquina, no una ventana que tape
-   la página (eso es lo que Google castiga), y nunca va encima del carrito.
+   Lo más importante es recoger el correo, así que sale pronto (a los POP_ESPERA
+   de la primera visita) y en el centro de la pantalla, con un velo detrás:
+   en una esquina se pasaba por alto. Nunca va encima del carrito.
    - Quien no se ha registrado ve el bono. Lo crea la hoja y llega por correo:
      aquí no se inventa un descuento ni se reparte ningún código.
      Si lo cierra sin registrarse, vuelve en POP_CERRADO días.
@@ -157,7 +157,7 @@ function unirseComunidad() {
      de un toque con el correo que ya dejó. Si no hay nada nuevo, no sale.
    No va en el HTML armado: lo pinta el navegador, así que los buscadores no lo ven. */
 const POP_KEY = "nandez-bono-pop";
-const POP_ESPERA = 4000;    /* a los 4 s de llegar */
+const POP_ESPERA = 3000;    /* a los 3 s: con la carga, nunca pasa de 5 */
 const POP_CERRADO = 7;      /* lo cerró sin registrarse: vuelve en una semana */
 const POP_MIEMBRO = 30;     /* ya es miembro: una novedad al mes */
 
@@ -197,8 +197,13 @@ function popVigilar() {
   setTimeout(intentar, POP_ESPERA);
 }
 
+/* Va en el centro, con un velo detrás: en una esquina pasaba de largo.
+   Tocar el velo lo cierra, igual que la ✕ y Escape. */
 function popMontar(el) {
-  document.body.append(el);
+  const velo = document.createElement("div");
+  velo.className = "g-pop-velo"; velo.id = "g-pop-velo"; velo.dataset.act = "pop-no";
+  document.body.append(velo, el);
+  requestAnimationFrame(() => velo.classList.add("in"));
   popPiso();
   /* el foco no se roba: la visita estaba leyendo. Entra solo al tabular */
   requestAnimationFrame(() => el.classList.add("in"));
@@ -210,7 +215,7 @@ function popAbrir() {
   el.className = "g-pop"; el.id = "g-pop";
   el.setAttribute("aria-label", en ? `${BONO_PCT} % off your first order` : `${BONO_PCT} % en tu primer pedido`);
   el.innerHTML = `<button class="g-pop-x" data-act="pop-no" aria-label="${en ? "Close" : "Cerrar"}">✕</button>
-    <p class="g-pop-pct"><b>${BONO_PCT} %</b><span>${en ? "off your<br>first order" : "en tu<br>primer pedido"}</span></p>
+    <p class="g-pop-pct"><b>${BONO_PCT} %</b><span>${en ? "off your <br>first order" : "en tu <br>primer pedido"}</span></p>
     <div class="g-pop-dice">
       <h2>${en ? `Join <em>${esc(CONFIG.comunidad)}</em>` : `Entra a <em>${esc(CONFIG.comunidad)}</em>`}</h2>
       <p>${en ? "Your code lands in your inbox, and you hear about every drop, new coffee and event before anyone else."
@@ -286,8 +291,9 @@ function popPiso() {
 function popCerrar(recordar = true) {
   const el = $("#g-pop"); if (!el) return;
   if (recordar && !el.classList.contains("g-pop-nuevo")) popPausa(POP_CERRADO);
-  el.classList.remove("in");
-  setTimeout(() => el.remove(), 320);
+  const velo = $("#g-pop-velo");
+  el.classList.remove("in"); velo?.classList.remove("in");
+  setTimeout(() => { el.remove(); velo?.remove(); }, 320);
 }
 
 function popApuntar() {
@@ -634,8 +640,8 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && x.id === "au-custom") myBid(0);
   if (e.key === "Escape" && document.body.classList.contains("menu-abierto")) menu(false);
   if (e.key === "Escape" && document.body.classList.contains("mas-abierto")) { mas(false); $("#dock-mas")?.focus(); }
-  /* el pop-up no es modal: Escape solo lo cierra si se está dentro de él */
-  if (e.key === "Escape" && document.activeElement?.closest("#g-pop")) popCerrar();
+  /* Escape cierra el pop-up, como la ✕ y el velo */
+  if (e.key === "Escape" && $("#g-pop")) popCerrar();
 });
 document.addEventListener("submit", (e) => {
   if (e.target.matches?.('[data-form="comunidad"]')) { e.preventDefault(); unirseComunidad(); }

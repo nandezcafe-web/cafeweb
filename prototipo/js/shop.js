@@ -215,8 +215,8 @@ function viewTienda() {
     <div class="view-head">
       <div><p class="eyebrow reveal">${t("nav_tienda")}</p>
         <h1 class="reveal" style="--i:1">${en ? "Everything <em>from the house</em>" : "Todo lo <em>de la casa</em>"}</h1>
-        <p class="reveal" style="--i:2">${en ? "Whole bean coffee from neighbouring farms, the gear to brew it and Coffee Gang merch."
-          : "Café en grano de fincas vecinas, lo necesario para prepararlo y el merch Coffee Gang."}</p></div>
+        <p class="reveal" style="--i:2">${en ? "Whole bean coffee from neighbouring farms, the gear to brew it and Nandez Coffee Gang merch."
+          : "Café en grano de fincas vecinas, lo necesario para prepararlo y el merch Nandez Coffee Gang."}</p></div>
     </div>
     <div class="g-puertas">
       <a class="g-puerta reveal" style="--pc:${p.color || "#2F5A3C"};--i:3" href="${ruta("cafes")}" data-act="go" data-to="cafes">
@@ -224,11 +224,11 @@ function viewTienda() {
         <span class="g-puerta-txt"><small>01 · ${n} ${en ? "whole bean coffees" : "cafés en grano"}${ya < n ? ` · ${ya} ${en ? "on sale" : "a la venta"}` : ""}</small>
           <b>${t("nav_cafes_esp")}</b><i>${en ? "One farm each, always whole bean." : "Una finca cada uno, siempre en grano."}</i></span></a>
       <a class="g-puerta oscura reveal" style="--i:4" href="${ruta("accesorios")}" data-act="go" data-to="accesorios">
-        <span class="g-puerta-art"><span class="g-pronto">Coffee Gang<i>${t("proximamente")}</i></span></span>
+        <span class="g-puerta-art"><span class="g-pronto">Nandez Coffee Gang<i>${t("proximamente")}</i></span></span>
         <span class="g-puerta-txt"><small>02 · ${accesoriosVisibles().length} ${en ? "pieces" : "piezas"} · ${t("proximamente").toLowerCase()}</small>
           <b>${t("nav_accesorios")}</b><i>${conPreparar()
             ? (en ? "Dripper, grinder, kettle, and things to wear." : "Gotero, molino, tetera, y algo para ponerse.")
-            : (en ? "T-shirt, cap, mug and tote bag from the gang." : "Camiseta, gorra, taza y bolsa de tela del gang.")}</i></span></a>
+            : (en ? `T-shirt, cap, mug and tote bag from ${CONFIG.comunidad}.` : `Camiseta, gorra, taza y bolsa de tela de ${CONFIG.comunidad}.`)}</i></span></a>
     </div>`;
 }
 
@@ -246,13 +246,13 @@ function accesorioCard(a, i = 0) {
 
 function viewAccesorios() {
   const en = UI.lang === "en", prep = conPreparar();
-  const grupos = [["preparar", en ? "To brew at home" : "Para preparar en casa"], ["merch", "Merch " + esc(CONFIG.gang)]]
+  const grupos = [["preparar", en ? "To brew at home" : "Para preparar en casa"], ["merch", "Merch " + esc(CONFIG.comunidad)]]
     .filter(([g]) => CONFIG.accesoriosVisibles.includes(g));
   return `${subnavTienda("accesorios")}
     <div class="view-head">
       <div><p class="eyebrow reveal">${t("nav_tienda")} · ${t("nav_accesorios")}</p>
         <h1 class="reveal" style="--i:1">${prep ? (en ? "To brew it, <em>and to wear it</em>" : "Para prepararlo, <em>y para ponértelo</em>")
-                                              : (en ? "Wear the <em>gang</em>" : "Ponte el <em>gang</em>")}</h1>
+                                              : (en ? `Wear <em>${CONFIG.comunidad}</em>` : `Ponte <em>${CONFIG.comunidad}</em>`)}</h1>
         <p class="reveal" style="--i:2">${en ? "We are choosing each piece. Leave your email on the ones you want and we tell you the day they are out, with their price."
           : "Estamos escogiendo cada pieza. Deja tu correo en las que quieras y te avisamos el día que salgan, con su precio."}</p></div>
     </div>

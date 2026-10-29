@@ -6,6 +6,16 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/la-gang",
+      "destination": "/nandez-coffee-gang",
+      "permanent": true
+    },
+    {
+      "source": "/en/the-gang",
+      "destination": "/en/nandez-coffee-gang",
+      "permanent": true
+    },
+    {
       "source": "/cafe-castillo-de-arboledas",
       "destination": "/cafe-castillo-de-ragonvalia",
       "permanent": true

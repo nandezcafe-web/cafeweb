@@ -618,30 +618,32 @@ h1 em,h2 em{color:var(--marca)}
 
 /* ============================================================
    EL POP-UP DEL BONO DE BIENVENIDA
-   Aparece abajo, a un lado. No es un modal: no tapa lo que se está
-   leyendo, no roba el foco y no traba el scroll. Google castiga el
-   aviso que cubre la página, y de todas formas aquí se está leyendo.
-   Quién lo ve y cuándo se decide en popPuede() (js/main.js).
+   Aparece en el centro, con un velo detrás: en una esquina la gente lo
+   pasaba de largo y lo que más importa es recoger el correo. Se cierra
+   con la ✕, tocando el velo o con Escape.
+   Quién lo ve y cuándo se decide en popSobra() (js/main.js).
    ============================================================ */
-.g-pop{position:fixed;z-index:80;left:20px;bottom:calc(20px + var(--g-pop-piso,0px));width:min(412px,calc(100vw - 40px));
-  display:flex;gap:16px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--card);
-  box-shadow:0 26px 54px -20px rgba(29,20,15,.5);
-  opacity:0;transform:translateY(14px) scale(.985);
+/* En el centro de la pantalla, con un velo detrás: en una esquina se pasaba por alto. */
+.g-pop-velo{position:fixed;inset:0;z-index:79;background:rgba(20,18,16,.55);opacity:0;transition:opacity .3s var(--ease-out);cursor:pointer}
+.g-pop-velo.in{opacity:1}
+.g-pop{position:fixed;z-index:80;left:50%;top:50%;width:min(520px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;
+  display:flex;gap:20px;padding:28px 26px 24px;border:1px solid var(--line);border-radius:18px;background:var(--card);
+  box-shadow:0 30px 70px -20px rgba(29,20,15,.6);
+  opacity:0;transform:translate(-50%,calc(-50% + 14px)) scale(.97);
   transition:opacity .3s var(--ease-out),transform .34s var(--ease-out)}
-.g-pop.in{opacity:1;transform:none}
-/* mientras el carrito o un modal estén abiertos, el pop-up se quita de en
-   medio: detrás del velo solo estorba */
-body:has(dialog[open]) .g-pop{opacity:0;transform:translateY(8px);pointer-events:none}
+.g-pop.in{opacity:1;transform:translate(-50%,-50%)}
+/* mientras el carrito o un modal estén abiertos, el pop-up se quita de en medio */
+body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
 .g-pop-x{position:absolute;top:7px;right:7px;width:30px;height:30px;display:grid;place-items:center;border:0;
   border-radius:50%;background:none;color:var(--ink-3);font-size:13px;line-height:1;cursor:pointer;
   transition:background .2s var(--ease-out),color .2s var(--ease-out)}
 .g-pop-x:hover{background:var(--paper-2);color:var(--ink)}
 /* el número es la marca de hallazgo: va en terracota, sin fondo de color */
 .g-pop-pct{flex:0 0 auto;width:96px;margin:0;padding-top:2px;text-align:center}
-.g-pop-pct b{display:block;font:italic 40px/1 var(--serif);color:var(--cherry)}
+.g-pop-pct b{display:block;font:italic 48px/1 var(--serif);color:var(--cherry)}
 .g-pop-pct span{display:block;margin-top:5px;font:600 10px/1.35 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
 .g-pop-dice{min-width:0;flex:1}
-.g-pop-dice h2{margin:0 0 5px;padding-right:22px;font:italic 23px/1.1 var(--serif);color:var(--ink)}
+.g-pop-dice h2{margin:0 0 6px;padding-right:22px;font:italic 28px/1.1 var(--serif);color:var(--ink)}
 .g-pop-dice>p{margin:0 0 13px;font-size:13.5px;line-height:1.5;color:var(--ink-2)}
 .g-pop-dice .lbl{display:block;margin-bottom:5px}
 /* el correo y el botón van uno encima del otro: en una tarjeta de 412 px
@@ -654,16 +656,15 @@ body:has(dialog[open]) .g-pop{opacity:0;transform:translateY(8px);pointer-events
 .g-pop-nuevo .g-pop-pct b{font-size:30px}
 .g-pop-nuevo .g-pop-fila{margin-top:2px}
 
-/* En el móvil va abajo, encima del dock; y si la bandeja del carrito está
-   puesta, sube para no pelearse con ella. */
-@media (max-width:860px){
-  .g-pop{left:10px;right:10px;width:auto;gap:14px;padding:16px;border-radius:20px;
-    bottom:calc(86px + var(--g-pop-piso,0px) + env(safe-area-inset-bottom,0px))}
-  .g-pop-pct{width:86px}
+/* En el móvil el número va arriba y el formulario a todo el ancho */
+@media (max-width:560px){
+  .g-pop{flex-direction:column;gap:6px;padding:22px 18px 18px}
+  .g-pop-pct{width:auto;display:flex;align-items:baseline;gap:10px;text-align:left}
+  .g-pop-pct span br{display:none}
   .g-pop-pct b{font-size:34px}
   .g-pop-dice h2{font-size:21px}
 }
-@media (prefers-reduced-motion:reduce){.g-pop{transition:opacity .15s;transform:none}}
+@media (prefers-reduced-motion:reduce){.g-pop{transition:opacity .15s;transform:translate(-50%,-50%)}}
 
 /* El final del pie, en una sola banda: antes el © y el letrero se leían como
    dos secciones distintas. */
