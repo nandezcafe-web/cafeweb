@@ -417,6 +417,7 @@ function entrarGang() {
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) return toast(en ? "Check your email address." : "Revisa tu correo.", { type: "err" });
   if (!ok) return toast(en ? "Tick the box to join." : "Marca la casilla para entrar.", { type: "err" });
   S.espera.push({ id: nextId("GA"), producto: "gang", correo, fecha: isoToday(), consentimiento: true }); save();
+  popPausa(POP_MIEMBRO);   /* ya es miembro: el pop-up vuelve en un mes, con algo nuevo */
   registrar("gang", { correo, consentimiento: true },
     en ? `Hi, I want to join the gang of ${CONFIG.comunidad} and I agree to receive the drops by email. My email: ${correo}`
        : `Hola, quiero entrar a la gang de ${CONFIG.comunidad} y acepto recibir los drops por correo. Mi correo: ${correo}`,

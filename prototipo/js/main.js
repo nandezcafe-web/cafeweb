@@ -112,7 +112,7 @@ function apuntarComunidad(correo, listo) {
   enviarAviso("comunidad", { correo, consentimiento: true }).then((ok) => {
     /* solo se guarda si la hoja lo recibió: si no, no quedó apuntada en
        ninguna parte y hay que poder intentarlo otra vez */
-    if (ok) { S.espera.push({ id: nextId("CM"), producto: "comunidad", correo, fecha: isoToday(), consentimiento: true }); save(); }
+    if (ok) { S.espera.push({ id: nextId("CM"), producto: "comunidad", correo, fecha: isoToday(), consentimiento: true }); save(); popPausa(POP_MIEMBRO); }
     listo(ok);
   });
 }
@@ -145,29 +145,43 @@ function unirseComunidad() {
     en ? `Community: ${correo}` : `Comunidad: ${correo}`);
 }
 
-/* ---------- el pop-up del bono de bienvenida ----------
-   Ofrece el mismo bono del formulario del pie: lo crea la hoja y llega por
-   correo. Aquí no se inventa un descuento nuevo ni se reparte ningún código.
-
-   No va en el HTML armado: lo pinta el navegador, así que los buscadores no
-   lo ven. Y no sale de entrada: Google castiga el aviso que tapa la página en
-   cuanto abre, así que espera a que la visita muestre interés —media página
-   leída, o medio minuto— y nunca se pone encima del carrito. */
+/* ---------- el pop-up: el bono para quien llega, la novedad para quien ya es miembro ----------
+   Lo más importante es recoger el correo, así que sale pronto: a los POP_ESPERA
+   de la primera visita. Es una tarjeta en una esquina, no una ventana que tape
+   la página (eso es lo que Google castiga), y nunca va encima del carrito.
+   - Quien no se ha registrado ve el bono. Lo crea la hoja y llega por correo:
+     aquí no se inventa un descuento ni se reparte ningún código.
+     Si lo cierra sin registrarse, vuelve en POP_CERRADO días.
+   - Quien ya es miembro lo vuelve a ver cada POP_MIEMBRO días, con lo nuevo:
+     el próximo drop si ya tiene fecha, o el próximo café, con un "Avísame"
+     de un toque con el correo que ya dejó. Si no hay nada nuevo, no sale.
+   No va en el HTML armado: lo pinta el navegador, así que los buscadores no lo ven. */
 const POP_KEY = "nandez-bono-pop";
-const POP_DIAS = 45;        /* si lo cierra, no vuelve a aparecer en 45 días */
-const POP_PISO = 12000;     /* nunca antes de 12 s */
-const POP_TECHO = 30000;    /* a los 30 s sale, aunque no haya bajado */
-const POP_LEIDO = 0.5;      /* o en cuanto lleve media página */
+const POP_ESPERA = 4000;    /* a los 4 s de llegar */
+const POP_CERRADO = 7;      /* lo cerró sin registrarse: vuelve en una semana */
+const POP_MIEMBRO = 30;     /* ya es miembro: una novedad al mes */
+
+const popPausa = (dias) => { try { localStorage.setItem(POP_KEY, JSON.stringify({ hasta: Date.now() + dias * 864e5 })); } catch {} };
+const popPausado = () => { try { const v = JSON.parse(localStorage.getItem(POP_KEY)); return !!(v && Date.now() < v.hasta); } catch { return false; } };
+/* el correo con que se registró en este navegador, si ya es miembro */
+const popMiembro = () => S.espera.find((e) => (e.producto === "comunidad" || e.producto === "gang") && e.consentimiento)?.correo || "";
+
+/* Lo nuevo para un miembro: el drop con fecha por venir, o el primer café
+   "próximamente" que todavía no pidió que le avisaran */
+function popNovedad() {
+  const f = dropFecha();
+  if (visible("drop") && f && f > new Date() && !dropAgotado()) return { tipo: "drop" };
+  const p = S.productos.find((x) => x.proximamente && !S.espera.some((e) => e.producto === x.id));
+  return p ? { tipo: "cafe", p } : null;
+}
 
 /* Hay dos clases de "no": las de aquí no cambian durante la visita, así que
    cuando una se cumple se deja de vigilar. */
 function popSobra() {
-  /* Sin la hoja conectada no hay bono que prometer: el script es quien lo crea */
-  if (!CONFIG.registro) return true;
-  if (UI.bono) return true;                                      /* ya tiene uno puesto en el carrito */
-  if (S.espera.some((e) => (e.producto === "comunidad" || e.producto === "gang") && e.consentimiento)) return true;
-  try { const v = JSON.parse(localStorage.getItem(POP_KEY)); if (v && Date.now() < v.hasta) return true; } catch {}
-  return false;
+  /* Sin la hoja conectada no hay dónde guardar el correo ni bono que prometer */
+  if (!CONFIG.registro || popPausado()) return true;
+  if (popMiembro()) return !popNovedad();
+  return !!UI.bono;                                              /* ya tiene uno puesto en el carrito */
 }
 /* Las de aquí son del momento: se espera y se vuelve a mirar. */
 const popEstorba = () => UI.view === "gang"                      /* esa página ES este registro */
@@ -175,19 +189,19 @@ const popEstorba = () => UI.view === "gang"                      /* esa página 
 
 function popVigilar() {
   if (popSobra() || $("#g-pop")) return;
-  const t0 = Date.now();
-  let reloj = 0;
-  const dejar = () => { removeEventListener("scroll", intentar); clearInterval(reloj); };
   const intentar = () => {
-    if ($("#g-pop")) return;
-    if (popSobra()) return dejar();
-    if (popEstorba() || Date.now() - t0 < POP_PISO) return;
-    const alto = Math.max(document.documentElement.scrollHeight - innerHeight, 1);
-    if (scrollY / alto < POP_LEIDO && Date.now() - t0 < POP_TECHO) return;
-    dejar(); popAbrir();
+    if ($("#g-pop") || popSobra()) return;
+    if (popEstorba()) return void setTimeout(intentar, 2000);
+    if (popMiembro()) popAbrirNovedad(popNovedad()); else popAbrir();
   };
-  addEventListener("scroll", intentar, { passive: true });
-  reloj = setInterval(intentar, 2000);
+  setTimeout(intentar, POP_ESPERA);
+}
+
+function popMontar(el) {
+  document.body.append(el);
+  popPiso();
+  /* el foco no se roba: la visita estaba leyendo. Entra solo al tabular */
+  requestAnimationFrame(() => el.classList.add("in"));
 }
 
 function popAbrir() {
@@ -199,8 +213,8 @@ function popAbrir() {
     <p class="g-pop-pct"><b>${BONO_PCT} %</b><span>${en ? "off your<br>first order" : "en tu<br>primer pedido"}</span></p>
     <div class="g-pop-dice">
       <h2>${en ? `Join <em>${esc(CONFIG.comunidad)}</em>` : `Entra a <em>${esc(CONFIG.comunidad)}</em>`}</h2>
-      <p>${en ? "Your code lands in your inbox, and we tell you about every drop two hours before everyone else."
-              : "Tu bono te llega al correo, y te avisamos de cada drop dos horas antes que a todos."}</p>
+      <p>${en ? "Your code lands in your inbox, and you hear about every drop, new coffee and event before anyone else."
+              : "Tu bono te llega al correo, y te enteras de cada drop, café nuevo y evento antes que nadie."}</p>
       <form data-form="pop" novalidate>
         <label class="lbl" for="pop-mail">${en ? "Email" : "Correo electrónico"}</label>
         <div class="g-pop-fila">
@@ -211,10 +225,51 @@ function popAbrir() {
         <small>${en ? "One use, 30 days." : "Un solo uso, 30 días."} <a href="${ruta("privacidad")}" data-act="go" data-to="privacidad">${en ? "Privacy policy" : "Política de privacidad"}</a></small>
       </form>
     </div>`;
-  document.body.append(el);
-  popPiso();
-  /* el foco no se roba: la visita estaba leyendo. Entra solo al tabular */
-  requestAnimationFrame(() => el.classList.add("in"));
+  popMontar(el);
+}
+
+/* Para quien ya es miembro: lo nuevo, una vez al mes. El mes se cuenta desde que
+   sale, no desde que lo cierra, para que no aparezca en cada visita. */
+function popAbrirNovedad(n) {
+  if (!n) return;
+  const en = UI.lang === "en", correo = popMiembro();
+  popPausa(POP_MIEMBRO);
+  const el = document.createElement("aside");
+  el.className = "g-pop g-pop-nuevo"; el.id = "g-pop";
+  let dice;
+  if (n.tipo === "drop") {
+    const f = dropFechaGang() || dropFecha();
+    el.setAttribute("aria-label", `Drop ${D().n}`);
+    dice = `<h2>Drop ${esc(D().n)} ${en ? "is coming" : "ya viene"}</h2>
+      <p>${en ? `It opens for ${esc(CONFIG.comunidad)} on ${fmtFecha(f.toISOString())} at ${horaDe(f)}, before everyone else.`
+              : `Abre para ${esc(CONFIG.comunidad)} el ${fmtFecha(f.toISOString())} a las ${horaDe(f)}, antes que para todos.`}</p>
+      <a class="btn primary" href="${ruta("drop")}" data-act="go" data-to="drop">${en ? "See the drop" : "Ver el drop"}</a>`;
+  } else {
+    const p = n.p;
+    el.setAttribute("aria-label", tx(p.nombre));
+    dice = `<h2>${en ? `New from <em>${esc(CONFIG.marca)}</em>` : `Lo nuevo de <em>${esc(CONFIG.marca)}</em>`}</h2>
+      <p>${en ? `<b>${esc(tx(p.nombre))}</b> is on its way. We will let you know at ${esc(correo)} the day it comes out, before anyone else.`
+              : `<b>${esc(tx(p.nombre))}</b> ya viene en camino. Te avisamos a ${esc(correo)} el día que salga, antes que a nadie.`}</p>
+      <div class="g-pop-fila"><button class="btn primary" data-act="pop-avisame" data-id="${p.id}">${t("avisame")}</button>
+        <a class="btn" href="${ruta("cafe", p.id)}" data-act="cafe" data-id="${p.id}">${en ? "See the coffee" : "Ver el café"}</a></div>`;
+  }
+  el.innerHTML = `<button class="g-pop-x" data-act="pop-no" aria-label="${en ? "Close" : "Cerrar"}">✕</button>
+    <p class="g-pop-pct"><b>${en ? "New" : "Nuevo"}</b><span>${esc(CONFIG.comunidad)}</span></p>
+    <div class="g-pop-dice">${dice}</div>`;
+  popMontar(el);
+}
+/* "Avísame" de un toque: el correo ya lo dejó al registrarse */
+function popAvisame(id) {
+  const p = prodById(id), correo = popMiembro(), en = UI.lang === "en", btn = $('[data-act="pop-avisame"]');
+  if (!p || !correo) return;
+  if (btn) btn.disabled = true;
+  enviarAviso("espera", { producto: tx(p.nombre), correo }).then((ok) => {
+    if (!ok) { if (btn) btn.disabled = false; return toast(en ? "It did not save. Try again in a moment." : "No se pudo guardar. Intenta otra vez en un momento.", { type: "err" }); }
+    S.espera.push({ id: nextId("LE"), producto: p.id, correo, fecha: isoToday() }); save();
+    const caja = $("#g-pop .g-pop-dice");
+    if (caja) caja.innerHTML = `<h2>${en ? "Done" : "Listo"}</h2><p>${en ? `You will be among the first to know when ${esc(tx(p.nombre))} is out.` : `Vas a ser de los primeros en saber cuándo sale ${esc(tx(p.nombre))}.`}</p>`;
+    setTimeout(() => popCerrar(false), 4000);
+  });
 }
 /* La bandeja del carrito también vive abajo y crece cuando el texto se parte
    en dos líneas: el pop-up se acomoda encima midiéndola, no a una altura fija
@@ -226,11 +281,11 @@ function popPiso() {
   el.style.setProperty("--g-pop-piso", (alto ? alto + 12 : 0) + "px");
 }
 
-/* Al cerrarlo a mano se recuerda, para no volver a preguntar en 45 días.
-   Cuando se apuntó, no: ya no cumple la condición de popPuede(). */
+/* Si cierra el del bono sin registrarse, vuelve en POP_CERRADO días. El de la
+   novedad ya contó su mes al salir, así que cerrarlo no cambia nada. */
 function popCerrar(recordar = true) {
   const el = $("#g-pop"); if (!el) return;
-  if (recordar) try { localStorage.setItem(POP_KEY, JSON.stringify({ hasta: Date.now() + POP_DIAS * 864e5 })); } catch {}
+  if (recordar && !el.classList.contains("g-pop-nuevo")) popPausa(POP_CERRADO);
   el.classList.remove("in");
   setTimeout(() => el.remove(), 320);
 }
@@ -547,6 +602,7 @@ document.addEventListener("click", (e) => {
     case "quitar": return quitarDelCarrito(el.dataset.p, el.dataset.g);
     case "cart-close": return cerrarCarrito();
     case "pop-no": return popCerrar();
+    case "pop-avisame": return popAvisame(el.dataset.id);
     case "pedido-wa": return pedidoWA();
     case "pedido-mp": return pedidoMP();
     case "copiar": return copiar(el.dataset.texto);

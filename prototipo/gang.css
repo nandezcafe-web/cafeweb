@@ -651,6 +651,8 @@ body:has(dialog[open]) .g-pop{opacity:0;transform:translateY(8px);pointer-events
 .g-pop-ok{display:flex;align-items:flex-start;gap:9px;margin-top:11px;cursor:pointer;font-size:12px;line-height:1.4;color:var(--ink-2)}
 .g-pop-ok input{flex:0 0 auto;width:17px;height:17px;margin:1px 0 0;accent-color:var(--cherry)}
 .g-pop-dice small{display:block;margin-top:9px;font-size:11.5px;color:var(--ink-3)}
+.g-pop-nuevo .g-pop-pct b{font-size:30px}
+.g-pop-nuevo .g-pop-fila{margin-top:2px}
 
 /* En el móvil va abajo, encima del dock; y si la bandeja del carrito está
    puesta, sube para no pelearse con ella. */
