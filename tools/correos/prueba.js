@@ -110,8 +110,16 @@ ok(post({ accion: "pedido", clave: props.CLAVE, id: "NDZ-1022-CD34", estado: "de
 /* ---- suscripciones ---- */
 const sub = ss.hojas["Suscripciones"].filas[1];
 ok(sub[0] === "luis@correo.com" && sub[2] === "sí" && sub[4] === 2 && sub[8] === "espera", "la suscripción llega en espera, con kit y cada dos meses");
+const constancia = enviados.find((m) => m.to === "luis@correo.com");
+ok(constancia && constancia.subject === "Quedaste en la lista de la suscripción Cosecha" && constancia.body.includes("Hoy no se cobra nada") && !constancia.body.includes("accion=baja"),
+  "al suscribirse le llega la constancia, sin enlace de publicidad: es un correo del servicio que pidió");
 ok(post({ accion: "suscripcion", clave: props.CLAVE, fila: 1, estado: "activa" }).ok === false, "no deja tocar el encabezado");
+const act = post({ accion: "suscripcion", clave: props.CLAVE, fila: 2, estado: "activa", proximo: "2026-01-31" });
+ok(act.avisado && ultimo().to === "luis@correo.com" && ultimo().subject === "Tu suscripción Cosecha está activa" && ultimo().body.includes("primera caja sale el 31 de enero"),
+  "al activarla, el suscriptor recibe la fecha de su primera caja");
+const nAct = enviados.length;
 post({ accion: "suscripcion", clave: props.CLAVE, fila: 2, estado: "activa", proximo: "2026-01-31" });
+ok(enviados.length === nAct, "volver a guardarla activa no repite el correo");
 ok(sub && ss.hojas["Suscripciones"].filas[1][8] === "activa", "el panel la activa con la fecha del primer envío");
 const env = post({ accion: "sub-envio", clave: props.CLAVE, fila: 2, transportadora: "Interrapidísimo", guia: "800999" });
 const s2 = ss.hojas["Suscripciones"].filas[1];
@@ -131,6 +139,23 @@ ok(resumen && resumen.body.includes("ATRASADA") && resumen.body.includes("luis@c
 const nD2 = enviados.length;
 ctx.diario();
 ok(!enviados.slice(nD2).some((m) => m.to === "mike@mail.com"), "el recordatorio sale una sola vez");
+
+const enDias = (n) => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + n); return d; };
+ok(!enviados.slice(nD).some((m) => m.to === "luis@correo.com"), "a una caja atrasada no se le manda el aviso al suscriptor (eso lo ve Nandez)");
+ss.hojas["Suscripciones"].filas[1][9] = enDias(2);   // la próxima caja de Luis sale en dos días
+const nC = enviados.length;
+ctx.diario();
+const caja = enviados.slice(nC).find((m) => m.to === "luis@correo.com");
+ok(caja && caja.subject.startsWith("Tu caja Cosecha sale el") && caja.body.includes("todavía no has pagado") && caja.body.includes("molienda grano"),
+  "tres días antes, al suscriptor mes a mes le llega el aviso de su caja con el recordatorio del pago");
+const nC2 = enviados.length;
+ctx.diario();
+ok(!enviados.slice(nC2).some((m) => m.to === "luis@correo.com"), "el aviso de la caja sale una sola vez por fecha");
+const fs6 = ss.hojas["Suscripciones"].filas[1];
+fs6[3] = "6 envíos"; fs6[11] = 5; fs6[9] = enDias(1); fs6[14] = "";
+ctx.diario();
+const ultimaCaja = enviados.filter((m) => m.to === "luis@correo.com").pop();
+ok(ultimaCaja.body.includes("última de tus 6 cajas") && !ultimaCaja.body.includes("no has pagado"), "con 6 cajas pagadas, la sexta avisa que se acaba y no cobra");
 
 cuota = 0;
 const sinCupo = post({ tipo: "comunidad", correo: "sara@correo.com", consentimiento: true });
@@ -174,3 +199,9 @@ post({ tipo: "comunidad", correo: "pao@correo.com", consentimiento: true });
 const n4 = enviados.length;
 const repetida = post({ accion: "enviar", clave: props.CLAVE, asunto: "Salió el Tibo B", mensaje: "Ya está." });
 ok(repetida.ok && repetida.enviados === 1 && enviados[n4].to === "pao@correo.com", "reenviar la misma campaña solo les llega a quienes faltan (Pao)");
+
+/* ---- la gang ---- */
+cuota = 10;
+const gang = post({ tipo: "gang", correo: "lu@correo.com", consentimiento: true });
+ok(gang.bienvenida === "enviada" && ultimo().to === "lu@correo.com" && ultimo().htmlBody.includes("GANG-"), "quien entra por /la-gang recibe la misma bienvenida con su bono");
+ok(post({ tipo: "gang", correo: "lu2@correo.com" }).bienvenida === undefined, "por /la-gang, sin la casilla tampoco hay bono");

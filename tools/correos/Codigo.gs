@@ -34,7 +34,11 @@ const COLS = ["correo", "nombre", "etiquetas", "acepta_correos", "alta", "ultimo
 const COLS_BONOS = ["codigo", "correo", "pct", "alta", "vence", "bienvenida", "usado", "pedido", "recordado", "idioma"];
 const COLS_PEDIDOS = ["id", "fecha", "estado", "nombre", "correo", "whatsapp", "ciudad", "productos", "subtotal", "descuento",
   "envio", "total", "bono", "canal", "pagado", "despachado", "transportadora", "guia", "notas"];
-const COLS_SUBS = ["correo", "plan", "kit", "pago", "cada_meses", "molienda", "ciudad", "alta", "estado", "proximo", "ultimo_envio", "envios", "notas", "idioma"];
+const COLS_SUBS = ["correo", "plan", "kit", "pago", "cada_meses", "molienda", "ciudad", "alta", "estado", "proximo", "ultimo_envio", "envios", "notas", "idioma", "avisado"];
+/* Al suscriptor se le avisa este número de días antes de que salga su caja */
+const SUB_AVISO = 3;
+const PLAN_NOMBRE = { semilla: ["Semilla", "Seed"], cosecha: ["Cosecha", "Harvest"], barista: ["Barista", "Barista"], cafeteria: ["Cafetería", "Café"] };
+const planDe_ = (id, en) => (PLAN_NOMBRE[id] || [id, id])[en ? 1 : 0];
 const ESTADOS_PEDIDO = ["nuevo", "pagado", "despachado", "entregado", "cancelado"];
 const ESTADOS_SUB = ["espera", "activa", "pausada", "cancelada"];
 
@@ -111,8 +115,9 @@ function doPost(e) {
     }
     if (tipo === "pedido") return json_({ ok: true, pedido: pedido_(ss, d, valido ? correo : "") });
     if (tipo === "suscripcion" && valido) nuevaSub_(ss, correo, d);
-    /* la bienvenida sale una sola vez por correo, y solo con la casilla marcada */
-    if (tipo === "comunidad" && valido && d.consentimiento === true) return json_({ ok: true, bienvenida: bienvenida_(ss, correo, idioma) });
+    /* la bienvenida sale una sola vez por correo, y solo con la casilla marcada.
+       Entrar por /la-gang es el mismo registro que el pie y el pop-up. */
+    if ((tipo === "comunidad" || tipo === "gang") && valido && d.consentimiento === true) return json_({ ok: true, bienvenida: bienvenida_(ss, correo, idioma) });
     return json_({ ok: true });
   } finally { lock.releaseLock(); }
 }
@@ -249,20 +254,58 @@ function avisoGuia_(correo, ref, transportadora, guia, en) {
 /* ---------- suscripciones ----------
    Mientras no haya cobro automático, la suscripción llega como "espera":
    la persona dejó el correo. Cuando paga, el panel la activa con la fecha del
-   primer envío; cada envío registrado corre la fecha 1 o 2 meses. */
+   primer envío; cada envío registrado corre la fecha 1 o 2 meses.
+   Al suscriptor le llegan solos tres correos: la constancia al inscribirse, el
+   de "ya está activa" y, SUB_AVISO días antes de cada caja, el aviso de que sale.
+   Son correos del servicio que pidió: no necesitan la casilla de publicidad. */
 function nuevaSub_(ss, correo, d) {
   hojaDe_(ss, H_SUBS).appendRow([correo, corto_(d.plan, 30), d.kit === true ? "sí" : "no", d.seis === true ? "6 envíos" : "mes a mes",
-    Number(d.cada) === 2 ? 2 : 1, corto_(d.molienda, 30), corto_(d.ciudad, 80), new Date(), "espera", "", "", 0, "", corto_(d.idioma, 5)]);
+    Number(d.cada) === 2 ? 2 : 1, corto_(d.molienda, 30), corto_(d.ciudad, 80), new Date(), "espera", "", "", 0, "", corto_(d.idioma, 5), ""]);
+  const en = d.idioma === "en", plan = planDe_(corto_(d.plan, 30), en), cada = Number(d.cada) === 2;
+  correoSub_(correo, en, en ? "You are on the list for the " + plan + " subscription" : "Quedaste en la lista de la suscripción " + plan,
+    en ? "We got your " + plan + " subscription: " + (cada ? "every two months" : "every month") + ", ground " + corto_(d.molienda, 30) + ".\n\nNothing is charged today. As soon as subscriptions open we send you how to pay, and the date of your first box.\n\nWant to change something? Just reply."
+       : "Recibimos tu suscripción " + plan + ": " + (cada ? "cada dos meses" : "cada mes") + ", molienda " + corto_(d.molienda, 30) + ".\n\nHoy no se cobra nada. Apenas abramos la suscripción te escribimos con cómo pagar y la fecha de tu primera caja.\n\n¿Quieres cambiar algo? Responde este correo.");
+}
+function correoSub_(correo, en, asunto, texto) {
+  if (MailApp.getRemainingDailyQuota() < 1) return false;
+  MailApp.sendEmail({ to: correo, name: MARCA, subject: asunto,
+    htmlBody: marco_(cuerpo_(texto), pieServicio_(en ? "subscription" : "suscripción", en)), body: texto + "\n\n—\n" + MARCA });
+  return true;
+}
+/* El aviso antes de cada caja. Mes a mes, recuerda el pago; con 6 por adelantado,
+   en la última avisa que se acaba. */
+function avisoCaja_(f) {
+  const en = f[13] === "en", plan = planDe_(f[1], en), cuando = fecha_(f[9], en), molienda = f[5], n = (Number(f[11]) || 0) + 1;
+  const mesAMes = f[3] !== "6 envíos", ultima = !mesAMes && n >= 6;
+  const texto = en
+    ? "Your " + plan + " box ships on " + cuando + ", ground " + molienda + ".\n\n" +
+      (mesAMes ? "If you have not paid this month yet, reply and we send you how; it ships once it is paid.\n\n" : "") +
+      (ultima ? "It is the last of your 6 boxes. Want to keep going? Reply and we send you how to renew.\n\n" : "") +
+      "Want a different grind or address this time? Reply before " + cuando + "."
+    : "Tu caja " + plan + " sale el " + cuando + ", molienda " + molienda + ".\n\n" +
+      (mesAMes ? "Si todavía no has pagado este mes, responde y te mandamos cómo; sale apenas esté pago.\n\n" : "") +
+      (ultima ? "Es la última de tus 6 cajas. ¿Quieres seguir? Responde y te mandamos cómo renovar.\n\n" : "") +
+      "¿Esta vez quieres otra molienda u otra dirección? Responde antes del " + cuando + ".";
+  return correoSub_(String(f[0]), en, en ? "Your " + plan + " box ships on " + cuando : "Tu caja " + plan + " sale el " + cuando, texto);
 }
 function cambiarSub_(d) {
   if (!d.clave || d.clave !== clave_()) return json_({ ok: false, error: "clave" });
   if (ESTADOS_SUB.indexOf(d.estado) < 0) return json_({ ok: false, error: "estado" });
   const h = hojaDe_(libro_(), H_SUBS), r = Number(d.fila);
   if (!(r > 1 && r <= h.getDataRange().getValues().length)) return json_({ ok: false, error: "no" });
+  const antes = h.getDataRange().getValues()[r - 1];
   h.getRange(r, 9).setValue(d.estado);
   if (d.proximo) h.getRange(r, 10).setValue(dia_(d.proximo + "T12:00:00"));
   if (d.notas != null) h.getRange(r, 13).setValue(corto_(d.notas, 500));
-  return json_({ ok: true });
+  /* al activarla (o reanudarla) con fecha, el suscriptor sabe cuándo le llega */
+  let avisado = false;
+  if (d.estado === "activa" && antes[8] !== "activa" && d.proximo) {
+    const en = antes[13] === "en", plan = planDe_(antes[1], en), cuando = fecha_(dia_(d.proximo + "T12:00:00"), en);
+    avisado = correoSub_(String(antes[0]), en, en ? "Your " + plan + " subscription is on" : "Tu suscripción " + plan + " está activa",
+      en ? "Your " + plan + " subscription is active. Your " + (antes[11] ? "next" : "first") + " box ships on " + cuando + ".\n\nWe write to you " + SUB_AVISO + " days before each box, in case you want to change the grind or the address."
+         : "Tu suscripción " + plan + " está activa. Tu " + (antes[11] ? "próxima" : "primera") + " caja sale el " + cuando + ".\n\nTe escribimos " + SUB_AVISO + " días antes de cada caja, por si quieres cambiar la molienda o la dirección.");
+  }
+  return json_({ ok: true, avisado: avisado });
 }
 function envioSub_(d) {
   if (!d.clave || d.clave !== clave_()) return json_({ ok: false, error: "clave" });
@@ -333,7 +376,8 @@ function baja_(q) {
 
 /* ---------- cada mañana ----------
    Programado por "configurar". Reintenta las bienvenidas que no salieron,
-   recuerda el bono a quien no lo ha usado y le escribe a Nandez qué toca hoy. */
+   recuerda el bono a quien no lo ha usado, avisa a cada suscriptor que su caja
+   sale en SUB_AVISO días y le escribe a Nandez qué toca hoy. */
 function diario() {
   const ss = libro_(), hoy = dia_(new Date()), hb = hojaDe_(ss, H_BONOS), bonos = hb.getDataRange().getValues();
   for (let i = 1; i < bonos.length; i++) {
@@ -349,6 +393,16 @@ function diario() {
       htmlBody: marco_(cuerpo_(texto) + codigoHtml_(String(f[0])) + boton_(enlace, en ? "Use it now" : "Usarlo ahora"), pieComunidad_(correo, en)),
       body: texto + "\n\n" + f[0] + "\n" + enlace + "\n\n—\n" + MARCA + "\n" + (en ? "Unsubscribe: " : "Para no recibir más correos: ") + enlaceBaja_(correo) });
     hb.getRange(i + 1, 9).setValue(new Date());
+  }
+
+  /* a cada suscriptor activo, SUB_AVISO días antes de su caja, una sola vez por fecha */
+  const hs = hojaDe_(ss, H_SUBS), filasSub = hs.getDataRange().getValues(), aviso = masDias_(hoy, SUB_AVISO);
+  for (let i = 1; i < filasSub.length; i++) {
+    const f = filasSub[i];
+    if (!f[0] || f[8] !== "activa" || !f[9] || dia_(f[9]) < hoy || dia_(f[9]) > aviso) continue;
+    const clave = dia_(f[9]).toISOString().slice(0, 10);
+    if (String(f[14] || "") === clave) continue;
+    if (avisoCaja_(f)) hs.getRange(i + 1, 15).setValue(clave);
   }
 
   const pedidos = hojaDe_(ss, H_PEDIDOS).getDataRange().getValues().slice(1).filter((f) => f[0]);

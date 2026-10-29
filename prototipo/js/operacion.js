@@ -176,7 +176,7 @@ document.addEventListener("click", (e) => {
     case "op-sub-activar": return opSubActivar(id);
     case "op-sub-activar-ok": {
       const f = $("#op-proximo")?.value; if (!f) return toast("Escoge la fecha.", { type: "err" });
-      return opMandar({ accion: "suscripcion", fila: +id, estado: "activa", proximo: f }, () => `Suscripción activa. Primer envío: ${coFecha(f)}.`);
+      return opMandar({ accion: "suscripcion", fila: +id, estado: "activa", proximo: f }, (j) => `Suscripción activa. Primer envío: ${coFecha(f)}.${j.avisado ? " Le llegó la fecha por correo." : ""}`);
     }
     case "op-sub": return opMandar({ accion: "suscripcion", fila: +id, estado: el.dataset.estado }, () => "Suscripción pausada.");
   }

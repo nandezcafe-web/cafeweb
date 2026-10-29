@@ -1462,6 +1462,31 @@ html[lang=en] .ruta li::before{content:"Month " counter(ruta)}
 .cart-bono-linea{color:var(--leaf)}.cart-bono-linea .cart-del{margin-left:8px}
 .cart-bono .co-fila .input{min-width:0}
 
+/* ============================================================
+   CHECKOUT: método de envío y método de pago
+   Mismo esqueleto que una caja de tienda, con las tintas de la casa.
+   ============================================================ */
+.pay{margin-top:22px;display:grid;gap:8px}
+.pay-t{font:400 1.3rem/1.2 var(--serif);margin:12px 0 0}
+.pay-t:first-child{margin-top:0}
+.pay-sub{margin:0;color:var(--ink-2);font-size:13px}
+.pay-ops{display:grid;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--card)}
+.pay-op{display:flex;flex-wrap:wrap;width:100%;align-items:center;gap:8px 10px;margin:0;padding:13px 14px;border:0;border-top:1px solid var(--line);
+  background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.pay-op:first-child{border-top:0}
+.pay-op.fijo{cursor:default}
+.pay-op.sel{background:var(--paper-2)}
+.pay-rd{flex:none;position:relative;width:16px;height:16px;border:1px solid var(--ink-3);border-radius:50%}
+.pay-op.sel .pay-rd{border-color:var(--cherry)}
+.pay-op.sel .pay-rd::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--cherry)}
+.pay-nom{flex:1 1 170px;min-width:0;font-size:14px;font-weight:600}
+.pay-nom small{display:block;font-weight:400;font-size:12.5px;color:var(--ink-2)}
+.pay-marcas{display:flex;flex-wrap:wrap;flex:0 1 auto;justify-content:flex-end;gap:4px;margin-left:26px}
+.pay-marcas i{font:600 9.5px/1 var(--mono);font-style:normal;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-2);background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:4px 5px}
+.pay-det{margin:0;padding:11px 14px 12px 40px;border-top:1px solid var(--line);background:var(--paper);color:var(--ink-2);font-size:13px}
+@media (max-width:520px){.pay-marcas{justify-content:flex-start}}
+
 /* sala de subasta */
 .auction{color:#E6D7C3}
 .auction .kicker{color:#c9b497}
@@ -1650,7 +1675,7 @@ const CONFIG = {
      estos valores son el punto de partida si no hay conexión. */
   fnc: { precioCarga: 2105000, factorBase: 94, fecha: "2026-09-25" },
   mercado: { ny: 278.6, trm: 3306.86 },
-  storageKey: "nandez-v10",
+  storageKey: "nandez-v11",
   whatsapp: "",                 // 573001234567 · mientras esté vacío, pedidos y avisos salen por correo
   correo: "nandezcafe@gmail.com",
   /* Formulario externo (Formspree, Getform…): si hay URL, pedidos, suscriptores y postores
@@ -1674,7 +1699,9 @@ const CONFIG = {
   /* Pagos. Mientras no haya links, el pedido sale por WhatsApp o correo.
      Ver docs/06_pagos_y_suscripciones.md */
   pagos: {
-    mercadoPago: "",            // link de pago general o Checkout Pro (/api/checkout)
+    /* Link de cobro personal: abre Mercado Pago pero el cliente escribe el monto.
+       Cuando haya MP_ACCESS_TOKEN en Vercel, cambiar por "/api/checkout" y el total viaja solo. */
+    mercadoPago: "https://link.mercadopago.com.co/nandezcoffee",
     porProducto: {},            // { "C-GEI-250": "https://mpago.la/xxxx" }
     suscripcion: {},            // { descubrir: "https://mpago.la/xxxx" }
     /* Cómo se paga mientras no haya pago en línea. POR CONFIRMAR con la cuenta real. */
@@ -1710,6 +1737,11 @@ const T = {
   ver_cafe: { es: "Ver el café", en: "View coffee" }, agotado: { es: "Agotado", en: "Sold out" },
   pedido: { es: "Tu pedido", en: "Your order" }, total: { es: "Total", en: "Total" },
   pagar_mp: { es: "Pagar con Mercado Pago", en: "Pay with Mercado Pago" },
+  pagar_ahora: { es: "Pagar ahora", en: "Pay now" },
+  pago_envio: { es: "Método de envío", en: "Shipping method" },
+  pago_titulo: { es: "Pago", en: "Payment" },
+  pago_seguro: { es: "Todas las transacciones son seguras y están encriptadas.",
+                 en: "All transactions are secure and encrypted." },
   pedir_wa: { es: "Pedir por WhatsApp", en: "Order on WhatsApp" },
   seguir: { es: "Seguir viendo", en: "Keep browsing" },
   disponibles: { es: "disponibles", en: "available" }, por_kg: { es: "por kg", en: "per kg" },
@@ -1730,7 +1762,7 @@ const ES_EN = {
   "Productor por confirmar": "Grower to be confirmed", "Finca por confirmar": "Farm to be confirmed",
   "Nuestra finca": "Our farm", "Familia Nandez": "The Nandez family",
   "Bourbon rosado": "Pink Bourbon", Castillo: "Castillo", Geisha: "Geisha", "Por confirmar": "To be confirmed",
-  "Lote Tibo B": "Tibo B lot", "Tibo B": "Tibo B",
+  "Finca El Paraíso": "El Paraíso farm",
   Lavado: "Washed", Natural: "Natural", Honey: "Honey", "Anaeróbico": "Anaerobic",
   Productor: "Grower", "GPS en visita de campo": "GPS on a farm visit", "Bitácora con fotos": "Photo log",
   "Q-grader independiente": "Independent Q-grader", "Informe de trilla": "Milling report", "Catación propia": "Our own cupping",
@@ -1744,7 +1776,7 @@ const msnm = (n) => fmtNum(n) + (UI.lang === "en" ? " m a.s.l." : " msnm");
 
 function seed() {
   return {
-    v: 10, seq: 400,
+    v: 11, seq: 400,
 
     /* ---------- FINCAS ALIADAS ---------- */
     fincas: [
@@ -1752,9 +1784,9 @@ function seed() {
         variedad: "Geisha", exclusiva: true, premios: { es: "Ganador de concursos de calidad (por confirmar)", en: "Quality competition winner (to be confirmed)" },
         historia: { es: "PENDIENTE: la historia de don Domingo, cuántos años lleva con el Geisha y qué premios ha ganado.",
                     en: "PENDING: Domingo's story, how long he has grown Geisha and which awards he has won." }, pendiente: true },
-      { id: "F-02", productor: "Productor por confirmar", finca: "Lote Tibo B", municipio: "Chinácota", altitud: 1750,
-        variedad: "Por confirmar", exclusiva: false,
-        historia: { es: "PENDIENTE: quién cultiva el Tibo B, a qué altura y por qué su café sabe distinto.", en: "PENDING: who grows Tibo B, at what altitude and why it tastes different." }, pendiente: true },
+      { id: "F-02", productor: "Productor por confirmar", finca: "Finca El Paraíso", vereda: "Palocolorado", municipio: "Chinácota", altitud: null,
+        variedad: "Cenicafé 1", exclusiva: false,
+        historia: { es: "PENDIENTE: quién cultiva El Paraíso, a qué altura y por qué su café sabe distinto.", en: "PENDING: who grows El Paraíso, at what altitude and why it tastes different." }, pendiente: true },
       { id: "F-03", productor: "Productor por confirmar", finca: "Lote Ragonvalia", municipio: "Ragonvalia", altitud: 1550,
         variedad: "Castillo", exclusiva: false,
         historia: { es: "PENDIENTE: historia de la finca.", en: "PENDING: farm story." }, pendiente: true },
@@ -1788,21 +1820,22 @@ function seed() {
         ],
         presentacion: 250, precio: 38000, stock: 90 },
 
-      /* Los tres cafés van EN GRANO. Castillo ya está; Tibo B y el tercero están por confirmar
-         (nombre, finca, precio y ficha): mientras tanto se muestran como "próximamente" y
-         recogen correos. `color` es la tinta de cada café en la página. */
-      { id: "P-TIB", fincaId: "F-02", loteId: null, proximamente: true, color: "#2C4FA3",
-        nombre: { es: "Tibo B", en: "Tibo B" }, sub: { es: "Por confirmar · cosecha 2026", en: "To be confirmed · 2026 harvest" },
-        variedad: "Por confirmar", proceso: "Por confirmar", tueste: { es: "Por confirmar", en: "To be confirmed" }, cosecha: "2026",
+      /* Castillo y El Paraíso van EN GRANO, cada uno de su finca. El tercero es un blend de
+         los dos, MOLIDO en molienda media. Los tres llevan tostión media. El Paraíso y el blend
+         están por confirmar (precio, altura, proceso y ficha): mientras tanto se muestran como
+         "próximamente" y recogen correos. `color` es la tinta de cada café en la página. */
+      { id: "P-PAR", fincaId: "F-02", loteId: null, proximamente: true, color: "#2C4FA3",
+        nombre: { es: "El Paraíso", en: "El Paraíso" }, sub: { es: "Cenicafé 1 · Palocolorado, Chinácota", en: "Cenicafé 1 · Palocolorado, Chinácota" },
+        variedad: "Cenicafé 1", proceso: "Por confirmar", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026",
         sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que no pierda aroma.", en: "We ship it whole so it keeps its aroma." },
-        altitud: 1750, puntaje: null, nivel: "DECLARADO", fuente: "Productor", fecha: "2026-10-22",
+        altitud: null, puntaje: null, nivel: "DECLARADO", fuente: "Productor", fecha: "2026-10-28",
         notas: { es: ["Notas por confirmar"], en: ["Notes to be confirmed"] },
         ficha: {
-          variedad: A("Por confirmar", "DECLARADO", "Productor", "2026-10-22"),
-          altitud: A(1750, "DECLARADO", "Productor", "2026-10-22"),
-          proceso: A("Por confirmar", "DECLARADO", "Productor", "2026-10-22"),
-          puntaje: A("—", "DECLARADO", "Productor", "2026-10-22"),
-          factor: A("—", "DECLARADO", "Productor", "2026-10-22"),
+          variedad: A("Cenicafé 1", "DECLARADO", "Productor", "2026-10-28"),
+          altitud: A("—", "DECLARADO", "Productor", "2026-10-28"),
+          proceso: A("Por confirmar", "DECLARADO", "Productor", "2026-10-28"),
+          puntaje: A("—", "DECLARADO", "Productor", "2026-10-28"),
+          factor: A("—", "DECLARADO", "Productor", "2026-10-28"),
         },
         pago: null,
         receta: { metodo: "V60", dosis: "15 g", agua: "250 ml", temp: "93 °C", tiempo: "2:45", molienda: { es: "Media fina", en: "Medium fine" } },
@@ -1811,21 +1844,22 @@ function seed() {
         ],
         presentacion: 250, precio: 0, stock: 0 },
 
-      { id: "P-003", fincaId: null, loteId: null, proximamente: true, color: "#9A6610",
-        nombre: { es: "Tercer café", en: "Third coffee" }, sub: { es: "Por confirmar · cosecha 2026", en: "To be confirmed · 2026 harvest" },
-        variedad: "Por confirmar", proceso: "Por confirmar", tueste: { es: "Por confirmar", en: "To be confirmed" }, cosecha: "2026",
-        sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que no pierda aroma.", en: "We ship it whole so it keeps its aroma." },
-        altitud: null, puntaje: null, nivel: "DECLARADO", fuente: "Productor", fecha: "2026-10-22",
+      /* El blend no tiene una finca sino dos: `mezcla` dice cuáles (fincaDe las junta). */
+      { id: "P-BLE", fincaId: null, mezcla: ["F-03", "F-02"], loteId: null, proximamente: true, color: "#9A6610",
+        nombre: { es: "Blend de la casa", en: "House blend" }, sub: { es: "Castillo + Cenicafé 1 · molido", en: "Castillo + Cenicafé 1 · ground" },
+        variedad: "Castillo + Cenicafé 1", proceso: "Por confirmar", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026",
+        sale: { es: "Molido", en: "Ground" }, saleNota: { es: "Molienda media: lista para el gotero o la cafetera de goteo.", en: "Medium grind: ready for a pour-over cone or a drip machine." },
+        altitud: null, puntaje: null, nivel: "DECLARADO", fuente: "Nandez Coffee", fecha: "2026-10-28",
         notas: { es: ["Notas por confirmar"], en: ["Notes to be confirmed"] },
         ficha: {
-          variedad: A("Por confirmar", "DECLARADO", "Productor", "2026-10-22"),
-          altitud: A("—", "DECLARADO", "Productor", "2026-10-22"),
-          proceso: A("Por confirmar", "DECLARADO", "Productor", "2026-10-22"),
-          puntaje: A("—", "DECLARADO", "Productor", "2026-10-22"),
-          factor: A("—", "DECLARADO", "Productor", "2026-10-22"),
+          variedad: A("Castillo + Cenicafé 1", "DECLARADO", "Nandez Coffee", "2026-10-28"),
+          altitud: A("—", "DECLARADO", "Productor", "2026-10-28"),
+          proceso: A("Por confirmar", "DECLARADO", "Productor", "2026-10-28"),
+          puntaje: A("—", "DECLARADO", "Productor", "2026-10-28"),
+          factor: A("—", "DECLARADO", "Productor", "2026-10-28"),
         },
         pago: null,
-        receta: { metodo: "V60", dosis: "15 g", agua: "250 ml", temp: "93 °C", tiempo: "2:45", molienda: { es: "Media fina", en: "Medium fine" } },
+        receta: { metodo: "V60", dosis: "15 g", agua: "250 ml", temp: "93 °C", tiempo: "3:00", molienda: { es: "Media", en: "Medium" } },
         variantes: [
           { g: 250, precio: 0, label: { es: "Bolsa", en: "Bag" }, nota: { es: "precio por confirmar", en: "price to be confirmed" }, stock: 0, principal: true },
         ],
@@ -1888,13 +1922,13 @@ function seed() {
   };
 }
 
-function load() { try { const s = JSON.parse(localStorage.getItem(CONFIG.storageKey)); return s && s.v === 10 ? s : null; } catch { return null; } }
+function load() { try { const s = JSON.parse(localStorage.getItem(CONFIG.storageKey)); return s && s.v === 11 ? s : null; } catch { return null; } }
 function save() { try { localStorage.setItem(CONFIG.storageKey, JSON.stringify(S)); } catch {} }
 function idiomaGuardado() { try { return localStorage.getItem("nandez-lang"); } catch { return null; } }
 
 let S = load() || seed();
 const UI = { view: "inicio", lang: idiomaGuardado() || (navigator.language || "es").slice(0, 2) === "en" ? "en" : "es",
-  atab: "pedidos", animate: true, carrito: [], au: null, q: null, cafe: null, entrada: null };
+  atab: "pedidos", animate: true, carrito: [], au: null, q: null, cafe: null, entrada: null, pago: "" };
 
 /* ---------- utilidades ---------- */
 const $ = (s, r = document) => r.querySelector(s);
@@ -1922,7 +1956,13 @@ const nextId = (p) => `${p}-${S.seq++}`;
 const num = (id, def = 0) => { const el = $("#" + id); const v = el ? parseFloat(el.value) : NaN; return isNaN(v) ? def : v; };
 const gramos = (g) => (g >= 1000 ? g / 1000 + " kg" : g + " g");
 const prodById = (id) => S.productos.find((p) => p.id === id);
-const fincaDe = (p) => S.fincas.find((f) => f.id === p.fincaId) || {};
+/* La finca de un café. El blend tiene dos: devuelve los nombres y municipios juntos. */
+const fincaDe = (p) => {
+  if (!p.mezcla) return S.fincas.find((f) => f.id === p.fincaId) || {};
+  const fs = p.mezcla.map((id) => S.fincas.find((f) => f.id === id)).filter(Boolean);
+  return { finca: fs.map((f) => tr(f.finca)).join(" + "), municipio: [...new Set(fs.map((f) => f.municipio))].join(" y "), mezcla: true };
+};
+const esMolido = (p) => p.sale && p.sale.es === "Molido";
 
 function precioComiteKg(factor = CONFIG.fnc.factorBase) {
   return (CONFIG.fnc.precioCarga * (CONFIG.fnc.factorBase / factor)) / 125;
@@ -2008,7 +2048,7 @@ const ACCESORIOS = [
   { id: "A-FIL", grupo: "preparar", color: "#9A6610", proximamente: true, nombre: { es: "Filtros de papel × 100", en: "Paper filters × 100" },
     desc: { es: "Para el gotero. Sin sabor a papel si los enjuagas antes.", en: "For the dripper. No paper taste if you rinse them first." } },
   { id: "A-MOL", grupo: "preparar", color: "#141210", proximamente: true, nombre: { es: "Molino manual de muela cónica", en: "Conical burr hand grinder" },
-    desc: { es: "Porque el café va en grano: muele justo antes de prepararlo.", en: "The coffee ships whole bean: grind right before brewing." } },
+    desc: { es: "Para los cafés en grano: muele justo antes de prepararlo.", en: "For the whole bean coffees: grind right before brewing." } },
   { id: "A-BAL", grupo: "preparar", color: "#2C4FA3", proximamente: true, nombre: { es: "Balanza con temporizador", en: "Scale with timer" },
     desc: { es: "Quince gramos, doscientos cincuenta mililitros, tres minutos.", en: "Fifteen grams, two hundred fifty millilitres, three minutes." } },
   { id: "A-TET", grupo: "preparar", color: "#C9381A", proximamente: true, nombre: { es: "Tetera cuello de cisne", en: "Gooseneck kettle" },
@@ -2102,8 +2142,8 @@ function meta(view, id) {
       : { t: marca + " · Café de origen de Norte de Santander",
           d: "Familia cafetera de Chinácota. Le compramos los mejores lotes a fincas de Norte de Santander y los tostamos con nuestra marca: un café por finca, con su altura, su variedad, su proceso y su puntaje de catación." },
     tienda: en
-      ? { t: "Shop · " + marca, d: "Specialty whole bean coffee from Norte de Santander, plus brewing gear and Coffee Gang merch." }
-      : { t: "Tienda · " + marca, d: "Café de especialidad en grano de Norte de Santander, accesorios para prepararlo y merch Coffee Gang." },
+      ? { t: "Shop · " + marca, d: "Specialty coffee from Norte de Santander, whole bean and ground, plus brewing gear and Coffee Gang merch." }
+      : { t: "Tienda · " + marca, d: "Café de especialidad de Norte de Santander, en grano y molido, accesorios para prepararlo y merch Coffee Gang." },
     accesorios: en
       ? (conPreparar()
           ? { t: "Brewing gear and merch · " + marca, d: "Cone dripper, filters, hand grinder, scale, gooseneck kettle and Coffee Gang merch. Coming soon: leave your email." }
@@ -2113,18 +2153,18 @@ function meta(view, id) {
           : { t: "Merch Coffee Gang · " + marca, d: "Camiseta, gorra, taza y bolsa de tela de Nandez Coffee Gang. Próximamente: deja tu correo y te avisamos el día que salga." }),
     cafes: en
       ? { t: "Specialty coffee · " + marca,
-          d: "Three whole bean coffees, one farm each: Castillo from Ragonvalia, Tibo B and a third lot to be confirmed. Roasted in Norte de Santander and shipped countrywide." }
+          d: "Three medium roast coffees from Norte de Santander: Castillo from Ragonvalia and El Paraíso (Cenicafé 1, Chinácota), whole bean, and a ground blend of the two. Shipped countrywide." }
       : { t: "Cafés de especialidad · " + marca,
-          d: "Tres cafés en grano, una finca cada uno: Castillo de Ragonvalia, Tibo B y un tercer lote por confirmar. Tostados en Norte de Santander, con envío a todo el país." },
+          d: "Tres cafés de Norte de Santander con tostión media: Castillo de Ragonvalia y El Paraíso (Cenicafé 1, Chinácota) en grano, y un blend de los dos, molido. Envío a todo el país." },
     cafe: en
       ? (p.proximamente
-          ? { t: tx(p.nombre) + " · whole bean coffee, coming soon · " + marca,
-              d: tx(p.nombre) + ": the next whole bean coffee from Norte de Santander. Farm, data sheet and price to be confirmed; leave your email and we tell you the day it is out." }
+          ? { t: tx(p.nombre) + (esMolido(p) ? " · ground coffee" : " · whole bean coffee") + ", coming soon · " + marca,
+              d: tx(p.nombre) + " (" + tx(p.sub) + "): medium roast, " + (esMolido(p) ? "ground" : "whole bean") + ", from Norte de Santander. Data sheet and price to be confirmed; leave your email and we tell you the day it is out." }
           : { t: tx(p.nombre) + " · " + p.puntaje + " SCA · coffee from " + (fincaDe(p).municipio || "Colombia") + " · " + marca,
               d: tx(p.nombre) + ": " + p.variedad + " " + p.proceso.toLowerCase() + " grown at " + fmtNum(p.altitud) + " m in " + (fincaDe(p).municipio || "") + ", " + p.puntaje + " SCA points. Notes of " + tx(p.notas).join(", ").toLowerCase() + ". Whole bean, from " + cop(p.variantes[0].precio) + "." })
       : (p.proximamente
-          ? { t: tx(p.nombre) + " · café en grano, próximamente · " + marca,
-              d: tx(p.nombre) + ": el próximo café en grano de Norte de Santander. Finca, ficha y precio por confirmar; deja tu correo y te avisamos el día que salga." }
+          ? { t: tx(p.nombre) + (esMolido(p) ? " · café molido" : " · café en grano") + ", próximamente · " + marca,
+              d: tx(p.nombre) + " (" + tx(p.sub) + "): tostión media, " + (esMolido(p) ? "molido" : "en grano") + ", de Norte de Santander. Ficha y precio por confirmar; deja tu correo y te avisamos el día que salga." }
           : { t: tx(p.nombre) + " · " + p.puntaje + " SCA · café de " + (fincaDe(p).municipio || "Colombia") + " · " + marca,
               d: tx(p.nombre) + ": " + p.variedad + " " + p.proceso.toLowerCase() + " cultivado a " + fmtNum(p.altitud) + " msnm en " + (fincaDe(p).municipio || "") + ", con " + p.puntaje + " puntos SCA. Notas de " + tx(p.notas).join(", ").toLowerCase() + ". En grano, desde " + cop(p.variantes[0].precio) + "." }),
     subasta: en
@@ -3072,7 +3112,7 @@ function viewCorreos() {
       <p class="hint">Sale desde el Gmail de Nandez con la marca, y cada correo trae su enlace para darse de baja.
         Va a <b>${fmtNum(para.length)}</b> ${para.length === 1 ? "persona" : "personas"}${CO.etiqueta ? ` con la etiqueta «${esc(CO.etiqueta)}»` : " que aceptan correos"}.
         ${para.length > CO.datos.cuota ? `Hoy alcanzan ${fmtNum(CO.datos.cuota)}; el resto queda contado para mañana.` : ""}</p>
-      <div class="field"><label class="lbl" for="co-asunto">Asunto</label><input id="co-asunto" class="input" maxlength="150" placeholder="Salió el Tibo B" value="${esc(CO.borrador.asunto)}"></div>
+      <div class="field"><label class="lbl" for="co-asunto">Asunto</label><input id="co-asunto" class="input" maxlength="150" placeholder="Salió El Paraíso" value="${esc(CO.borrador.asunto)}"></div>
       <div class="field"><label class="lbl" for="co-mensaje">Mensaje</label>
         <textarea id="co-mensaje" class="input co-mensaje" rows="8" placeholder="Escribe como le hablarías a un amigo. Deja una línea en blanco entre párrafos.">${esc(CO.borrador.mensaje)}</textarea></div>
       <div class="co-fila"><button class="btn" data-act="co-prueba">Enviarme una prueba</button>
@@ -3323,7 +3363,7 @@ document.addEventListener("click", (e) => {
     case "op-sub-activar": return opSubActivar(id);
     case "op-sub-activar-ok": {
       const f = $("#op-proximo")?.value; if (!f) return toast("Escoge la fecha.", { type: "err" });
-      return opMandar({ accion: "suscripcion", fila: +id, estado: "activa", proximo: f }, () => `Suscripción activa. Primer envío: ${coFecha(f)}.`);
+      return opMandar({ accion: "suscripcion", fila: +id, estado: "activa", proximo: f }, (j) => `Suscripción activa. Primer envío: ${coFecha(f)}.${j.avisado ? " Le llegó la fecha por correo." : ""}`);
     }
     case "op-sub": return opMandar({ accion: "suscripcion", fila: +id, estado: el.dataset.estado }, () => "Suscripción pausada.");
   }

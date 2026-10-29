@@ -1,7 +1,7 @@
 # Pagos con Mercado Pago y suscripciones
 
-**Fecha:** 26 de septiembre de 2026
-**Estado:** la página ya tiene los botones y la función lista; falta la cuenta y las llaves.
+**Fecha:** 28 de octubre de 2026
+**Estado:** el carrito ya cobra por el link de Mercado Pago `link.mercadopago.com.co/nandezcoffee`. Falta el Access Token para pasar a Checkout Pro.
 
 ---
 
@@ -14,6 +14,14 @@
 | **C. Checkout API** | El pago ocurre dentro de nuestra página, sin salir | Cuando el volumen lo justifique | Certificación PCI y bastante más desarrollo |
 
 **Recomendación:** empezar con **A** esta semana y activar **B** apenas exista la cuenta de vendedor.
+
+### Lo que hay hoy: link de cobro personal
+
+`CONFIG.pagos.mercadoPago` apunta a `https://link.mercadopago.com.co/nandezcoffee`. Ese link **no lleva el monto**: abre la caja de Mercado Pago en cero y el cliente escribe cuánto paga.
+
+Por eso el carrito, al oprimir *Pagar ahora*, no manda a Mercado Pago de una: primero guarda el pedido y muestra una ventana con el número (`NDZ-…`), el total exacto y un botón para copiarlo, y de ahí sí abre Mercado Pago. La descripción del pago lleva el número del pedido, que es con lo que se cruza el pago contra el pedido.
+
+**Lo que hay que revisar a mano:** que el monto que entró coincida con el total del pedido. Apenas haya `MP_ACCESS_TOKEN`, cambiar `mercadoPago` a `"/api/checkout"` y el total viaja solo; esa ventana deja de aparecer sin tocar nada más.
 
 ## 2. Activar el Checkout Pro (camino B)
 

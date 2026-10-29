@@ -110,11 +110,11 @@ function subastaCard(i = 0) {
 }
 
 function fincaCard(f, i = 0) {
-  const cafes = S.productos.filter((p) => p.fincaId === f.id), en = UI.lang === "en";
+  const cafes = S.productos.filter((p) => p.fincaId === f.id || (p.mezcla || []).includes(f.id)), en = UI.lang === "en";
   return `<article class="finca reveal ${f.propia ? "propia" : ""}" style="--i:${i}">
     <div class="finca-art">${ridge(f, { w: 380, h: 120 })}</div>
     <div class="finca-body">
-      <p class="kicker">${esc(f.municipio)} · ${msnm(f.altitud)}</p>
+      <p class="kicker">${esc([f.vereda, f.municipio].filter(Boolean).join(", "))} · ${f.altitud ? msnm(f.altitud) : (en ? "altitude to be confirmed" : "altura por confirmar")}</p>
       <h3>${esc(tr(f.finca))}</h3>
       ${conocido(f.productor) || f.exclusiva ? `<p class="finca-prod">${conocido(f.productor) ? esc(tr(f.productor)) : ""}${f.exclusiva ? ` <span class="excl">${en ? "exclusive" : "exclusivo"}</span>` : ""}</p>` : ""}
       ${historiaPublica(f) ? `<p class="hint">${esc(historiaPublica(f))}</p>` : ""}
@@ -268,10 +268,10 @@ function viewCafes() {
   return `${subnavTienda("cafes")}
     <div class="view-head">
       <div><p class="eyebrow reveal">${t("nav_tienda")} · ${t("nav_cafes_esp")}</p>
-        <h2 class="reveal" style="--i:1">${en ? "Three coffees, <em>whole bean</em>" : "Tres cafés, <em>en grano</em>"}</h2>
+        <h2 class="reveal" style="--i:1">${en ? "Three coffees, <em>medium roast</em>" : "Tres cafés, <em>tostión media</em>"}</h2>
         <p class="reveal" style="--i:2">${en
-          ? "Three whole bean coffees, each from a single farm in Norte de Santander. Choose by flavour, by altitude or by farm."
-          : "Tres cafés en grano, cada uno de una sola finca de Norte de Santander. Escoge por sabor, por altura o por finca."}</p></div>
+          ? "Two from a single farm, whole bean, and a blend of the two, ground. All from Norte de Santander."
+          : "Dos de una sola finca, en grano, y un blend de los dos, molido. Todos de Norte de Santander."}</p></div>
     </div>
     <div class="dos">${S.productos.map((p, i) => cafeCard(p, i)).join("")}${visible("subasta") ? subastaCard(S.productos.length) : ""}</div>
     ${bloqueCafeterias()}
@@ -301,8 +301,8 @@ function viewCafe() {
   const compra = pronto ? `
       <div class="pronto-aviso">
         <b>${t("proximamente")}</b>
-        <p>${en ? "Farm, data sheet and price are still to be confirmed. Leave your email and we tell you the day it is out."
-                : "La finca, la ficha y el precio están por confirmar. Deja tu correo y te avisamos el día que salga."}</p>
+        <p>${en ? "The data sheet and the price are still to be confirmed. Leave your email and we tell you the day it is out."
+                : "La ficha y el precio están por confirmar. Deja tu correo y te avisamos el día que salga."}</p>
         <button class="btn primary" data-act="espera" data-id="${p.id}">${t("avisame")}</button>
       </div>
       <p class="sale"><span class="sale-tag">${esc(tx(saleDe(p, v)))}</span> <span>${esc(tx(saleNotaDe(p, v)))}</span></p>` : `
@@ -447,6 +447,64 @@ function abrirCarrito() {
 }
 function cerrarCarrito() { const d = $("#cart"); if (d?.open) d.close(); renderTray(); }
 
+/* El link personal de Mercado Pago abre la caja vacía: el cliente escribe el monto */
+const mpEscribeMonto = () => /link\.mercadopago\./.test(CONFIG.pagos.mercadoPago);
+const mayus = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+/* Formas de pago que la tienda puede ofrecer hoy; la primera queda marcada */
+function metodosPago() {
+  const en = UI.lang === "en", ops = [];
+  if (CONFIG.pagos.mercadoPago) ops.push({
+    id: "mp", nom: "Mercado Pago",
+    sub: en ? "Card, PSE, Nequi or cash." : "Tarjeta, PSE, Nequi o efectivo.",
+    marcas: ["Visa", "Mastercard", "PSE", "Nequi"],
+    det: mpEscribeMonto()
+      ? (en ? "We open Mercado Pago and you type the total you see here, with your order number."
+            : "Te abrimos Mercado Pago y escribes el total que ves aquí, con tu número de pedido.")
+      : (en ? "You finish the payment on Mercado Pago and come back here."
+            : "Terminas el pago en Mercado Pago y vuelves acá."),
+  });
+  ops.push({
+    id: "manual", nom: mayus(tx(CONFIG.pagos.manual)),
+    sub: en ? "You pay once we confirm the order." : "Pagas cuando te confirmamos el pedido.",
+    marcas: en ? ["Transfer", "Nequi"] : ["Transferencia", "Nequi"],
+    det: CONFIG.registro
+      ? (en ? `The order reaches us, we write to you with the total and you pay by ${tx(CONFIG.pagos.manual)}.`
+            : `Nos llega el pedido, te escribimos con el total y pagas por ${tx(CONFIG.pagos.manual)}.`)
+      : (en ? `You send us the order by ${canalContacto()} and we reply with how to pay.`
+            : `Nos envías el pedido por ${canalContacto()} y te respondemos cómo pagar.`),
+  });
+  return ops;
+}
+const pagoSel = () => { const ops = metodosPago(); return ops.some((o) => o.id === UI.pago) ? UI.pago : ops[0].id; };
+
+/* Método de envío y método de pago, en bloques como los de un checkout */
+function bloquePago(envio, E) {
+  const en = UI.lang === "en", sel = pagoSel();
+  const marcas = (xs) => `<span class="pay-marcas">${xs.map((m) => `<i>${esc(m)}</i>`).join("")}</span>`;
+  return `
+    <section class="pay">
+      <h4 class="pay-t">${t("pago_envio")}</h4>
+      <div class="pay-ops"><div class="pay-op fijo sel">
+        <span class="pay-rd"></span>
+        <span class="pay-nom">${esc(E.transportadora)} · ${en ? "Nationwide shipping" : "Envío nacional"}<small>${tx(E.dias)}</small></span>
+        <b class="mono">${envio ? cop(envio) : en ? "Free" : "Gratis"}</b>
+      </div></div>
+
+      <h4 class="pay-t">${t("pago_titulo")}</h4>
+      <p class="pay-sub">${t("pago_seguro")}</p>
+      <div class="pay-ops" role="radiogroup" aria-label="${t("pago_titulo")}">
+        ${metodosPago().map((o) => `
+          <button type="button" class="pay-op${o.id === sel ? " sel" : ""}" data-pago="${o.id}" role="radio" aria-checked="${o.id === sel}">
+            <span class="pay-rd"></span>
+            <span class="pay-nom">${esc(o.nom)}<small>${esc(o.sub)}</small></span>
+            ${marcas(o.marcas)}
+          </button>
+          ${o.id === sel ? `<p class="pay-det">${esc(o.det)}</p>` : ""}`).join("")}
+      </div>
+    </section>`;
+}
+
 function renderCarrito() {
   const en = UI.lang === "en", cuerpo = $("#cart-body"); if (!cuerpo) return;
   if (!UI.carrito.length) {
@@ -494,14 +552,17 @@ function renderCarrito() {
       ${CONFIG.registro && !UI.bono ? `<div class="field cart-bono" style="grid-column:1/-1"><label class="lbl" for="pd-bono">${en ? "Welcome code" : "Código de bono"}</label>
         <div class="co-fila"><input id="pd-bono" class="input mono" autocapitalize="characters" autocomplete="off" placeholder="GANG-XXXXX"${val("pd-bono")}>
           <button class="btn" data-act="bono-aplicar" ${UI.bonoCargando ? "disabled" : ""}>${UI.bonoCargando ? "…" : en ? "Apply" : "Aplicar"}</button></div></div>` : ""}
-    </div>`;
-  const pie = $("#cart-foot"), mp = !!CONFIG.pagos.mercadoPago;
+    </div>
+
+    ${bloquePago(envio, E)}`;
+  const pie = $("#cart-foot"), sel = pagoSel();
   pie.innerHTML = `
-    ${mp ? `<button class="btn primary" data-act="pedido-mp">${t("pagar_mp")}</button>` : ""}
-    <button class="btn ${mp ? "" : "primary"}" data-act="pedido-wa">${CONFIG.registro ? (en ? "Place the order" : "Hacer el pedido")
+    <button class="btn primary" data-act="${sel === "mp" ? "pedido-mp" : "pedido-wa"}">${sel === "mp"
+      ? `${t("pagar_ahora")} · ${cop(totalCarrito() - desc + envio)}`
+      : CONFIG.registro ? (en ? "Place the order" : "Hacer el pedido")
       : en ? `Send order by ${canalContacto()}` : `Enviar pedido por ${canalContacto()}`}</button>
-    <p class="hint">${mp
-      ? (en ? "Card, PSE, Nequi or cash through Mercado Pago." : "Tarjeta, PSE, Nequi o efectivo con Mercado Pago.")
+    <p class="hint">${sel === "mp"
+      ? (en ? "You pay on Mercado Pago; your card never passes through this page." : "Pagas en Mercado Pago; tu tarjeta no pasa por esta página.")
       : (en ? `No payment yet: we confirm the order and you pay by ${tx(CONFIG.pagos.manual)}.`
             : `Todavía no pagas: te confirmamos el pedido y pagas por ${tx(CONFIG.pagos.manual)}.`)}</p>`;
 }
@@ -636,13 +697,42 @@ async function pedidoMP() {
       return confirmacionPedido(pedido, texto);
     }
   }
+  if (mpEscribeMonto()) return pagoEnMP(pedido, url);
   window.open(url, "_blank", "noopener");
+}
+
+/* El link personal abre la caja en cero: le decimos cuánto escribir y con qué referencia */
+function pagoEnMP(pedido, url) {
+  const en = UI.lang === "en";
+  modal(`${en ? "Order" : "Pedido"} <em>${esc(pedido.id)}</em>`, `
+    <ol class="pasos-pedido">
+      <li><b>${en ? "Open Mercado Pago." : "Abre Mercado Pago."}</b>
+        <span>${en ? "It opens in another tab, in the Nandez Coffee account." : "Se abre en otra pestaña, en la cuenta de Nandez Coffee."}</span></li>
+      <li><b>${en ? `Enter ${cop(pedido.total)}.` : `Escribe ${cop(pedido.total)}.`}</b>
+        <span>${en ? `That is your total with shipping. Leave ${pedido.id} as the description so we can match it.`
+                  : `Ese es tu total con el envío. Deja ${pedido.id} como descripción para poder cruzarlo.`}</span></li>
+      <li><b>${en ? "We ship it." : "Lo despachamos."}</b>
+        <span>${en ? `It arrives in ${tx(CONFIG.envio.dias)} with ${CONFIG.envio.transportadora}; the tracking number reaches your email.`
+                  : `Llega en ${tx(CONFIG.envio.dias)} por ${CONFIG.envio.transportadora}; la guía te llega al correo.`}</span></li>
+    </ol>
+    <div class="dlg-actions">
+      <button class="btn" data-act="copiar" data-texto="${Math.round(pedido.total)}">${en ? "Copy the total" : "Copiar el total"}</button>
+      <a class="btn primary" href="${esc(url)}" target="_blank" rel="noopener">${en ? "Open Mercado Pago" : "Abrir Mercado Pago"}</a></div>
+    <p class="hint">${en ? `Already paid? Write to ${CONFIG.correo} with your order number.`
+                        : `¿Ya pagaste? Escríbenos a ${CONFIG.correo} con tu número de pedido.`}</p>`, "narrow");
 }
 
 function copiar(texto) {
   const ok = () => toast(UI.lang === "en" ? "Copied." : "Copiado.");
   try { navigator.clipboard.writeText(texto).then(ok, () => {}); } catch {}
 }
+
+/* Elegir método de pago: cambia el botón del pie sin perder lo que ya escribió */
+document.addEventListener("click", (e) => {
+  const el = e.target.closest(".pay-op[data-pago]"); if (!el) return;
+  if (UI.pago === el.dataset.pago) return;
+  UI.pago = el.dataset.pago; renderCarrito();
+});
 
 /* El bono en el carrito: el panel general deja pasar lo que no conoce */
 document.addEventListener("click", (e) => {

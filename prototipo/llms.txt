@@ -4,13 +4,13 @@
 
 ## Qué vendemos
 - Castillo de Ragonvalia: variedad Castillo, proceso Lavado, 1550 msnm, 84 puntos SCA, en grano, desde $38.000 (https://cafeweb-five.vercel.app/cafe-castillo-de-ragonvalia)
-- Tibo B: café en grano, por confirmar (finca, ficha y precio); lista de espera en https://cafeweb-five.vercel.app/cafe-tibo-b)
-- Tercer café: café en grano, por confirmar (finca, ficha y precio); lista de espera en https://cafeweb-five.vercel.app/cafe-tercer-cafe)
+- El Paraíso (Cenicafé 1 · Palocolorado, Chinácota): tostión media, en grano; ficha y precio por confirmar, lista de espera en https://cafeweb-five.vercel.app/cafe-el-paraiso)
+- Blend de la casa (Castillo + Cenicafé 1 · molido): tostión media, molido; ficha y precio por confirmar, lista de espera en https://cafeweb-five.vercel.app/cafe-blend-de-la-casa)
 - Merch Coffee Gang, próximamente (https://cafeweb-five.vercel.app/accesorios)
 - Suscripción mensual desde $72.000, con kit de bienvenida para preparar en casa, filtros y una receta cada mes (https://cafeweb-five.vercel.app/suscripcion)
 
 ## Cómo trabajamos
-- Una finca, una variedad. Cada dato (altura, variedad, proceso, puntaje) dice quién lo comprobó y cuándo.
+- Dos cafés de una sola finca, en grano, y un blend de los dos, molido; los tres con tostión media. Cada dato (altura, variedad, proceso, puntaje) dice quién lo comprobó y cuándo.
 
 ## Preguntas frecuentes
 ### ¿Qué es el café de origen y en qué se diferencia del café común?
@@ -30,8 +30,8 @@ Sí. Vamos a la finca y medimos el factor de rendimiento y la humedad delante de
 - https://cafeweb-five.vercel.app/cafes
 - https://cafeweb-five.vercel.app/accesorios
 - https://cafeweb-five.vercel.app/cafe-castillo-de-ragonvalia
-- https://cafeweb-five.vercel.app/cafe-tibo-b
-- https://cafeweb-five.vercel.app/cafe-tercer-cafe
+- https://cafeweb-five.vercel.app/cafe-el-paraiso
+- https://cafeweb-five.vercel.app/cafe-blend-de-la-casa
 - https://cafeweb-five.vercel.app/drops
 - https://cafeweb-five.vercel.app/drop-001
 - https://cafeweb-five.vercel.app/la-gang

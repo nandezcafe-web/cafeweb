@@ -29,16 +29,16 @@ const icono = (k, clase = "") => `<svg class="${clase}" viewBox="0 0 24 24" fill
 function portada(en) {
   const p = S.productos.find((x) => !x.proximamente) || S.productos[0];
   const hechos = en
-    ? [["1,500 to 1,950 m", "above sea level"], ["Whole bean, always", "you grind it at home"], ["One farm", "per bag"]]
-    : [["1.500 a 1.950 msnm", "fincas vecinas"], ["En grano, siempre", "lo mueles en casa"], ["Una finca", "por bolsa"]];
-  const sello = en ? "2026 HARVEST · WHOLE BEAN · NORTE DE SANTANDER · " : "COSECHA 2026 · EN GRANO · NORTE DE SANTANDER · ";
+    ? [["1,500 to 1,950 m", "above sea level"], ["Medium roast", "all three"], ["Whole bean or ground", "you choose"]]
+    : [["1.500 a 1.950 msnm", "fincas vecinas"], ["Tostión media", "los tres"], ["En grano o molido", "tú escoges"]];
+  const sello = en ? "2026 HARVEST · MEDIUM ROAST · NORTE DE SANTANDER · " : "COSECHA 2026 · TOSTIÓN MEDIA · NORTE DE SANTANDER · ";
   return `<section class="g-hero hero" aria-labelledby="portada-titulo">
     <div class="g-hero-txt">
       <p class="g-kicker reveal"><em>${esc(CONFIG.marca)}</em> · Chinácota, Norte de Santander</p>
       <h1 id="portada-titulo">${pal(en ? "Whole bean coffee" : "Café en grano")}<em>${pal(en ? "with a first name." : "con nombre propio.", 3)}</em></h1>
       <p class="g-lede reveal" style="--i:3">${en
-        ? "Three coffees from neighbouring farms in Norte de Santander. One farm per bag, always whole bean, so you grind it at home and every cup tastes of the place it came from."
-        : "Tres cafés de fincas vecinas de Norte de Santander. Una finca por bolsa y siempre en grano, para que lo muelas en casa y cada taza sepa al lugar de donde salió."}</p>
+        ? "Three coffees from neighbouring farms in Norte de Santander, all medium roast: two from a single farm, whole bean, so you grind them at home, and a blend of the two, ground and ready to brew."
+        : "Tres cafés de fincas vecinas de Norte de Santander, todos con tostión media: dos de una sola finca, en grano, para que los muelas en casa, y un blend de los dos, molido y listo para preparar."}</p>
       <div class="g-cta reveal" style="--i:4">
         <button class="btn primary lg" data-act="go" data-to="cafes">${en ? "See the coffees" : "Ver los cafés"}${icono("flecha", "ico")}</button>
         <a class="g-link" href="${ruta("suscripcion")}" data-act="go" data-to="suscripcion">${en ? "The subscription" : "La suscripción"}</a>
@@ -59,10 +59,10 @@ function portada(en) {
    Corre despacio y se detiene al pasar el cursor. */
 function cinta(en) {
   const items = en
-    ? [`<em>One farm</em> per bag`, `Grown at <em>1,500 to 1,950</em> metres`, `<em>Whole bean</em>, ground at home`, `<em>2026</em> harvest`,
+    ? [`<em>Medium</em> roast`, `Grown at <em>1,500 to 1,950</em> metres`, `<em>Whole bean</em> or ground`, `<em>2026</em> harvest`,
        `Chinácota · Toledo · Ragonvalia`, `Free shipping from <em>${cop(CONFIG.envio.gratisDesde)}</em>`,
        `Our own farm: <em>5,000</em> Geisha plants, first harvest 2027`, `Norte de Santander · <em>${CONFIG.gang}</em>`]
-    : [`<em>Una finca</em> por bolsa`, `Cultivado entre <em>1.500 y 1.950</em> metros`, `<em>En grano</em>, para moler en casa`, `Cosecha <em>2026</em>`,
+    : [`Tostión <em>media</em>`, `Cultivado entre <em>1.500 y 1.950</em> metros`, `<em>En grano</em> o molido`, `Cosecha <em>2026</em>`,
        `Chinácota · Toledo · Ragonvalia`, `Envío gratis desde <em>${cop(CONFIG.envio.gratisDesde)}</em>`,
        `Nuestra finca: <em>5.000</em> plantas de Geisha, primera cosecha en 2027`, `Norte de Santander · <em>${CONFIG.gang}</em>`];
   const fila = items.map((x) => `<span>${x}</span>`).join("");

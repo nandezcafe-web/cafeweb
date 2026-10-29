@@ -8,14 +8,14 @@ const pal = (txt, desde = 0) => txt.split(" ").map((p, i) => `<span class="pal" 
 function viewInicio() {
   const en = UI.lang === "en";
   const principios = en
-    ? [["One farm, one bag.", "No blends of a hundred growers. Every bag comes from a single farm and a single harvest, so you know exactly what you are drinking."],
+    ? [["You know where it comes from.", "Every bag names its farm. The blend names its two: Castillo from Ragonvalia and El Paraíso from Chinácota, nothing else."],
        ["Data with a signature.", "Altitude, variety, process and score say who checked them and when. What we have not verified yet, we do not make up."],
        ["Three coffees, not thirty.", "A lot goes on the shelf only if we cup it and it convinces us. We would rather sell out than fill the shelf."],
-       ["You grind it.", "We ship whole bean because the aroma escapes fast once it is ground. Grind it right before brewing and you taste it in the first cup."]]
-    : [["Una finca, una bolsa.", "Nada de mezclas de cien productores. Cada bolsa sale de una sola finca y de una sola cosecha, así que sabes exactamente qué estás tomando."],
+       ["Whole bean or ground.", "Two coffees go whole bean, so you grind them right before brewing. The blend goes medium ground, ready for the cone or the drip machine. All three, medium roast."]]
+    : [["Sabes de dónde viene.", "Cada bolsa dice de qué finca sale. El blend dice de cuáles dos: Castillo de Ragonvalia y El Paraíso de Chinácota, nada más."],
        ["Datos con firma.", "La altura, la variedad, el proceso y el puntaje dicen quién los comprobó y cuándo. Lo que todavía no hemos verificado, no lo inventamos."],
        ["Tres cafés, no treinta.", "Un lote entra a la tienda solo si lo catamos y nos convence. Preferimos que se agote a llenar la estantería."],
-       ["Lo mueles tú.", "Lo mandamos en grano porque el aroma se escapa rápido una vez molido. Muélelo justo antes de prepararlo y lo notas en la primera taza."]];
+       ["En grano o molido.", "Dos cafés van en grano, para que los muelas justo antes de prepararlos. El blend va en molienda media, listo para el gotero o la cafetera de goteo. Los tres, con tostión media."]];
   const cabeza = (num, kicker, titulo, texto, link) => `<div class="g-head g-io">
       <span class="g-num">${num}</span><p class="g-kicker">${kicker}</p>
       <h2>${titulo}</h2>${texto ? `<p>${texto}</p>` : ""}${link || ""}</div>`;
@@ -26,9 +26,9 @@ function viewInicio() {
 
   <section class="g-sec" id="cafes" aria-labelledby="g-cafes">
     ${cabeza("01", en ? "This harvest" : "Esta cosecha",
-      `<span id="g-cafes">${en ? "Three coffees. <em>One farm each.</em>" : "Tres cafés. <em>Una finca cada uno.</em>"}</span>`,
-      en ? "Always whole bean. Each bag says which farm it comes from, how high it grew and who checked every number."
-         : "Siempre en grano. Cada bolsa dice de qué finca viene, a qué altura creció y quién comprobó cada dato.",
+      `<span id="g-cafes">${en ? "Three coffees. <em>Two farms and a blend.</em>" : "Tres cafés. <em>Dos fincas y un blend.</em>"}</span>`,
+      en ? "Two whole bean, one ground, all medium roast. Each bag says which farm it comes from and who checked every number."
+         : "Dos en grano y uno molido, todos con tostión media. Cada bolsa dice de qué finca viene y quién comprobó cada dato.",
       `<a class="g-link" href="${ruta("tienda")}" data-act="go" data-to="tienda">${en ? "Go to the shop" : "Ir a la tienda"}</a>`)}
     <div class="g-prods">${S.productos.map((p, i) => tarjetaInicio(p, i)).join("")}</div>
     ${visible("subasta") ? `<div class="g-subasta g-io">

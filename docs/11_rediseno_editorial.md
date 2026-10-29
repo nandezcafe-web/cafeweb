@@ -72,7 +72,7 @@ Tendencia de fondo, ya documentada en [05_referentes_web.md](05_referentes_web.m
 
 Parte del logo que entregó el cliente ([fuentes/marca/logo-nandez-v1.png](../fuentes/marca/logo-nandez-v1.png)): NANDEZ en una display pesada y "COFFEE GANG" debajo, en naranja. El PNG se recortó y se le quitó el fondo blanco: [prototipo/img/marca/logo.png](../prototipo/img/marca/logo.png).
 
-**Color.** Naranja del logo `#EF4724` (muestreado del archivo), crema de papel `#F5F0E6`, negro carbón `#141210`. Cada café lleva además su propia tinta: Castillo verde `#2F5A3C`, Tibo B azul `#2C4FA3`, el tercero ocre `#C98A1E`. El naranja manda; las tintas de café solo aparecen detrás de su bolsa.
+**Color.** Naranja del logo `#EF4724` (muestreado del archivo), crema de papel `#F5F0E6`, negro carbón `#141210`. Cada café lleva además su propia tinta: Castillo verde `#2F5A3C`, El Paraíso azul `#2C4FA3`, el blend ocre `#C98A1E`. El naranja manda; las tintas de café solo aparecen detrás de su bolsa.
 
 **Letra.** Bricolage Grotesque 800 para titulares (en mayúscula, apretada), Instrument Serif cursiva para el acento en naranja (`<em>`), Instrument Sans para leer, IBM Plex Mono para datos y etiquetas. Las cuatro vienen de Google Fonts.
 
@@ -88,7 +88,7 @@ Parte del logo que entregó el cliente ([fuentes/marca/logo-nandez-v1.png](../fu
 |---|---|---|
 | — | Portada | "Café en grano *con nombre propio.*", la bolsa del café que se está tostando sobre naranja, tres hechos (altura, en grano, tostado semanal). |
 | — | Cinta | Precio FNC del día, bolsa de Nueva York y TRM (los mismos datos del panel), envío gratis, "en grano". |
-| 01 | Los cafés | Tres tarjetas: Castillo a la venta; Tibo B y el tercero como "Próximamente" con lista de espera. Debajo, la franja de la subasta en vivo. |
+| 01 | Los cafés | Tres tarjetas: Castillo a la venta; El Paraíso y el blend como "Próximamente" con lista de espera. Debajo, la franja de la subasta en vivo. |
 | 02 | Cómo trabajamos | Página negra: tres principios numerados y, en cifras grandes, lo que le pagamos a la finca frente a la referencia del día. |
 | — | Por dentro | La cereza interactiva, que ya existía. |
 | 03 | Los vecinos | Las cuatro fincas en una rejilla. |
@@ -101,13 +101,13 @@ Parte del logo que entregó el cliente ([fuentes/marca/logo-nandez-v1.png](../fu
 
 ## 4. Los productos
 
-Tres cafés, todos **en grano**:
+Tres cafés, todos con **tostión media**: dos de una sola finca **en grano** y un blend **molido** (molienda media). Actualizado el 28 de octubre de 2026.
 
 | Id | Café | Estado |
 |---|---|---|
 | P-CAS | Castillo de Ragonvalia | A la venta: 250 g a $38.000 y kilo a $132.000, 84 SCA. |
-| P-TIB | Tibo B | **Por confirmar**: nombre, finca, altura, ficha y precio. Se muestra como "Próximamente" y recoge correos. |
-| P-003 | Tercer café | **Por confirmar** todo. Igual que el anterior. |
+| P-PAR | El Paraíso | Finca El Paraíso, vereda Palocolorado (Chinácota), variedad Cenicafé 1, en grano. **Por confirmar**: productor, altura, proceso, notas, puntaje y precio. Se muestra como "Próximamente" y recoge correos. |
+| P-BLE | Blend de la casa | Mezcla de Castillo y Cenicafé 1 (El Paraíso), molido en molienda media. **Por confirmar**: el nombre ("Blend de la casa" es provisional), la proporción, las notas y el precio. |
 
 El Bourbon rosado salió del catálogo. El plan Cafetería pasó a 2 kg de Castillo por $240.000 al mes ($120.000 el kilo). Los datos guardados en el navegador cambiaron de versión (`nandez-v8`), así que ningún visitante verá el catálogo viejo.
 
@@ -115,8 +115,8 @@ El Bourbon rosado salió del catálogo. El plan Cafetería pasó a 2 kg de Casti
 
 ## 5. Lo que falta decidir
 
-1. **Tibo B:** confirmar si es finca, lote o variedad, quién lo cultiva y a qué precio sale.
-2. **El tercer café:** nombre y todo lo demás.
+1. **El Paraíso:** quién lo cultiva, a qué altura, el proceso y el precio.
+2. **El blend:** su nombre, la proporción de cada café y el precio.
 3. **El empaque:** las fotos de las bolsas siguen siendo las del diseño anterior ("Nandez Cafe · café de origen", kraft). Cuando el empaque se rediseñe con el logo nuevo, se reemplazan las fotos con el mismo nombre de archivo y nada más cambia.
 4. **La suscripción en grano:** los planes Semilla y Cosecha todavía dicen "molienda a tu gusto". Si todo va en grano, hay que decidir si esos planes llevan molino o si se mantiene la molienda solo para suscriptores.
 5. **El nombre:** decidido el 22 de octubre de 2026. La empresa se llama **Nandez Coffee** en títulos, textos legales, Google y correos; **Coffee Gang** queda para la comunidad (Nandez Coffee Gang) y el merch. La cuenta de correo, el Instagram (@nandezcafe) y el YouTube (@NándezCafé) conservan el nombre anterior.

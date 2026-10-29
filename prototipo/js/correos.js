@@ -95,7 +95,7 @@ function viewCorreos() {
       <p class="hint">Sale desde el Gmail de Nandez con la marca, y cada correo trae su enlace para darse de baja.
         Va a <b>${fmtNum(para.length)}</b> ${para.length === 1 ? "persona" : "personas"}${CO.etiqueta ? ` con la etiqueta «${esc(CO.etiqueta)}»` : " que aceptan correos"}.
         ${para.length > CO.datos.cuota ? `Hoy alcanzan ${fmtNum(CO.datos.cuota)}; el resto queda contado para mañana.` : ""}</p>
-      <div class="field"><label class="lbl" for="co-asunto">Asunto</label><input id="co-asunto" class="input" maxlength="150" placeholder="Salió el Tibo B" value="${esc(CO.borrador.asunto)}"></div>
+      <div class="field"><label class="lbl" for="co-asunto">Asunto</label><input id="co-asunto" class="input" maxlength="150" placeholder="Salió El Paraíso" value="${esc(CO.borrador.asunto)}"></div>
       <div class="field"><label class="lbl" for="co-mensaje">Mensaje</label>
         <textarea id="co-mensaje" class="input co-mensaje" rows="8" placeholder="Escribe como le hablarías a un amigo. Deja una línea en blanco entre párrafos.">${esc(CO.borrador.mensaje)}</textarea></div>
       <div class="co-fila"><button class="btn" data-act="co-prueba">Enviarme una prueba</button>

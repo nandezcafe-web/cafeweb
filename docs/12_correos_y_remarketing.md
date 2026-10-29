@@ -36,6 +36,10 @@ Cuando la lista pase de unos cientos de personas activas, o se quieran automatiz
 | Cuándo | Qué |
 |---|---|
 | Alguien se une a la comunidad con la casilla | Queda en la hoja al instante (ya no se abre el correo) y le llega la bienvenida con su bono |
+| Alguien entra por **/la-gang** con la casilla | Lo mismo que la comunidad: bienvenida y bono (una sola vez por correo) |
+| Alguien se suscribe | Queda en **Suscripciones** «en espera» y le llega la constancia: plan, frecuencia, molienda y que hoy no se cobra |
+| En el panel, *Activar* una suscripción | Al suscriptor le llega la fecha de su primera caja |
+| 3 días antes de cada caja | Al suscriptor: «tu caja sale el…», con la molienda; si paga mes a mes, el recordatorio del pago; si es la 6.ª de 6, que se acaba y cómo renovar |
 | Alguien hace un pedido | Queda en **Pedidos**; a Nandez le llega el aviso y al cliente la constancia |
 | En el panel, *Despachar* con la guía | Al cliente le llega la guía por correo |
 | En el panel, *Registrar envío* de una suscripción | Al suscriptor le llega la guía y la próxima fecha se corre 1 o 2 meses |
@@ -83,7 +87,7 @@ Si más adelante se cambia el script, hay que publicar una **nueva versión** de
 node tools/correos/prueba.js tools/correos/Codigo.gs
 ```
 
-Imita la hoja, Gmail y las propiedades en memoria y revisa 56 casos: etiquetas, autorización, clave, baja firmada, cuota diaria, bienvenida y bono, pedidos, despachos, suscripciones y el aviso diario.
+Imita la hoja, Gmail y las propiedades en memoria y revisa 65 casos: etiquetas, autorización, clave, baja firmada, cuota diaria, bienvenida y bono, pedidos, despachos, suscripciones con sus tres correos, la gang y el aviso diario.
 
 ## 5. Cuidados
 
