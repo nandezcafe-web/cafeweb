@@ -2427,7 +2427,7 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
       <p>Café de la cosecha, filtros y una receta nueva cada mes. La primera caja trae el kit para prepararlo, y la Ruta Nandez te enseña un método al mes.</p>
       <button class="btn claro lg" data-act="go" data-to="suscripcion">Ver los planes<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
     </div>
-    <ul class="g-planes"><li class=""><b>Semilla</b><span>Para empezar a preparar en casa</span><strong>$72.000<small>/mes</small></strong></li><li class="hot"><b>Cosecha</b><span>Para comparar dos fincas cada mes</span><strong>$105.000<small>/mes</small></strong></li><li class=""><b>Barista</b><span>Para el ritual completo, moliendo en casa</span><strong>$115.000<small>/mes</small></strong></li></ul>
+    <ul class="g-planes"><li class=""><b>Semilla</b><span>Para empezar a preparar en casa</span><strong>$72.000<small>/mes</small></strong></li><li class="hot"><b>Cosecha</b><span>Para comparar dos fincas cada mes</span><strong>$105.000<small>/mes</small></strong></li><li class=""><b>Barista</b><span>Para tu barra, no para tu casa</span><strong>$240.000<small>/mes</small></strong></li></ul>
   </section>
 
   <section class="g-sec g-musica" aria-labelledby="g-musica">
@@ -2891,12 +2891,18 @@ const PLANES = [
     mes: 105000, inscripcion: 319000, seisKit: 679000, seisSinKit: 585000, molienda: "media-fina",
     cada: { es: ["2 × 250 g de dos fincas distintas", "40 filtros", "Molienda a tu gusto", "La receta del mes y su video", "Acceso anticipado a cada lote nuevo"],
             en: ["2 × 250 g from two different farms", "40 filters", "Ground to your taste", "The month's recipe and video", "Early access to every new lot"] } },
-  { id: "barista", nombre: { es: "Barista", en: "Barista" }, kit: "barista",
-    para: { es: "Para el ritual completo, moliendo en casa", en: "For the full ritual, grinding at home" },
-    mes: 115000, inscripcion: 549000, seisKit: 849000, seisSinKit: 639000, molienda: "grano",
-    cada: { es: ["2 × 250 g en grano, de dos fincas", "40 filtros", "Algo del oficio cada tres meses", "La receta del mes y su video", "Acceso anticipado a cada lote nuevo"],
-            en: ["2 × 250 g whole bean, from two farms", "40 filters", "A brewing extra every three months", "The month's recipe and video", "Early access to every new lot"] } },
+  /* El escalón de arriba es la barra, no un recargo: antes costaba $10.000 más
+     que Cosecha por "algo del oficio cada tres meses", que no es un plan.
+     Va en kilos, así que no lleva kit de bienvenida ni seis envíos por
+     adelantado: `plano` dice que se cobra mes a mes y ya. */
+  { id: "barista", nombre: { es: "Barista", en: "Barista" }, plano: true,
+    para: { es: "Para tu barra, no para tu casa", en: "For your bar, not your kitchen" },
+    mes: 240000, molienda: "grano",
+    cada: { es: ["2 kg en grano cada mes", "Tostión a tu perfil", "Material para tu carta", "¿Más de 2 kg? Te cotizamos"],
+            en: ["2 kg whole bean every month", "Roast to your profile", "Menu material", "More than 2 kg? Ask for a quote"] } },
 ];
+/* El plan de cafetería se fundió en Barista. Esto queda para que el panel
+   siga sabiendo leer las suscripciones registradas con el id viejo. */
 const CAFETERIA = { id: "cafeteria", nombre: { es: "Cafetería", en: "Café" }, mes: 240000,
   desc: { es: "Dos kilos de Castillo en grano cada mes, con el envío y la tostión a tu perfil. Si necesitas más, lo cotizamos.",
           en: "Two kilos of whole bean Castillo a month, shipping and your roast profile included. Need more, we quote it." },
@@ -2905,6 +2911,7 @@ const CAFETERIA = { id: "cafeteria", nombre: { es: "Cafetería", en: "Café" }, 
 
 /* Lo que cuesta cada forma de pago y cuánto se ahorra frente a mes a mes (seis envíos). */
 function precioPlan(p, conKit, seis) {
+  if (p.plano) return { luego: p.mes };
   if (conKit && seis) return { total: p.seisKit, ahorro: p.inscripcion + 5 * p.mes - p.seisKit };
   if (conKit) return { hoy: p.inscripcion, luego: p.mes };
   if (seis) return { total: p.seisSinKit, ahorro: 6 * p.mes - p.seisSinKit };
@@ -4265,18 +4272,6 @@ function viewSuscripcion() {
                                : " Todavía no cobramos: deja tu correo y te mandamos el link de pago el día que abramos.")}</p></div>
     </div>
 
-    <section class="section">
-      <div class="section-head"><p class="eyebrow">${en ? "For cafés" : "Para cafeterías"}</p>
-        <h2>${en ? "Your house coffee, <em>every month</em>" : "El café de tu barra, <em>cada mes</em>"}</h2></div>
-      <article class="plan plan-cafeteria">
-        <h3>${esc(tx(CAFETERIA.nombre))}</h3>
-        <p class="plan-precio"><b class="mono">${cop(CAFETERIA.mes)}</b><small>${t("mes")}</small></p>
-        <p class="hint">${esc(tx(CAFETERIA.desc))}</p>
-        <ul class="plan-lista">${tx(CAFETERIA.incluye).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
-        <button class="btn" data-act="sub" data-id="${CAFETERIA.id}">${CONFIG.pagos.suscripcion[CAFETERIA.id] ? t("suscribirme") : (en ? "Notify me when it opens" : "Avísame cuando abra")}</button>
-      </article>
-    </section>
-
     <div class="sub-opciones reveal" style="--i:3">
       <div class="seg" role="group" aria-label="${en ? "Kit" : "Kit"}">
         ${op("kit", "si", kit, en ? "With the welcome kit" : "Con kit de bienvenida")}${op("kit", "no", !kit, en ? "I already have my gear" : "Ya tengo mi equipo")}
@@ -4287,13 +4282,13 @@ function viewSuscripcion() {
     </div>
 
     <div class="planes">${PLANES.map((p, i) => {
-      const k = KITS[p.kit], link = CONFIG.pagos.suscripcion[claveSub(p.id, kit, seis)];
+      const k = KITS[p.kit], link = CONFIG.pagos.suscripcion[p.plano ? p.id : claveSub(p.id, kit, seis)];
       return `<article class="plan ${p.destacado ? "hot" : ""} reveal" style="--i:${i + 4}">
         ${p.destacado ? `<span class="plan-tag">${en ? "The one we recommend" : "El que recomendamos"}</span>` : ""}
         <h3>${esc(tx(p.nombre))}</h3>
         <p class="plan-para">${esc(tx(p.para))}</p>
         ${bloquePrecio(p, en)}
-        ${kit ? `<div class="plan-kit"><b>${esc(tx(k.nombre))}</b><ul>${tx(k.trae).map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+        ${kit && !p.plano ? `<div class="plan-kit"><b>${esc(tx(k.nombre))}</b><ul>${tx(k.trae).map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
         <p class="plan-cada">${en ? "In every box" : "En cada envío"}</p>
         <ul class="plan-lista">${tx(p.cada).map((x) => `<li>${esc(x)}</li>`).join("")}<li>${en ? "Shipping included" : "Envío incluido"}</li></ul>
         <button class="btn ${p.destacado ? "primary" : ""}" data-act="sub" data-id="${p.id}">${link ? t("suscribirme") : (en ? "Notify me when it opens" : "Avísame cuando abra")}</button>
@@ -4326,15 +4321,17 @@ function subOpcion(k, v) {
 
 function suscribir(id) {
   const en = UI.lang === "en", casa = PLANES.find((x) => x.id === id), p = casa || CAFETERIA;
-  const kit = casa ? subKit() : false, seis = casa ? subSeis() : false;
-  const link = CONFIG.pagos.suscripcion[casa ? claveSub(id, kit, seis) : id];
+  /* Barista va en kilos: ni kit de bienvenida ni seis envíos por adelantado */
+  const conOpciones = !!casa && !casa.plano;
+  const kit = conOpciones ? subKit() : false, seis = conOpciones ? subSeis() : false;
+  const link = CONFIG.pagos.suscripcion[conOpciones ? claveSub(id, kit, seis) : id];
   if (link) return void window.open(link, "_blank", "noopener");
-  const x = casa ? precioPlan(p, kit, seis) : { luego: p.mes };
-  const resumen = casa
+  const x = precioPlan(p, kit, seis);
+  const resumen = conOpciones
     ? `${esc(tx(p.nombre))} · ${kit ? esc(tx(KITS[p.kit].nombre)) : (en ? "no kit" : "sin kit")} · ${seis ? (en ? "6 boxes in advance" : "6 envíos por adelantado") : (en ? "monthly" : "mes a mes")}<br>
        <b class="mono">${x.hoy ? `${cop(x.hoy)} ${en ? "today, then" : "hoy, luego"} ${cop(x.luego)} ${t("mes")}` : x.total ? `${cop(x.total)} ${en ? "in one payment" : "en un solo pago"}` : `${cop(x.luego)} ${t("mes")}`}</b>`
     : `${esc(tx(p.nombre))} · <b class="mono">${cop(p.mes)} ${t("mes")}</b>`;
-  const mol = casa ? p.molienda : "grano";
+  const mol = p.molienda || "grano";
   modal(`${en ? "Subscription" : "Suscripción"} · <em>${esc(tx(p.nombre))}</em>`, `
     <p class="sub-resumen">${resumen}</p>
     <p class="hint">${en ? "Leave your email and we will send you the payment link as soon as the subscription goes live. Nothing is charged today."
@@ -4356,10 +4353,11 @@ function suscribirOk(id) {
   const mail = $("#sub-mail").value.trim(), en = UI.lang === "en";
   if (!/^\S+@\S+\.\S+$/.test(mail)) return toast(en ? "Write a valid email." : "Escribe un correo válido.", { type: "err" });
   const casa = PLANES.find((x) => x.id === id), p = casa || CAFETERIA;
-  const kit = casa ? subKit() : false, seis = casa ? subSeis() : false;
+  const conOpciones = !!casa && !casa.plano;
+  const kit = conOpciones ? subKit() : false, seis = conOpciones ? subSeis() : false;
   const mol = MOLIENDAS.find((o) => o.id === $("#sub-molienda")?.value) || MOLIENDAS[0];
   const cada = $("#sub-cada")?.value === "2" ? 2 : 1;
-  const x = casa ? precioPlan(p, kit, seis) : { luego: p.mes };
+  const x = precioPlan(p, kit, seis);
   const d = { mail, plan: id, kit, seis, cada, ciudad: $("#sub-ciudad").value.trim(), molienda: mol.id, fecha: isoToday() };
   S.suscriptores.unshift(d); save(); closeModal(); render();
   const pago = x.hoy ? `${cop(x.hoy)} de inscripción y luego ${cop(x.luego)} al mes`

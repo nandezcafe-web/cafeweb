@@ -2026,12 +2026,18 @@ const PLANES = [
     mes: 105000, inscripcion: 319000, seisKit: 679000, seisSinKit: 585000, molienda: "media-fina",
     cada: { es: ["2 × 250 g de dos fincas distintas", "40 filtros", "Molienda a tu gusto", "La receta del mes y su video", "Acceso anticipado a cada lote nuevo"],
             en: ["2 × 250 g from two different farms", "40 filters", "Ground to your taste", "The month's recipe and video", "Early access to every new lot"] } },
-  { id: "barista", nombre: { es: "Barista", en: "Barista" }, kit: "barista",
-    para: { es: "Para el ritual completo, moliendo en casa", en: "For the full ritual, grinding at home" },
-    mes: 115000, inscripcion: 549000, seisKit: 849000, seisSinKit: 639000, molienda: "grano",
-    cada: { es: ["2 × 250 g en grano, de dos fincas", "40 filtros", "Algo del oficio cada tres meses", "La receta del mes y su video", "Acceso anticipado a cada lote nuevo"],
-            en: ["2 × 250 g whole bean, from two farms", "40 filters", "A brewing extra every three months", "The month's recipe and video", "Early access to every new lot"] } },
+  /* El escalón de arriba es la barra, no un recargo: antes costaba $10.000 más
+     que Cosecha por "algo del oficio cada tres meses", que no es un plan.
+     Va en kilos, así que no lleva kit de bienvenida ni seis envíos por
+     adelantado: `plano` dice que se cobra mes a mes y ya. */
+  { id: "barista", nombre: { es: "Barista", en: "Barista" }, plano: true,
+    para: { es: "Para tu barra, no para tu casa", en: "For your bar, not your kitchen" },
+    mes: 240000, molienda: "grano",
+    cada: { es: ["2 kg en grano cada mes", "Tostión a tu perfil", "Material para tu carta", "¿Más de 2 kg? Te cotizamos"],
+            en: ["2 kg whole bean every month", "Roast to your profile", "Menu material", "More than 2 kg? Ask for a quote"] } },
 ];
+/* El plan de cafetería se fundió en Barista. Esto queda para que el panel
+   siga sabiendo leer las suscripciones registradas con el id viejo. */
 const CAFETERIA = { id: "cafeteria", nombre: { es: "Cafetería", en: "Café" }, mes: 240000,
   desc: { es: "Dos kilos de Castillo en grano cada mes, con el envío y la tostión a tu perfil. Si necesitas más, lo cotizamos.",
           en: "Two kilos of whole bean Castillo a month, shipping and your roast profile included. Need more, we quote it." },
@@ -2040,6 +2046,7 @@ const CAFETERIA = { id: "cafeteria", nombre: { es: "Cafetería", en: "Café" }, 
 
 /* Lo que cuesta cada forma de pago y cuánto se ahorra frente a mes a mes (seis envíos). */
 function precioPlan(p, conKit, seis) {
+  if (p.plano) return { luego: p.mes };
   if (conKit && seis) return { total: p.seisKit, ahorro: p.inscripcion + 5 * p.mes - p.seisKit };
   if (conKit) return { hoy: p.inscripcion, luego: p.mes };
   if (seis) return { total: p.seisSinKit, ahorro: 6 * p.mes - p.seisSinKit };
