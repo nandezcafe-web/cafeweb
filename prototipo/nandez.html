@@ -3773,6 +3773,42 @@ function viewCafe() {
 /* ---------- pedido y pago ---------- */
 const CART_KEY = "nandez-carrito";
 function guardarCarrito() { try { localStorage.setItem(CART_KEY, JSON.stringify(UI.carrito)); } catch {} }
+
+/* El stock de verdad vive en la hoja; el navegador solo lo copia. Sin hoja
+   conectada, la tienda sigue con los números del catálogo, como siempre. */
+function cargarStock() {
+  if (!CONFIG.registro) return Promise.resolve(false);
+  return fetch(`${CONFIG.registro}?accion=stock`).then((r) => r.json()).catch(() => ({ ok: false }))
+    .then((j) => {
+      if (!j || !j.ok || !j.stock) return false;
+      let cambio = false;
+      S.productos.forEach((p) => {
+        p.variantes.forEach((v) => {
+          const n = j.stock[`${p.id}-${v.g}`];
+          if (n == null || n === v.stock) return;
+          v.stock = n; cambio = true;
+        });
+        p.stock = principal(p).stock;
+      });
+      if (cambio) { podarCarrito(); save(); render(); renderNav(); renderTray(); if ($("#cart")?.open) renderCarrito(); }
+      return cambio;
+    });
+}
+/* Si la hoja dice que queda menos, el carrito se ajusta solo antes de pagar */
+function podarCarrito() {
+  if (!UI.carrito.length) return;
+  const antes = JSON.stringify(UI.carrito);
+  UI.carrito = UI.carrito.filter((i) => {
+    const p = prodById(i.id), v = p && p.variantes.find((x) => x.g === i.g);
+    if (!v || !v.stock) return false;
+    i.n = Math.min(i.n, v.stock);
+    return true;
+  });
+  if (JSON.stringify(UI.carrito) === antes) return;
+  guardarCarrito();
+  toast(UI.lang === "en" ? "We updated your order: there is less left than we thought."
+                         : "Ajustamos tu pedido: queda menos de lo que teníamos contado.", { type: "err" });
+}
 function cargarCarrito() {
   try {
     const v = JSON.parse(localStorage.getItem(CART_KEY));
@@ -3840,6 +3876,7 @@ function renderTray() {
 
 function abrirCarrito() {
   const d = $("#cart"); if (!d) return;
+  cargarStock();   /* al abrir el carrito se vuelve a preguntar: es el momento que importa */
   renderCarrito();
   if (!d.open) d.showModal();
   renderTray();
@@ -4015,7 +4052,8 @@ function registrarPedido(d, canal) {
   const bono = descuento ? UI.bono.codigo : "";
   const items = UI.carrito.map((i) => {
     const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
-    return { id: i.id, nombre: i.nombre, n: i.n, precio: i.precio, forma: tx(saleDe(p, v)) };
+    /* g y stock son para la hoja: con ellos sabe qué presentación descontar */
+    return { id: i.id, g: i.g, nombre: i.nombre, n: i.n, precio: i.precio, forma: tx(saleDe(p, v)), stock: v.stock };
   });
   const pedido = { id: numeroPedido(), clienteId: cl.id, canal, nombre, documento: d.documento, direccion: d.direccion,
     detalle: d.detalle, ciudad: d.ciudad, departamento: d.departamento, tel: d.tel, correo: d.correo,
@@ -5615,6 +5653,7 @@ UI.view = VIEWS[r0.view] ? r0.view : "inicio";
 if (r0.id) { UI.cafe = r0.id; UI.entrada = r0.id; }
 render(true);
 montarNav();
+cargarStock();   /* la hoja manda sobre lo que queda; si no hay hoja, no pasa nada */
 setInterval(() => {
   const a = UI.au, now = Date.now();
   if (!a.ended) { botTick(a, now); if (now >= a.endsAt) { endAuction(a); renderNav(); } }

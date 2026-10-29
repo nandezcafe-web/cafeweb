@@ -9,6 +9,7 @@ function nuevaHoja(nombre) {
   return { nombre, filas,
     appendRow: (r) => filas.push(r.slice()), setFrozenRows() {},
     getLastColumn: () => filas.reduce((n, f) => Math.max(n, f.length), 0),
+    getLastRow: () => filas.length,
     getRange: (r, c, nr, nc) => {
       const celda = (i, j, v) => { while (filas.length < i) filas.push([]); filas[i - 1][j - 1] = v; };
       const leer = (i, j) => { const f = filas[i - 1] || []; return f[j - 1] === undefined ? "" : f[j - 1]; };
@@ -95,19 +96,20 @@ ok(getJ({ accion: "bono", codigo: "GANG-ZZZZZ" }).error === "no", "un código in
 const nP = enviados.length;
 const rp = post({ tipo: "pedido", id: "NDZ-1022-AB12", correo: "ana@correo.com", nombre: "Ana Ruiz", ciudad: "Cúcuta", tel: "3001234567", canal: "correo",
   documento: "1090123456", direccion: "Calle 10 # 5-23", detalle: "Barrio La Playa", departamento: "Norte de Santander",
-  items: [{ n: 2, nombre: "Castillo 250 g", forma: "Grano" }], subtotal: 100000, descuento: 10000, envio: 12000, total: 102000, bono: codigoAna });
+  items: [{ id: "P-CAS", g: 250, n: 2, nombre: "Castillo 250 g", forma: "Grano", stock: 90 }], subtotal: 100000, descuento: 10000, envio: 12000, total: 102000, bono: codigoAna });
 ok(rp.ok && rp.pedido === "NDZ-1022-AB12", "el pedido se guarda y devuelve su número");
 const fp = ss.hojas["Pedidos"].filas[1];
 ok(fp[2] === "nuevo" && fp[7] === "2 × Castillo 250 g (grano)" && fp[11] === 102000 && fp[12] === codigoAna && !fp[18], "la fila del pedido trae estado, productos, total y bono");
 ok(fp[19] === "1090123456" && fp[20] === "Calle 10 # 5-23" && fp[21] === "Barrio La Playa" && fp[22] === "Norte de Santander",
   "y los datos del envío: documento, dirección, detalle y departamento");
 ok(getJ({ accion: "bono", codigo: codigoAna }).error === "usado", "después del pedido, el bono queda usado");
+
 ok(enviados.length === nP + 2 && enviados[nP].to === "nandezcafe@gmail.com" && enviados[nP + 1].to === "ana@correo.com", "llega aviso a Nandez y constancia al cliente");
 ok(/CC\/NIT 1090123456/.test(enviados[nP].body) && /Calle 10 # 5-23\nBarrio La Playa\nCúcuta, Norte de Santander/.test(enviados[nP].body),
   "el aviso a Nandez trae la dirección lista para la guía");
 ok(/Calle 10 # 5-23/.test(enviados[nP + 1].body) && /mal escrito/.test(enviados[nP + 1].body),
   "al cliente le vuelve la dirección, por si quedó mal escrita");
-post({ tipo: "pedido", id: "NDZ-1022-CD34", nombre: "Pepe", ciudad: "Pamplona", items: [{ n: 1, nombre: "Castillo 500 g" }], subtotal: 60000, descuento: 6000, envio: 12000, total: 66000, bono: codigoAna });
+post({ tipo: "pedido", id: "NDZ-1022-CD34", nombre: "Pepe", ciudad: "Pamplona", items: [{ id: "P-CAS", g: 500, n: 1, nombre: "Castillo 500 g", stock: 4 }], subtotal: 60000, descuento: 6000, envio: 12000, total: 66000, bono: codigoAna });
 ok(/no sirve \(usado\)/.test(ss.hojas["Pedidos"].filas[2][18]), "un bono ya usado queda marcado en las notas del pedido para revisarlo");
 
 /* una hoja creada antes de que existieran estos datos recupera sus títulos sola */
@@ -227,3 +229,21 @@ cuota = 10;
 const gang = post({ tipo: "gang", correo: "lu@correo.com", consentimiento: true });
 ok(gang.bienvenida === "enviada" && ultimo().to === "lu@correo.com" && ultimo().htmlBody.includes("GANG-"), "quien entra por /la-gang recibe la misma bienvenida con su bono");
 ok(post({ tipo: "gang", correo: "lu2@correo.com" }).bienvenida === undefined, "por /la-gang, sin la casilla tampoco hay bono");
+
+/* ---- stock compartido ----
+   Va al final a propósito: estos pedidos mueven los conteos de arriba. */
+cuota = 20;
+ok(getJ({ accion: "stock" }).stock["P-CAS-250"] === 88 && getJ({ accion: "stock" }).stock["P-CAS-500"] === 3,
+  "los pedidos de arriba ya crearon las filas del stock y descontaron (90 − 2 y 4 − 1)");
+post({ tipo: "pedido", id: "NDZ-1022-ST01", nombre: "Stock", ciudad: "Cúcuta",
+  items: [{ id: "P-CAS", g: 250, n: 3, nombre: "Castillo 250 g", stock: 90 }], total: 120000 });
+ok(getJ({ accion: "stock" }).stock["P-CAS-250"] === 85, "un pedido nuevo parte de la hoja, no de lo que diga el navegador");
+post({ tipo: "pedido", id: "NDZ-1022-ST02", nombre: "Ambicioso", ciudad: "Cúcuta",
+  items: [{ id: "P-CAS", g: 250, n: 200, nombre: "Castillo 250 g", stock: 90 }], total: 8000000 });
+const fAmb = ss.hojas["Pedidos"].filas.find((f) => f[0] === "NDZ-1022-ST02");
+ok(getJ({ accion: "stock" }).stock["P-CAS-250"] === 0 && /Sin stock — Castillo 250 g: pidió 200 y había 85/.test(fAmb[18]),
+  "pedir más de lo que hay deja la hoja en cero y lo anota en el pedido");
+post({ accion: "pedido", clave: props.CLAVE, id: "NDZ-1022-ST01", estado: "cancelado" });
+ok(getJ({ accion: "stock" }).stock["P-CAS-250"] === 3, "cancelar un pedido devuelve sus bolsas");
+post({ accion: "pedido", clave: props.CLAVE, id: "NDZ-1022-ST01", estado: "cancelado" });
+ok(getJ({ accion: "stock" }).stock["P-CAS-250"] === 3, "cancelarlo dos veces no las devuelve dos veces");

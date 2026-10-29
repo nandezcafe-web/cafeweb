@@ -604,6 +604,7 @@ UI.view = VIEWS[r0.view] ? r0.view : "inicio";
 if (r0.id) { UI.cafe = r0.id; UI.entrada = r0.id; }
 render(true);
 montarNav();
+cargarStock();   /* la hoja manda sobre lo que queda; si no hay hoja, no pasa nada */
 setInterval(() => {
   const a = UI.au, now = Date.now();
   if (!a.ended) { botTick(a, now); if (now >= a.endsAt) { endAuction(a); renderNav(); } }

@@ -89,6 +89,22 @@ node tools/correos/prueba.js tools/correos/Codigo.gs
 
 Imita la hoja, Gmail y las propiedades en memoria y revisa 70 casos: etiquetas, autorización, clave, baja firmada, cuota diaria, bienvenida y bono, pedidos con sus datos de envío, despachos, suscripciones con sus tres correos, la gang y el aviso diario.
 
+### La hoja Stock
+
+Antes, lo que quedaba de cada café vivía en el navegador de cada visitante: cada quien tenía su propia copia de "90 bolsas" y tres personas podían comprar la última. Desde el 29 de octubre de 2026 hay una hoja **Stock** con una fila por presentación (`P-CAS-250`, `P-CAS-1000`…) y cuatro columnas: `id`, `nombre`, `stock` y `actualizado`.
+
+| Qué pasa | Qué hace la hoja |
+|---|---|
+| La tienda carga, o alguien abre el carrito | Pide `?accion=stock` (sin clave: lo que queda no es secreto) y pinta esa cifra |
+| En el carrito hay más de lo que queda | Se ajusta solo y se le avisa a la persona |
+| Entra un pedido | Descuenta las bolsas. La primera vez que ve una presentación, crea su fila con lo que diga la tienda: de ahí sale el inventario inicial |
+| Alguien pide más de lo que hay | El pedido igual queda (ya pudo haber pagado), la hoja baja a cero y el pedido queda anotado: «Sin stock — …» |
+| En el panel se cancela un pedido | Devuelve sus bolsas, y solo la primera vez |
+
+**La hoja manda.** Para corregir el inventario se edita la columna `stock` a mano y listo; el navegador se actualiza en la siguiente carga. El pedido lleva además una columna `items` con lo que se pidió, que es lo que permite devolver las bolsas al cancelar.
+
+**Lo que todavía no hace:** el descuento ocurre cuando entra el pedido, no cuando se confirma el pago, así que un pedido que nunca se pague deja esas bolsas apartadas hasta que lo canceles en el panel. Cuando el pago sea automático, eso se mueve al webhook.
+
 ### Las columnas de envío
 
 Desde el 28 de octubre de 2026 el pedido trae lo que la transportadora pide para hacer la guía: **documento, direccion, detalle y departamento**. Van **al final** de la hoja Pedidos, después de `notas`, a propósito: una hoja que ya existe conserva el orden viejo y ninguna fila anterior se descuadra. Al publicar la versión nueva del script, los títulos de esas cuatro columnas aparecen solos la primera vez que algo toque la hoja; las filas de antes quedan con esas celdas vacías y el panel avisa, al despacharlas, que hay que pedir la dirección por WhatsApp.
