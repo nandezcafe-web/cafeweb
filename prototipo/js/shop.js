@@ -561,10 +561,8 @@ function renderCarrito() {
       ? `${t("pagar_ahora")} · ${cop(totalCarrito() - desc + envio)}`
       : CONFIG.registro ? (en ? "Place the order" : "Hacer el pedido")
       : en ? `Send order by ${canalContacto()}` : `Enviar pedido por ${canalContacto()}`}</button>
-    <p class="hint">${sel === "mp"
-      ? (en ? "You pay on Mercado Pago; your card never passes through this page." : "Pagas en Mercado Pago; tu tarjeta no pasa por esta página.")
-      : (en ? `No payment yet: we confirm the order and you pay by ${tx(CONFIG.pagos.manual)}.`
-            : `Todavía no pagas: te confirmamos el pedido y pagas por ${tx(CONFIG.pagos.manual)}.`)}</p>`;
+    ${sel === "mp" ? "" : `<p class="hint">${en ? `No payment yet: we confirm the order and you pay by ${tx(CONFIG.pagos.manual)}.`
+      : `Todavía no pagas: te confirmamos el pedido y pagas por ${tx(CONFIG.pagos.manual)}.`}</p>`}`;
 }
 
 function cambiarCantidad(pid, g, d) {
