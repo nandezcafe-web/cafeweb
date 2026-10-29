@@ -32,8 +32,11 @@ const H_CONTACTOS = "Contactos", H_REGISTROS = "Registros", H_ENVIOS = "Envíos"
 const H_BONOS = "Bonos", H_PEDIDOS = "Pedidos", H_SUBS = "Suscripciones";
 const COLS = ["correo", "nombre", "etiquetas", "acepta_correos", "alta", "ultimo", "baja", "ciudad", "idioma"];
 const COLS_BONOS = ["codigo", "correo", "pct", "alta", "vence", "bienvenida", "usado", "pedido", "recordado", "idioma"];
+/* Los datos de envío entraron después, así que van al final: una hoja que ya
+   existe conserva el orden viejo y las filas de antes no se descuadran. */
 const COLS_PEDIDOS = ["id", "fecha", "estado", "nombre", "correo", "whatsapp", "ciudad", "productos", "subtotal", "descuento",
-  "envio", "total", "bono", "canal", "pagado", "despachado", "transportadora", "guia", "notas"];
+  "envio", "total", "bono", "canal", "pagado", "despachado", "transportadora", "guia", "notas",
+  "documento", "direccion", "detalle", "departamento"];
 const COLS_SUBS = ["correo", "plan", "kit", "pago", "cada_meses", "molienda", "ciudad", "alta", "estado", "proximo", "ultimo_envio", "envios", "notas", "idioma", "avisado"];
 /* Al suscriptor se le avisa este número de días antes de que salga su caja */
 const SUB_AVISO = 3;
@@ -66,7 +69,11 @@ function configurar() {
 }
 function hoja_(ss, nombre, cols) {
   let h = ss.getSheetByName(nombre);
-  if (!h) { h = ss.insertSheet(nombre); h.appendRow(cols); h.setFrozenRows(1); h.getRange(1, 1, 1, cols.length).setFontWeight("bold"); }
+  if (!h) { h = ss.insertSheet(nombre); h.appendRow(cols); h.setFrozenRows(1); h.getRange(1, 1, 1, cols.length).setFontWeight("bold"); return h; }
+  /* La hoja ya estaba: si el script ganó columnas, les pone título sin tocar lo
+     escrito. Se mira la fila de títulos, no getLastColumn(), que cuenta los datos. */
+  const titulos = h.getRange(1, 1, 1, cols.length).getValues()[0];
+  for (let i = 0; i < cols.length; i++) if (!titulos[i]) h.getRange(1, i + 1).setValue(cols[i]).setFontWeight("bold");
   return h;
 }
 const libro_ = () => SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty("HOJA_ID"));
@@ -205,17 +212,26 @@ function pedido_(ss, d, correo) {
     else { bono = corto_(d.bono, 20); notas = "Ojo: el bono " + bono + " no sirve (" + b.error + "); se cobró con descuento."; }
   }
   h.appendRow([id, new Date(), "nuevo", corto_(d.nombre, 120), correo, corto_(d.tel, 40), corto_(d.ciudad, 80), productos,
-    num_(d.subtotal), num_(d.descuento), num_(d.envio), num_(d.total), bono, corto_(d.canal, 20), "", "", "", "", notas]);
+    num_(d.subtotal), num_(d.descuento), num_(d.envio), num_(d.total), bono, corto_(d.canal, 20), "", "", "", "", notas,
+    corto_(d.documento, 30), corto_(d.direccion, 200), corto_(d.detalle, 200), corto_(d.departamento, 60)]);
   const en = d.idioma === "en", lineas = productos + "\n\nTotal: " + pesos_(d.total) + (num_(d.descuento) ? " (" + (en ? "with " : "con ") + bono + ")" : "");
+  /* la dirección como se escribe en la guía */
+  const envio = corto_(d.direccion, 200) + (d.detalle ? "\n" + corto_(d.detalle, 200) : "") +
+    "\n" + corto_(d.ciudad, 80) + (d.departamento ? ", " + corto_(d.departamento, 60) : "");
   /* a Nandez, enseguida; al cliente, la constancia de que llegó */
   if (MailApp.getRemainingDailyQuota() > 0)
     MailApp.sendEmail({ to: Session.getEffectiveUser().getEmail(), name: MARCA, subject: "Pedido nuevo " + id + " · " + pesos_(d.total),
-      body: corto_(d.nombre, 120) + " · " + corto_(d.ciudad, 80) + (d.tel ? " · WhatsApp " + corto_(d.tel, 40) : "") + (correo ? " · " + correo : "") +
-        "\n\n" + lineas + (notas ? "\n\n" + notas : "") + "\n\nConfírmalo y márcalo como pagado en el panel, pestaña Pedidos." });
+      body: corto_(d.nombre, 120) + (d.documento ? " · CC/NIT " + corto_(d.documento, 30) : "") +
+        (d.tel ? " · tel " + corto_(d.tel, 40) : "") + (correo ? " · " + correo : "") +
+        "\n\n" + envio + "\n\n" + lineas + (notas ? "\n\n" + notas : "") +
+        "\n\nConfírmalo y márcalo como pagado en el panel, pestaña Pedidos." });
   if (correo && MailApp.getRemainingDailyQuota() > 0) {
+    /* la dirección va de vuelta: un error se arregla mejor antes de despachar */
     const texto = en
-      ? "We got your order " + id + ".\n\n" + lineas + "\n\nWe will write to you shortly with how to pay. Once it is paid, we ship it and send you the tracking number."
-      : "Recibimos tu pedido " + id + ".\n\n" + lineas + "\n\nEn un rato te escribimos con cómo pagar. Apenas esté pago lo despachamos y te mandamos la guía.";
+      ? "We got your order " + id + ".\n\n" + lineas + "\n\nIt ships to:\n" + envio +
+        "\n\nIs anything wrong there? Just reply. We will write to you shortly with how to pay; once it is paid, we ship it and send you the tracking number."
+      : "Recibimos tu pedido " + id + ".\n\n" + lineas + "\n\nVa a:\n" + envio +
+        "\n\n¿Algo quedó mal escrito? Responde este correo. En un rato te escribimos con cómo pagar; apenas esté pago lo despachamos y te mandamos la guía.";
     MailApp.sendEmail({ to: correo, name: MARCA, subject: (en ? "We got your order " : "Recibimos tu pedido ") + id,
       htmlBody: marco_(cuerpo_(texto), pieServicio_(id, en)), body: texto + "\n\n—\n" + MARCA });
   }
@@ -342,7 +358,8 @@ function doGet(e) {
     const pedidos = hojaDe_(ss, H_PEDIDOS).getDataRange().getValues().slice(1).filter((f) => f[0]).reverse()
       .map((f) => ({ id: f[0], fecha: f[1], estado: f[2], nombre: f[3], correo: f[4], tel: f[5], ciudad: f[6], productos: f[7],
         subtotal: f[8], descuento: f[9], envio: f[10], total: f[11], bono: f[12], canal: f[13], pagado: f[14], despachado: f[15],
-        transportadora: f[16], guia: f[17], notas: f[18] }));
+        transportadora: f[16], guia: f[17], notas: f[18],
+        documento: f[19], direccion: f[20], detalle: f[21], departamento: f[22] }));
     const subs = hojaDe_(ss, H_SUBS).getDataRange().getValues().map((f, i) => ({ fila: i + 1, correo: f[0], plan: f[1], kit: f[2], pago: f[3],
       cada: f[4], molienda: f[5], ciudad: f[6], alta: f[7], estado: f[8], proximo: f[9], ultimo: f[10], envios: f[11], notas: f[12] }))
       .slice(1).filter((s) => s.correo);

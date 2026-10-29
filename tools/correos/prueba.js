@@ -8,7 +8,16 @@ function nuevaHoja(nombre) {
   const filas = [];
   return { nombre, filas,
     appendRow: (r) => filas.push(r.slice()), setFrozenRows() {},
-    getRange: (r, c, nr, nc) => ({ setValue: (v) => { while (filas.length < r) filas.push([]); filas[r - 1][c - 1] = v; }, setFontWeight() { return this; } }),
+    getLastColumn: () => filas.reduce((n, f) => Math.max(n, f.length), 0),
+    getRange: (r, c, nr, nc) => {
+      const celda = (i, j, v) => { while (filas.length < i) filas.push([]); filas[i - 1][j - 1] = v; };
+      const leer = (i, j) => { const f = filas[i - 1] || []; return f[j - 1] === undefined ? "" : f[j - 1]; };
+      const rango = { setValue: (v) => (celda(r, c, v), rango),
+        setValues: (vs) => (vs.forEach((f, i) => f.forEach((v, j) => celda(r + i, c + j, v))), rango),
+        getValues: () => Array.from({ length: nr || 1 }, (_, i) => Array.from({ length: nc || 1 }, (_, j) => leer(r + i, c + j))),
+        setFontWeight: () => rango };
+      return rango;
+    },
     getDataRange: () => ({ getValues: () => filas.map((f) => f.slice()) }) };
 }
 function nuevoLibro(nombre) {
@@ -84,20 +93,33 @@ ok(getJ({ accion: "bono", codigo: "GANG-ZZZZZ" }).error === "no", "un código in
 
 /* ---- pedidos ---- */
 const nP = enviados.length;
-const rp = post({ tipo: "pedido", id: "NDZ-1022-AB12", correo: "ana@correo.com", nombre: "Ana", ciudad: "Cúcuta", tel: "3001234567", canal: "correo",
-  items: [{ n: 2, nombre: "Tibo B 250 g", forma: "Grano" }], subtotal: 100000, descuento: 10000, envio: 12000, total: 102000, bono: codigoAna });
+const rp = post({ tipo: "pedido", id: "NDZ-1022-AB12", correo: "ana@correo.com", nombre: "Ana Ruiz", ciudad: "Cúcuta", tel: "3001234567", canal: "correo",
+  documento: "1090123456", direccion: "Calle 10 # 5-23", detalle: "Barrio La Playa", departamento: "Norte de Santander",
+  items: [{ n: 2, nombre: "Castillo 250 g", forma: "Grano" }], subtotal: 100000, descuento: 10000, envio: 12000, total: 102000, bono: codigoAna });
 ok(rp.ok && rp.pedido === "NDZ-1022-AB12", "el pedido se guarda y devuelve su número");
 const fp = ss.hojas["Pedidos"].filas[1];
-ok(fp[2] === "nuevo" && fp[7] === "2 × Tibo B 250 g (grano)" && fp[11] === 102000 && fp[12] === codigoAna && !fp[18], "la fila del pedido trae estado, productos, total y bono");
+ok(fp[2] === "nuevo" && fp[7] === "2 × Castillo 250 g (grano)" && fp[11] === 102000 && fp[12] === codigoAna && !fp[18], "la fila del pedido trae estado, productos, total y bono");
+ok(fp[19] === "1090123456" && fp[20] === "Calle 10 # 5-23" && fp[21] === "Barrio La Playa" && fp[22] === "Norte de Santander",
+  "y los datos del envío: documento, dirección, detalle y departamento");
 ok(getJ({ accion: "bono", codigo: codigoAna }).error === "usado", "después del pedido, el bono queda usado");
 ok(enviados.length === nP + 2 && enviados[nP].to === "nandezcafe@gmail.com" && enviados[nP + 1].to === "ana@correo.com", "llega aviso a Nandez y constancia al cliente");
+ok(/CC\/NIT 1090123456/.test(enviados[nP].body) && /Calle 10 # 5-23\nBarrio La Playa\nCúcuta, Norte de Santander/.test(enviados[nP].body),
+  "el aviso a Nandez trae la dirección lista para la guía");
+ok(/Calle 10 # 5-23/.test(enviados[nP + 1].body) && /mal escrito/.test(enviados[nP + 1].body),
+  "al cliente le vuelve la dirección, por si quedó mal escrita");
 post({ tipo: "pedido", id: "NDZ-1022-CD34", nombre: "Pepe", ciudad: "Pamplona", items: [{ n: 1, nombre: "Castillo 500 g" }], subtotal: 60000, descuento: 6000, envio: 12000, total: 66000, bono: codigoAna });
 ok(/no sirve \(usado\)/.test(ss.hojas["Pedidos"].filas[2][18]), "un bono ya usado queda marcado en las notas del pedido para revisarlo");
 
+/* una hoja creada antes de que existieran estos datos recupera sus títulos sola */
+ss.hojas["Pedidos"].filas[0] = ss.hojas["Pedidos"].filas[0].slice(0, 19);
 ok(getJ({ accion: "operacion", clave: "mala" }).ok === false, "la operación pide la clave");
 const op = getJ({ accion: "operacion", clave: props.CLAVE });
 ok(op.ok && op.pedidos.length === 2 && op.pedidos[0].id === "NDZ-1022-CD34" && op.suscripciones.length === 1, "con la clave trae los pedidos (el más nuevo primero) y las suscripciones");
 ok(op.bonos.entregados === 2 && op.bonos.usados === 1, "y el conteo de bonos entregados y usados");
+ok(ss.hojas["Pedidos"].filas[0][19] === "documento" && ss.hojas["Pedidos"].filas[0][22] === "departamento",
+  "una hoja vieja recupera los títulos de las columnas nuevas sin tocar las filas");
+ok(op.pedidos[1].direccion === "Calle 10 # 5-23" && op.pedidos[1].departamento === "Norte de Santander",
+  "y el panel recibe la dirección de cada pedido");
 
 ok(post({ accion: "pedido", clave: "mala", id: "NDZ-1022-AB12", estado: "pagado" }).ok === false, "cambiar un pedido pide la clave");
 ok(post({ accion: "pedido", clave: props.CLAVE, id: "NDZ-1022-AB12", estado: "volando" }).ok === false, "un estado inventado se rechaza");

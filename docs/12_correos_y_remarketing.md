@@ -87,7 +87,11 @@ Si más adelante se cambia el script, hay que publicar una **nueva versión** de
 node tools/correos/prueba.js tools/correos/Codigo.gs
 ```
 
-Imita la hoja, Gmail y las propiedades en memoria y revisa 65 casos: etiquetas, autorización, clave, baja firmada, cuota diaria, bienvenida y bono, pedidos, despachos, suscripciones con sus tres correos, la gang y el aviso diario.
+Imita la hoja, Gmail y las propiedades en memoria y revisa 70 casos: etiquetas, autorización, clave, baja firmada, cuota diaria, bienvenida y bono, pedidos con sus datos de envío, despachos, suscripciones con sus tres correos, la gang y el aviso diario.
+
+### Las columnas de envío
+
+Desde el 28 de octubre de 2026 el pedido trae lo que la transportadora pide para hacer la guía: **documento, direccion, detalle y departamento**. Van **al final** de la hoja Pedidos, después de `notas`, a propósito: una hoja que ya existe conserva el orden viejo y ninguna fila anterior se descuadra. Al publicar la versión nueva del script, los títulos de esas cuatro columnas aparecen solos la primera vez que algo toque la hoja; las filas de antes quedan con esas celdas vacías y el panel avisa, al despacharlas, que hay que pedir la dirección por WhatsApp.
 
 ## 5. Cuidados
 

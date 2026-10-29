@@ -520,8 +520,8 @@ function viewPrivacidad() {
   const en = UI.lang === "en";
   return paginaTexto(en ? "Privacy policy" : "Política de privacidad", en ? "Your data, <em>only for your order</em>" : "Tus datos, <em>solo para tu pedido</em>",
     en ? "Policy under Colombian Law 1581 of 2012 on personal data." : "Política según la Ley 1581 de 2012 de protección de datos personales.",
-    [[en ? "What we ask for" : "Qué pedimos", `<p>${en ? "Name, city, WhatsApp and email: only what we need to deliver your order, answer you or let you know about the subscription and the community."
-        : "Nombre, ciudad, WhatsApp y correo: solo lo necesario para entregarte el pedido, responderte o avisarte de la suscripción y la comunidad."}</p>`],
+    [[en ? "What we ask for" : "Qué pedimos", `<p>${en ? "To ship an order: name, ID or tax number, address, city, department, phone and email. The ID number is what the courier asks for to issue the waybill and what the invoice needs. Nothing else."
+        : "Para despacharte un pedido: nombre, cédula o NIT, dirección, ciudad, departamento, teléfono y correo. La cédula es lo que pide la transportadora para hacer la guía y lo que lleva la factura. Nada más."}</p>`],
      [en ? "The community" : "La comunidad", `<p>${en ? `If you join the ${CONFIG.comunidad} community and tick the box, we use your email to send you news and members-only offers. You can leave with the link at the end of every email or by writing to ${CONFIG.correo}.`
         : `Si te unes a la comunidad ${CONFIG.comunidad} y marcas la casilla, usamos tu correo para enviarte noticias y ofertas solo para miembros. Te sales con el enlace al final de cada correo o escribiéndonos a ${CONFIG.correo}.`}</p>`],
      [en ? "What we use it for" : "Para qué lo usamos", `<p>${en ? "To confirm and ship orders and send the notices and news you asked for. We do not sell or share your data, except with the carrier that delivers your order."
