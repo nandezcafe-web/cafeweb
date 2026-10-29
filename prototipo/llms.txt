@@ -4,8 +4,8 @@
 
 ## Qué vendemos
 - Castillo de Ragonvalia: variedad Castillo, proceso Lavado, 1550 msnm, 84 puntos SCA, en grano, desde $40.000 (https://cafeweb-five.vercel.app/cafe-castillo-de-ragonvalia)
-- El Paraíso (Cenicafé 1 · Palocolorado, Chinácota): tostión media, en grano; ficha y precio por confirmar, lista de espera en https://cafeweb-five.vercel.app/cafe-el-paraiso)
-- Blend de la casa (Castillo + Cenicafé 1 · molido): tostión media, molido; ficha y precio por confirmar, lista de espera en https://cafeweb-five.vercel.app/cafe-blend-de-la-casa)
+- El Paraíso (Cenicafé 1 · Palocolorado, Chinácota): tostión media, en grano; ficha y precio por confirmar, lista de espera (https://cafeweb-five.vercel.app/cafe-el-paraiso)
+- Blend de la casa (Castillo + Cenicafé 1 · molido): tostión media, molido; ficha y precio por confirmar, lista de espera (https://cafeweb-five.vercel.app/cafe-blend-de-la-casa)
 - Merch Coffee Gang, próximamente (https://cafeweb-five.vercel.app/accesorios)
 - Suscripción mensual desde $72.000, con kit de bienvenida para preparar en casa, filtros y una receta cada mes (https://cafeweb-five.vercel.app/suscripcion)
 

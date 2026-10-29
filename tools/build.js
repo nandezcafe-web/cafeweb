@@ -313,7 +313,7 @@ const llms = ev(c0, [
   '"# " + CONFIG.marca, "",',
   '"> Familia cafetera de Chinácota, Norte de Santander (Colombia). Compramos lote por lote a fincas de Chinácota, Toledo y Ragonvalia, y vendemos cada café tostado con su ficha verificable. Nuestra propia finca (5.000 plantas de Geisha) da su primera cosecha en 2027.", "",',
   '"## Qué vendemos",',
-  '...S.productos.map((p) => "- " + tx(p.nombre) + (p.proximamente ? " (" + tx(p.sub) + "): tostión media, " + (esMolido(p) ? "molido" : "en grano") + "; ficha y precio por confirmar, lista de espera en " : ": variedad " + p.variedad + ", proceso " + p.proceso + ", " + p.altitud + " msnm, " + p.puntaje + " puntos SCA, en grano, desde " + cop(p.variantes[0].precio) + " (") + CONFIG.sitio + ruta("cafe", p.id, "es") + ")"),',
+  '...S.productos.map((p) => "- " + tx(p.nombre) + (p.proximamente ? " (" + tx(p.sub) + "): tostión media, " + (esMolido(p) ? "molido" : "en grano") + "; ficha y precio por confirmar, lista de espera (" : ": variedad " + p.variedad + ", proceso " + p.proceso + ", " + p.altitud + " msnm, " + p.puntaje + " puntos SCA, en grano, desde " + cop(p.variantes[0].precio) + " (") + CONFIG.sitio + ruta("cafe", p.id, "es") + ")"),',
   '...(visible("subasta") ? ["- Subasta en vivo de un microlote Geisha de Toledo (" + CONFIG.sitio + "/subasta)"] : []),',
   '"- " + (conPreparar() ? "Accesorios para preparar en casa y merch Coffee Gang" : "Merch Coffee Gang") + ", próximamente (" + CONFIG.sitio + ruta("accesorios", null, "es") + ")",',
   '"- Suscripción mensual desde " + cop(PLANES[0].mes) + ", con kit de bienvenida para preparar en casa, filtros y una receta cada mes (" + CONFIG.sitio + "/suscripcion)", "",',
