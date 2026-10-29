@@ -3607,7 +3607,7 @@ function viewTienda() {
   return `${subnavTienda("tienda")}
     <div class="view-head">
       <div><p class="eyebrow reveal">${t("nav_tienda")}</p>
-        <h2 class="reveal" style="--i:1">${en ? "Everything <em>from the house</em>" : "Todo lo <em>de la casa</em>"}</h2>
+        <h1 class="reveal" style="--i:1">${en ? "Everything <em>from the house</em>" : "Todo lo <em>de la casa</em>"}</h1>
         <p class="reveal" style="--i:2">${en ? "Whole bean coffee from neighbouring farms, the gear to brew it and Coffee Gang merch."
           : "Café en grano de fincas vecinas, lo necesario para prepararlo y el merch Coffee Gang."}</p></div>
     </div>
@@ -3644,8 +3644,8 @@ function viewAccesorios() {
   return `${subnavTienda("accesorios")}
     <div class="view-head">
       <div><p class="eyebrow reveal">${t("nav_tienda")} · ${t("nav_accesorios")}</p>
-        <h2 class="reveal" style="--i:1">${prep ? (en ? "To brew it, <em>and to wear it</em>" : "Para prepararlo, <em>y para ponértelo</em>")
-                                              : (en ? "Wear the <em>gang</em>" : "Ponte el <em>gang</em>")}</h2>
+        <h1 class="reveal" style="--i:1">${prep ? (en ? "To brew it, <em>and to wear it</em>" : "Para prepararlo, <em>y para ponértelo</em>")
+                                              : (en ? "Wear the <em>gang</em>" : "Ponte el <em>gang</em>")}</h1>
         <p class="reveal" style="--i:2">${en ? "We are choosing each piece. Leave your email on the ones you want and we tell you the day they are out, with their price."
           : "Estamos escogiendo cada pieza. Deja tu correo en las que quieras y te avisamos el día que salgan, con su precio."}</p></div>
     </div>
@@ -3661,7 +3661,7 @@ function viewCafes() {
   return `${subnavTienda("cafes")}
     <div class="view-head">
       <div><p class="eyebrow reveal">${t("nav_tienda")} · ${t("nav_cafes_esp")}</p>
-        <h2 class="reveal" style="--i:1">${en ? "Three coffees, <em>medium roast</em>" : "Tres cafés, <em>tostión media</em>"}</h2>
+        <h1 class="reveal" style="--i:1">${en ? "Three coffees, <em>medium roast</em>" : "Tres cafés, <em>tostión media</em>"}</h1>
         <p class="reveal" style="--i:2">${en
           ? "Two from a single farm, whole bean, and a blend of the two, ground. All from Norte de Santander."
           : "Dos de una sola finca, en grano, y un blend de los dos, molido. Todos de Norte de Santander."}</p></div>
@@ -4216,7 +4216,7 @@ function viewSuscripcion() {
 
   return `<div class="view-head">
       <div><p class="eyebrow reveal">${en ? "Subscription" : "Suscripción"}${abierta ? "" : (en ? " · opening soon" : " · abrimos pronto")}</p>
-        <h2 class="reveal" style="--i:1">${en ? "For your bar, <em>and for your house</em>" : "Para tu barra, <em>y para tu casa</em>"}</h2>
+        <h1 class="reveal" style="--i:1">${en ? "For your bar, <em>and for your house</em>" : "Para tu barra, <em>y para tu casa</em>"}</h1>
         <p class="reveal" style="--i:2">${en
           ? "Kilos for cafés, roasted to your profile, with shipping included. And boxes for home, with the filters and a new recipe every month."
           : "Kilos para cafeterías, con la tostión a tu perfil y el envío incluido. Y cajas para la casa, con los filtros y una receta nueva cada mes."}
@@ -4594,7 +4594,7 @@ function viewDiario() {
   const en = UI.lang === "en";
   return `<div class="view-head">
       <div><p class="eyebrow reveal">${t("nav_diario")}</p>
-        <h2 class="reveal" style="--i:1">${en ? "What we learn <em>buying coffee</em>" : "Lo que aprendemos <em>comprando café</em>"}</h2>
+        <h1 class="reveal" style="--i:1">${en ? "What we learn <em>buying coffee</em>" : "Lo que aprendemos <em>comprando café</em>"}</h1>
         <p class="reveal" style="--i:2">${en ? "Farm visits, prices, processing and how to brew what we sell."
           : "Visitas a fincas, precios, beneficio y cómo preparar lo que vendemos."}</p></div>
     </div>
@@ -4625,7 +4625,7 @@ function viewEntrada() {
 /* ---------- contacto, envíos, términos y datos ---------- */
 function paginaTexto(eyebrow, titulo, intro, bloques) {
   return `<article class="legal">
-    <div class="view-head"><div><p class="eyebrow reveal">${eyebrow}</p><h2 class="reveal" style="--i:1">${titulo}</h2>
+    <div class="view-head"><div><p class="eyebrow reveal">${eyebrow}</p><h1 class="reveal" style="--i:1">${titulo}</h1>
       ${intro ? `<p class="reveal" style="--i:2">${intro}</p>` : ""}</div></div>
     ${bloques.map(([h, cuerpo]) => `<section class="legal-b"><h3>${h}</h3>${cuerpo}</section>`).join("")}
   </article>`;
@@ -4702,7 +4702,7 @@ function viewNoEncontrada() {
   const en = UI.lang === "en";
   return `<article class="legal no-encontrada">
     <div class="view-head"><div><p class="eyebrow reveal">404</p>
-      <h2 class="reveal" style="--i:1">${en ? "This page <em>is not here</em>" : "Esta página <em>no está</em>"}</h2>
+      <h1 class="reveal" style="--i:1">${en ? "This page <em>is not here</em>" : "Esta página <em>no está</em>"}</h1>
       <p class="reveal" style="--i:2">${en ? "Maybe the link is old or a letter is missing. The coffee is still where it was."
         : "Puede que el enlace sea viejo o le falte una letra. El café sigue donde estaba."}</p></div></div>
     <div class="cta"><button class="btn primary" data-act="go" data-to="cafes">${en ? "See the coffees" : "Ver los cafés"}</button>

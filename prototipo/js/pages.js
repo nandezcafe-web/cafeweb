@@ -50,7 +50,7 @@ function viewSuscripcion() {
 
   return `<div class="view-head">
       <div><p class="eyebrow reveal">${en ? "Subscription" : "Suscripción"}${abierta ? "" : (en ? " · opening soon" : " · abrimos pronto")}</p>
-        <h2 class="reveal" style="--i:1">${en ? "For your bar, <em>and for your house</em>" : "Para tu barra, <em>y para tu casa</em>"}</h2>
+        <h1 class="reveal" style="--i:1">${en ? "For your bar, <em>and for your house</em>" : "Para tu barra, <em>y para tu casa</em>"}</h1>
         <p class="reveal" style="--i:2">${en
           ? "Kilos for cafés, roasted to your profile, with shipping included. And boxes for home, with the filters and a new recipe every month."
           : "Kilos para cafeterías, con la tostión a tu perfil y el envío incluido. Y cajas para la casa, con los filtros y una receta nueva cada mes."}
@@ -428,7 +428,7 @@ function viewDiario() {
   const en = UI.lang === "en";
   return `<div class="view-head">
       <div><p class="eyebrow reveal">${t("nav_diario")}</p>
-        <h2 class="reveal" style="--i:1">${en ? "What we learn <em>buying coffee</em>" : "Lo que aprendemos <em>comprando café</em>"}</h2>
+        <h1 class="reveal" style="--i:1">${en ? "What we learn <em>buying coffee</em>" : "Lo que aprendemos <em>comprando café</em>"}</h1>
         <p class="reveal" style="--i:2">${en ? "Farm visits, prices, processing and how to brew what we sell."
           : "Visitas a fincas, precios, beneficio y cómo preparar lo que vendemos."}</p></div>
     </div>
@@ -459,7 +459,7 @@ function viewEntrada() {
 /* ---------- contacto, envíos, términos y datos ---------- */
 function paginaTexto(eyebrow, titulo, intro, bloques) {
   return `<article class="legal">
-    <div class="view-head"><div><p class="eyebrow reveal">${eyebrow}</p><h2 class="reveal" style="--i:1">${titulo}</h2>
+    <div class="view-head"><div><p class="eyebrow reveal">${eyebrow}</p><h1 class="reveal" style="--i:1">${titulo}</h1>
       ${intro ? `<p class="reveal" style="--i:2">${intro}</p>` : ""}</div></div>
     ${bloques.map(([h, cuerpo]) => `<section class="legal-b"><h3>${h}</h3>${cuerpo}</section>`).join("")}
   </article>`;
@@ -536,7 +536,7 @@ function viewNoEncontrada() {
   const en = UI.lang === "en";
   return `<article class="legal no-encontrada">
     <div class="view-head"><div><p class="eyebrow reveal">404</p>
-      <h2 class="reveal" style="--i:1">${en ? "This page <em>is not here</em>" : "Esta página <em>no está</em>"}</h2>
+      <h1 class="reveal" style="--i:1">${en ? "This page <em>is not here</em>" : "Esta página <em>no está</em>"}</h1>
       <p class="reveal" style="--i:2">${en ? "Maybe the link is old or a letter is missing. The coffee is still where it was."
         : "Puede que el enlace sea viejo o le falte una letra. El café sigue donde estaba."}</p></div></div>
     <div class="cta"><button class="btn primary" data-act="go" data-to="cafes">${en ? "See the coffees" : "Ver los cafés"}</button>

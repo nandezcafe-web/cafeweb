@@ -214,7 +214,7 @@ function viewTienda() {
   return `${subnavTienda("tienda")}
     <div class="view-head">
       <div><p class="eyebrow reveal">${t("nav_tienda")}</p>
-        <h2 class="reveal" style="--i:1">${en ? "Everything <em>from the house</em>" : "Todo lo <em>de la casa</em>"}</h2>
+        <h1 class="reveal" style="--i:1">${en ? "Everything <em>from the house</em>" : "Todo lo <em>de la casa</em>"}</h1>
         <p class="reveal" style="--i:2">${en ? "Whole bean coffee from neighbouring farms, the gear to brew it and Coffee Gang merch."
           : "Café en grano de fincas vecinas, lo necesario para prepararlo y el merch Coffee Gang."}</p></div>
     </div>
@@ -251,8 +251,8 @@ function viewAccesorios() {
   return `${subnavTienda("accesorios")}
     <div class="view-head">
       <div><p class="eyebrow reveal">${t("nav_tienda")} · ${t("nav_accesorios")}</p>
-        <h2 class="reveal" style="--i:1">${prep ? (en ? "To brew it, <em>and to wear it</em>" : "Para prepararlo, <em>y para ponértelo</em>")
-                                              : (en ? "Wear the <em>gang</em>" : "Ponte el <em>gang</em>")}</h2>
+        <h1 class="reveal" style="--i:1">${prep ? (en ? "To brew it, <em>and to wear it</em>" : "Para prepararlo, <em>y para ponértelo</em>")
+                                              : (en ? "Wear the <em>gang</em>" : "Ponte el <em>gang</em>")}</h1>
         <p class="reveal" style="--i:2">${en ? "We are choosing each piece. Leave your email on the ones you want and we tell you the day they are out, with their price."
           : "Estamos escogiendo cada pieza. Deja tu correo en las que quieras y te avisamos el día que salgan, con su precio."}</p></div>
     </div>
@@ -268,7 +268,7 @@ function viewCafes() {
   return `${subnavTienda("cafes")}
     <div class="view-head">
       <div><p class="eyebrow reveal">${t("nav_tienda")} · ${t("nav_cafes_esp")}</p>
-        <h2 class="reveal" style="--i:1">${en ? "Three coffees, <em>medium roast</em>" : "Tres cafés, <em>tostión media</em>"}</h2>
+        <h1 class="reveal" style="--i:1">${en ? "Three coffees, <em>medium roast</em>" : "Tres cafés, <em>tostión media</em>"}</h1>
         <p class="reveal" style="--i:2">${en
           ? "Two from a single farm, whole bean, and a blend of the two, ground. All from Norte de Santander."
           : "Dos de una sola finca, en grano, y un blend de los dos, molido. Todos de Norte de Santander."}</p></div>
