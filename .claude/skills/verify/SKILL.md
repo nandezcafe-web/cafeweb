@@ -15,7 +15,7 @@ description: How to run and drive the Nandez Coffee site (public SPA, single-fil
 - Los crawlers no ejecutan JS: para textos SEO/llms.txt basta `curl -s <url> | grep`.
 - Inglés: rutas bajo `/en/` (p. ej. `/en/subscription`); la portada es `/en`, sin barra (Vercel redirige `/en/`). Para saber si una dirección es inglés usar `esIngles(path)`, nunca `startsWith("/en")`: `/envios-y-devoluciones` también empieza por `/en`.
 - Para revisar en navegador, no basta `curl`: el HTML llega bien y es el JavaScript el que puede cambiar la vista (así pasó con `/en`, que se veía como 404).
-- Estado del visitante: `localStorage['nandez-v11']`. Para probar estado viejo, inyectar claves ahí y recargar; limpiar al terminar.
+- Estado del visitante: `localStorage['nandez-v12']`. Para probar estado viejo, inyectar claves ahí y recargar; limpiar al terminar.
 - Formularios que "envían" abren el correo con `abrirContacto(texto, asunto)`: reemplazarla por una función que capture, para no abrir el cliente de correo.
 - Móvil: resize_window preset mobile; revisar `scrollWidth - innerWidth === 0` y que el `.dock` esté visible.
 

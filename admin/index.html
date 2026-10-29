@@ -1675,7 +1675,7 @@ const CONFIG = {
      estos valores son el punto de partida si no hay conexión. */
   fnc: { precioCarga: 2105000, factorBase: 94, fecha: "2026-09-25" },
   mercado: { ny: 278.6, trm: 3306.86 },
-  storageKey: "nandez-v11",
+  storageKey: "nandez-v12",
   whatsapp: "",                 // 573001234567 · mientras esté vacío, pedidos y avisos salen por correo
   correo: "nandezcafe@gmail.com",
   /* Formulario externo (Formspree, Getform…): si hay URL, pedidos, suscriptores y postores
@@ -1783,7 +1783,7 @@ const msnm = (n) => fmtNum(n) + (UI.lang === "en" ? " m a.s.l." : " msnm");
 
 function seed() {
   return {
-    v: 11, seq: 400,
+    v: 12, seq: 400,
 
     /* ---------- FINCAS ALIADAS ---------- */
     fincas: [
@@ -1930,7 +1930,7 @@ function seed() {
   };
 }
 
-function load() { try { const s = JSON.parse(localStorage.getItem(CONFIG.storageKey)); return s && s.v === 11 ? s : null; } catch { return null; } }
+function load() { try { const s = JSON.parse(localStorage.getItem(CONFIG.storageKey)); return s && s.v === 12 ? s : null; } catch { return null; } }
 function save() { try { localStorage.setItem(CONFIG.storageKey, JSON.stringify(S)); } catch {} }
 function idiomaGuardado() { try { return localStorage.getItem("nandez-lang"); } catch { return null; } }
 

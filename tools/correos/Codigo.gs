@@ -29,14 +29,17 @@ const BONO = { pct: 10, dias: 30, recordarA: 23 };
 /* El aviso diario a Nandez: suscripciones que tocan en los próximos días */
 const AVISO_DIAS = 3;
 const H_CONTACTOS = "Contactos", H_REGISTROS = "Registros", H_ENVIOS = "Envíos", H_ENTREGAS = "Entregas";
-const H_BONOS = "Bonos", H_PEDIDOS = "Pedidos", H_SUBS = "Suscripciones";
+const H_BONOS = "Bonos", H_PEDIDOS = "Pedidos", H_SUBS = "Suscripciones", H_STOCK = "Stock";
 const COLS = ["correo", "nombre", "etiquetas", "acepta_correos", "alta", "ultimo", "baja", "ciudad", "idioma"];
 const COLS_BONOS = ["codigo", "correo", "pct", "alta", "vence", "bienvenida", "usado", "pedido", "recordado", "idioma"];
 /* Los datos de envío entraron después, así que van al final: una hoja que ya
    existe conserva el orden viejo y las filas de antes no se descuadran. */
 const COLS_PEDIDOS = ["id", "fecha", "estado", "nombre", "correo", "whatsapp", "ciudad", "productos", "subtotal", "descuento",
   "envio", "total", "bono", "canal", "pagado", "despachado", "transportadora", "guia", "notas",
-  "documento", "direccion", "detalle", "departamento"];
+  "documento", "direccion", "detalle", "departamento", "items"];
+/* Una fila por presentación ("P-CAS-250"). Esta hoja es el stock de verdad:
+   el navegador solo copia lo que diga aquí. Se puede corregir a mano. */
+const COLS_STOCK = ["id", "nombre", "stock", "actualizado"];
 const COLS_SUBS = ["correo", "plan", "kit", "pago", "cada_meses", "molienda", "ciudad", "alta", "estado", "proximo", "ultimo_envio", "envios", "notas", "idioma", "avisado"];
 /* Al suscriptor se le avisa este número de días antes de que salga su caja */
 const SUB_AVISO = 3;
@@ -58,6 +61,7 @@ function configurar() {
   hoja_(ss, H_PEDIDOS, COLS_PEDIDOS);
   hoja_(ss, H_SUBS, COLS_SUBS);
   hoja_(ss, H_BONOS, COLS_BONOS);
+  hoja_(ss, H_STOCK, COLS_STOCK);
   const primera = ss.getSheetByName("Hoja 1") || ss.getSheetByName("Sheet1");
   if (primera && ss.getSheets().length > 1) ss.deleteSheet(primera);
   if (!p.getProperty("CLAVE")) p.setProperty("CLAVE", Utilities.getUuid().replace(/-/g, ""));
@@ -95,7 +99,7 @@ const fecha_ = (v, en) => { const d = new Date(v);
   return en ? MESES.en[d.getMonth()] + " " + d.getDate() : d.getDate() + " de " + MESES.es[d.getMonth()]; };
 const pesos_ = (n) => "$" + String(num_(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 /* las hojas que se agregaron después: si alguien ya tenía la hoja armada, aparecen solas */
-const hojaDe_ = (ss, nombre) => hoja_(ss, nombre, { [H_BONOS]: COLS_BONOS, [H_PEDIDOS]: COLS_PEDIDOS, [H_SUBS]: COLS_SUBS }[nombre]);
+const hojaDe_ = (ss, nombre) => hoja_(ss, nombre, { [H_BONOS]: COLS_BONOS, [H_PEDIDOS]: COLS_PEDIDOS, [H_SUBS]: COLS_SUBS, [H_STOCK]: COLS_STOCK }[nombre]);
 
 /* ---------- lo que llega de la página ----------
    La página manda texto plano (sin preflight de CORS). Nunca se activa
@@ -213,7 +217,14 @@ function pedido_(ss, d, correo) {
   }
   h.appendRow([id, new Date(), "nuevo", corto_(d.nombre, 120), correo, corto_(d.tel, 40), corto_(d.ciudad, 80), productos,
     num_(d.subtotal), num_(d.descuento), num_(d.envio), num_(d.total), bono, corto_(d.canal, 20), "", "", "", "", notas,
-    corto_(d.documento, 30), corto_(d.direccion, 200), corto_(d.detalle, 200), corto_(d.departamento, 60)]);
+    corto_(d.documento, 30), corto_(d.direccion, 200), corto_(d.detalle, 200), corto_(d.departamento, 60),
+    JSON.stringify(items.map((i) => ({ id: corto_(i.id, 40), g: num_(i.g), n: num_(i.n) })))]);
+  /* el pedido aparta las bolsas: si alguien pidió más de las que había, queda escrito */
+  const falta = descontarStock_(ss, items);
+  if (falta.length) {
+    notas = (notas ? notas + " " : "") + "Sin stock — " + falta.join("; ") + ".";
+    h.getRange(h.getLastRow(), 19).setValue(notas);
+  }
   const en = d.idioma === "en", lineas = productos + "\n\nTotal: " + pesos_(d.total) + (num_(d.descuento) ? " (" + (en ? "with " : "con ") + bono + ")" : "");
   /* la dirección como se escribe en la guía */
   const envio = corto_(d.direccion, 200) + (d.detalle ? "\n" + corto_(d.detalle, 200) : "") +
@@ -237,6 +248,44 @@ function pedido_(ss, d, correo) {
   }
   return id;
 }
+/* ---------- stock compartido ----------
+   Sin esta hoja cada navegador llevaba su propia cuenta y dos personas podían
+   comprar la última bolsa. Acá hay una sola cifra para todos. */
+const claveStock_ = (i) => corto_(i.id, 40) + "-" + num_(i.g);
+function stockMapa_(ss) {
+  const m = {};
+  hojaDe_(ss, H_STOCK).getDataRange().getValues().slice(1).forEach((f) => { if (f[0]) m[String(f[0])] = num_(f[2]); });
+  return m;
+}
+/* Descuenta lo pedido. La primera vez que ve una presentación crea su fila con
+   lo que la tienda dice tener: de ahí sale el inventario inicial, y después
+   manda la hoja. Devuelve lo que no alcanzó, para anotarlo en el pedido. */
+function descontarStock_(ss, items) {
+  const h = hojaDe_(ss, H_STOCK), filas = h.getDataRange().getValues(), falta = [];
+  items.forEach((i) => {
+    const id = claveStock_(i), piden = Math.max(0, num_(i.n));
+    if (!num_(i.g) || !piden) return;
+    const k = filas.findIndex((f, j) => j > 0 && String(f[0]) === id);
+    const hay = k > 0 ? num_(filas[k][2]) : num_(i.stock);
+    if (piden > hay) falta.push(corto_(i.nombre, 80) + ": pidió " + piden + " y había " + hay);
+    const queda = Math.max(0, hay - piden);
+    if (k > 0) { h.getRange(k + 1, 3).setValue(queda); h.getRange(k + 1, 4).setValue(new Date()); }
+    else { h.appendRow([id, corto_(i.nombre, 80), queda, new Date()]); filas.push([id, "", queda, ""]); }
+  });
+  return falta;
+}
+/* Un pedido cancelado devuelve sus bolsas */
+function devolverStock_(ss, items) {
+  const h = hojaDe_(ss, H_STOCK), filas = h.getDataRange().getValues();
+  items.forEach((i) => {
+    const k = filas.findIndex((f, j) => j > 0 && String(f[0]) === claveStock_(i));
+    if (k < 1) return;
+    h.getRange(k + 1, 3).setValue(num_(filas[k][2]) + Math.max(0, num_(i.n)));
+    h.getRange(k + 1, 4).setValue(new Date());
+  });
+}
+const itemsDe_ = (v) => { try { const a = JSON.parse(v || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
+
 /* El panel mueve el pedido de estado. Al despacharlo con guía, el cliente recibe la guía. */
 function cambiarPedido_(d) {
   if (!d.clave || d.clave !== clave_()) return json_({ ok: false, error: "clave" });
@@ -245,6 +294,8 @@ function cambiarPedido_(d) {
   const i = filas.findIndex((f, k) => k > 0 && String(f[0]) === String(d.id));
   if (i < 0) return json_({ ok: false, error: "no" });
   const r = i + 1, f = filas[i];
+  /* cancelar devuelve las bolsas a la hoja, y solo la primera vez */
+  if (d.estado === "cancelado" && f[2] !== "cancelado") devolverStock_(ss, itemsDe_(f[23]));
   h.getRange(r, 3).setValue(d.estado);
   if (d.estado === "pagado" && !f[14]) h.getRange(r, 15).setValue(new Date());
   if (d.notas != null) h.getRange(r, 19).setValue(corto_(d.notas, 500));
@@ -339,6 +390,8 @@ function envioSub_(d) {
 function doGet(e) {
   const q = (e && e.parameter) || {};
   if (q.accion === "baja") return baja_(q);
+  /* El stock no es secreto: la tienda lo pide al cargar, sin clave */
+  if (q.accion === "stock") return json_({ ok: true, stock: stockMapa_(libro_()) });
   if (q.accion === "bono") {
     const b = bonoVigente_(libro_(), q.codigo);
     return json_(b.fila ? { ok: true, codigo: b.codigo, pct: b.pct, vence: b.vence } : { ok: false, error: b.error });
