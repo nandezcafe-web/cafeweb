@@ -693,7 +693,6 @@ function registrarPedido(d, canal, srv) {
     const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
     v.stock = Math.max(0, v.stock - i.n);
     p.stock = principal(p).stock;
-    atribuirVenta(p, (i.n * i.g) / p.presentacion, i.precio * i.n);
   });
   const L = (a) => a.join("\n");
   const texto = L([

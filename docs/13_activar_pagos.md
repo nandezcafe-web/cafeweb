@@ -88,6 +88,8 @@ Cambiar las tres llaves por las de producción (`pub_prod_`, `prod_integrity_`, 
 | Wompi anula un pago | El pedido vuelve a «nuevo» y se avisa a Nandez para no despacharlo |
 | La pasarela no responde | La página ofrece transferencia o Nequi sin perder el carrito ni lo escrito |
 
+**El Inventario del panel ve las ventas de la página.** Cada lote suma, además de lo que se registra a mano (venta directa, Clientes), las bolsas de los pedidos **cobrados** que trae la hoja: pagados, despachados o entregados, nunca las reservas. El kilo cuenta como cuatro bolsas de 250 g, y la plata entra sin el IVA que va dentro del precio. La pestaña las trae sola si el panel tiene la clave. Antes, la venta se le atribuía al lote en el navegador del comprador y el panel nunca se enteraba.
+
 En el panel, una reserva sin pagar dice **«Pagando en línea»** y no tiene botón de marcar pagado: la marca el aviso de Wompi, no una persona. Cada pedido pagado tiene su botón **Factura** con los datos para el servicio gratuito de la DIAN.
 
 ## 4. Las pruebas
@@ -100,7 +102,7 @@ node tools/pruebas/servidor.mjs                     # la tienda en el navegador:
 
 `compras.mjs` corre el código de verdad (servidor, script de la hoja y factura del panel) y simula solo Wompi, Google y Gmail, en memoria: **no toca la hoja real ni envía correos**. El Wompi simulado rechaza un cobro mal firmado y firma sus avisos como el real.
 
-**Resultado del 3 de noviembre de 2026:** 196/196 con el catálogo de prueba y 106/106 con el real, **302 compras y 336 pedidos pagados**, con los 8 invariantes en verde (stock, transacciones, plata, correos, bonos, facturas). Además, 6 compras en el navegador con clics reales en `servidor.mjs`: aprobada con tarjeta, rechazada y reintentada con Nequi, total cambiado y pagada por PSE, en inglés y en el celular, sin correo y con la pasarela caída.
+**Resultado del 3 de noviembre de 2026:** 196/196 con el catálogo de prueba y 106/106 con el real, **302 compras y 336 pedidos pagados**, con los 9 invariantes en verde (stock, transacciones, plata, correos, bonos, facturas y lotes del Inventario). Además, 6 compras en el navegador con clics reales en `servidor.mjs`: aprobada con tarjeta, rechazada y reintentada con Nequi, total cambiado y pagada por PSE, en inglés y en el celular, sin correo y con la pasarela caída.
 
 Las compras en el navegador encontraron **dos errores que se corrigieron**: el widget se abría debajo del carrito (un diálogo modal deja todo lo demás inerte, y el primer clic cerraba el carrito en vez de pagar), y la reserva sin pagar se olvidaba al recargar la página, con lo que se apartaban dos veces las mismas bolsas.
 

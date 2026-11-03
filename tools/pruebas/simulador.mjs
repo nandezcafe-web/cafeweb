@@ -120,6 +120,13 @@ export function navegador() {
     window: { addEventListener() {} }, setInterval() {}, setTimeout() {}, fetch: () => Promise.resolve({ json: () => ({}) }) };
   vm.createContext(nav);
   vm.runInContext(fs.readFileSync(path.join(RAIZ, "prototipo/js/core.js"), "utf8"), nav);
+  /* el Inventario del panel: lee las ventas de la página desde OP.datos */
+  nav.coClave = () => "";
+  vm.runInContext(fs.readFileSync(path.join(RAIZ, "prototipo/js/inventory.js"), "utf8"), nav);
   vm.runInContext(fs.readFileSync(path.join(RAIZ, "prototipo/js/operacion.js"), "utf8"), nav);
+  nav.ponerPedidos = (pedidos) => vm.runInContext("OP.datos = " + JSON.stringify({ pedidos }), nav);
+  nav.enLotes = () => vm.runInContext("S.compras.map((c) => ({ id: c.id, ...ventasWeb(c), recuperado: recuperado(c), manual: c.ingresos || 0 }))", nav);
+  nav.loteDe = (id) => vm.runInContext("(S.productos.find((p) => p.id === " + JSON.stringify(id) + ") || {}).loteId || null", nav);
+  nav.presentacionDe = (id) => vm.runInContext("(S.productos.find((p) => p.id === " + JSON.stringify(id) + ") || {}).presentacion || 250", nav);
   return nav;
 }

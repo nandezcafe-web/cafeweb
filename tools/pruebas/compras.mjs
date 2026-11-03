@@ -488,6 +488,21 @@ const inv = [
     (() => { const op = JSON.parse(gs.doGet({ parameter: { accion: "operacion", clave: props.CLAVE } }).texto);
       return op.pedidos.filter((p) => p.estado === "pagado").every((p) => nav.textoFactura(p).cuadra === true); })()],
   ["ninguna salida a la red fuera de la hoja simulada", true],
+  ["el Inventario del panel cuenta en su lote cada bolsa cobrada en la página", (() => {
+    const op = JSON.parse(gs.doGet({ parameter: { accion: "operacion", clave: props.CLAVE } }).texto);
+    nav.ponerPedidos(op.pedidos);
+    const cobrados = op.pedidos.filter((p) => ["pagado", "despachado", "entregado"].includes(p.estado));
+    let esperadas = 0, plata = 0;
+    cobrados.forEach((p) => {
+      const f = p.subtotal ? (p.subtotal - p.descuento) / p.subtotal : 1;
+      p.items.forEach((i) => { if (!nav.loteDe(i.id)) return; esperadas += i.n * i.g / nav.presentacionDe(i.id); plata += i.p * i.n * f / (1 + CAT.iva / 100); });
+    });
+    const lotes = nav.enLotes(), bolsas = lotes.reduce((s, l) => s + l.bolsas, 0), ingresos = lotes.reduce((s, l) => s + l.ingresos, 0);
+    /* y ningún pedido sin cobrar suma */
+    nav.ponerPedidos(op.pedidos.map((p) => ({ ...p, estado: "nuevo" })));
+    const sinCobrar = nav.enLotes().reduce((s, l) => s + l.bolsas, 0);
+    return esperadas > 0 && Math.abs(bolsas - esperadas) < 1e-9 && Math.abs(ingresos - plata) < 0.01 && sinCobrar === 0;
+  })()],
 ];
 
 /* ---------- 10. el informe ---------- */

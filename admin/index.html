@@ -2599,9 +2599,36 @@ function comprasHTML() {
    ============================================================ */
 const ETAPAS = ["EN BODEGA", "TRILLADO", "TOSTADO", "EMPACADO", "VENDIDO"];
 
+/* ---------- las ventas de la página ----------
+   Lo que se compra en la página queda en la hoja de Google (pestaña Pedidos), no
+   en este navegador. Aquí se suma desde lo mismo que trae la pestaña Pedidos del
+   panel, y solo lo cobrado: pagado, despachado o entregado. Lo que se registra a
+   mano (venta directa, Clientes) sigue aparte, en bolsasVendidas e ingresos.
+   Se cuenta sin el IVA que va dentro del precio: esa plata no es del lote. */
+const COBRADOS = ["pagado", "despachado", "entregado"];
+function ventasWeb(c) {
+  const v = { bolsas: 0, ingresos: 0, pedidos: 0 };
+  (OP.datos?.pedidos || []).filter((p) => COBRADOS.includes(p.estado)).forEach((p) => {
+    /* con bono, cada bolsa se cobró más barata: igual que en la factura */
+    const sub = Number(p.subtotal) || 0, factor = sub ? (sub - (Number(p.descuento) || 0)) / sub : 1;
+    let delLote = false;
+    (p.items || []).forEach((i) => {
+      const prod = S.productos.find((x) => x.id === i.id);
+      if (!prod || prod.loteId !== c.id || !(i.n > 0)) return;
+      v.bolsas += (i.n * (i.g || prod.presentacion || 250)) / (prod.presentacion || 250);
+      if (i.p) v.ingresos += (i.p * i.n * factor) / (1 + (CONFIG.iva || 0) / 100);
+      delLote = true;
+    });
+    if (delLote) v.pedidos++;
+  });
+  return v;
+}
+const vendidas = (c) => (c.bolsasVendidas || 0) + ventasWeb(c).bolsas;
+const libres = (c) => Math.max(0, Math.round((c.bolsas || 0) - vendidas(c)));
+
 const costoTotal = (c) => Object.values(c.costos || {}).reduce((s, v) => s + v, 0);
 const costoBolsa = (c) => (c.bolsas ? costoTotal(c) / c.bolsas : 0);
-const recuperado = (c) => c.ingresos || 0;
+const recuperado = (c) => (c.ingresos || 0) + ventasWeb(c).ingresos;
 const enJuego = (c) => Math.max(0, costoTotal(c) - recuperado(c));      // plata todavía sin recuperar
 const factorReal = (c) => (c.kgVerde ? (c.kg * 70) / c.kgVerde : null);
 const mermaReal = (c) => (c.kgVerde && c.kgTostado ? (1 - c.kgTostado / c.kgVerde) * 100 : null);
@@ -2610,10 +2637,12 @@ const dias = (iso) => Math.round((Date.now() - new Date(iso + "T00:00:00")) / 86
 function valorPendiente(c) {
   const p = S.productos.find((x) => x.loteId === c.id);
   const precio = p ? p.precio : c.precioVenta || 0;
-  return bolsasLibres(c) * precio;
+  return libres(c) * precio;
 }
 
 function viewInventario() {
+  /* las ventas de la página vienen de la hoja: se traen solas al abrir esta pestaña */
+  if (!OP.datos && !OP.cargando && !OP.error && CONFIG.registro && coClave()) setTimeout(opCargar);
   const abiertas = S.compras.filter((c) => c.estado !== "VENDIDO");
   const invertido = S.compras.reduce((s, c) => s + costoTotal(c), 0);
   const quieto = S.compras.reduce((s, c) => s + enJuego(c), 0);
@@ -2634,6 +2663,10 @@ function viewInventario() {
       <div class="kpi"><b data-count="${porVender}" data-pre="$">${cop(porVender)}</b><small>valor de lo que queda</small></div>
       <div class="kpi"><b data-count="${recup + porVender - invertido}" data-pre="$">${cop(recup + porVender - invertido)}</b><small>utilidad si se vende todo</small></div>
     </div>
+    <p class="hint">${OP.datos ? `Incluye ${fmtNum(S.compras.reduce((s, c) => s + ventasWeb(c).pedidos, 0))} pedidos cobrados de la página, leídos de la hoja de Google, sin el IVA que va dentro del precio.`
+      : OP.cargando ? "Trayendo las ventas de la página desde la hoja…"
+      : OP.error ? `Las ventas de la página no se pudieron traer: ${esc(OP.error)}`
+      : "Las ventas de la página no se ven todavía: pega la clave del panel en la pestaña Correos."}</p>
     <div class="list">${S.compras.map(loteCard).join("")}</div>
     <p class="hint">Los costos que no se han registrado todavía (trilla, tueste, empaque) no están sumados: el costo por bolsa sube cuando se registren.</p>`;
 }
@@ -2641,7 +2674,7 @@ function viewInventario() {
 function loteCard(c, i) {
   const idx = ETAPAS.indexOf(c.estado), total = costoTotal(c), rec = recuperado(c), pend = valorPendiente(c);
   const util = rec + pend - total, margen = rec + pend > 0 ? (util / (rec + pend)) * 100 : 0;
-  const fr = factorReal(c), mm = mermaReal(c), d = dias(c.fecha);
+  const fr = factorReal(c), mm = mermaReal(c), d = dias(c.fecha), web = ventasWeb(c).bolsas;
   const stepper = `<div class="stepper" aria-label="Etapa: ${esc(c.estado)}">${ETAPAS.map((s, k) =>
     `${k ? `<i class="${k <= idx ? "on" : ""}"></i>` : ""}<b class="${k <= idx ? "on" : ""} ${k === idx ? "now" : ""}" title="${s.toLowerCase()}"></b>`).join("")}</div>
     <div class="stepper-label">${esc(c.estado.toLowerCase())} · ${d} días en bodega</div>`;
@@ -2656,7 +2689,7 @@ function loteCard(c, i) {
     [`${fmtNum(c.kg)} kg pergamino`, `factor declarado ${c.factor}${fr ? ` · real ${fr.toFixed(1)}` : ""}`],
     c.kgVerde ? [`${fmtNum(c.kgVerde)} kg verde`, `tras trilla`] : null,
     c.kgTostado ? [`${fmtNum(c.kgTostado)} kg tostado`, `merma ${mm.toFixed(1)} %`] : null,
-    c.bolsas ? [`${fmtNum(c.bolsas)} bolsas`, `${fmtNum(Math.round(c.bolsasVendidas || 0))} vendidas · ${fmtNum(bolsasLibres(c))} en stock`] : null,
+    c.bolsas ? [`${fmtNum(c.bolsas)} bolsas`, `${fmtNum(Math.round(vendidas(c)))} vendidas${web ? ` (${fmtNum(Math.round(web))} en la página)` : ""} · ${fmtNum(libres(c))} en stock`] : null,
   ].filter(Boolean);
   return `<div class="item lote" style="--i:${i}">
     <div><p class="kicker">${esc(c.id)} · ${fmtFecha(c.fecha)} · ${esc(c.municipio)}</p>
@@ -2714,10 +2747,10 @@ function invPasoOk() {
     toast(`${fmtNum(c.bolsas)} bolsas listas. Ya aparecen en la tienda.`, { label: "Ver tienda", act: () => go("tienda") });
   }
   if (paso === "venta") {
-    const n = Math.min(v("bolsas"), bolsasLibres(c)), precio = v("precio");
+    const n = Math.min(v("bolsas"), libres(c)), precio = v("precio");
     c.bolsasVendidas = (c.bolsasVendidas || 0) + n; c.ingresos = (c.ingresos || 0) + n * precio;
     const p = S.productos.find((x) => x.loteId === c.id); if (p) p.stock = Math.max(0, p.stock - n);
-    if (!bolsasLibres(c)) c.estado = "VENDIDO";
+    if (!libres(c)) c.estado = "VENDIDO";
     toast(`Venta registrada: ${n} bolsas por ${cop(n * precio)}.`);
   }
   save(); closeModal(); render();
