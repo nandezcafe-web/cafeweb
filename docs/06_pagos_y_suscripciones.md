@@ -41,6 +41,22 @@ Pasos:
 
 En Vercel hay que dejar el *Root Directory* del proyecto en la raíz (no en `prototipo`) para que `api/` funcione; `vercel.json` ya indica que el sitio estático sale de `prototipo`.
 
+## 2 bis. El IVA
+
+**El café tostado paga IVA del 5 %**, no del 19 %: está en el artículo 468-1 del Estatuto Tributario, partida 09.01, que cubre el café tostado o descafeinado. El café verde sin tostar está excluido. Si ves una tienda cobrando el 19 % sobre café tostado, está usando la tarifa general; no es referencia.
+
+**Quién tiene que cobrarlo.** Solo quien sea *responsable de IVA*. Una persona natural no lo es mientras cumpla las condiciones del parágrafo 3 del artículo 437: ingresos brutos bajo 3.500 UVT (con la UVT 2026 de $52.374 son $183.309.000), un solo establecimiento, no ser usuario aduanero, y sin contratos ni consignaciones gravadas por encima de ese tope. **Confirmar con el contador antes de facturar.**
+
+**Cómo quedó en la página.** `CONFIG.iva` vale `5`. El precio que se muestra ya lo incluye, como manda el precio al consumidor: la bolsa de $40.000 lleva $1.905 de IVA adentro. Debajo del total del carrito aparece «Incluye $1.905 de IVA (5 %)», el envío no lo lleva, y el pedido guarda la cifra en su propia columna de la hoja para cuando haya que facturar. **Poniendo `iva: 0` desaparece todo**, que es como debe quedar si Nandez no es responsable.
+
+| Sobre una bolsa de $40.000 | |
+|---|---|
+| IVA 5 % incluido | $1.905 |
+| Comisión Mercado Pago (3,49 % + IVA) | $1.661 |
+| **Se va antes de tocar la caja** | **$3.566 ≈ 9 %** |
+
+Esos dos descuentos **ya están en el cotizador**, con sus casillas para cambiarlos. El margen dejó de medirse sobre lo que entra por caja y pasa a medirse sobre lo que queda, que es lo que importa al decidir cuánto pagarle a la finca. En el lote de ejemplo, el tope de compra bajó de $48.625 a $42.895 por kilo: antes el cotizador autorizaba pagar casi $6.000 de más por kilo.
+
 ## 3. Cuánto cobra Mercado Pago
 
 Para Colombia, la comisión ronda **3,49 % + IVA** con acreditación al día siguiente, y sube si el dinero se quiere de inmediato; algunas fuentes mencionan además un fijo por transacción. **Hay que confirmarlo en la cuenta**, porque cambia por método de pago y volumen.
