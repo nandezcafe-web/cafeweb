@@ -275,6 +275,19 @@ ${alterna(u)}
 </urlset>
 `);
 
+/* El catálogo que leen los correos (tools/correos/Codigo.gs): así la bienvenida muestra
+   los cafés con su precio real y nadie copia precios a mano en el script.
+   Las fotos van en JPG desde img/correo/: Outlook no muestra WebP. */
+const FOTO_CORREO = { "P-CAS": "/img/correo/p-cas.jpg" };
+escribir("data/catalogo.json", JSON.stringify({
+  productos: ev(mundo("es"), `S.productos.map((p) => ({
+    id: p.id, nombre: p.nombre, sale: p.sale, sub: p.sub, color: p.color || "#C9381A",
+    precio: p.proximamente ? 0 : principal(p).precio, gramos: principal(p).g, proximamente: !!p.proximamente,
+    url: { es: CONFIG.sitio + ruta("cafe", p.id, "es"), en: CONFIG.sitio + ruta("cafe", p.id, "en") } }))`)
+    .map((p) => ({ ...p, foto: FOTO_CORREO[p.id] ? sitio + FOTO_CORREO[p.id] : "" })),
+  redes: ev(mundo("es"), "CONFIG.redes"),
+}, null, 2));
+
 /* para "agregar a la pantalla de inicio" en el celular */
 escribir("site.webmanifest", JSON.stringify({ name: "Nandez Coffee", short_name: "Nandez", start_url: "/", display: "standalone",
   background_color: "#F5F0E6", theme_color: "#F5F0E6",

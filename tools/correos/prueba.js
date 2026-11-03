@@ -27,7 +27,7 @@ function nuevoLibro(nombre) {
     insertSheet: (n) => (hojas[n] = nuevaHoja(n)), getSheets: () => Object.values(hojas), deleteSheet: (h) => delete hojas[h.nombre], hojas };
   return (libros[id] = ss);
 }
-const props = {}, enviados = [], disparadores = []; let cuota = 3;
+const props = {}, enviados = [], disparadores = [], cacheMem = {}; let cuota = 3;
 const ctx = {
   console, JSON, Date, String, Math, Object, Number, Array,
   SpreadsheetApp: { create: nuevoLibro, openById: (id) => libros[id] },
@@ -43,6 +43,10 @@ const ctx = {
     getProjectTriggers: () => disparadores.map((f) => ({ getHandlerFunction: () => f })),
     newTrigger: (f) => { const t = { timeBased: () => t, everyDays: () => t, atHour: () => t, create: () => disparadores.push(f) }; return t; } },
   Logger: { log: (m) => console.log("  log:", m) },
+  /* el catálogo que publica tools/build.js, leído del disco como si viniera de la página */
+  CacheService: { getScriptCache: () => ({ get: (k) => cacheMem[k] || null, put: (k, v) => { cacheMem[k] = v; } }) },
+  UrlFetchApp: { fetch: () => ({ getResponseCode: () => 200,
+    getContentText: () => fs.readFileSync(require("path").join(__dirname, "../../prototipo/data/catalogo.json"), "utf8") }) },
 };
 vm.createContext(ctx); vm.runInContext(codigo, ctx);
 const post = (d) => JSON.parse(ctx.doPost({ postData: { contents: JSON.stringify(d) } }).texto);
@@ -67,6 +71,10 @@ const bienv = ultimo(), codigoAna = ss.hojas["Bonos"].filas[1][0];
 ok(bienv.to === "ana@correo.com" && /^GANG-[A-HJ-NP-Z2-9]{5}$/.test(codigoAna), "a Ana le llega la bienvenida y su bono tiene el formato GANG-XXXXX sin letras confusas");
 ok(bienv.htmlBody.includes(codigoAna) && bienv.htmlBody.includes("/cafes?bono=" + codigoAna) && bienv.htmlBody.includes("accion=baja"), "la bienvenida trae el código, el botón que lo deja en el carrito y la baja");
 ok(/\d+ de [a-z]+/.test(bienv.body), "la fecha de vencimiento va en español");
+ok(bienv.htmlBody.includes("/img/correo/logo.png") && bienv.htmlBody.includes("Castillo de Ragonvalia") && bienv.htmlBody.includes("$36.000")
+  && bienv.htmlBody.includes("?bono=" + codigoAna) && bienv.htmlBody.includes("Próximamente") && bienv.htmlBody.includes("Instagram"),
+  "la bienvenida trae el logo, la vitrina con el precio ya con el bono, los que vienen en camino y las redes");
+if (process.env.GUARDAR) fs.writeFileSync(process.env.GUARDAR, bienv.htmlBody);
 const n1 = enviados.length;
 ok(post({ tipo: "comunidad", correo: "ana@correo.com", consentimiento: true }).bienvenida === "ya" && enviados.length === n1, "si vuelve a unirse, no le llega otra bienvenida ni otro bono");
 post({ tipo: "espera", correo: "ana@correo.com", producto: "Tibo B" });

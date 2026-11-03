@@ -77,6 +77,8 @@ Cuando la lista pase de unos cientos de personas activas, o se quieran automatiz
 7. Abrir el panel interno → **Correos** → pegar la clave. Queda guardada en ese navegador. La pestaña **Pedidos** usa la misma.
 8. En el editor del script, *Configuración del proyecto* → **Zona horaria: (GMT-05:00) Bogotá**, para que el aviso de las 7 y las fechas sean de Colombia.
 
+**El diseño de los correos** lleva el logo y la vitrina de cafés con su precio real (ya con el bono restado). El script los lee de `https://…/data/catalogo.json`, que arma `node tools/build.js` desde el catálogo de la página, y las fotos van en JPG desde `prototipo/img/correo/` (Outlook no muestra WebP). Para que un café salga con foto en el correo, agregar su JPG ahí y su línea en `FOTO_CORREO` (tools/build.js). Leer la página es un permiso nuevo: la primera vez Google pide autorizar "conectarse a un servicio externo".
+
 Si el script ya estaba publicado con la versión anterior: pegar el archivo nuevo, ejecutar **configurar** otra vez (crea las hojas nuevas y el aviso diario, no toca lo que hay) y publicar una **nueva versión** de la misma implementación.
 
 Si más adelante se cambia el script, hay que publicar una **nueva versión** de la misma implementación (Implementar → Administrar implementaciones → editar), para que la URL no cambie.

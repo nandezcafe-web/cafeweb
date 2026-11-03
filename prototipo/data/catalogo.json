@@ -1,0 +1,81 @@
+{
+  "productos": [
+    {
+      "id": "P-CAS",
+      "nombre": {
+        "es": "Castillo de Ragonvalia",
+        "en": "Castillo from Ragonvalia"
+      },
+      "sale": {
+        "es": "En grano",
+        "en": "Whole bean"
+      },
+      "sub": {
+        "es": "Lavado · cosecha 2026",
+        "en": "Washed · 2026 harvest"
+      },
+      "color": "#2F5A3C",
+      "precio": 40000,
+      "gramos": 250,
+      "proximamente": false,
+      "url": {
+        "es": "https://cafeweb-five.vercel.app/cafe-castillo-de-ragonvalia",
+        "en": "https://cafeweb-five.vercel.app/en/coffee-castillo-from-ragonvalia"
+      },
+      "foto": "https://cafeweb-five.vercel.app/img/correo/p-cas.jpg"
+    },
+    {
+      "id": "P-PAR",
+      "nombre": {
+        "es": "El Paraíso",
+        "en": "El Paraíso"
+      },
+      "sale": {
+        "es": "En grano",
+        "en": "Whole bean"
+      },
+      "sub": {
+        "es": "Cenicafé 1 · Palocolorado, Chinácota",
+        "en": "Cenicafé 1 · Palocolorado, Chinácota"
+      },
+      "color": "#2C4FA3",
+      "precio": 0,
+      "gramos": 250,
+      "proximamente": true,
+      "url": {
+        "es": "https://cafeweb-five.vercel.app/cafe-el-paraiso",
+        "en": "https://cafeweb-five.vercel.app/en/coffee-el-paraiso"
+      },
+      "foto": ""
+    },
+    {
+      "id": "P-BLE",
+      "nombre": {
+        "es": "Blend de la casa",
+        "en": "House blend"
+      },
+      "sale": {
+        "es": "Molido",
+        "en": "Ground"
+      },
+      "sub": {
+        "es": "Castillo + Cenicafé 1 · molido",
+        "en": "Castillo + Cenicafé 1 · ground"
+      },
+      "color": "#9A6610",
+      "precio": 0,
+      "gramos": 250,
+      "proximamente": true,
+      "url": {
+        "es": "https://cafeweb-five.vercel.app/cafe-blend-de-la-casa",
+        "en": "https://cafeweb-five.vercel.app/en/coffee-house-blend"
+      },
+      "foto": ""
+    }
+  ],
+  "redes": {
+    "instagram": "https://www.instagram.com/nandezcafe/",
+    "facebook": "https://www.facebook.com/profile.php?id=61594868961438",
+    "youtube": "https://www.youtube.com/@N%C3%A1ndezCaf%C3%A9"
+  }
+}

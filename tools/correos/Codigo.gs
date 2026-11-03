@@ -178,17 +178,24 @@ function mandarBienvenida_(h, fila) {
   if (MailApp.getRemainingDailyQuota() < 1) return false;
   const f = h.getDataRange().getValues()[fila - 1], en = f[9] === "en";
   const codigo = String(f[0]), correo = String(f[1]), vence = fecha_(f[4], en);
-  const enlace = SITIO + (en ? "/en/coffees" : "/cafes") + "?bono=" + codigo;
-  const texto = en
-    ? "Welcome to " + COMUNIDAD + ".\n\nYou now have a plug for farm coffee: coffee from Norte de Santander that reaches your door with a name of its own. The farm, the grower, the altitude, the process and the roast date, on every bag.\n\nAs a member of " + COMUNIDAD + " you hear about every drop before anyone else. And your first bag is " + f[2] + " % off with this code:"
-    : "Bienvenido a " + COMUNIDAD + ".\n\nAhora tienes un plug de café de finca: café de Norte de Santander que llega a tu casa con nombre propio. La finca, quien la cultiva, la altura, el proceso y la fecha de tostión, en cada bolsa.\n\nComo miembro de " + COMUNIDAD + " te enteras de cada drop antes que nadie. Y tu primera bolsa tiene " + f[2] + " % menos con este código:";
-  const despues = en
-    ? "It is yours until " + vence + ", for one order. The button gets it ready in your cart: you just pick the coffee.\n\nHow do you brew at home? Reply and we will tell you where to start. A real person reads it."
-    : "Es tuyo hasta el " + vence + ", para un pedido. El botón lo deja listo en tu carrito: tú solo escoges el café.\n\n¿Cómo lo preparas en casa? Respóndenos y te decimos con cuál empezar. Del otro lado te lee una persona.";
-  const html = cuerpo_(texto) + codigoHtml_(codigo) + boton_(enlace, en ? "Order my first bag" : "Pedir mi primera bolsa") + cuerpo_(despues);
-  MailApp.sendEmail({ to: correo, name: MARCA, subject: en ? "Welcome to " + COMUNIDAD + ": " + f[2] + " % off your first bag" : "Bienvenido a " + COMUNIDAD + ": tu primera bolsa con " + f[2] + " %",
+  const enlace = SITIO + (en ? "/en/coffees" : "/cafes") + "?bono=" + codigo, pct = Number(f[2]) || BONO.pct;
+  const intro = en
+    ? "You now have a plug for farm coffee: coffee from Norte de Santander that reaches your door with a name of its own. The farm, the grower and the roast date, on every bag.\n\nTo welcome you, your first bag is " + pct + " % off:"
+    : "Ahora tienes un plug de café de finca: café de Norte de Santander que llega a tu casa con nombre propio. La finca, quien la cultiva y la fecha de tostión, en cada bolsa.\n\nPara darte la bienvenida, tu primera bolsa tiene " + pct + " % menos:";
+  const vale = en ? "Yours until " + vence + ", for one order. The button gets it ready in your cart." : "Es tuyo hasta el " + vence + ", para un pedido. El botón lo deja listo en tu carrito.";
+  const porQue = en
+    ? ["Farm coffee from Norte de Santander, with a name of its own", "Medium roast, whole bean or ground", "The farm and the roast date on every bag", "You hear about every drop before anyone else", "Shipping anywhere in Colombia"]
+    : ["Café de finca de Norte de Santander, con nombre propio", "Tostión media, en grano o molido", "La finca y la fecha de tostión en cada bolsa", "Te enteras de cada drop antes que nadie", "Envíos a toda Colombia"];
+  const cierre = en ? "How do you brew at home? Reply and we will tell you where to start. A real person reads it."
+    : "¿Cómo lo preparas en casa? Respóndenos y te decimos con cuál empezar. Del otro lado te lee una persona.";
+  const html = titulo_(en ? "Welcome to " : "Bienvenido a ", COMUNIDAD) + centrado_(intro) + codigoHtml_(codigo) +
+    centrado_(vale, 13) + boton_(enlace, en ? "Order my first bag" : "Pedir mi primera bolsa") +
+    lista_(en ? "Why " + MARCA + "?" : "¿Por qué " + MARCA + "?", porQue) +
+    productos_(en ? "To start with…" : "Para empezar…", codigo, pct, en) + centrado_(cierre, 15);
+  MailApp.sendEmail({ to: correo, name: MARCA, subject: en ? "Welcome to " + COMUNIDAD + ": " + pct + " % off your first bag" : "Bienvenido a " + COMUNIDAD + ": tu primera bolsa con " + pct + " %",
     htmlBody: marco_(html, pieComunidad_(correo, en)),
-    body: texto + "\n\n" + codigo + "\n\n" + despues + "\n\n" + enlace + "\n\n—\n" + MARCA + "\n" + (en ? "Unsubscribe: " : "Para no recibir más correos: ") + enlaceBaja_(correo) });
+    body: (en ? "Welcome to " : "Bienvenido a ") + COMUNIDAD + ".\n\n" + intro + "\n\n" + codigo + "\n" + vale + "\n" + enlace + "\n\n" +
+      porQue.map((x) => "· " + x).join("\n") + "\n\n" + cierre + "\n\n—\n" + MARCA + "\n" + (en ? "Unsubscribe: " : "Para no recibir más correos: ") + enlaceBaja_(correo) });
   h.getRange(fila, 6).setValue(new Date());
   return true;
 }
@@ -460,7 +467,9 @@ function diario() {
       ? "Your first bag of " + MARCA + " is still waiting for you. The " + f[2] + " % you got when you joined " + COMUNIDAD + " ends in " + quedan + " days."
       : "Tu primera bolsa de " + MARCA + " sigue esperándote. El " + f[2] + " % que te dimos al entrar a " + COMUNIDAD + " vence en " + quedan + " días.";
     MailApp.sendEmail({ to: correo, name: MARCA, subject: en ? COMUNIDAD + ": your " + f[2] + " % ends in " + quedan + " days" : COMUNIDAD + ": tu " + f[2] + " % vence en " + quedan + " días",
-      htmlBody: marco_(cuerpo_(texto) + codigoHtml_(String(f[0])) + boton_(enlace, en ? "Order my coffee" : "Pedir mi café"), pieComunidad_(correo, en)),
+      htmlBody: marco_(titulo_(en ? "Your " + f[2] + " % ends in " : "Tu " + f[2] + " % vence en ", quedan + (en ? " days" : " días")) + centrado_(texto) +
+        codigoHtml_(String(f[0])) + boton_(enlace, en ? "Order my coffee" : "Pedir mi café") +
+        productos_(en ? "Pick yours" : "Escoge el tuyo", String(f[0]), Number(f[2]) || BONO.pct, en), pieComunidad_(correo, en)),
       body: texto + "\n\n" + f[0] + "\n" + enlace + "\n\n—\n" + MARCA + "\n" + (en ? "Unsubscribe: " : "Para no recibir más correos: ") + enlaceBaja_(correo) });
     hb.getRange(i + 1, 9).setValue(new Date());
   }
@@ -523,16 +532,78 @@ function enviar_(d) {
 /* ---------- la plantilla de los correos ---------- */
 const esc_ = (s) => String(s).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
 const cuerpo_ = (texto) => esc_(texto).split(/\n{2,}/).map((p) => '<p style="margin:0 0 16px">' + p.replace(/\n/g, "<br>") + "</p>").join("");
-const codigoHtml_ = (codigo) => '<p style="margin:8px 0 20px;padding:14px;border:2px dashed #C9381A;text-align:center;font:800 26px/1 \'Courier New\',monospace;letter-spacing:0.12em;color:#141210">' + esc_(codigo) + "</p>";
-const boton_ = (url, txt) => '<p style="margin:0 0 24px"><a href="' + esc_(url) + '" style="display:inline-block;background:#C9381A;color:#ffffff;text-decoration:none;font:700 16px Arial,sans-serif;padding:14px 26px">' + esc_(txt) + "</a></p>";
+const codigoHtml_ = (codigo) => '<p style="margin:8px 0 8px;padding:14px;border:2px dashed #C9381A;text-align:center;font:800 26px/1 \'Courier New\',monospace;letter-spacing:0.12em;color:#141210">' + esc_(codigo) + "</p>";
+const boton_ = (url, txt) => '<p style="margin:18px 0 28px;text-align:center"><a href="' + esc_(url) + '" style="display:inline-block;background:#C9381A;color:#ffffff;text-decoration:none;font:700 15px Arial,sans-serif;letter-spacing:0.06em;text-transform:uppercase;padding:15px 30px;border-radius:6px">' + esc_(txt) + "</a></p>";
+/* El título grande, centrado, con el nombre en la cursiva naranja de la página */
+const titulo_ = (antes, nombre) => '<h1 style="margin:0 0 18px;text-align:center;font:400 30px/1.15 Georgia,\'Times New Roman\',serif;color:#141210">' +
+  esc_(antes) + '<i style="color:#C9381A">' + esc_(nombre) + "</i></h1>";
+const centrado_ = (texto, px) => '<div style="text-align:center;font-size:' + (px || 16) + 'px;color:' + (px && px < 15 ? "#6B645C" : "#141210") + '">' + cuerpo_(texto) + "</div>";
+const lista_ = (titulo, items) => '<div style="margin:4px 0 28px;padding:22px 20px;background:#F5F0E6;border-radius:10px">' +
+  '<p style="margin:0 0 12px;text-align:center;font:italic 20px/1.2 Georgia,serif;color:#141210">' + esc_(titulo) + "</p>" +
+  items.map((x) => '<p style="margin:0 0 6px;text-align:center;font-size:14.5px;color:#141210"><span style="color:#C9381A">●</span>&nbsp; ' + esc_(x) + "</p>").join("") + "</div>";
+
+/* ---------- el catálogo de la página ----------
+   tools/build.js publica /data/catalogo.json con los cafés, su precio y su foto.
+   El correo lo lee de ahí (guardado 6 horas): un precio nunca se copia a mano aquí.
+   Si la página no responde, el correo sale igual, sin la vitrina. */
+function catalogo_() {
+  const cache = CacheService.getScriptCache(), guardado = cache.get("catalogo");
+  if (guardado) return JSON.parse(guardado);
+  try {
+    const r = UrlFetchApp.fetch(SITIO + "/data/catalogo.json", { muteHttpExceptions: true });
+    if (r.getResponseCode() !== 200) return { productos: [], redes: {} };
+    const j = JSON.parse(r.getContentText());
+    cache.put("catalogo", JSON.stringify(j), 21600);
+    return j;
+  } catch (err) { return { productos: [], redes: {} }; }
+}
+/* La vitrina: dos por fila. El que está a la venta lleva su precio con el bono ya
+   restado y un "Lo quiero" que abre la ficha con el bono puesto; el que viene en
+   camino, "Próximamente" y un "Avísame". Nada de precios inventados. */
+function productos_(titulo, codigo, pct, en) {
+  const ps = (catalogo_().productos || []).slice(0, 4);
+  if (!ps.length) return "";
+  const L = en ? "en" : "es";
+  const celda = (p) => {
+    const url = p.url[L] + (p.proximamente ? "" : "?bono=" + encodeURIComponent(codigo));
+    const foto = p.foto
+      ? '<img src="' + esc_(p.foto) + '" width="240" alt="' + esc_(p.nombre[L]) + '" style="display:block;width:100%;max-width:240px;height:auto;border-radius:8px;margin:0 auto">'
+      : '<div style="padding:52px 12px;border-radius:8px;background:' + esc_(p.color) + ';color:#ffffff;font:italic 22px/1.2 Georgia,serif;text-align:center">' + esc_(p.nombre[L]) + "</div>";
+    const precio = p.proximamente
+      ? '<p style="margin:0 0 12px;font:600 11px Arial,sans-serif;letter-spacing:0.14em;text-transform:uppercase;color:#C9381A">' + (en ? "Coming soon" : "Próximamente") + "</p>"
+      : '<p style="margin:0 0 12px;font-size:14px"><s style="color:#6B645C">' + pesos_(p.precio) + '</s>&nbsp; <b style="color:#141210">' + pesos_(p.precio * (1 - pct / 100)) + "</b></p>";
+    return '<td width="50%" valign="top" style="padding:0 8px 26px;text-align:center">' + foto +
+      '<p style="margin:12px 0 2px;font:700 15px Arial,sans-serif;color:#141210">' + esc_(p.nombre[L]) + "</p>" +
+      '<p style="margin:0 0 6px;font-size:12.5px;color:#6B645C">' + esc_(p.sale[L]) + " · " + p.gramos + " g</p>" + precio +
+      '<a href="' + esc_(url) + '" style="display:inline-block;background:' + (p.proximamente ? "#ffffff;color:#141210;border:1px solid #141210" : "#141210;color:#ffffff") +
+      ';text-decoration:none;font:700 12px Arial,sans-serif;letter-spacing:0.08em;text-transform:uppercase;padding:11px 20px;border-radius:6px">' +
+      (p.proximamente ? (en ? "Notify me" : "Avísame") : (en ? "I want it" : "Lo quiero")) + "</a></td>";
+  };
+  let filas = "";
+  /* si quedan en número impar, el último va solo y centrado */
+  for (let i = 0; i < ps.length; i += 2) filas += "<tr>" + (ps[i + 1] ? celda(ps[i]) + celda(ps[i + 1])
+    : '<td colspan="2" align="center"><table role="presentation" width="50%" cellpadding="0" cellspacing="0"><tr>' + celda(ps[i]).replace('width="50%" ', "") + "</tr></table></td>") + "</tr>";
+  return '<div style="margin:0 -32px 24px;padding:28px 24px 4px;background:#F5F0E6">' +
+    '<p style="margin:0 0 20px;text-align:center;font:italic 24px/1.2 Georgia,serif;color:#141210">' + esc_(titulo) + "</p>" +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse">' + filas + "</table></div>";
+}
+const REDES_NOMBRE = { instagram: "Instagram", facebook: "Facebook", youtube: "YouTube", tiktok: "TikTok" };
+const redes_ = () => {
+  const r = catalogo_().redes || {}, ks = Object.keys(r).filter((k) => r[k]);
+  return ks.length ? '<p style="margin:28px 0 0;text-align:center;font:700 11px Arial,sans-serif;letter-spacing:0.14em;text-transform:uppercase">' +
+    ks.map((k) => '<a href="' + esc_(r[k]) + '" style="color:#C9381A;text-decoration:none">' + (REDES_NOMBRE[k] || k) + "</a>").join('&nbsp;&nbsp;·&nbsp;&nbsp;') + "</p>" : "";
+};
 const pieComunidad_ = (correo, en) => (en ? "You get this email because you joined the " + COMUNIDAD + " community. " : "Recibes este correo porque te uniste a la comunidad " + COMUNIDAD + ". ") +
   '<a href="' + enlaceBaja_(correo) + '" style="color:#6B645C">' + (en ? "Unsubscribe" : "Darme de baja") + "</a>.";
 const pieServicio_ = (ref, en) => (en ? "You get this email about your " : "Recibes este correo por tu ") + esc_(ref) + ". " + (en ? "Questions? Just reply." : "¿Dudas? Responde este correo.");
+/* El logo de la página, en PNG (img/correo/logo.png): si el correo no carga
+   imágenes, queda el texto NANDEZ COFFEE GANG en naranja. */
 function marco_(html, pie) {
-  return '<div style="background:#F5F0E6;padding:32px 16px">' +
-    '<div style="max-width:560px;margin:auto;background:#ffffff;border:1px solid #141210;padding:32px;font:16px/1.6 Arial,sans-serif;color:#141210">' +
-    '<p style="margin:0 0 24px;font:800 24px Arial,sans-serif;letter-spacing:-0.02em;color:#C9381A">NANDEZ' +
-    ' <span style="font:700 10px Arial,sans-serif;letter-spacing:0.22em;color:#141210">COFFEE GANG</span></p>' + html +
-    '<p style="margin:32px 0 0;padding-top:16px;border-top:1px solid #E5DED0;font-size:12px;color:#6B645C">' + pie + "</p></div></div>";
+  return '<div style="background:#F5F0E6;padding:32px 12px">' +
+    '<div style="max-width:560px;margin:auto;background:#ffffff;border:1px solid #E5DED0;border-radius:12px;padding:32px;font:16px/1.6 Arial,sans-serif;color:#141210;overflow:hidden">' +
+    '<p style="margin:0 0 26px;text-align:center"><a href="' + SITIO + '" style="text-decoration:none">' +
+    '<img src="' + SITIO + '/img/correo/logo.png" width="180" alt="NANDEZ COFFEE GANG" style="width:180px;height:auto;border:0;font:800 22px Arial,sans-serif;color:#C9381A"></a></p>' + html +
+    redes_() +
+    '<p style="margin:20px 0 0;padding-top:16px;border-top:1px solid #E5DED0;text-align:center;font-size:12px;color:#6B645C">' + pie + "</p></div></div>";
 }
 const plantilla_ = (texto, correo) => marco_(cuerpo_(texto), pieComunidad_(correo, false));
