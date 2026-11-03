@@ -333,7 +333,16 @@ const llms = ev(c0, [
   '"# " + CONFIG.marca, "",',
   '"> Familia cafetera de Chinácota, Norte de Santander (Colombia). Compramos lote por lote a fincas vecinas y vendemos cada café tostado con su ficha verificable: el municipio y la altura de cada finca van en la ficha de su café. Nuestra propia finca (5.000 plantas de Geisha) da su primera cosecha en 2027.", "",',
   '"## Qué vendemos",',
-  '...S.productos.map((p) => "- " + tx(p.nombre) + (p.proximamente ? " (" + tx(p.sub) + "): tostión media, " + (esMolido(p) ? "molido" : "en grano") + "; ficha y precio por confirmar, lista de espera (" : ": variedad " + p.variedad + ", proceso " + p.proceso + ", " + p.altitud + " msnm, " + p.puntaje + " puntos SCA, en grano, desde " + cop(p.variantes[0].precio) + " (") + CONFIG.sitio + ruta("cafe", p.id, "es") + ")"),',
+  /* Cada café con lo que de verdad se sabe de él: la altura sale de su finca
+     (o del rango, si es mezcla) y el precio solo se nombra cuando existe. */
+  '...S.productos.map((p) => "- " + tx(p.nombre) + ": variedad " + p.variedad'
+  + ' + (alturaDe(p) ? ", " + alturaDe(p) : "")'
+  + ' + (p.proceso && !/confirmar/i.test(p.proceso) ? ", proceso " + p.proceso : "")'
+  + ' + (p.puntaje ? ", " + p.puntaje + " puntos SCA" : "")'
+  + ' + ", " + (esMolido(p) ? "molido" : "en grano")'
+  + ' + (p.variantes[0].precio ? ", desde " + cop(p.variantes[0].precio) : "")'
+  + ' + (p.proximamente ? "; todavía no sale, hay lista de espera" : "")'
+  + ' + " (" + CONFIG.sitio + ruta("cafe", p.id, "es") + ")"),',
   '...(visible("subasta") ? ["- Subasta en vivo de un microlote Geisha de Toledo (" + CONFIG.sitio + "/subasta)"] : []),',
   '"- " + (conPreparar() ? "Accesorios para preparar en casa y merch Nandez Coffee Gang" : "Merch Nandez Coffee Gang") + ", próximamente (" + CONFIG.sitio + ruta("accesorios", null, "es") + ")",',
   '"- Suscripción mensual desde " + cop(PLANES[0].mes) + ", con kit de bienvenida para preparar en casa, filtros y una receta cada mes (" + CONFIG.sitio + "/suscripcion)", "",',

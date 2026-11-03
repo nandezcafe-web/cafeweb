@@ -15,6 +15,12 @@ const envioDe = (subtotal) => (subtotal >= CONFIG.envio.gratisDesde ? 0 : CONFIG
 const BONO_PCT = 10;
 const descuentoCarrito = () => (UI.bono ? Math.round((totalCarrito() * UI.bono.pct) / 100) : 0);
 
+/* El precio de un café que todavía no sale: si ya se sabe, se dice; si no,
+   "por confirmar". Antes decía "por confirmar" aunque el precio estuviera puesto. */
+const precioRotulo = (p, v, en) => (v.precio
+  ? `<b class="mono">${cop(v.precio)}</b><small>${gramos(v.g)} · ${esc(tx(saleDe(p, v))).toLowerCase()}</small>`
+  : `<b>${t("por_confirmar")}</b><small>${esc(tx(saleDe(p, v))).toLowerCase()}</small>`);
+
 /* ---------- tarjetas ---------- */
 /* ---------- la foto de cada café ----------
    Convención: /img/productos/<id del café en minúsculas> y su versión @0.5x,
@@ -43,11 +49,11 @@ function cafeCard(p, i = 0) {
       <div class="cc-score"><b>${esc(p.puntaje)}</b><small style="color:${LV[p.nivel].c}">SCA · ${lvl(p.nivel)}</small></div>`}
     </div>
     <div class="cc-body">
-      <p class="kicker">${esc(tr(f.finca || t("por_confirmar")))}<br>${p.altitud ? esc(msnm(p.altitud)) : (en ? "altitude to be confirmed" : "altura por confirmar")}</p>
+      <p class="kicker">${esc(tr(f.finca || t("por_confirmar")))}<br>${alturaDe(p) ? esc(alturaDe(p)) : (en ? "altitude to be confirmed" : "altura por confirmar")}</p>
       <h3>${esc(tx(p.nombre))}</h3>
       <p class="notas-linea">${tx(p.notas).join(" · ")}</p>
       <div class="cc-foot">${pronto
-        ? `<b>${t("por_confirmar")}</b><small>${t("en_grano").toLowerCase()}</small><button class="btn sm" data-act="espera" data-id="${p.id}">${t("avisame")}</button>`
+        ? `${precioRotulo(p, v, en)}<button class="btn sm" data-act="espera" data-id="${p.id}">${t("avisame")}</button>`
         : `<b class="mono">${cop(v.precio)}</b><small>${gramos(v.g)} · ${esc(tx(saleDe(p, v))).toLowerCase()}</small>
         <button class="btn primary sm" data-act="cafe" data-id="${p.id}">${t("ver_cafe")}</button>`}</div>
     </div></article>`;
@@ -59,16 +65,17 @@ function tarjetaInicio(p, i = 0) {
   const f = fincaDe(p), v = principal(p), en = UI.lang === "en", pronto = !!p.proximamente;
   return `<article class="g-prod g-io${pronto ? " pronto" : ""}" style="--pc:${p.color || "#2F5A3C"};--i:${i}">
     <div class="g-prod-art" data-act="cafe" data-id="${p.id}" role="button" tabindex="0" aria-label="${esc(tx(p.nombre))}">
-      ${pronto ? `<span class="g-pronto">${t("proximamente")}<i>${esc(tx(p.sub))}</i></span>` : fotoProducto(p, { clase: "g-prod-foto", sizes: "(min-width:1000px) 400px, 90vw" })}
+      ${fotoProducto(p, { clase: "g-prod-foto", sizes: "(min-width:1000px) 400px, 90vw" })}
+      ${pronto ? `<span class="g-pronto">${t("proximamente")}<i>${esc(tx(p.sub))}</i></span>` : ""}
       ${pronto ? "" : `<p class="g-prod-sca"><b>${esc(p.puntaje)}</b><small>SCA · ${lvl(p.nivel)}</small></p>`}
       <span class="g-prod-n">0${i + 1}</span>
     </div>
     <div class="g-prod-body">
-      <p class="g-kicker">${esc(tr(f.finca || t("por_confirmar")))} · ${p.altitud ? esc(msnm(p.altitud)) : (en ? "altitude tbc" : "altura por confirmar")}</p>
+      <p class="g-kicker">${esc(tr(f.finca || t("por_confirmar")))} · ${alturaDe(p) ? esc(alturaDe(p)) : (en ? "altitude tbc" : "altura por confirmar")}</p>
       <h3>${esc(tx(p.nombre))}</h3>
       <p class="g-notas">${pronto ? esc(tx(p.sub)) : tx(p.notas).join(" · ")}</p>
       <div class="g-prod-foot">${pronto
-        ? `<b>${t("por_confirmar")}</b><small>${t("en_grano").toLowerCase()}</small><button class="btn sm" data-act="espera" data-id="${p.id}">${t("avisame")}</button>`
+        ? `${precioRotulo(p, v, en)}<button class="btn sm" data-act="espera" data-id="${p.id}">${t("avisame")}</button>`
         : `<b class="mono">${cop(v.precio)}</b><small>${gramos(v.g)} · ${t("en_grano").toLowerCase()}</small>
         <button class="btn primary sm" data-act="add" data-p="${p.id}" data-g="${v.g}" ${v.stock ? "" : "disabled"}>${t("agregar")}</button>`}</div>
     </div></article>`;

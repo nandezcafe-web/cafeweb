@@ -693,3 +693,18 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
   background:var(--ink);color:var(--paper);text-align:left;
   font:600 10px/1 var(--mono);letter-spacing:.1em}
 .cc-art.con-foto .g-pronto i{display:none}
+
+/* Las fotos traen su propio fondo, así que llenan el marco en vez de flotar
+   dentro. Antes el marco pintaba su color y la foto quedaba encima como una
+   calcomanía, con el recuadro a la vista. El degradado y la sombra del suelo
+   también sobran: ya vienen en la foto. */
+.cc-art.con-foto{padding:0;background:none}
+.cc-art.con-foto::after{content:none}
+.cc-art.con-foto .prod-foto{width:100%;height:100%;max-width:none;margin:0;object-fit:cover}
+.g-prod-art .g-prod-foto{width:100%;height:100%;max-width:none;margin:0;object-fit:cover;display:block}
+.g-prod-art{padding:0}
+/* con foto detrás, el sello de "próximamente" se vuelve esquinero y legible */
+.g-prod-art .g-pronto{position:absolute;top:14px;left:14px;z-index:2;width:auto;align-self:start;justify-self:start;
+  padding:6px 11px;border-radius:4px;background:var(--ink);color:var(--paper);text-align:left;
+  font:600 11px/1 var(--mono);letter-spacing:.1em}
+.g-prod-art .g-pronto i{display:none}

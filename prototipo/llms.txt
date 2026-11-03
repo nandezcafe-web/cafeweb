@@ -3,9 +3,9 @@
 > Familia cafetera de Chinácota, Norte de Santander (Colombia). Compramos lote por lote a fincas vecinas y vendemos cada café tostado con su ficha verificable: el municipio y la altura de cada finca van en la ficha de su café. Nuestra propia finca (5.000 plantas de Geisha) da su primera cosecha en 2027.
 
 ## Qué vendemos
-- Castillo de Ragonvalia: variedad Castillo, proceso Lavado, 1550 msnm, 84 puntos SCA, en grano, desde $40.000 (https://cafeweb-five.vercel.app/cafe-castillo-de-ragonvalia)
-- El Paraíso (Cenicafé 1 · Palocolorado, Chinácota): tostión media, en grano; ficha y precio por confirmar, lista de espera (https://cafeweb-five.vercel.app/cafe-el-paraiso)
-- Blend de la casa (Castillo + Cenicafé 1 · molido): tostión media, molido; ficha y precio por confirmar, lista de espera (https://cafeweb-five.vercel.app/cafe-blend-de-la-casa)
+- Castillo de Ragonvalia: variedad Castillo, 1.870 msnm, proceso Lavado, 84 puntos SCA, en grano, desde $40.000 (https://cafeweb-five.vercel.app/cafe-castillo-de-ragonvalia)
+- El Paraíso: variedad Cenicafé 1, 1.300 msnm, en grano, desde $40.000; todavía no sale, hay lista de espera (https://cafeweb-five.vercel.app/cafe-el-paraiso)
+- Blend de la casa: variedad Castillo + Cenicafé 1, 1.300 – 1.870 msnm, molido, desde $40.000; todavía no sale, hay lista de espera (https://cafeweb-five.vercel.app/cafe-blend-de-la-casa)
 - Merch Nandez Coffee Gang, próximamente (https://cafeweb-five.vercel.app/accesorios)
 - Suscripción mensual desde $48.000, con kit de bienvenida para preparar en casa, filtros y una receta cada mes (https://cafeweb-five.vercel.app/suscripcion)
 
