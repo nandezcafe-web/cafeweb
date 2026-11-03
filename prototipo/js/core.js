@@ -413,12 +413,12 @@ const KITS = {
 const PLANES = [
   { id: "semilla", nombre: { es: "Semilla", en: "Seed" }, kit: "esencial",
     para: { es: "Una bolsa al mes, y aprender a prepararla", en: "A bag a month, and how to brew it" },
-    mes: 48000, inscripcion: 145000, seisKit: 334000, seisSinKit: 266000, molienda: "media-fina",
+    mes: 48000, inscripcion: 145000, seisKit: 334000, seisSinKit: 266000, molienda: "media-fina", gramos: 250,
     cada: { es: ["250 g de la finca del mes", "20 filtros", "Molida como la pidas", "La receta del mes, en video"],
             en: ["250 g from the farm of the month", "20 filters", "Ground however you ask", "The month's recipe, on video"] } },
   { id: "cosecha", nombre: { es: "Cosecha", en: "Harvest" }, kit: "completo", destacado: true,
     para: { es: "Dos fincas al mes, lado a lado", en: "Two farms a month, side by side" },
-    mes: 84000, inscripcion: 298000, seisKit: 578000, seisSinKit: 468000, molienda: "media-fina",
+    mes: 84000, inscripcion: 298000, seisKit: 578000, seisSinKit: 468000, molienda: "media-fina", gramos: 500,
     cada: { es: ["2 × 250 g de dos fincas distintas", "40 filtros", "Molida como la pidas", "La receta del mes, en video", "Los lotes nuevos, antes que nadie"],
             en: ["2 × 250 g from two different farms", "40 filters", "Ground however you ask", "The month's recipe, on video", "New lots before anyone else"] } },
   /* El escalón de arriba es la barra, no un recargo: antes costaba $10.000 más
@@ -427,7 +427,7 @@ const PLANES = [
      adelantado: `plano` dice que se cobra mes a mes y ya. */
   { id: "barista", nombre: { es: "Barista", en: "Barista" }, plano: true,
     para: { es: "Para tu barra, no para tu casa", en: "For your bar, not your kitchen" },
-    mes: 240000, molienda: "grano",
+    mes: 240000, molienda: "grano", gramos: 2000,
     cada: { es: ["2 kg en grano cada mes", "Tostión a tu perfil", "Material para tu carta", "¿Más de 2 kg? Te cotizamos"],
             en: ["2 kg whole bean every month", "Roast to your profile", "Menu material", "More than 2 kg? Ask for a quote"] } },
 ];
@@ -440,6 +440,17 @@ const CAFETERIA = { id: "cafeteria", nombre: { es: "Cafetería", en: "Café" }, 
              en: ["2 kg whole bean monthly", "Shipping included", "Roast to your profile", "Menu material", "More than 2 kg? Ask for a quote"] } };
 
 /* Lo que cuesta cada forma de pago y cuánto se ahorra frente a mes a mes (seis envíos). */
+/* Lo que costaría el mismo café comprado suelto en la tienda, con su envío.
+   Se lee del precio de la bolsa, así que si la bolsa sube, la comparación
+   sube con ella y nunca queda prometiendo un ahorro que ya no existe. */
+function sueltoEquivalente(p) {
+  const prod = S.productos.find((x) => !x.proximamente) || S.productos[0];
+  const bolsa = prod && principal(prod).precio;
+  if (!p.gramos || !bolsa) return 0;
+  const cafe = (p.gramos / 250) * bolsa;
+  return cafe + (cafe >= CONFIG.envio.gratisDesde ? 0 : CONFIG.envio.costo);
+}
+
 function precioPlan(p, conKit, seis) {
   if (p.plano) return { luego: p.mes };
   if (conKit && seis) return { total: p.seisKit, ahorro: p.inscripcion + 5 * p.mes - p.seisKit };

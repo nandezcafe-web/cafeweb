@@ -13,11 +13,19 @@ const claveSub = (id, kit, seis) => `${id}${kit ? "-kit" : ""}${seis ? "-6" : ""
 
 function bloquePrecio(p, en) {
   const x = precioPlan(p, subKit(), subSeis());
+  /* El ahorro se compara contra lo mismo que se está mostrando: un mes de
+     café cuando el precio es mensual, seis cuando se paga adelantado. Si no
+     hay ahorro, la línea no sale: no se promete lo que no es. */
+  const suelto = sueltoEquivalente(p);
+  const menos = (paga, meses) => {
+    const d = suelto * meses - paga;
+    return d > 0 ? `<p class="plan-suelto"><b class="mono">${cop(d)}</b> ${en ? "less than buying it loose" : "menos que comprarlo suelto"}</p>` : "";
+  };
   if (x.hoy) return `<p class="plan-precio"><b class="mono">${cop(x.hoy)}</b><small>${en ? "sign-up: the kit and your first box" : "inscripción: el kit y tu primer envío"}</small></p>
-    <p class="plan-luego">${en ? "Then" : "Luego"} <b class="mono">${cop(x.luego)}</b> ${t("mes")}</p>`;
+    <p class="plan-luego">${en ? "Then" : "Luego"} <b class="mono">${cop(x.luego)}</b> ${t("mes")}</p>${menos(x.luego, 1)}`;
   if (x.total) return `<p class="plan-precio"><b class="mono">${cop(x.total)}</b><small>${subKit() ? (en ? "6 boxes and the kit" : "6 envíos y el kit") : (en ? "6 boxes" : "6 envíos")}</small></p>
-    <p class="plan-ahorro">${en ? "You save" : "Ahorras"} <b class="mono">${cop(x.ahorro)}</b> ${en ? "against paying monthly" : "frente a mes a mes"}</p>`;
-  return `<p class="plan-precio"><b class="mono">${cop(x.luego)}</b><small>${t("mes")}</small></p>`;
+    <p class="plan-ahorro">${en ? "You save" : "Ahorras"} <b class="mono">${cop(x.ahorro)}</b> ${en ? "against paying monthly" : "frente a mes a mes"}</p>${menos(x.total, 6)}`;
+  return `<p class="plan-precio"><b class="mono">${cop(x.luego)}</b><small>${t("mes")}</small></p>${menos(x.luego, 1)}`;
 }
 
 function viewSuscripcion() {

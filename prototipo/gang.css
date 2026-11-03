@@ -676,3 +676,10 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
    Cosecha encima. Cada tarjeta lleva su borde y su aire. */
 .planes{gap:16px;border:0}
 .plan{border:1px solid var(--ink);margin-bottom:0}
+
+/* El ahorro frente a comprar suelto: una línea, no otra píldora. La píldora
+   ya la usa el ahorro por pagar adelantado y dos compitiendo se anulan. */
+.plan-suelto{margin:2px 0 0;font-size:13.5px;color:var(--ink-2)}
+.plan-suelto b{color:var(--cherry)}
+.plan.hot .plan-suelto{color:rgba(245,240,230,.78)}
+.plan.hot .plan-suelto b{color:var(--marca)}

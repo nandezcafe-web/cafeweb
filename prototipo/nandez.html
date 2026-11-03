@@ -2313,6 +2313,13 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
 .planes{gap:16px;border:0}
 .plan{border:1px solid var(--ink);margin-bottom:0}
 
+/* El ahorro frente a comprar suelto: una línea, no otra píldora. La píldora
+   ya la usa el ahorro por pagar adelantado y dos compitiendo se anulan. */
+.plan-suelto{margin:2px 0 0;font-size:13.5px;color:var(--ink-2)}
+.plan-suelto b{color:var(--cherry)}
+.plan.hot .plan-suelto{color:rgba(245,240,230,.78)}
+.plan.hot .plan-suelto b{color:var(--marca)}
+
 </style>
 <script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Coffee","url":"https://cafeweb-five.vercel.app","logo":"https://cafeweb-five.vercel.app/img/marca/icono-512.png","image":"https://cafeweb-five.vercel.app/img/marca/compartir.jpg","sameAs":["https://www.instagram.com/nandezcafe/","https://www.facebook.com/profile.php?id=61594868961438","https://www.youtube.com/@N%C3%A1ndezCaf%C3%A9"],"email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"Familia cafetera de Chinácota. Compramos lotes pequeños en fincas de Norte de Santander y los tostamos con nuestro nombre: dos cafés de una sola finca, en grano, y un blend molido de los dos."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Coffee","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"es"}]}</script>
 </head>
@@ -2913,12 +2920,12 @@ const KITS = {
 const PLANES = [
   { id: "semilla", nombre: { es: "Semilla", en: "Seed" }, kit: "esencial",
     para: { es: "Una bolsa al mes, y aprender a prepararla", en: "A bag a month, and how to brew it" },
-    mes: 48000, inscripcion: 145000, seisKit: 334000, seisSinKit: 266000, molienda: "media-fina",
+    mes: 48000, inscripcion: 145000, seisKit: 334000, seisSinKit: 266000, molienda: "media-fina", gramos: 250,
     cada: { es: ["250 g de la finca del mes", "20 filtros", "Molida como la pidas", "La receta del mes, en video"],
             en: ["250 g from the farm of the month", "20 filters", "Ground however you ask", "The month's recipe, on video"] } },
   { id: "cosecha", nombre: { es: "Cosecha", en: "Harvest" }, kit: "completo", destacado: true,
     para: { es: "Dos fincas al mes, lado a lado", en: "Two farms a month, side by side" },
-    mes: 84000, inscripcion: 298000, seisKit: 578000, seisSinKit: 468000, molienda: "media-fina",
+    mes: 84000, inscripcion: 298000, seisKit: 578000, seisSinKit: 468000, molienda: "media-fina", gramos: 500,
     cada: { es: ["2 × 250 g de dos fincas distintas", "40 filtros", "Molida como la pidas", "La receta del mes, en video", "Los lotes nuevos, antes que nadie"],
             en: ["2 × 250 g from two different farms", "40 filters", "Ground however you ask", "The month's recipe, on video", "New lots before anyone else"] } },
   /* El escalón de arriba es la barra, no un recargo: antes costaba $10.000 más
@@ -2927,7 +2934,7 @@ const PLANES = [
      adelantado: `plano` dice que se cobra mes a mes y ya. */
   { id: "barista", nombre: { es: "Barista", en: "Barista" }, plano: true,
     para: { es: "Para tu barra, no para tu casa", en: "For your bar, not your kitchen" },
-    mes: 240000, molienda: "grano",
+    mes: 240000, molienda: "grano", gramos: 2000,
     cada: { es: ["2 kg en grano cada mes", "Tostión a tu perfil", "Material para tu carta", "¿Más de 2 kg? Te cotizamos"],
             en: ["2 kg whole bean every month", "Roast to your profile", "Menu material", "More than 2 kg? Ask for a quote"] } },
 ];
@@ -2940,6 +2947,17 @@ const CAFETERIA = { id: "cafeteria", nombre: { es: "Cafetería", en: "Café" }, 
              en: ["2 kg whole bean monthly", "Shipping included", "Roast to your profile", "Menu material", "More than 2 kg? Ask for a quote"] } };
 
 /* Lo que cuesta cada forma de pago y cuánto se ahorra frente a mes a mes (seis envíos). */
+/* Lo que costaría el mismo café comprado suelto en la tienda, con su envío.
+   Se lee del precio de la bolsa, así que si la bolsa sube, la comparación
+   sube con ella y nunca queda prometiendo un ahorro que ya no existe. */
+function sueltoEquivalente(p) {
+  const prod = S.productos.find((x) => !x.proximamente) || S.productos[0];
+  const bolsa = prod && principal(prod).precio;
+  if (!p.gramos || !bolsa) return 0;
+  const cafe = (p.gramos / 250) * bolsa;
+  return cafe + (cafe >= CONFIG.envio.gratisDesde ? 0 : CONFIG.envio.costo);
+}
+
 function precioPlan(p, conKit, seis) {
   if (p.plano) return { luego: p.mes };
   if (conKit && seis) return { total: p.seisKit, ahorro: p.inscripcion + 5 * p.mes - p.seisKit };
@@ -4263,11 +4281,19 @@ const claveSub = (id, kit, seis) => `${id}${kit ? "-kit" : ""}${seis ? "-6" : ""
 
 function bloquePrecio(p, en) {
   const x = precioPlan(p, subKit(), subSeis());
+  /* El ahorro se compara contra lo mismo que se está mostrando: un mes de
+     café cuando el precio es mensual, seis cuando se paga adelantado. Si no
+     hay ahorro, la línea no sale: no se promete lo que no es. */
+  const suelto = sueltoEquivalente(p);
+  const menos = (paga, meses) => {
+    const d = suelto * meses - paga;
+    return d > 0 ? `<p class="plan-suelto"><b class="mono">${cop(d)}</b> ${en ? "less than buying it loose" : "menos que comprarlo suelto"}</p>` : "";
+  };
   if (x.hoy) return `<p class="plan-precio"><b class="mono">${cop(x.hoy)}</b><small>${en ? "sign-up: the kit and your first box" : "inscripción: el kit y tu primer envío"}</small></p>
-    <p class="plan-luego">${en ? "Then" : "Luego"} <b class="mono">${cop(x.luego)}</b> ${t("mes")}</p>`;
+    <p class="plan-luego">${en ? "Then" : "Luego"} <b class="mono">${cop(x.luego)}</b> ${t("mes")}</p>${menos(x.luego, 1)}`;
   if (x.total) return `<p class="plan-precio"><b class="mono">${cop(x.total)}</b><small>${subKit() ? (en ? "6 boxes and the kit" : "6 envíos y el kit") : (en ? "6 boxes" : "6 envíos")}</small></p>
-    <p class="plan-ahorro">${en ? "You save" : "Ahorras"} <b class="mono">${cop(x.ahorro)}</b> ${en ? "against paying monthly" : "frente a mes a mes"}</p>`;
-  return `<p class="plan-precio"><b class="mono">${cop(x.luego)}</b><small>${t("mes")}</small></p>`;
+    <p class="plan-ahorro">${en ? "You save" : "Ahorras"} <b class="mono">${cop(x.ahorro)}</b> ${en ? "against paying monthly" : "frente a mes a mes"}</p>${menos(x.total, 6)}`;
+  return `<p class="plan-precio"><b class="mono">${cop(x.luego)}</b><small>${t("mes")}</small></p>${menos(x.luego, 1)}`;
 }
 
 function viewSuscripcion() {
