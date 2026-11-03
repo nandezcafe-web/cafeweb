@@ -73,8 +73,8 @@ ok(bienv.to === "ana@correo.com" && /^GANG-[A-HJ-NP-Z2-9]{5}$/.test(codigoAna), 
 ok(bienv.htmlBody.includes(codigoAna) && bienv.htmlBody.includes("/cafes?bono=" + codigoAna) && bienv.htmlBody.includes("accion=baja"), "la bienvenida trae el código, el botón que lo deja en el carrito y la baja");
 ok(/\d+ de [a-z]+/.test(bienv.body), "la fecha de vencimiento va en español");
 ok(bienv.htmlBody.includes("/img/correo/logo.png") && bienv.htmlBody.includes("Castillo de Ragonvalia") && bienv.htmlBody.includes("$36.000")
-  && bienv.htmlBody.includes("?bono=" + codigoAna) && bienv.htmlBody.includes("Próximamente") && bienv.htmlBody.includes("Instagram"),
-  "la bienvenida trae el logo, la vitrina con el precio ya con el bono, los que vienen en camino y las redes");
+  && bienv.htmlBody.includes("?bono=" + codigoAna) && bienv.htmlBody.includes("En preventa") && bienv.htmlBody.includes("Reservar") && bienv.htmlBody.includes("Instagram"),
+  "la bienvenida trae el logo, la vitrina con el precio ya con el bono, los que están en preventa y las redes");
 if (process.env.GUARDAR) fs.writeFileSync(process.env.GUARDAR, bienv.htmlBody);
 const n1 = enviados.length;
 ok(post({ tipo: "comunidad", correo: "ana@correo.com", consentimiento: true }).bienvenida === "ya" && enviados.length === n1, "si vuelve a unirse, no le llega otra bienvenida ni otro bono");

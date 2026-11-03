@@ -45,7 +45,7 @@ function cafeCard(p, i = 0) {
     <div class="cc-art${CON_FOTO.has(p.id) ? " con-foto" : ""}" data-act="cafe" data-id="${p.id}" role="button" tabindex="0" aria-label="${esc(tx(p.nombre))}">
       ${fotoProducto(p)}
       ${pronto ? `<span class="g-pronto">${t("proximamente")}<i>${esc(tx(p.sub))}</i></span>` : ""}
-      ${pronto ? "" : `<span class="state st-publicado">${v.stock} ${t("disponibles")}</span>
+      ${pronto ? "" : `<span class="state st-publicado">${enPreventa(p) ? t("en_preventa") : `${v.stock} ${t("disponibles")}`}</span>
       <div class="cc-score"><b>${esc(p.puntaje)}</b><small style="color:${LV[p.nivel].c}">SCA · ${lvl(p.nivel)}</small></div>`}
     </div>
     <div class="cc-body">
@@ -54,8 +54,8 @@ function cafeCard(p, i = 0) {
       <p class="notas-linea">${tx(p.notas).join(" · ")}</p>
       <div class="cc-foot">${pronto
         ? `${precioRotulo(p, v, en)}<button class="btn sm" data-act="espera" data-id="${p.id}">${t("avisame")}</button>`
-        : `<b class="mono">${cop(v.precio)}</b><small>${gramos(v.g)} · ${esc(tx(saleDe(p, v))).toLowerCase()}</small>
-        <button class="btn primary sm" data-act="cafe" data-id="${p.id}">${t("ver_cafe")}</button>`}</div>
+        : `<b class="mono">${cop(precioHoy(p, v))}</b><small>${gramos(v.g)} · ${esc(tx(saleDe(p, v))).toLowerCase()}</small>
+        <button class="btn primary sm" data-act="cafe" data-id="${p.id}">${enPreventa(p) ? t("reserva_corta") : t("ver_cafe")}</button>`}</div>
     </div></article>`;
 }
 
@@ -308,7 +308,7 @@ function viewCafe() {
   const sinMolino = enGrano
     ? ` <a class="enlace" href="${esc(contactoURL(en ? `Hi, I want the ${tx(p.nombre)} but I have no grinder.` : `Hola, quiero el ${tx(p.nombre)} pero no tengo molino.`, tx(p.nombre)))}" target="_blank" rel="noopener">${en ? "No grinder? Write to us." : "¿No tienes molino? Escríbenos."}</a>`
     : "";
-  const pronto = !!p.proximamente;
+  const pronto = !!p.proximamente, pre = enPreventa(p);
   const compra = pronto ? `
       <div class="pronto-aviso">
         <b>${t("proximamente")}</b>
@@ -319,18 +319,20 @@ function viewCafe() {
       <p class="sale"><span class="sale-tag">${esc(tx(saleDe(p, v)))}</span> <span>${esc(tx(saleNotaDe(p, v)))}</span></p>` : `
       <div class="vars" role="radiogroup" aria-label="${en ? "Size" : "Presentación"}">
         ${p.variantes.map((x) => `<button class="var ${x.g === v.g ? "on" : ""}" role="radio" aria-checked="${x.g === v.g}" data-act="var" data-p="${p.id}" data-g="${x.g}"
-          aria-label="${esc(`${gramos(x.g)} · ${tx(x.label)} · ${cop(x.precio)}${x.stock ? "" : " · " + t("agotado")}`)}" ${x.stock ? "" : "disabled"}>
-          <b>${gramos(x.g)}</b><span>${esc(tx(x.label))}</span><small>${x.stock ? esc(tx(x.nota)) : t("agotado")}</small>
+          aria-label="${esc(`${gramos(x.g)} · ${tx(x.label)} · ${cop(precioHoy(p, x))}${x.stock || pre ? "" : " · " + t("agotado")}`)}" ${x.stock || pre ? "" : "disabled"}>
+          <b>${gramos(x.g)}</b><span>${esc(tx(x.label))}</span><small>${x.stock ? esc(tx(x.nota)) : (pre ? t("en_preventa") : t("agotado"))}</small>
           <span class="mono precio">${cop(x.precio)}</span></button>`).join("")}
       </div>
 
       <p class="sale"><span class="sale-tag">${esc(tx(saleDe(p, v)))}</span> <span>${esc(tx(saleNotaDe(p, v)))}${sinMolino}</span></p>
 
       <div class="buy-row">
-        <div><b class="precio-grande mono">${cop(v.precio)}</b><small>${gramos(v.g)} · ${cop((v.precio / v.g) * 1000)} ${t("por_kg")}</small></div>
-        <button class="btn primary lg" data-act="add" data-p="${p.id}" data-g="${v.g}" ${v.stock ? "" : "disabled"}>${t("agregar")}</button>
+        <div><b class="precio-grande mono">${cop(precioHoy(p, v))}</b><small>${gramos(v.g)} · ${cop((precioHoy(p, v) / v.g) * 1000)} ${t("por_kg")}</small></div>
+        <button class="btn primary lg" data-act="add" data-p="${p.id}" data-g="${v.g}" ${v.stock || pre ? "" : "disabled"}>${pre ? t("reservar") : t("agregar")}</button>
       </div>
-      <p class="hint">${v.stock} ${t("disponibles")} · ${en
+      <p class="hint">${pre
+        ? (en ? `Pre-order: we ship from ${fmtFecha(entregaPreventa())}` : `Preventa: despachamos desde el ${fmtFecha(entregaPreventa())}`)
+        : `${v.stock} ${t("disponibles")}`} · ${en
         ? `ships from Cúcuta within Colombia in ${tx(E.dias)} · ${cop(E.costo)}, free from ${cop(E.gratisDesde)}`
         : `sale de Cúcuta y llega en ${tx(E.dias)} · envío ${cop(E.costo)}, gratis desde ${cop(E.gratisDesde)}`}</p>`;
   return `<article class="prod" style="--pc:${p.color || "#2F5A3C"}">
@@ -476,8 +478,11 @@ function quitarBono(pintar = true) { UI.bono = null; try { localStorage.removeIt
 
 function addCarrito(pid, g) {
   const p = prodById(pid), v = p.variantes.find((x) => x.g === +g), c = enCarrito(p.id, v.g);
-  if (c) { if (c.n < v.stock) c.n++; else return toast(UI.lang === "en" ? "No more of that size." : "No queda más de esa presentación.", { type: "err" }); }
-  else UI.carrito.push({ id: p.id, g: v.g, n: 1, precio: v.precio, nombre: `${tx(p.nombre)} ${gramos(v.g)}` });
+  /* En preventa no se descuenta de un inventario que todavía no existe: el
+     tope es el cupo anunciado, y sin cupo anunciado no hay tope. */
+  const tope = enPreventa(p) ? (CONFIG.preventa.cupo || Infinity) : v.stock;
+  if (c) { if (c.n < tope) c.n++; else return toast(UI.lang === "en" ? "No more of that size." : "No queda más de esa presentación.", { type: "err" }); }
+  else UI.carrito.push({ id: p.id, g: v.g, n: 1, precio: precioHoy(p, v), nombre: `${tx(p.nombre)} ${gramos(v.g)}` });
   guardarCarrito(); render(); abrirCarrito();
 }
 

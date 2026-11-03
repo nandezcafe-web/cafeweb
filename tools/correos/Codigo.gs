@@ -707,19 +707,24 @@ function productos_(titulo, codigo, pct, en) {
   if (!ps.length) return "";
   const L = en ? "en" : "es";
   const celda = (p) => {
+    /* el bono sirve también para reservar: solo lo pierde quien ni siquiera puede pedir */
     const url = p.url[L] + (p.proximamente ? "" : "?bono=" + encodeURIComponent(codigo));
     const foto = p.foto
       ? '<img src="' + esc_(p.foto) + '" width="240" alt="' + esc_(p.nombre[L]) + '" style="display:block;width:100%;max-width:240px;height:auto;border-radius:8px;margin:0 auto">'
       : '<div style="padding:52px 12px;border-radius:8px;background:' + esc_(p.color) + ';color:#ffffff;font:italic 22px/1.2 Georgia,serif;text-align:center">' + esc_(p.nombre[L]) + "</div>";
-    const precio = p.proximamente
-      ? '<p style="margin:0 0 12px;font:600 11px Arial,sans-serif;letter-spacing:0.14em;text-transform:uppercase;color:#C9381A">' + (en ? "Coming soon" : "Próximamente") + "</p>"
-      : '<p style="margin:0 0 12px;font-size:14px"><s style="color:#6B645C">' + pesos_(p.precio) + '</s>&nbsp; <b style="color:#141210">' + pesos_(p.precio * (1 - pct / 100)) + "</b></p>";
+    const rotulo = (txt) => '<p style="margin:0 0 12px;font:600 11px Arial,sans-serif;letter-spacing:0.14em;text-transform:uppercase;color:#C9381A">' + txt + "</p>";
+    const conBono = '<p style="margin:0 0 12px;font-size:14px"><s style="color:#6B645C">' + pesos_(p.precio) + '</s>&nbsp; <b style="color:#141210">' + pesos_(p.precio * (1 - pct / 100)) + "</b></p>";
+    /* Tres estados: el que ni se puede pedir, el que se reserva y se despacha
+       el día del lanzamiento, y el que sale hoy mismo. */
+    const precio = p.proximamente ? rotulo(en ? "Coming soon" : "Próximamente")
+      : p.preventa ? rotulo(en ? "Pre-order" : "En preventa") + conBono
+      : conBono;
     return '<td width="50%" valign="top" style="padding:0 8px 26px;text-align:center">' + foto +
       '<p style="margin:12px 0 2px;font:700 15px Arial,sans-serif;color:#141210">' + esc_(p.nombre[L]) + "</p>" +
       '<p style="margin:0 0 6px;font-size:12.5px;color:#6B645C">' + esc_(p.sale[L]) + " · " + p.gramos + " g</p>" + precio +
       '<a href="' + esc_(url) + '" style="display:inline-block;background:' + (p.proximamente ? "#ffffff;color:#141210;border:1px solid #141210" : "#141210;color:#ffffff") +
       ';text-decoration:none;font:700 12px Arial,sans-serif;letter-spacing:0.08em;text-transform:uppercase;padding:11px 20px;border-radius:6px">' +
-      (p.proximamente ? (en ? "Notify me" : "Avísame") : (en ? "I want it" : "Lo quiero")) + "</a></td>";
+      (p.proximamente ? (en ? "Notify me" : "Avísame") : p.preventa ? (en ? "Pre-order" : "Reservar") : (en ? "I want it" : "Lo quiero")) + "</a></td>";
   };
   let filas = "";
   /* si quedan en número impar, el último va solo y centrado */

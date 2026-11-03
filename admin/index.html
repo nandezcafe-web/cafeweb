@@ -1643,6 +1643,15 @@ const CONFIG = {
   /* Secciones apagadas hasta que estén listas: no salen en el menú, ni en el inicio,
      ni en el sitemap, y su dirección da 404. Para volver a mostrarlas, quitarlas de aquí. */
   ocultas: ["subasta", "diario", "drops", "gang"],
+  /* El día que abre la venta normal. Mientras no llegue, los cafés sin
+     existencias se reservan en vez de aparecer agotados. */
+  lanzamiento: "2026-11-20",
+  /* La preventa. Lo que esté en 0 o vacío sencillamente no se anuncia:
+     - entregaDesde: el día que se despacha. Si está vacío, se usa `lanzamiento`.
+     - cupo: cuántas bolsas se aceptan por café. En 0 no se habla de cupo.
+     - precio: precio de preventa. En 0 se cobra el de siempre.
+     Para cerrarla, `activa: false`. */
+  preventa: { activa: true, entregaDesde: "", cupo: 0, precio: 0 },
   /* EL DROP QUE VIENE. Un lote pequeño que sale un día, a una hora, y se acaba.
      Mientras un dato esté vacío, la página dice "por confirmar": no se inventa ninguno.
      - estado: "expectativa" (anunciado, sin abrir) · "abierto" (se puede comprar) · "agotado"
@@ -1758,6 +1767,8 @@ const T = {
   drop_asegurar: { es: "Asegurar la mía", en: "Get mine" },
   comprar: { es: "Comprar", en: "Buy" }, agregar: { es: "Agregar al pedido", en: "Add to order" },
   ver_cafe: { es: "Ver el café", en: "View coffee" }, agotado: { es: "Agotado", en: "Sold out" },
+  en_preventa: { es: "En preventa", en: "Pre-order" }, reservar: { es: "Reservar la mía", en: "Reserve mine" },
+  reserva_corta: { es: "Reservar", en: "Pre-order" },
   pedido: { es: "Tu pedido", en: "Your order" }, total: { es: "Total", en: "Total" },
   pagar_mp: { es: "Pagar con Mercado Pago", en: "Pay with Mercado Pago" },
   pagar_ahora: { es: "Pagar ahora", en: "Pay now" },
@@ -1850,7 +1861,7 @@ function seed() {
          los dos, MOLIDO en molienda fina. Los tres llevan tostión media. El Paraíso y el blend
          están por confirmar (precio, altura, proceso y ficha): mientras tanto se muestran como
          "próximamente" y recogen correos. `color` es la tinta de cada café en la página. */
-      { id: "P-PAR", fincaId: "F-02", loteId: null, proximamente: true, color: "#2C4FA3",
+      { id: "P-PAR", fincaId: "F-02", loteId: null, color: "#2C4FA3",
         nombre: { es: "El Paraíso", en: "El Paraíso" }, sub: { es: "Cenicafé 1 · Palocolorado, Chinácota", en: "Cenicafé 1 · Palocolorado, Chinácota" },
         variedad: "Cenicafé 1", proceso: "Por confirmar", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026",
         sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que no pierda aroma.", en: "We ship it whole so it keeps its aroma." },
@@ -1872,7 +1883,7 @@ function seed() {
         presentacion: 250, precio: 40000, stock: 0 },
 
       /* El blend no tiene una finca sino dos: `mezcla` dice cuáles (fincaDe las junta). */
-      { id: "P-BLE", fincaId: null, mezcla: ["F-03", "F-02"], loteId: null, proximamente: true, color: "#9A6610",
+      { id: "P-BLE", fincaId: null, mezcla: ["F-03", "F-02"], loteId: null, color: "#9A6610",
         nombre: { es: "Blend de la casa", en: "House blend" }, sub: { es: "Castillo + Cenicafé 1 · molido", en: "Castillo + Cenicafé 1 · ground" },
         variedad: "Castillo + Cenicafé 1", proceso: "Por confirmar", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026",
         sale: { es: "Molido", en: "Ground" }, saleNota: { es: "Molienda fina: lista para el gotero o la cafetera de goteo.", en: "Fine grind: ready for a pour-over cone or a drip machine." },
@@ -2000,6 +2011,22 @@ function alturaDe(p) {
   if (!hs.length) return "";
   return hs[0] === hs[hs.length - 1] ? msnm(hs[0]) : fmtNum(hs[0]) + " – " + msnm(hs[hs.length - 1]);
 }
+/* ---------- la preventa ----------
+   Un café está en preventa cuando se vende antes de tener existencias: se paga
+   ahora y se despacha el día del lanzamiento. No es lo mismo que agotado —ese
+   se vendió— ni que "próximamente" —ese ni siquiera se puede pedir—. */
+const preventaAbierta = () => !!(CONFIG.preventa && CONFIG.preventa.activa && CONFIG.lanzamiento && new Date(CONFIG.lanzamiento + "T23:59:59-05:00") > new Date());
+const enPreventa = (p) => preventaAbierta() && !p.proximamente && !p.variantes.some((x) => x.stock > 0);
+const entregaPreventa = () => (CONFIG.preventa && CONFIG.preventa.entregaDesde) || CONFIG.lanzamiento;
+/* Cuántos días faltan para abrir. 0 el mismo día; negativo si ya pasó. */
+function faltanDias() {
+  if (!CONFIG.lanzamiento) return null;
+  const hoy = new Date(isoToday() + "T00:00:00");
+  return Math.round((new Date(CONFIG.lanzamiento + "T00:00:00") - hoy) / 864e5);
+}
+/* El precio que se cobra hoy: el de preventa si lo hay, si no el de siempre. */
+const precioHoy = (p, v) => (enPreventa(p) && CONFIG.preventa.precio ? CONFIG.preventa.precio : v.precio);
+
 const fincaDe = (p) => {
   if (!p.mezcla) return S.fincas.find((f) => f.id === p.fincaId) || {};
   const fs = p.mezcla.map((id) => S.fincas.find((f) => f.id === id)).filter(Boolean);
@@ -2227,13 +2254,25 @@ function meta(view, id) {
       ? (p.proximamente
           ? { t: tx(p.nombre) + (esMolido(p) ? " · ground coffee" : " · whole bean coffee") + ", coming soon · " + marca,
               d: tx(p.nombre) + " (" + tx(p.sub) + "): medium roast, " + (esMolido(p) ? "ground" : "whole bean") + ", from Norte de Santander. Data sheet and price to be confirmed; leave your email and we tell you the day it is out." }
-          : { t: tx(p.nombre) + " · " + p.puntaje + " SCA · coffee from " + (fincaDe(p).municipio || "Colombia") + " · " + marca,
-              d: tx(p.nombre) + ": " + p.variedad + " " + p.proceso.toLowerCase() + " grown at " + fmtNum(p.altitud) + " m in " + (fincaDe(p).municipio || "") + ", " + p.puntaje + " SCA points. Notes of " + tx(p.notas).join(", ").toLowerCase() + ". Whole bean, from " + cop(p.variantes[0].precio) + "." })
+          : { t: tx(p.nombre) + (p.puntaje ? " · " + p.puntaje + " SCA" : "") + " · coffee from " + (fincaDe(p).municipio || "Colombia") + " · " + marca,
+              d: tx(p.nombre) + ": " + p.variedad
+                + (conocido(p.proceso) ? " " + p.proceso.toLowerCase() : "")
+                + (alturaDe(p) ? " grown at " + alturaDe(p).replace(" m a.s.l.", " m") : "")
+                + (fincaDe(p).municipio ? " in " + fincaDe(p).municipio : "")
+                + (p.puntaje ? ", " + p.puntaje + " SCA points" : "")
+                + ". Notes of " + tx(p.notas).join(", ").toLowerCase()
+                + ". " + tx(saleDe(p, p.variantes[0])) + ", from " + cop(p.variantes[0].precio) + "." })
       : (p.proximamente
           ? { t: tx(p.nombre) + (esMolido(p) ? " · café molido" : " · café en grano") + ", próximamente · " + marca,
               d: tx(p.nombre) + " (" + tx(p.sub) + "): tostión media, " + (esMolido(p) ? "molido" : "en grano") + ", de Norte de Santander. Ficha y precio por confirmar; deja tu correo y te avisamos el día que salga." }
-          : { t: tx(p.nombre) + " · " + p.puntaje + " SCA · café de " + (fincaDe(p).municipio || "Colombia") + " · " + marca,
-              d: tx(p.nombre) + ": " + p.variedad + " " + p.proceso.toLowerCase() + " cultivado a " + fmtNum(p.altitud) + " msnm en " + (fincaDe(p).municipio || "") + ", con " + p.puntaje + " puntos SCA. Notas de " + tx(p.notas).join(", ").toLowerCase() + ". En grano, desde " + cop(p.variantes[0].precio) + "." }),
+          : { t: tx(p.nombre) + (p.puntaje ? " · " + p.puntaje + " SCA" : "") + " · café de " + (fincaDe(p).municipio || "Colombia") + " · " + marca,
+              d: tx(p.nombre) + ": " + p.variedad
+                + (conocido(p.proceso) ? " " + p.proceso.toLowerCase() : "")
+                + (alturaDe(p) ? " cultivado a " + alturaDe(p) : "")
+                + (fincaDe(p).municipio ? " en " + fincaDe(p).municipio : "")
+                + (p.puntaje ? ", con " + p.puntaje + " puntos SCA" : "")
+                + ". Notas de " + tx(p.notas).join(", ").toLowerCase()
+                + ". " + tx(saleDe(p, p.variantes[0])) + ", desde " + cop(p.variantes[0].precio) + "." }),
     subasta: en
       ? { t: "Live Geisha coffee auction · " + marca,
           d: "Bid in US dollars for a single 30 kg Geisha microlot of green coffee from Toledo, Norte de Santander, Colombia: reserve price, verified bidders and a 100 g sample to cup first." }

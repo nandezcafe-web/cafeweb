@@ -18,6 +18,8 @@
       "precio": 40000,
       "gramos": 250,
       "proximamente": false,
+      "preventa": false,
+      "entrega": "",
       "variantes": [
         {
           "g": 250,
@@ -46,13 +48,15 @@
         "en": "Cenicafé 1 · Palocolorado, Chinácota"
       },
       "color": "#2C4FA3",
-      "precio": 0,
+      "precio": 40000,
       "gramos": 250,
-      "proximamente": true,
+      "proximamente": false,
+      "preventa": true,
+      "entrega": "2026-11-20",
       "variantes": [
         {
           "g": 250,
-          "precio": 0,
+          "precio": 40000,
           "stock": 0
         }
       ],
@@ -77,13 +81,15 @@
         "en": "Castillo + Cenicafé 1 · ground"
       },
       "color": "#9A6610",
-      "precio": 0,
+      "precio": 40000,
       "gramos": 250,
-      "proximamente": true,
+      "proximamente": false,
+      "preventa": true,
+      "entrega": "2026-11-20",
       "variantes": [
         {
           "g": 250,
-          "precio": 0,
+          "precio": 40000,
           "stock": 0
         }
       ],

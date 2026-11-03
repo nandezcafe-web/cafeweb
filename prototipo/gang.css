@@ -698,7 +698,7 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
    dentro. Antes el marco pintaba su color y la foto quedaba encima como una
    calcomanía, con el recuadro a la vista. El degradado y la sombra del suelo
    también sobran: ya vienen en la foto. */
-.cc-art.con-foto{padding:0;background:none}
+.cc-art.con-foto{padding:0}
 .cc-art.con-foto::after{content:none}
 .cc-art.con-foto .prod-foto{width:100%;height:100%;max-width:none;margin:0;object-fit:cover}
 .g-prod-art .g-prod-foto{width:100%;height:100%;max-width:none;margin:0;object-fit:cover;display:block}
@@ -721,3 +721,28 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
   padding:6px 11px;border-radius:4px;background:var(--ink);color:var(--paper);text-align:left;
   font:600 11px/1 var(--mono);letter-spacing:.1em}
 .prod-escena.con-foto .g-pronto i{display:none}
+
+/* ============================================================
+   LAS FOTOS LLENAN SU MARCO, EN TODAS PARTES
+   Cada foto trae su propio fondo y su propia sombra. Los marcos pintaban
+   además su color detrás y dejaban aire alrededor, así que la foto se veía
+   como una calcomanía pegada sobre un panel de otro color. Aquí se quita el
+   aire, el color y la sombra dibujada, y la imagen ocupa el marco entero.
+   ============================================================ */
+/* El color del marco se queda como respaldo: la foto lo tapa por completo,
+   pero si tarda en cargar es mejor ver la tinta de la marca que un hueco. */
+.g-hero-art,.prod-escena,.g-puerta-art{padding:0}
+.prod-escena::after,.g-hero-art::after{content:none}
+.g-hero-art .g-hero-foto,
+.prod-escena .prod-foto,
+.g-puerta-art .g-prod-foto{width:100%;height:100%;max-width:none;min-height:0;margin:0;object-fit:cover;display:block}
+/* el marco toma la proporción de la foto donde puede, y recorta lo mínimo donde no */
+.prod-escena{min-height:0;aspect-ratio:800/1120}
+.g-hero-art{min-height:0;aspect-ratio:800/1120}
+.g-puerta-art{aspect-ratio:4/3}
+/* el sello de la cosecha y el "próximamente" quedan por encima de la foto */
+.g-hero-art .g-sello,.g-hero-art .g-hero-tag{z-index:2}
+.prod-escena .g-pronto,.g-puerta-art .g-pronto{position:absolute;inset:auto auto 16px 16px;z-index:2;width:auto;
+  align-self:end;justify-self:start;padding:6px 11px;border-radius:4px;background:var(--ink);color:var(--paper);
+  text-align:left;font:600 11px/1 var(--mono);letter-spacing:.1em}
+.prod-escena .g-pronto i,.g-puerta-art .g-pronto i{display:none}

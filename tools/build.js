@@ -283,6 +283,8 @@ escribir("data/catalogo.json", JSON.stringify({
   productos: ev(mundo("es"), `S.productos.map((p) => ({
     id: p.id, nombre: p.nombre, sale: p.sale, sub: p.sub, color: p.color || "#C9381A",
     precio: p.proximamente ? 0 : principal(p).precio, gramos: principal(p).g, proximamente: !!p.proximamente,
+    /* En preventa se cobra desde ya y se despacha el día del lanzamiento */
+    preventa: enPreventa(p), entrega: enPreventa(p) ? entregaPreventa() : "",
     /* stock: el inventario de arranque; después manda la hoja Stock */
     variantes: p.variantes.map((v) => ({ g: v.g, precio: p.proximamente ? 0 : v.precio, stock: v.stock || 0 })),
     url: { es: CONFIG.sitio + ruta("cafe", p.id, "es"), en: CONFIG.sitio + ruta("cafe", p.id, "en") } }))`)
