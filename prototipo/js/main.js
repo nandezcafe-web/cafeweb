@@ -7,15 +7,17 @@ const pal = (txt, desde = 0) => txt.split(" ").map((p, i) => `<span class="pal" 
 
 function viewInicio() {
   const en = UI.lang === "en";
+  /* Los títulos afirman, no describen: "Sabes de dónde viene" es una función
+     de producto; "Cada bolsa tiene remitente" es una frase de la marca. */
   const principios = en
-    ? [["You know where it comes from.", "Every bag names its farm. The blend names its two: Castillo from Ragonvalia and El Paraíso from Chinácota, nothing else."],
-       ["Data with a signature.", "Altitude, variety, process and score say who checked them and when. What we have not verified yet, we do not make up."],
-       ["Three coffees, not thirty.", "A lot goes on the shelf only if we cup it and it convinces us. We would rather sell out than fill the shelf."],
-       ["Whole bean or ground.", "Two coffees go whole bean, so you grind them right before brewing. The blend goes medium ground, ready for the cone or the drip machine. All three, medium roast."]]
-    : [["Sabes de dónde viene.", "Cada bolsa dice de qué finca sale. El blend dice de cuáles dos: Castillo de Ragonvalia y El Paraíso de Chinácota, nada más."],
-       ["Datos con firma.", "La altura, la variedad, el proceso y el puntaje dicen quién los comprobó y cuándo. Lo que todavía no hemos verificado, no lo inventamos."],
-       ["Tres cafés, no treinta.", "Un lote entra a la tienda solo si lo catamos y nos convence. Preferimos que se agote a llenar la estantería."],
-       ["En grano o molido.", "Dos cafés van en grano, para que los muelas justo antes de prepararlos. El blend va en molienda media, listo para el gotero o la cafetera de goteo. Los tres, con tostión media."]];
+    ? [["Every bag has a sender.", "It does not come from “Colombia”. It comes from a farm with a name, and the blend carries both: Castillo from Ragonvalia and El Paraíso from Chinácota."],
+       ["What we do not know, we say.", "Altitude, variety, process and score come with who checked them and when. What is missing says “to be confirmed” until we confirm it. Making it up would be easier; that is why we don't."],
+       ["Three coffees, not thirty.", "A lot goes on the shelf only if we cup it and it convinces us. We would rather sell out than fill your shelf with filler."],
+       ["Whoever drinks it grinds it.", "Two go whole bean, because coffee starts fading minutes after it is ground. The blend goes ground, for whoever has no grinder and is not about to buy one."]]
+    : [["Cada bolsa tiene remitente.", "No viene de “Colombia”. Viene de una finca con nombre, y el blend trae las dos: Castillo de Ragonvalia y El Paraíso de Chinácota."],
+       ["Lo que no sabemos, lo decimos.", "La altura, la variedad, el proceso y el puntaje van con quién los comprobó y cuándo. Lo que falta dice “por confirmar” hasta que lo confirmemos. Inventarlo sería más fácil; por eso no lo hacemos."],
+       ["Tres cafés, no treinta.", "Un lote entra solo si lo catamos y nos convence. Preferimos que se agote a llenarte la estantería de relleno."],
+       ["Lo muele quien se lo toma.", "Dos van en grano, porque el café empieza a perderse a los minutos de molerlo. El blend va molido, para quien no tiene molino y no piensa comprar uno."]];
   const cabeza = (num, kicker, titulo, texto, link) => `<div class="g-head g-io">
       <span class="g-num">${num}</span><p class="g-kicker">${kicker}</p>
       <h2>${titulo}</h2>${texto ? `<p>${texto}</p>` : ""}${link || ""}</div>`;

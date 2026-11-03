@@ -103,13 +103,14 @@ ok(getJ({ accion: "bono", codigo: "GANG-ZZZZZ" }).error === "no", "un código in
 /* ---- pedidos ---- */
 const nP = enviados.length;
 const rp = post({ tipo: "pedido", id: "NDZ-1022-AB12", correo: "ana@correo.com", nombre: "Ana Ruiz", ciudad: "Cúcuta", tel: "3001234567", canal: "correo",
-  documento: "1090123456", direccion: "Calle 10 # 5-23", detalle: "Barrio La Playa", departamento: "Norte de Santander",
+  documento: "1090123456", direccion: "Calle 10 # 5-23", detalle: "Barrio La Playa", departamento: "Norte de Santander", iva: 4286,
   items: [{ id: "P-CAS", g: 250, n: 2, nombre: "Castillo 250 g", forma: "Grano", stock: 90 }], subtotal: 100000, descuento: 10000, envio: 12000, total: 102000, bono: codigoAna });
 ok(rp.ok && rp.pedido === "NDZ-1022-AB12", "el pedido se guarda y devuelve su número");
 const fp = ss.hojas["Pedidos"].filas[1];
 ok(fp[2] === "nuevo" && fp[7] === "2 × Castillo 250 g (grano)" && fp[11] === 102000 && fp[12] === codigoAna && !fp[18], "la fila del pedido trae estado, productos, total y bono");
 ok(fp[19] === "1090123456" && fp[20] === "Calle 10 # 5-23" && fp[21] === "Barrio La Playa" && fp[22] === "Norte de Santander",
   "y los datos del envío: documento, dirección, detalle y departamento");
+ok(fp[24] === 4286 && /Incluye \$ ?4\.286 de IVA/.test(enviados[nP + 1].body), "el IVA incluido queda en la fila del pedido y en la constancia del cliente");
 ok(getJ({ accion: "bono", codigo: codigoAna }).error === "usado", "después del pedido, el bono queda usado");
 
 ok(enviados.length === nP + 2 && enviados[nP].to === "nandezcafe@gmail.com" && enviados[nP + 1].to === "ana@correo.com", "llega aviso a Nandez y constancia al cliente");

@@ -36,7 +36,7 @@ const COLS_BONOS = ["codigo", "correo", "pct", "alta", "vence", "bienvenida", "u
    existe conserva el orden viejo y las filas de antes no se descuadran. */
 const COLS_PEDIDOS = ["id", "fecha", "estado", "nombre", "correo", "whatsapp", "ciudad", "productos", "subtotal", "descuento",
   "envio", "total", "bono", "canal", "pagado", "despachado", "transportadora", "guia", "notas",
-  "documento", "direccion", "detalle", "departamento", "items"];
+  "documento", "direccion", "detalle", "departamento", "items", "iva"];
 /* Una fila por presentación ("P-CAS-250"). Esta hoja es el stock de verdad:
    el navegador solo copia lo que diga aquí. Se puede corregir a mano. */
 const COLS_STOCK = ["id", "nombre", "stock", "actualizado"];
@@ -225,14 +225,15 @@ function pedido_(ss, d, correo) {
   h.appendRow([id, new Date(), "nuevo", corto_(d.nombre, 120), correo, corto_(d.tel, 40), corto_(d.ciudad, 80), productos,
     num_(d.subtotal), num_(d.descuento), num_(d.envio), num_(d.total), bono, corto_(d.canal, 20), "", "", "", "", notas,
     corto_(d.documento, 30), corto_(d.direccion, 200), corto_(d.detalle, 200), corto_(d.departamento, 60),
-    JSON.stringify(items.map((i) => ({ id: corto_(i.id, 40), g: num_(i.g), n: num_(i.n) })))]);
+    JSON.stringify(items.map((i) => ({ id: corto_(i.id, 40), g: num_(i.g), n: num_(i.n) }))), num_(d.iva)]);
   /* el pedido aparta las bolsas: si alguien pidió más de las que había, queda escrito */
   const falta = descontarStock_(ss, items);
   if (falta.length) {
     notas = (notas ? notas + " " : "") + "Sin stock — " + falta.join("; ") + ".";
     h.getRange(h.getLastRow(), 19).setValue(notas);
   }
-  const en = d.idioma === "en", lineas = productos + "\n\nTotal: " + pesos_(d.total) + (num_(d.descuento) ? " (" + (en ? "with " : "con ") + bono + ")" : "");
+  const en = d.idioma === "en", lineas = productos + "\n\nTotal: " + pesos_(d.total) + (num_(d.descuento) ? " (" + (en ? "with " : "con ") + bono + ")" : "") +
+    (num_(d.iva) ? "\n" + (en ? "Includes " : "Incluye ") + pesos_(d.iva) + (en ? " of VAT" : " de IVA") : "");
   /* la dirección como se escribe en la guía */
   const envio = corto_(d.direccion, 200) + (d.detalle ? "\n" + corto_(d.detalle, 200) : "") +
     "\n" + corto_(d.ciudad, 80) + (d.departamento ? ", " + corto_(d.departamento, 60) : "");
@@ -419,7 +420,7 @@ function doGet(e) {
       .map((f) => ({ id: f[0], fecha: f[1], estado: f[2], nombre: f[3], correo: f[4], tel: f[5], ciudad: f[6], productos: f[7],
         subtotal: f[8], descuento: f[9], envio: f[10], total: f[11], bono: f[12], canal: f[13], pagado: f[14], despachado: f[15],
         transportadora: f[16], guia: f[17], notas: f[18],
-        documento: f[19], direccion: f[20], detalle: f[21], departamento: f[22] }));
+        documento: f[19], direccion: f[20], detalle: f[21], departamento: f[22], iva: f[24] }));
     const subs = hojaDe_(ss, H_SUBS).getDataRange().getValues().map((f, i) => ({ fila: i + 1, correo: f[0], plan: f[1], kit: f[2], pago: f[3],
       cada: f[4], molienda: f[5], ciudad: f[6], alta: f[7], estado: f[8], proximo: f[9], ultimo: f[10], envios: f[11], notas: f[12] }))
       .slice(1).filter((s) => s.correo);

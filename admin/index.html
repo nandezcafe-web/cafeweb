@@ -1487,6 +1487,9 @@ html[lang=en] .ruta li::before{content:"Month " counter(ruta)}
 .pay-det{margin:0;padding:11px 14px 12px 40px;border-top:1px solid var(--line);background:var(--paper);color:var(--ink-2);font-size:13px}
 @media (max-width:520px){.pay-marcas{justify-content:flex-start}}
 
+/* El IVA incluido, debajo del total: dato, no cifra protagonista */
+.cart-iva{margin:2px 0 0;text-align:right;color:var(--ink-3);font-size:12px}
+
 /* sala de subasta */
 .auction{color:#E6D7C3}
 .auction .kicker{color:#c9b497}
@@ -1706,7 +1709,15 @@ const CONFIG = {
     suscripcion: {},            // { descubrir: "https://mpago.la/xxxx" }
     /* Cómo se paga mientras no haya pago en línea. POR CONFIRMAR con la cuenta real. */
     manual: { es: "transferencia bancaria o Nequi", en: "bank transfer or Nequi" },
+    /* Lo que se queda la pasarela de cada cobro: su porcentaje y el IVA de esa
+       comisión. No es un costo del café, pero sale del mismo precio. */
+    comision: { pct: 3.49, iva: 19 },
   },
+  /* IVA del café tostado: tarifa del 5 % (E.T. art. 468-1); el café verde sin tostar
+     está excluido. El precio que se muestra YA lo incluye, como el precio al
+     consumidor. En 0 no se cobra ni se muestra: así queda si Nandez no es
+     responsable de IVA. CONFIRMAR con el contador antes de facturar. */
+  iva: 5,
 };
 
 /* Los 32 departamentos y Bogotá: la transportadora los pide para la guía, y
@@ -1948,6 +1959,13 @@ const cop = (n) => (UI.lang === "en" ? "COP " : "$") + fmtNum(Math.round(n || 0)
 const usd = (n) => "USD " + Number(n || 0).toLocaleString(UI.lang === "en" ? "en-US" : "es-CO", { maximumFractionDigits: 0 });
 const usdLb = (n) => "USD " + (Number(n || 0) / 2.20462).toLocaleString(UI.lang === "en" ? "en-US" : "es-CO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "/lb";
 const copK =(n) => (Math.abs(n) >= 1e6 ? "$" + fmtNum(n / 1e6, 1) + " M" : cop(n));
+/* El IVA que ya va DENTRO de un precio al consumidor: $40.000 al 5 % llevan $1.905 */
+const ivaDe = (valor) => (CONFIG.iva ? (Number(valor) || 0) * CONFIG.iva / (100 + CONFIG.iva) : 0);
+/* Lo que la pasarela se queda de un cobro, con el IVA de su propia comisión */
+const comisionPasarela = (valor, pct) => {
+  const c = CONFIG.pagos.comision; if (!c) return 0;
+  return ((Number(valor) || 0) * (pct == null ? c.pct : pct) / 100) * (1 + c.iva / 100);
+};
 const isoToday = () => new Date().toISOString().slice(0, 10);
 /* Acepta "2026-11-19" y también "2026-11-19T19:00:00-05:00" (la hora del drop).
    Cuando la fecha trae hora, se lee en hora de Colombia: el día del drop es el
@@ -2017,15 +2035,15 @@ const KITS = {
 };
 const PLANES = [
   { id: "semilla", nombre: { es: "Semilla", en: "Seed" }, kit: "esencial",
-    para: { es: "Para empezar a preparar en casa", en: "To start brewing at home" },
+    para: { es: "Una bolsa al mes, y aprender a prepararla", en: "A bag a month, and how to brew it" },
     mes: 72000, inscripcion: 169000, seisKit: 459000, seisSinKit: 399000, molienda: "media-fina",
-    cada: { es: ["250 g de café de especialidad", "20 filtros", "Molienda a tu gusto", "La receta del mes y su video"],
-            en: ["250 g of specialty coffee", "20 filters", "Ground to your taste", "The month's recipe and video"] } },
+    cada: { es: ["250 g de la finca del mes", "20 filtros", "Molida como la pidas", "La receta del mes, en video"],
+            en: ["250 g from the farm of the month", "20 filters", "Ground however you ask", "The month's recipe, on video"] } },
   { id: "cosecha", nombre: { es: "Cosecha", en: "Harvest" }, kit: "completo", destacado: true,
-    para: { es: "Para comparar dos fincas cada mes", en: "To compare two farms every month" },
+    para: { es: "Dos fincas al mes, lado a lado", en: "Two farms a month, side by side" },
     mes: 105000, inscripcion: 319000, seisKit: 679000, seisSinKit: 585000, molienda: "media-fina",
-    cada: { es: ["2 × 250 g de dos fincas distintas", "40 filtros", "Molienda a tu gusto", "La receta del mes y su video", "Acceso anticipado a cada lote nuevo"],
-            en: ["2 × 250 g from two different farms", "40 filters", "Ground to your taste", "The month's recipe and video", "Early access to every new lot"] } },
+    cada: { es: ["2 × 250 g de dos fincas distintas", "40 filtros", "Molida como la pidas", "La receta del mes, en video", "Los lotes nuevos, antes que nadie"],
+            en: ["2 × 250 g from two different farms", "40 filters", "Ground however you ask", "The month's recipe, on video", "New lots before anyone else"] } },
   /* El escalón de arriba es la barra, no un recargo: antes costaba $10.000 más
      que Cosecha por "algo del oficio cada tres meses", que no es un plan.
      Va en kilos, así que no lleva kit de bienvenida ni seis envíos por
@@ -2363,7 +2381,8 @@ function later(ms, fn) { setTimeout(() => { if (fn() !== false) { save(); softRe
    ============================================================ */
 function nuevaCot() {
   return { estado: "Pergamino seco", kg: 125, factor: 94, humedad: 11, sca: 85,
-    precioCarga: CONFIG.fnc.precioCarga, ...COSTOS, presentacion: 250, precioVenta: 40000 };
+    precioCarga: CONFIG.fnc.precioCarga, ...COSTOS, presentacion: 250, precioVenta: 40000,
+    iva: CONFIG.iva, comision: CONFIG.pagos.comision.pct };
 }
 
 function calcCot(d) {
@@ -2379,20 +2398,26 @@ function calcCot(d) {
   const ingresos = bolsas * d.precioVenta;
 
   const costoProceso = d.transporte * kgPerg + d.trilla * kgPerg + d.tueste * kgVerde + d.empaque * bolsas + (ingresos * d.indirectos) / 100;
-  const maxTotal = ingresos * (1 - d.margenObjetivo / 100) - costoProceso;   // lo máximo que puede costar el café
+  /* De lo que entra por caja, dos partes nunca fueron nuestras: el IVA que va
+     dentro del precio y lo que se queda la pasarela. El margen se mide sobre lo
+     que de verdad queda, o el cotizador diría que podemos pagar más de lo que podemos. */
+  const iva = (ingresos * (d.iva || 0)) / (100 + (d.iva || 0));
+  const comision = comisionPasarela(ingresos, d.comision);
+  const ventaNeta = ingresos - iva - comision;
+  const maxTotal = ventaNeta * (1 - d.margenObjetivo / 100) - costoProceso;   // lo máximo que puede costar el café
   const maxKg = kgPerg12 > 0 ? maxTotal / kgPerg12 : 0;
   const sugeridoKg = Math.min(comiteKg * (1 + d.primaSugerida / 100), Math.max(maxKg, 0));
   const sugeridoTope = comiteKg * (1 + d.primaSugerida / 100) > maxKg;
 
   const compra = sugeridoKg * kgPerg12;
   const costoTotal = compra + costoProceso;
-  const utilidad = ingresos - costoTotal;
-  const margen = ingresos > 0 ? (utilidad / ingresos) * 100 : 0;
+  const utilidad = ventaNeta - costoTotal;
+  const margen = ventaNeta > 0 ? (utilidad / ventaNeta) * 100 : 0;
   const costoBolsa = bolsas ? costoTotal / bolsas : 0;
   const extraProductor = (sugeridoKg - comiteKg) * kgPerg12;
 
   return { kgPerg, kgPerg12, kgVerde, kgTostado, bolsas, comiteKg, valorComite, maxKg, sugeridoKg, sugeridoTope,
-    ingresos, costoProceso, compra, costoTotal, utilidad, margen, costoBolsa, extraProductor,
+    ingresos, iva, comision, ventaNeta, costoProceso, compra, costoTotal, utilidad, margen, costoBolsa, extraProductor,
     equilibrioBolsa: bolsas ? costoTotal / bolsas : 0 };
 }
 
@@ -2442,6 +2467,8 @@ function viewCotizador() {
           <div class="form-grid">
             ${fIn("presentacion", "Presentación", d.presentacion, { step: 10, suf: "gramos" })}
             ${fIn("precioVenta", "Precio de venta", d.precioVenta, { step: 500, suf: "COP por bolsa" })}
+            ${fIn("iva", "IVA del café tostado", d.iva, { step: 1, suf: "% dentro del precio" })}
+            ${fIn("comision", "Comisión de la pasarela", d.comision, { step: 0.1, suf: `% + IVA del ${CONFIG.pagos.comision.iva} %` })}
             ${fIn("margenObjetivo", "Margen objetivo", d.margenObjetivo, { step: 1, suf: "%" })}
             ${fIn("primaSugerida", "Prima sobre el comité", d.primaSugerida, { step: 1, suf: "% que ofrecemos de entrada" })}
             ${fIn("precioCarga", "Precio FNC por carga", d.precioCarga, { step: 5000, suf: "COP · factor 94" })}
@@ -2488,11 +2515,14 @@ function cotResHTML() {
         <div class="end"><b class="mono">${fmtNum(r.bolsas)}</b><small>bolsas de ${d.presentacion} g</small></div>
       </div>
       <div class="prow-au"><span>Venta total</span><b>${cop(r.ingresos)}</b></div>
+      ${r.iva ? `<div class="prow-au"><span>IVA incluido (${d.iva} %)</span><b>−${cop(r.iva)}</b></div>` : ""}
+      ${r.comision ? `<div class="prow-au"><span>Comisión de la pasarela (${d.comision} % + IVA)</span><b>−${cop(r.comision)}</b></div>` : ""}
       <div class="prow-au"><span>Compra del café</span><b>−${cop(r.compra)}</b></div>
       <div class="prow-au"><span>Trilla, tueste, empaque, fletes</span><b>−${cop(r.costoProceso)}</b></div>
       <div class="prow-au total"><span>Utilidad bruta</span><b>${cop(r.utilidad)} · ${r.margen.toFixed(1)} %</b></div>
       <div class="prow-au"><span>Costo por bolsa</span><b>${cop(r.costoBolsa)}</b></div>
       <div class="prow-au"><span>Precio mínimo por bolsa</span><b>${cop(r.equilibrioBolsa)}</b></div>
+      ${r.iva || r.comision ? `<p class="hint">El margen se mide sobre ${cop(r.ventaNeta)}, que es lo que queda después del IVA y de la pasarela, no sobre los ${cop(r.ingresos)} que entran por caja.</p>` : ""}
     </div>
     ${alertas.length ? `<ul class="alerts">${alertas.map(([k, t]) => `<li class="al-${k}">${t}</li>`).join("")}</ul>` : ""}
     <div class="res-actions">

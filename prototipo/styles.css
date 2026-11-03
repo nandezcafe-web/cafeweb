@@ -1475,3 +1475,6 @@ html[lang=en] .ruta li::before{content:"Month " counter(ruta)}
   color:var(--ink-2);background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:4px 5px}
 .pay-det{margin:0;padding:11px 14px 12px 40px;border-top:1px solid var(--line);background:var(--paper);color:var(--ink-2);font-size:13px}
 @media (max-width:520px){.pay-marcas{justify-content:flex-start}}
+
+/* El IVA incluido, debajo del total: dato, no cifra protagonista */
+.cart-iva{margin:2px 0 0;text-align:right;color:var(--ink-3);font-size:12px}

@@ -80,7 +80,15 @@ const CONFIG = {
     suscripcion: {},            // { descubrir: "https://mpago.la/xxxx" }
     /* Cómo se paga mientras no haya pago en línea. POR CONFIRMAR con la cuenta real. */
     manual: { es: "transferencia bancaria o Nequi", en: "bank transfer or Nequi" },
+    /* Lo que se queda la pasarela de cada cobro: su porcentaje y el IVA de esa
+       comisión. No es un costo del café, pero sale del mismo precio. */
+    comision: { pct: 3.49, iva: 19 },
   },
+  /* IVA del café tostado: tarifa del 5 % (E.T. art. 468-1); el café verde sin tostar
+     está excluido. El precio que se muestra YA lo incluye, como el precio al
+     consumidor. En 0 no se cobra ni se muestra: así queda si Nandez no es
+     responsable de IVA. CONFIRMAR con el contador antes de facturar. */
+  iva: 5,
 };
 
 /* Los 32 departamentos y Bogotá: la transportadora los pide para la guía, y
@@ -322,6 +330,13 @@ const cop = (n) => (UI.lang === "en" ? "COP " : "$") + fmtNum(Math.round(n || 0)
 const usd = (n) => "USD " + Number(n || 0).toLocaleString(UI.lang === "en" ? "en-US" : "es-CO", { maximumFractionDigits: 0 });
 const usdLb = (n) => "USD " + (Number(n || 0) / 2.20462).toLocaleString(UI.lang === "en" ? "en-US" : "es-CO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "/lb";
 const copK =(n) => (Math.abs(n) >= 1e6 ? "$" + fmtNum(n / 1e6, 1) + " M" : cop(n));
+/* El IVA que ya va DENTRO de un precio al consumidor: $40.000 al 5 % llevan $1.905 */
+const ivaDe = (valor) => (CONFIG.iva ? (Number(valor) || 0) * CONFIG.iva / (100 + CONFIG.iva) : 0);
+/* Lo que la pasarela se queda de un cobro, con el IVA de su propia comisión */
+const comisionPasarela = (valor, pct) => {
+  const c = CONFIG.pagos.comision; if (!c) return 0;
+  return ((Number(valor) || 0) * (pct == null ? c.pct : pct) / 100) * (1 + c.iva / 100);
+};
 const isoToday = () => new Date().toISOString().slice(0, 10);
 /* Acepta "2026-11-19" y también "2026-11-19T19:00:00-05:00" (la hora del drop).
    Cuando la fecha trae hora, se lee en hora de Colombia: el día del drop es el
@@ -391,15 +406,15 @@ const KITS = {
 };
 const PLANES = [
   { id: "semilla", nombre: { es: "Semilla", en: "Seed" }, kit: "esencial",
-    para: { es: "Para empezar a preparar en casa", en: "To start brewing at home" },
+    para: { es: "Una bolsa al mes, y aprender a prepararla", en: "A bag a month, and how to brew it" },
     mes: 72000, inscripcion: 169000, seisKit: 459000, seisSinKit: 399000, molienda: "media-fina",
-    cada: { es: ["250 g de café de especialidad", "20 filtros", "Molienda a tu gusto", "La receta del mes y su video"],
-            en: ["250 g of specialty coffee", "20 filters", "Ground to your taste", "The month's recipe and video"] } },
+    cada: { es: ["250 g de la finca del mes", "20 filtros", "Molida como la pidas", "La receta del mes, en video"],
+            en: ["250 g from the farm of the month", "20 filters", "Ground however you ask", "The month's recipe, on video"] } },
   { id: "cosecha", nombre: { es: "Cosecha", en: "Harvest" }, kit: "completo", destacado: true,
-    para: { es: "Para comparar dos fincas cada mes", en: "To compare two farms every month" },
+    para: { es: "Dos fincas al mes, lado a lado", en: "Two farms a month, side by side" },
     mes: 105000, inscripcion: 319000, seisKit: 679000, seisSinKit: 585000, molienda: "media-fina",
-    cada: { es: ["2 × 250 g de dos fincas distintas", "40 filtros", "Molienda a tu gusto", "La receta del mes y su video", "Acceso anticipado a cada lote nuevo"],
-            en: ["2 × 250 g from two different farms", "40 filters", "Ground to your taste", "The month's recipe and video", "Early access to every new lot"] } },
+    cada: { es: ["2 × 250 g de dos fincas distintas", "40 filtros", "Molida como la pidas", "La receta del mes, en video", "Los lotes nuevos, antes que nadie"],
+            en: ["2 × 250 g from two different farms", "40 filters", "Ground however you ask", "The month's recipe, on video", "New lots before anyone else"] } },
   /* El escalón de arriba es la barra, no un recargo: antes costaba $10.000 más
      que Cosecha por "algo del oficio cada tres meses", que no es un plan.
      Va en kilos, así que no lleva kit de bienvenida ni seis envíos por

@@ -4,7 +4,8 @@
    ============================================================ */
 function nuevaCot() {
   return { estado: "Pergamino seco", kg: 125, factor: 94, humedad: 11, sca: 85,
-    precioCarga: CONFIG.fnc.precioCarga, ...COSTOS, presentacion: 250, precioVenta: 40000 };
+    precioCarga: CONFIG.fnc.precioCarga, ...COSTOS, presentacion: 250, precioVenta: 40000,
+    iva: CONFIG.iva, comision: CONFIG.pagos.comision.pct };
 }
 
 function calcCot(d) {
@@ -20,20 +21,26 @@ function calcCot(d) {
   const ingresos = bolsas * d.precioVenta;
 
   const costoProceso = d.transporte * kgPerg + d.trilla * kgPerg + d.tueste * kgVerde + d.empaque * bolsas + (ingresos * d.indirectos) / 100;
-  const maxTotal = ingresos * (1 - d.margenObjetivo / 100) - costoProceso;   // lo máximo que puede costar el café
+  /* De lo que entra por caja, dos partes nunca fueron nuestras: el IVA que va
+     dentro del precio y lo que se queda la pasarela. El margen se mide sobre lo
+     que de verdad queda, o el cotizador diría que podemos pagar más de lo que podemos. */
+  const iva = (ingresos * (d.iva || 0)) / (100 + (d.iva || 0));
+  const comision = comisionPasarela(ingresos, d.comision);
+  const ventaNeta = ingresos - iva - comision;
+  const maxTotal = ventaNeta * (1 - d.margenObjetivo / 100) - costoProceso;   // lo máximo que puede costar el café
   const maxKg = kgPerg12 > 0 ? maxTotal / kgPerg12 : 0;
   const sugeridoKg = Math.min(comiteKg * (1 + d.primaSugerida / 100), Math.max(maxKg, 0));
   const sugeridoTope = comiteKg * (1 + d.primaSugerida / 100) > maxKg;
 
   const compra = sugeridoKg * kgPerg12;
   const costoTotal = compra + costoProceso;
-  const utilidad = ingresos - costoTotal;
-  const margen = ingresos > 0 ? (utilidad / ingresos) * 100 : 0;
+  const utilidad = ventaNeta - costoTotal;
+  const margen = ventaNeta > 0 ? (utilidad / ventaNeta) * 100 : 0;
   const costoBolsa = bolsas ? costoTotal / bolsas : 0;
   const extraProductor = (sugeridoKg - comiteKg) * kgPerg12;
 
   return { kgPerg, kgPerg12, kgVerde, kgTostado, bolsas, comiteKg, valorComite, maxKg, sugeridoKg, sugeridoTope,
-    ingresos, costoProceso, compra, costoTotal, utilidad, margen, costoBolsa, extraProductor,
+    ingresos, iva, comision, ventaNeta, costoProceso, compra, costoTotal, utilidad, margen, costoBolsa, extraProductor,
     equilibrioBolsa: bolsas ? costoTotal / bolsas : 0 };
 }
 
@@ -83,6 +90,8 @@ function viewCotizador() {
           <div class="form-grid">
             ${fIn("presentacion", "Presentación", d.presentacion, { step: 10, suf: "gramos" })}
             ${fIn("precioVenta", "Precio de venta", d.precioVenta, { step: 500, suf: "COP por bolsa" })}
+            ${fIn("iva", "IVA del café tostado", d.iva, { step: 1, suf: "% dentro del precio" })}
+            ${fIn("comision", "Comisión de la pasarela", d.comision, { step: 0.1, suf: `% + IVA del ${CONFIG.pagos.comision.iva} %` })}
             ${fIn("margenObjetivo", "Margen objetivo", d.margenObjetivo, { step: 1, suf: "%" })}
             ${fIn("primaSugerida", "Prima sobre el comité", d.primaSugerida, { step: 1, suf: "% que ofrecemos de entrada" })}
             ${fIn("precioCarga", "Precio FNC por carga", d.precioCarga, { step: 5000, suf: "COP · factor 94" })}
@@ -129,11 +138,14 @@ function cotResHTML() {
         <div class="end"><b class="mono">${fmtNum(r.bolsas)}</b><small>bolsas de ${d.presentacion} g</small></div>
       </div>
       <div class="prow-au"><span>Venta total</span><b>${cop(r.ingresos)}</b></div>
+      ${r.iva ? `<div class="prow-au"><span>IVA incluido (${d.iva} %)</span><b>−${cop(r.iva)}</b></div>` : ""}
+      ${r.comision ? `<div class="prow-au"><span>Comisión de la pasarela (${d.comision} % + IVA)</span><b>−${cop(r.comision)}</b></div>` : ""}
       <div class="prow-au"><span>Compra del café</span><b>−${cop(r.compra)}</b></div>
       <div class="prow-au"><span>Trilla, tueste, empaque, fletes</span><b>−${cop(r.costoProceso)}</b></div>
       <div class="prow-au total"><span>Utilidad bruta</span><b>${cop(r.utilidad)} · ${r.margen.toFixed(1)} %</b></div>
       <div class="prow-au"><span>Costo por bolsa</span><b>${cop(r.costoBolsa)}</b></div>
       <div class="prow-au"><span>Precio mínimo por bolsa</span><b>${cop(r.equilibrioBolsa)}</b></div>
+      ${r.iva || r.comision ? `<p class="hint">El margen se mide sobre ${cop(r.ventaNeta)}, que es lo que queda después del IVA y de la pasarela, no sobre los ${cop(r.ingresos)} que entran por caja.</p>` : ""}
     </div>
     ${alertas.length ? `<ul class="alerts">${alertas.map(([k, t]) => `<li class="al-${k}">${t}</li>`).join("")}</ul>` : ""}
     <div class="res-actions">

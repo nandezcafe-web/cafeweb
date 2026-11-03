@@ -583,6 +583,8 @@ function renderCarrito() {
         <button class="cart-del" data-act="bono-quitar">${en ? "Remove" : "Quitar"}</button></span><b class="mono">−${cop(desc)}</b></div>` : ""}
       <div><span>${en ? "Shipping" : "Envío"}</span><b class="mono">${envio ? cop(envio) : (en ? "Free" : "Gratis")}</b></div>
       <div class="cart-total"><span>${t("total")}</span><b class="mono">${cop(totalCarrito() - desc + envio)}</b></div>
+      ${CONFIG.iva ? `<p class="cart-iva">${en ? `Includes ${cop(ivaDe(totalCarrito() - desc))} of VAT (${CONFIG.iva} %)`
+        : `Incluye ${cop(ivaDe(totalCarrito() - desc))} de IVA (${CONFIG.iva} %)`}</p>` : ""}
       <p class="hint">${envio
         ? (en ? `Add ${cop(falta)} more and shipping is free. ` : `Te faltan ${cop(falta)} para el envío gratis. `)
         : ""}${en ? "Arrives in " : "Llega en "}${tx(E.dias)} ${en ? "with " : "por "}${esc(E.transportadora)}${en ? ", anywhere in Colombia." : ", a cualquier ciudad de Colombia."}</p>
@@ -656,6 +658,9 @@ function registrarPedido(d, canal) {
   const nombre = [d.nombre, d.apellidos].filter(Boolean).join(" ");
   const cl = upsertCliente(nombre, d.ciudad, d.tel);
   const subtotal = totalCarrito(), envio = envioDe(subtotal), descuento = descuentoCarrito(), total = subtotal - descuento + envio;
+  /* El IVA ya está dentro del precio del café; el envío no lo lleva. Se guarda
+     aparte porque es lo que pide la factura, no un cobro adicional. */
+  const iva = Math.round(ivaDe(subtotal - descuento));
   const bono = descuento ? UI.bono.codigo : "";
   const items = UI.carrito.map((i) => {
     const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
@@ -664,7 +669,7 @@ function registrarPedido(d, canal) {
   });
   const pedido = { id: numeroPedido(), clienteId: cl.id, canal, nombre, documento: d.documento, direccion: d.direccion,
     detalle: d.detalle, ciudad: d.ciudad, departamento: d.departamento, tel: d.tel, correo: d.correo,
-    items, subtotal, descuento, bono, envio, total, fecha: isoToday() };
+    items, subtotal, descuento, bono, envio, total, iva, fecha: isoToday() };
   S.pedidos.unshift(pedido);
   UI.carrito.forEach((i) => {
     const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
@@ -680,6 +685,7 @@ function registrarPedido(d, canal) {
     ...(descuento ? [`Bono ${bono} (−${UI.bono.pct} %): −${cop(descuento)}`] : []),
     `Envío: ${envio ? cop(envio) : "gratis"}`,
     `Total: ${cop(total)}`,
+    ...(iva ? [`Incluye ${cop(iva)} de IVA (${CONFIG.iva} %)`] : []),
     `${nombre} · CC/NIT ${d.documento}`,
     `${d.direccion}${d.detalle ? " · " + d.detalle : ""}`,
     `${d.ciudad}, ${d.departamento} · tel ${d.tel}${d.correo ? " · " + d.correo : ""}`,

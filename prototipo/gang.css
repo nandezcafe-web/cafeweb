@@ -670,3 +670,9 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
    dos secciones distintas. */
 .foot-fin{grid-column:1/-1;display:grid;gap:10px;justify-items:start;margin-top:22px}
 .foot-fin .foot-nota{grid-column:auto}
+
+/* Los planes, separados. Pegados en una sola tabla no se veía dónde acababa
+   uno y empezaba el otro: Semilla y Barista se leían como un mismo bloque con
+   Cosecha encima. Cada tarjeta lleva su borde y su aire. */
+.planes{gap:16px;border:0}
+.plan{border:1px solid var(--ink);margin-bottom:0}

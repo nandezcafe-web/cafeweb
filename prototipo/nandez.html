@@ -1509,6 +1509,9 @@ html[lang=en] .ruta li::before{content:"Month " counter(ruta)}
 .pay-det{margin:0;padding:11px 14px 12px 40px;border-top:1px solid var(--line);background:var(--paper);color:var(--ink-2);font-size:13px}
 @media (max-width:520px){.pay-marcas{justify-content:flex-start}}
 
+/* El IVA incluido, debajo del total: dato, no cifra protagonista */
+.cart-iva{margin:2px 0 0;text-align:right;color:var(--ink-3);font-size:12px}
+
 /* sala de subasta */
 .auction{color:#E6D7C3}
 .auction .kicker{color:#c9b497}
@@ -2304,6 +2307,12 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
 .foot-fin{grid-column:1/-1;display:grid;gap:10px;justify-items:start;margin-top:22px}
 .foot-fin .foot-nota{grid-column:auto}
 
+/* Los planes, separados. Pegados en una sola tabla no se veía dónde acababa
+   uno y empezaba el otro: Semilla y Barista se leían como un mismo bloque con
+   Cosecha encima. Cada tarjeta lleva su borde y su aire. */
+.planes{gap:16px;border:0}
+.plan{border:1px solid var(--ink);margin-bottom:0}
+
 </style>
 <script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Coffee","url":"https://cafeweb-five.vercel.app","logo":"https://cafeweb-five.vercel.app/img/marca/icono-512.png","image":"https://cafeweb-five.vercel.app/img/marca/compartir.jpg","sameAs":["https://www.instagram.com/nandezcafe/","https://www.facebook.com/profile.php?id=61594868961438","https://www.youtube.com/@N%C3%A1ndezCaf%C3%A9"],"email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"Familia cafetera de Chinácota. Compramos lotes pequeños en fincas de Norte de Santander y los tostamos con nuestro nombre: dos cafés de una sola finca, en grano, y un blend molido de los dos."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Coffee","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"es"}]}</script>
 </head>
@@ -2416,7 +2425,7 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
     <div class="g-manifiesto-in">
       <p class="g-kicker g-io"><span class="g-num">02</span> &nbsp; Cómo trabajamos</p>
       <h2 id="g-gang" class="g-io">No es “café colombiano”. <em>Es el café de alguien.</em></h2>
-      <ol class="g-principios g-io" style="--i:1"><li><b>Sabes de dónde viene.</b><span>Cada bolsa dice de qué finca sale. El blend dice de cuáles dos: Castillo de Ragonvalia y El Paraíso de Chinácota, nada más.</span></li><li><b>Datos con firma.</b><span>La altura, la variedad, el proceso y el puntaje dicen quién los comprobó y cuándo. Lo que todavía no hemos verificado, no lo inventamos.</span></li><li><b>Tres cafés, no treinta.</b><span>Un lote entra a la tienda solo si lo catamos y nos convence. Preferimos que se agote a llenar la estantería.</span></li><li><b>En grano o molido.</b><span>Dos cafés van en grano, para que los muelas justo antes de prepararlos. El blend va en molienda media, listo para el gotero o la cafetera de goteo. Los tres, con tostión media.</span></li></ol>
+      <ol class="g-principios g-io" style="--i:1"><li><b>Cada bolsa tiene remitente.</b><span>No viene de “Colombia”. Viene de una finca con nombre, y el blend trae las dos: Castillo de Ragonvalia y El Paraíso de Chinácota.</span></li><li><b>Lo que no sabemos, lo decimos.</b><span>La altura, la variedad, el proceso y el puntaje van con quién los comprobó y cuándo. Lo que falta dice “por confirmar” hasta que lo confirmemos. Inventarlo sería más fácil; por eso no lo hacemos.</span></li><li><b>Tres cafés, no treinta.</b><span>Un lote entra solo si lo catamos y nos convence. Preferimos que se agote a llenarte la estantería de relleno.</span></li><li><b>Lo muele quien se lo toma.</b><span>Dos van en grano, porque el café empieza a perderse a los minutos de molerlo. El blend va molido, para quien no tiene molino y no piensa comprar uno.</span></li></ol>
     </div>
   </section>
 
@@ -2427,7 +2436,7 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
       <p>Café de la cosecha, filtros y una receta nueva cada mes. La primera caja trae el kit para prepararlo, y la Ruta Nandez te enseña un método al mes.</p>
       <button class="btn claro lg" data-act="go" data-to="suscripcion">Ver los planes<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
     </div>
-    <ul class="g-planes"><li class=""><b>Semilla</b><span>Para empezar a preparar en casa</span><strong>$72.000<small>/mes</small></strong></li><li class="hot"><b>Cosecha</b><span>Para comparar dos fincas cada mes</span><strong>$105.000<small>/mes</small></strong></li><li class=""><b>Barista</b><span>Para tu barra, no para tu casa</span><strong>$240.000<small>/mes</small></strong></li></ul>
+    <ul class="g-planes"><li class=""><b>Semilla</b><span>Una bolsa al mes, y aprender a prepararla</span><strong>$72.000<small>/mes</small></strong></li><li class="hot"><b>Cosecha</b><span>Dos fincas al mes, lado a lado</span><strong>$105.000<small>/mes</small></strong></li><li class=""><b>Barista</b><span>Para tu barra, no para tu casa</span><strong>$240.000<small>/mes</small></strong></li></ul>
   </section>
 
   <section class="g-sec g-musica" aria-labelledby="g-musica">
@@ -2571,7 +2580,15 @@ const CONFIG = {
     suscripcion: {},            // { descubrir: "https://mpago.la/xxxx" }
     /* Cómo se paga mientras no haya pago en línea. POR CONFIRMAR con la cuenta real. */
     manual: { es: "transferencia bancaria o Nequi", en: "bank transfer or Nequi" },
+    /* Lo que se queda la pasarela de cada cobro: su porcentaje y el IVA de esa
+       comisión. No es un costo del café, pero sale del mismo precio. */
+    comision: { pct: 3.49, iva: 19 },
   },
+  /* IVA del café tostado: tarifa del 5 % (E.T. art. 468-1); el café verde sin tostar
+     está excluido. El precio que se muestra YA lo incluye, como el precio al
+     consumidor. En 0 no se cobra ni se muestra: así queda si Nandez no es
+     responsable de IVA. CONFIRMAR con el contador antes de facturar. */
+  iva: 5,
 };
 
 /* Los 32 departamentos y Bogotá: la transportadora los pide para la guía, y
@@ -2813,6 +2830,13 @@ const cop = (n) => (UI.lang === "en" ? "COP " : "$") + fmtNum(Math.round(n || 0)
 const usd = (n) => "USD " + Number(n || 0).toLocaleString(UI.lang === "en" ? "en-US" : "es-CO", { maximumFractionDigits: 0 });
 const usdLb = (n) => "USD " + (Number(n || 0) / 2.20462).toLocaleString(UI.lang === "en" ? "en-US" : "es-CO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "/lb";
 const copK =(n) => (Math.abs(n) >= 1e6 ? "$" + fmtNum(n / 1e6, 1) + " M" : cop(n));
+/* El IVA que ya va DENTRO de un precio al consumidor: $40.000 al 5 % llevan $1.905 */
+const ivaDe = (valor) => (CONFIG.iva ? (Number(valor) || 0) * CONFIG.iva / (100 + CONFIG.iva) : 0);
+/* Lo que la pasarela se queda de un cobro, con el IVA de su propia comisión */
+const comisionPasarela = (valor, pct) => {
+  const c = CONFIG.pagos.comision; if (!c) return 0;
+  return ((Number(valor) || 0) * (pct == null ? c.pct : pct) / 100) * (1 + c.iva / 100);
+};
 const isoToday = () => new Date().toISOString().slice(0, 10);
 /* Acepta "2026-11-19" y también "2026-11-19T19:00:00-05:00" (la hora del drop).
    Cuando la fecha trae hora, se lee en hora de Colombia: el día del drop es el
@@ -2882,15 +2906,15 @@ const KITS = {
 };
 const PLANES = [
   { id: "semilla", nombre: { es: "Semilla", en: "Seed" }, kit: "esencial",
-    para: { es: "Para empezar a preparar en casa", en: "To start brewing at home" },
+    para: { es: "Una bolsa al mes, y aprender a prepararla", en: "A bag a month, and how to brew it" },
     mes: 72000, inscripcion: 169000, seisKit: 459000, seisSinKit: 399000, molienda: "media-fina",
-    cada: { es: ["250 g de café de especialidad", "20 filtros", "Molienda a tu gusto", "La receta del mes y su video"],
-            en: ["250 g of specialty coffee", "20 filters", "Ground to your taste", "The month's recipe and video"] } },
+    cada: { es: ["250 g de la finca del mes", "20 filtros", "Molida como la pidas", "La receta del mes, en video"],
+            en: ["250 g from the farm of the month", "20 filters", "Ground however you ask", "The month's recipe, on video"] } },
   { id: "cosecha", nombre: { es: "Cosecha", en: "Harvest" }, kit: "completo", destacado: true,
-    para: { es: "Para comparar dos fincas cada mes", en: "To compare two farms every month" },
+    para: { es: "Dos fincas al mes, lado a lado", en: "Two farms a month, side by side" },
     mes: 105000, inscripcion: 319000, seisKit: 679000, seisSinKit: 585000, molienda: "media-fina",
-    cada: { es: ["2 × 250 g de dos fincas distintas", "40 filtros", "Molienda a tu gusto", "La receta del mes y su video", "Acceso anticipado a cada lote nuevo"],
-            en: ["2 × 250 g from two different farms", "40 filters", "Ground to your taste", "The month's recipe and video", "Early access to every new lot"] } },
+    cada: { es: ["2 × 250 g de dos fincas distintas", "40 filtros", "Molida como la pidas", "La receta del mes, en video", "Los lotes nuevos, antes que nadie"],
+            en: ["2 × 250 g from two different farms", "40 filters", "Ground however you ask", "The month's recipe, on video", "New lots before anyone else"] } },
   /* El escalón de arriba es la barra, no un recargo: antes costaba $10.000 más
      que Cosecha por "algo del oficio cada tres meses", que no es un plan.
      Va en kilos, así que no lleva kit de bienvenida ni seis envíos por
@@ -3986,6 +4010,8 @@ function renderCarrito() {
         <button class="cart-del" data-act="bono-quitar">${en ? "Remove" : "Quitar"}</button></span><b class="mono">−${cop(desc)}</b></div>` : ""}
       <div><span>${en ? "Shipping" : "Envío"}</span><b class="mono">${envio ? cop(envio) : (en ? "Free" : "Gratis")}</b></div>
       <div class="cart-total"><span>${t("total")}</span><b class="mono">${cop(totalCarrito() - desc + envio)}</b></div>
+      ${CONFIG.iva ? `<p class="cart-iva">${en ? `Includes ${cop(ivaDe(totalCarrito() - desc))} of VAT (${CONFIG.iva} %)`
+        : `Incluye ${cop(ivaDe(totalCarrito() - desc))} de IVA (${CONFIG.iva} %)`}</p>` : ""}
       <p class="hint">${envio
         ? (en ? `Add ${cop(falta)} more and shipping is free. ` : `Te faltan ${cop(falta)} para el envío gratis. `)
         : ""}${en ? "Arrives in " : "Llega en "}${tx(E.dias)} ${en ? "with " : "por "}${esc(E.transportadora)}${en ? ", anywhere in Colombia." : ", a cualquier ciudad de Colombia."}</p>
@@ -4059,6 +4085,9 @@ function registrarPedido(d, canal) {
   const nombre = [d.nombre, d.apellidos].filter(Boolean).join(" ");
   const cl = upsertCliente(nombre, d.ciudad, d.tel);
   const subtotal = totalCarrito(), envio = envioDe(subtotal), descuento = descuentoCarrito(), total = subtotal - descuento + envio;
+  /* El IVA ya está dentro del precio del café; el envío no lo lleva. Se guarda
+     aparte porque es lo que pide la factura, no un cobro adicional. */
+  const iva = Math.round(ivaDe(subtotal - descuento));
   const bono = descuento ? UI.bono.codigo : "";
   const items = UI.carrito.map((i) => {
     const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
@@ -4067,7 +4096,7 @@ function registrarPedido(d, canal) {
   });
   const pedido = { id: numeroPedido(), clienteId: cl.id, canal, nombre, documento: d.documento, direccion: d.direccion,
     detalle: d.detalle, ciudad: d.ciudad, departamento: d.departamento, tel: d.tel, correo: d.correo,
-    items, subtotal, descuento, bono, envio, total, fecha: isoToday() };
+    items, subtotal, descuento, bono, envio, total, iva, fecha: isoToday() };
   S.pedidos.unshift(pedido);
   UI.carrito.forEach((i) => {
     const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
@@ -4083,6 +4112,7 @@ function registrarPedido(d, canal) {
     ...(descuento ? [`Bono ${bono} (−${UI.bono.pct} %): −${cop(descuento)}`] : []),
     `Envío: ${envio ? cop(envio) : "gratis"}`,
     `Total: ${cop(total)}`,
+    ...(iva ? [`Incluye ${cop(iva)} de IVA (${CONFIG.iva} %)`] : []),
     `${nombre} · CC/NIT ${d.documento}`,
     `${d.direccion}${d.detalle ? " · " + d.detalle : ""}`,
     `${d.ciudad}, ${d.departamento} · tel ${d.tel}${d.correo ? " · " + d.correo : ""}`,
@@ -5058,15 +5088,17 @@ const pal = (txt, desde = 0) => txt.split(" ").map((p, i) => `<span class="pal" 
 
 function viewInicio() {
   const en = UI.lang === "en";
+  /* Los títulos afirman, no describen: "Sabes de dónde viene" es una función
+     de producto; "Cada bolsa tiene remitente" es una frase de la marca. */
   const principios = en
-    ? [["You know where it comes from.", "Every bag names its farm. The blend names its two: Castillo from Ragonvalia and El Paraíso from Chinácota, nothing else."],
-       ["Data with a signature.", "Altitude, variety, process and score say who checked them and when. What we have not verified yet, we do not make up."],
-       ["Three coffees, not thirty.", "A lot goes on the shelf only if we cup it and it convinces us. We would rather sell out than fill the shelf."],
-       ["Whole bean or ground.", "Two coffees go whole bean, so you grind them right before brewing. The blend goes medium ground, ready for the cone or the drip machine. All three, medium roast."]]
-    : [["Sabes de dónde viene.", "Cada bolsa dice de qué finca sale. El blend dice de cuáles dos: Castillo de Ragonvalia y El Paraíso de Chinácota, nada más."],
-       ["Datos con firma.", "La altura, la variedad, el proceso y el puntaje dicen quién los comprobó y cuándo. Lo que todavía no hemos verificado, no lo inventamos."],
-       ["Tres cafés, no treinta.", "Un lote entra a la tienda solo si lo catamos y nos convence. Preferimos que se agote a llenar la estantería."],
-       ["En grano o molido.", "Dos cafés van en grano, para que los muelas justo antes de prepararlos. El blend va en molienda media, listo para el gotero o la cafetera de goteo. Los tres, con tostión media."]];
+    ? [["Every bag has a sender.", "It does not come from “Colombia”. It comes from a farm with a name, and the blend carries both: Castillo from Ragonvalia and El Paraíso from Chinácota."],
+       ["What we do not know, we say.", "Altitude, variety, process and score come with who checked them and when. What is missing says “to be confirmed” until we confirm it. Making it up would be easier; that is why we don't."],
+       ["Three coffees, not thirty.", "A lot goes on the shelf only if we cup it and it convinces us. We would rather sell out than fill your shelf with filler."],
+       ["Whoever drinks it grinds it.", "Two go whole bean, because coffee starts fading minutes after it is ground. The blend goes ground, for whoever has no grinder and is not about to buy one."]]
+    : [["Cada bolsa tiene remitente.", "No viene de “Colombia”. Viene de una finca con nombre, y el blend trae las dos: Castillo de Ragonvalia y El Paraíso de Chinácota."],
+       ["Lo que no sabemos, lo decimos.", "La altura, la variedad, el proceso y el puntaje van con quién los comprobó y cuándo. Lo que falta dice “por confirmar” hasta que lo confirmemos. Inventarlo sería más fácil; por eso no lo hacemos."],
+       ["Tres cafés, no treinta.", "Un lote entra solo si lo catamos y nos convence. Preferimos que se agote a llenarte la estantería de relleno."],
+       ["Lo muele quien se lo toma.", "Dos van en grano, porque el café empieza a perderse a los minutos de molerlo. El blend va molido, para quien no tiene molino y no piensa comprar uno."]];
   const cabeza = (num, kicker, titulo, texto, link) => `<div class="g-head g-io">
       <span class="g-num">${num}</span><p class="g-kicker">${kicker}</p>
       <h2>${titulo}</h2>${texto ? `<p>${texto}</p>` : ""}${link || ""}</div>`;
