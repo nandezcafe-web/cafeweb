@@ -404,15 +404,21 @@ const KITS = {
     trae: { es: ["Todo el Kit Completo", "Tetera cuello de cisne", "Molino manual de muela cónica"],
             en: ["Everything in the Complete kit", "Gooseneck kettle", "Conical burr hand grinder"] } },
 };
+/* Los precios salen de lo que cuesta el mismo café suelto, no al revés:
+   250 g sueltos valen la bolsa + el envío, y la suscripción da ~10 % sobre
+   el café y regala el envío. Si cambia el precio de la bolsa o el del envío,
+   hay que rehacer esta cuenta o el plan vuelve a costar más que comprar
+   suelto, que es donde estaba. El kit y los descuentos por adelantado se
+   mantuvieron como estaban. */
 const PLANES = [
   { id: "semilla", nombre: { es: "Semilla", en: "Seed" }, kit: "esencial",
     para: { es: "Una bolsa al mes, y aprender a prepararla", en: "A bag a month, and how to brew it" },
-    mes: 72000, inscripcion: 169000, seisKit: 459000, seisSinKit: 399000, molienda: "media-fina",
+    mes: 48000, inscripcion: 145000, seisKit: 334000, seisSinKit: 266000, molienda: "media-fina",
     cada: { es: ["250 g de la finca del mes", "20 filtros", "Molida como la pidas", "La receta del mes, en video"],
             en: ["250 g from the farm of the month", "20 filters", "Ground however you ask", "The month's recipe, on video"] } },
   { id: "cosecha", nombre: { es: "Cosecha", en: "Harvest" }, kit: "completo", destacado: true,
     para: { es: "Dos fincas al mes, lado a lado", en: "Two farms a month, side by side" },
-    mes: 105000, inscripcion: 319000, seisKit: 679000, seisSinKit: 585000, molienda: "media-fina",
+    mes: 84000, inscripcion: 298000, seisKit: 578000, seisSinKit: 468000, molienda: "media-fina",
     cada: { es: ["2 × 250 g de dos fincas distintas", "40 filtros", "Molida como la pidas", "La receta del mes, en video", "Los lotes nuevos, antes que nadie"],
             en: ["2 × 250 g from two different farms", "40 filters", "Ground however you ask", "The month's recipe, on video", "New lots before anyone else"] } },
   /* El escalón de arriba es la barra, no un recargo: antes costaba $10.000 más

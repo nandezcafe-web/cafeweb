@@ -7,7 +7,7 @@
 - El Paraíso (Cenicafé 1 · Palocolorado, Chinácota): tostión media, en grano; ficha y precio por confirmar, lista de espera (https://cafeweb-five.vercel.app/cafe-el-paraiso)
 - Blend de la casa (Castillo + Cenicafé 1 · molido): tostión media, molido; ficha y precio por confirmar, lista de espera (https://cafeweb-five.vercel.app/cafe-blend-de-la-casa)
 - Merch Nandez Coffee Gang, próximamente (https://cafeweb-five.vercel.app/accesorios)
-- Suscripción mensual desde $72.000, con kit de bienvenida para preparar en casa, filtros y una receta cada mes (https://cafeweb-five.vercel.app/suscripcion)
+- Suscripción mensual desde $48.000, con kit de bienvenida para preparar en casa, filtros y una receta cada mes (https://cafeweb-five.vercel.app/suscripcion)
 
 ## Cómo trabajamos
 - Dos cafés de una sola finca, en grano, y un blend de los dos, molido; los tres con tostión media. Cada dato (altura, variedad, proceso, puntaje) dice quién lo comprobó y cuándo.
