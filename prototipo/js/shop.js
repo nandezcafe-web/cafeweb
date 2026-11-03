@@ -24,7 +24,7 @@ const precioRotulo = (p, v, en) => (v.precio
 /* ---------- tarjetas ---------- */
 /* ---------- la foto de cada café ----------
    Convención: /img/productos/<id del café en minúsculas> y su versión @0.5x,
-   recortadas a 904 × 827. Para cambiar una foto basta reemplazar el archivo
+   verticales a 800 × 1120, todas con la bolsa a la misma escala. Para cambiar una foto basta reemplazar el archivo
    con el mismo nombre. Si un café no tiene, se muestra el dibujo de su montaña. */
 /* Qué productos tienen foto y en qué formato. Las tres bolsas de la marca
    nueva están en JPG; si algún día se recomprimen a WebP, basta cambiar la
@@ -34,8 +34,8 @@ function fotoProducto(p, { sizes = "(min-width:900px) 360px, 70vw", clase = "pro
   const ext = CON_FOTO.get(p.id);
   if (!ext) return ridge(p, { w: 420, h: 200 });
   const base = `/img/productos/${p.id.toLowerCase()}`;
-  return `<img class="${clase}" src="${foto(`${base}.${ext}`)}" srcset="${foto(`${base}@0.5x.${ext}`)} 452w, ${foto(`${base}.${ext}`)} 904w"
-    sizes="${sizes}" width="904" height="827" alt="${esc(UI.lang === "en" ? `Bag of ${tx(p.nombre)}` : `Bolsa de ${tx(p.nombre)}`)}"
+  return `<img class="${clase}" src="${foto(`${base}.${ext}`)}" srcset="${foto(`${base}@0.5x.${ext}`)} 400w, ${foto(`${base}.${ext}`)} 800w"
+    sizes="${sizes}" width="800" height="1120" alt="${esc(UI.lang === "en" ? `Bag of ${tx(p.nombre)}` : `Bolsa de ${tx(p.nombre)}`)}"
     ${prioridad ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`;
 }
 

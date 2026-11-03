@@ -708,3 +708,9 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
   padding:6px 11px;border-radius:4px;background:var(--ink);color:var(--paper);text-align:left;
   font:600 11px/1 var(--mono);letter-spacing:.1em}
 .g-prod-art .g-pronto i{display:none}
+
+/* Las fotos de las bolsas son verticales (800 × 1120) y todas traen la bolsa
+   a la misma escala, que es lo que las hace verse parejas. El marco toma esa
+   misma proporción para no recortar ninguna. */
+.cc-art.con-foto{height:auto;aspect-ratio:800/1120}
+.g-prod-art{aspect-ratio:800/1120}
