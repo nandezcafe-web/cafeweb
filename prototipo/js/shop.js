@@ -17,15 +17,18 @@ const descuentoCarrito = () => (UI.bono ? Math.round((totalCarrito() * UI.bono.p
 
 /* ---------- tarjetas ---------- */
 /* ---------- la foto de cada café ----------
-   Convención: /img/productos/<id del café en minúsculas>.webp y su versión
-   @0.5x. Por ahora son pruebas hechas con el empaque en diseño; cuando lleguen
-   las fotos reales se reemplazan con el mismo nombre y nada más cambia.
-   Si un café todavía no tiene foto, se muestra el dibujo de su montaña. */
-const CON_FOTO = new Set(["P-CAS"]);
+   Convención: /img/productos/<id del café en minúsculas> y su versión @0.5x,
+   recortadas a 904 × 827. Para cambiar una foto basta reemplazar el archivo
+   con el mismo nombre. Si un café no tiene, se muestra el dibujo de su montaña. */
+/* Qué productos tienen foto y en qué formato. Las tres bolsas de la marca
+   nueva están en JPG; si algún día se recomprimen a WebP, basta cambiar la
+   extensión aquí. */
+const CON_FOTO = new Map([["P-CAS", "jpg"], ["P-PAR", "jpg"], ["P-BLE", "jpg"]]);
 function fotoProducto(p, { sizes = "(min-width:900px) 360px, 70vw", clase = "prod-foto", prioridad = false } = {}) {
-  if (!CON_FOTO.has(p.id)) return ridge(p, { w: 420, h: 200 });
+  const ext = CON_FOTO.get(p.id);
+  if (!ext) return ridge(p, { w: 420, h: 200 });
   const base = `/img/productos/${p.id.toLowerCase()}`;
-  return `<img class="${clase}" src="${foto(base + ".webp")}" srcset="${foto(base + "@0.5x.webp")} 452w, ${foto(base + ".webp")} 904w"
+  return `<img class="${clase}" src="${foto(`${base}.${ext}`)}" srcset="${foto(`${base}@0.5x.${ext}`)} 452w, ${foto(`${base}.${ext}`)} 904w"
     sizes="${sizes}" width="904" height="827" alt="${esc(UI.lang === "en" ? `Bag of ${tx(p.nombre)}` : `Bolsa de ${tx(p.nombre)}`)}"
     ${prioridad ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`;
 }
@@ -34,7 +37,8 @@ function cafeCard(p, i = 0) {
   const f = fincaDe(p), v = principal(p), en = UI.lang === "en", pronto = !!p.proximamente;
   return `<article class="card-cafe reveal${pronto ? " pronto" : ""}" style="--i:${i};--pc:${p.color || "#2F5A3C"}">
     <div class="cc-art${CON_FOTO.has(p.id) ? " con-foto" : ""}" data-act="cafe" data-id="${p.id}" role="button" tabindex="0" aria-label="${esc(tx(p.nombre))}">
-      ${pronto ? `<span class="g-pronto">${t("proximamente")}<i>${esc(tx(p.sub))}</i></span>` : fotoProducto(p)}
+      ${fotoProducto(p)}
+      ${pronto ? `<span class="g-pronto">${t("proximamente")}<i>${esc(tx(p.sub))}</i></span>` : ""}
       ${pronto ? "" : `<span class="state st-publicado">${v.stock} ${t("disponibles")}</span>
       <div class="cc-score"><b>${esc(p.puntaje)}</b><small style="color:${LV[p.nivel].c}">SCA · ${lvl(p.nivel)}</small></div>`}
     </div>

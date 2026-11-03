@@ -8,7 +8,7 @@
 /* Una foto del sitio con su huella de versión. En el archivo de un solo HTML
    las fotos viajan dentro, así que ahí no hay dirección que pedir. */
 function foto(ruta) {
-  const k = ruta.replace(/^.*\//, "").replace(/\.webp$/, "");
+  const k = ruta.replace(/^.*\//, "").replace(/\.\w+$/, "");
   const dentro = typeof GRANO_EMBEBIDO !== "undefined" && (GRANO_EMBEBIDO[k] || GRANO_EMBEBIDO[k.replace(/@0\.5x$/, "") + "@0.5x"]);
   if (dentro) return dentro;
   return typeof IMG_V !== "undefined" && IMG_V ? `${ruta}?v=${IMG_V}` : ruta;

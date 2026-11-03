@@ -683,3 +683,13 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
 .plan-suelto b{color:var(--cherry)}
 .plan.hot .plan-suelto{color:rgba(245,240,230,.78)}
 .plan.hot .plan-suelto b{color:var(--marca)}
+
+/* "Próximamente" era el titular del marco vacío: letra grande en crema sobre
+   el fondo rayado. Ahora que esas bolsas tienen foto, encima de un fondo claro
+   no se leía y además empujaba la imagen fuera de la tarjeta. Con foto pasa a
+   sello pequeño en la esquina, como el de las unidades disponibles. */
+.cc-art.con-foto .g-pronto{position:absolute;top:12px;left:12px;z-index:2;width:auto;
+  align-self:start;justify-self:start;padding:5px 10px;border-radius:4px;
+  background:var(--ink);color:var(--paper);text-align:left;
+  font:600 10px/1 var(--mono);letter-spacing:.1em}
+.cc-art.con-foto .g-pronto i{display:none}

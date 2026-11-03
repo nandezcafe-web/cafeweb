@@ -278,7 +278,7 @@ ${alterna(u)}
 /* El catálogo que leen los correos (tools/correos/Codigo.gs): así la bienvenida muestra
    los cafés con su precio real y nadie copia precios a mano en el script.
    Las fotos van en JPG desde img/correo/: Outlook no muestra WebP. */
-const FOTO_CORREO = { "P-CAS": "/img/correo/p-cas.jpg" };
+const FOTO_CORREO = { "P-CAS": "/img/correo/p-cas.jpg", "P-PAR": "/img/correo/p-par.jpg", "P-BLE": "/img/correo/p-ble.jpg" };
 escribir("data/catalogo.json", JSON.stringify({
   productos: ev(mundo("es"), `S.productos.map((p) => ({
     id: p.id, nombre: p.nombre, sale: p.sale, sub: p.sub, color: p.color || "#C9381A",
@@ -350,12 +350,17 @@ escribir("llms.txt", llms);
 /* ---------- 4. la tienda en un solo archivo (para enviar por WhatsApp) ---------- */
 /* las piezas del grano, en texto, para que el archivo funcione sin conexión */
 /* en el archivo suelto cada foto va dentro, en su tamaño chico */
-const EMBEBER = { "cereza": "grano/cereza@0.5x", "capa-corte": "grano/capa-corte@0.5x",
-                  "portada-ancho@0.5x": "portada/portada-ancho@0.5x", "portada-alto@0.5x": "portada/portada-alto@0.5x",
-                  "p-cas@0.5x": "productos/p-cas@0.5x",
-                  "cierre@0.5x": "portada/cierre@0.5x" };
-const pieza64 = (k) => "data:image/webp;base64," +
-  fs.readFileSync(path.join(SRC, "img", `${EMBEBER[k]}.webp`)).toString("base64");
+const EMBEBER = { "cereza": "grano/cereza@0.5x.webp", "capa-corte": "grano/capa-corte@0.5x.webp",
+                  "portada-ancho@0.5x": "portada/portada-ancho@0.5x.webp", "portada-alto@0.5x": "portada/portada-alto@0.5x.webp",
+                  "p-cas@0.5x": "productos/p-cas@0.5x.jpg",
+                  "p-par@0.5x": "productos/p-par@0.5x.jpg",
+                  "p-ble@0.5x": "productos/p-ble@0.5x.jpg",
+                  "cierre@0.5x": "portada/cierre@0.5x.webp" };
+/* Cada pieza con su formato: las bolsas están en JPG y el resto en WebP */
+const pieza64 = (k) => {
+  const rel = EMBEBER[k], ext = rel.replace(/^.*\./, "");
+  return `data:image/${ext === "jpg" ? "jpeg" : ext};base64,` + fs.readFileSync(path.join(SRC, "img", rel)).toString("base64");
+};
 const GRANO_DENTRO = `const GRANO_EMBEBIDO = ${JSON.stringify(Object.fromEntries(Object.keys(EMBEBER).map((k) => [k, pieza64(k)])))};`;
 const ctxEs = mundo("es");
 vm.runInContext(GRANO_DENTRO, ctxEs);

@@ -60,7 +60,7 @@
         "es": "https://cafeweb-five.vercel.app/cafe-el-paraiso",
         "en": "https://cafeweb-five.vercel.app/en/coffee-el-paraiso"
       },
-      "foto": ""
+      "foto": "https://cafeweb-five.vercel.app/img/correo/p-par.jpg"
     },
     {
       "id": "P-BLE",
@@ -91,7 +91,7 @@
         "es": "https://cafeweb-five.vercel.app/cafe-blend-de-la-casa",
         "en": "https://cafeweb-five.vercel.app/en/coffee-house-blend"
       },
-      "foto": ""
+      "foto": "https://cafeweb-five.vercel.app/img/correo/p-ble.jpg"
     }
   ],
   "redes": {
