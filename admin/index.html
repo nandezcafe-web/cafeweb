@@ -2253,9 +2253,9 @@ function meta(view, id) {
       : { t: "Política de privacidad · " + marca, d: "Qué datos personales pedimos, para qué los usamos y cómo pedirnos que los cambiemos o los borremos (Ley 1581 de 2012)." },
     suscripcion: en
       ? { t: "Colombian coffee subscription · " + marca,
-          d: "Freshly roasted Colombian specialty coffee every month, from COP 68,000. One or two farms per shipment, with the lot data sheet. Cancel anytime." }
+          d: "Freshly roasted Colombian specialty coffee every month, from COP " + fmtNum(Math.min(...PLANES.map((x) => x.mes))) + ". One or two farms per shipment, with the lot data sheet. Cancel anytime." }
       : { t: "Suscripción de café colombiano · " + marca,
-          d: "Café especial recién tostado cada mes, desde $68.000. Una o dos fincas por envío, con la ficha del lote. Cancelas cuando quieras." },
+          d: "Café especial recién tostado cada mes, desde $" + fmtNum(Math.min(...PLANES.map((x) => x.mes))) + ". Una o dos fincas por envío, con la ficha del lote. Cancelas cuando quieras." },
     /* Drops y gang: el título y la descripción llevan las palabras que la gente busca
        ("café de finca", "lotes numerados", "Norte de Santander"); la jerga de la marca
        va en el H1 y en el cuerpo. Las dos cosas caben sin pelearse. */

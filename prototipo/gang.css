@@ -714,3 +714,10 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
    misma proporción para no recortar ninguna. */
 .cc-art.con-foto{height:auto;aspect-ratio:800/1120}
 .g-prod-art{aspect-ratio:800/1120}
+
+/* La ficha de un café que viene: la foto de la bolsa con el sello de
+   "próximamente" en la esquina, como en la tienda, en vez del letrero grande. */
+.prod-escena.con-foto .g-pronto{position:absolute;top:14px;left:14px;z-index:2;width:auto;align-self:start;justify-self:start;
+  padding:6px 11px;border-radius:4px;background:var(--ink);color:var(--paper);text-align:left;
+  font:600 11px/1 var(--mono);letter-spacing:.1em}
+.prod-escena.con-foto .g-pronto i{display:none}

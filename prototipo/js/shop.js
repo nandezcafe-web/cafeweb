@@ -156,7 +156,7 @@ function bloqueCafeterias() {
     <div class="table-scroll"><table class="b2b-tabla">
       <thead><tr><th>${en ? "Coffee" : "Café"}</th><th>${en ? "Bag" : "Bolsa"}</th><th>1 kg</th><th>${en ? "5 kg or more" : "5 kg o más"}</th></tr></thead>
       <tbody>${filas}</tbody></table></div>
-    <p class="hint">${en ? "Monthly supply of 2 kg: see the Café plan in the subscription." : "Suministro de 2 kg al mes: mira el plan Cafetería en la suscripción."}
+    <p class="hint">${en ? "Monthly supply of 2 kg: see the Barista plan in the subscription." : "Suministro de 2 kg al mes: mira el plan Barista en la suscripción."}
       <a href="${ruta("suscripcion")}" data-act="go" data-to="suscripcion">${en ? "See the plan" : "Ver el plan"}</a></p>
   </section>`;
 }
@@ -226,14 +226,14 @@ function viewTienda() {
     <div class="view-head">
       <div><p class="eyebrow reveal">${t("nav_tienda")}</p>
         <h1 class="reveal" style="--i:1">${en ? "Everything <em>from the house</em>" : "Todo lo <em>de la casa</em>"}</h1>
-        <p class="reveal" style="--i:2">${en ? "Whole bean coffee from neighbouring farms, the gear to brew it and Nandez Coffee Gang merch."
-          : "Café en grano de fincas vecinas, lo necesario para prepararlo y el merch Nandez Coffee Gang."}</p></div>
+        <p class="reveal" style="--i:2">${en ? "Coffee from neighbouring farms, the gear to brew it and Nandez Coffee Gang merch."
+          : "Café de fincas vecinas, lo necesario para prepararlo y el merch Nandez Coffee Gang."}</p></div>
     </div>
     <div class="g-puertas">
       <a class="g-puerta reveal" style="--pc:${p.color || "#2F5A3C"};--i:3" href="${ruta("cafes")}" data-act="go" data-to="cafes">
         <span class="g-puerta-art">${fotoProducto(p, { clase: "g-prod-foto", sizes: "(min-width:900px) 520px, 90vw" })}</span>
-        <span class="g-puerta-txt"><small>01 · ${n} ${en ? "whole bean coffees" : "cafés en grano"}${ya < n ? ` · ${ya} ${en ? "on sale" : "a la venta"}` : ""}</small>
-          <b>${t("nav_cafes_esp")}</b><i>${en ? "One farm each, always whole bean." : "Una finca cada uno, siempre en grano."}</i></span></a>
+        <span class="g-puerta-txt"><small>01 · ${n} ${en ? "coffees" : "cafés"}${ya < n ? ` · ${ya} ${en ? "on sale" : "a la venta"}` : ""}</small>
+          <b>${t("nav_cafes_esp")}</b><i>${en ? "Two single farm, whole bean, and a ground blend." : "Dos de una sola finca, en grano, y un blend molido."}</i></span></a>
       <a class="g-puerta oscura reveal" style="--i:4" href="${ruta("accesorios")}" data-act="go" data-to="accesorios">
         <span class="g-puerta-art"><span class="g-pronto">Nandez Coffee Gang<i>${t("proximamente")}</i></span></span>
         <span class="g-puerta-txt"><small>02 · ${accesoriosVisibles().length} ${en ? "pieces" : "piezas"} · ${t("proximamente").toLowerCase()}</small>
@@ -339,19 +339,19 @@ function viewCafe() {
       <p class="eyebrow">${esc([conocido(f.productor) && tr(f.productor), conocido(f.finca) && tr(f.finca), f.municipio && !String(f.finca || "").includes(f.municipio) && f.municipio].filter(Boolean).join(" · ") || t("nav_cafes_esp"))}</p>
       <h1>${esc(tx(p.nombre))}</h1>
       <p class="lede">${esc(historiaPublica(f) || (f.municipio
-        ? (en ? `Whole bean coffee from ${f.municipio}, Norte de Santander${p.altitud ? `, grown at ${msnm(p.altitud)}` : ""}.`
-              : `Café en grano de ${f.municipio}, Norte de Santander${p.altitud ? `, cultivado a ${msnm(p.altitud)}` : ""}.`)
+        ? (en ? `${esMolido(p) ? "Ground" : "Whole bean"} coffee from ${f.municipio}, Norte de Santander${p.altitud ? `, grown at ${msnm(p.altitud)}` : ""}.`
+              : `Café ${esMolido(p) ? "molido" : "en grano"} de ${f.municipio}, Norte de Santander${p.altitud ? `, cultivado a ${msnm(p.altitud)}` : ""}.`)
         : (en ? "Whole bean coffee from Norte de Santander." : "Café en grano de Norte de Santander.")))}</p>
       ${compra}
     </div>
 
     <div class="prod-art reveal" style="--i:1">
-      <div class="prod-escena">
-        ${pronto ? `<span class="g-pronto">${t("proximamente")}<i>${esc(tx(p.sub))}</i></span>` : fotoProducto(p, { sizes: "(min-width:900px) 560px, 90vw", prioridad: true })}
+      <div class="prod-escena${CON_FOTO.has(p.id) ? " con-foto" : ""}">
+        ${pronto ? `<span class="g-pronto">${t("proximamente")}<i>${esc(tx(p.sub))}</i></span>` : ""}
+        ${!pronto || CON_FOTO.has(p.id) ? fotoProducto(p, { sizes: "(min-width:900px) 560px, 90vw", prioridad: true }) : ""}
         ${pronto ? "" : `<p class="prod-sello"><b>${esc(p.puntaje)}</b><small>SCA</small></p>`}
       </div>
       <ul class="notas-chips">${tx(p.notas).map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
-      <div class="foto-pend">${en ? "Photo of the farm and the producer" : "Foto de la finca y del productor"}</div>
     </div>
     </div>
 

@@ -32,8 +32,8 @@ function portada(en) {
      La altura no va: la de cada finca está por confirmar y un rango inventado miente. */
   const vb = principal(p);
   const hechos = en
-    ? [[cop(vb.precio), "per 250 g"], ["Medium roast", "all three"], ["Whole bean or ground", "you choose"]]
-    : [[cop(vb.precio), "los 250 g"], ["Tostión media", "los tres"], ["En grano o molido", "tú escoges"]];
+    ? [[cop(vb.precio), "per 250 g"], ["Medium roast", "all three"], ["Two whole bean", "one ground"]]
+    : [[cop(vb.precio), "los 250 g"], ["Tostión media", "los tres"], ["Dos en grano", "uno molido"]];
   const sello = en ? "2026 HARVEST · MEDIUM ROAST · NORTE DE SANTANDER · " : "COSECHA 2026 · TOSTIÓN MEDIA · NORTE DE SANTANDER · ";
   return `<section class="g-hero hero" aria-labelledby="portada-titulo">
     <div class="g-hero-txt">

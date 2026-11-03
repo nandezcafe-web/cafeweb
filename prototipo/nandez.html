@@ -2351,6 +2351,13 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
 .cc-art.con-foto{height:auto;aspect-ratio:800/1120}
 .g-prod-art{aspect-ratio:800/1120}
 
+/* La ficha de un café que viene: la foto de la bolsa con el sello de
+   "próximamente" en la esquina, como en la tienda, en vez del letrero grande. */
+.prod-escena.con-foto .g-pronto{position:absolute;top:14px;left:14px;z-index:2;width:auto;align-self:start;justify-self:start;
+  padding:6px 11px;border-radius:4px;background:var(--ink);color:var(--paper);text-align:left;
+  font:600 11px/1 var(--mono);letter-spacing:.1em}
+.prod-escena.con-foto .g-pronto i{display:none}
+
 </style>
 <script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cafeweb-five.vercel.app/#organizacion","name":"Nandez Coffee","url":"https://cafeweb-five.vercel.app","logo":"https://cafeweb-five.vercel.app/img/marca/icono-512.png","image":"https://cafeweb-five.vercel.app/img/marca/compartir.jpg","sameAs":["https://www.instagram.com/nandezcoffee/","https://www.facebook.com/profile.php?id=61594868961438","https://www.youtube.com/@N%C3%A1ndezCaf%C3%A9"],"email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"Familia cafetera de Chinácota. Compramos lotes pequeños en fincas de Norte de Santander y los tostamos con nuestro nombre: dos cafés de una sola finca, en grano, y un blend molido de los dos."},{"@type":"WebSite","@id":"https://cafeweb-five.vercel.app/#sitio","url":"https://cafeweb-five.vercel.app","name":"Nandez Coffee","publisher":{"@id":"https://cafeweb-five.vercel.app/#organizacion"},"inLanguage":"es"}]}</script>
 </head>
@@ -2404,7 +2411,7 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
         <button class="btn primary lg" data-act="go" data-to="cafes">Ver los cafés<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
         <a class="g-link" href="/suscripcion" data-act="go" data-to="suscripcion">La suscripción</a>
       </div>
-      <ul class="g-hechos reveal" style="--i:5"><li><b>$40.000</b><small>los 250 g</small></li><li><b>Tostión media</b><small>los tres</small></li><li><b>En grano o molido</b><small>tú escoges</small></li></ul>
+      <ul class="g-hechos reveal" style="--i:5"><li><b>$40.000</b><small>los 250 g</small></li><li><b>Tostión media</b><small>los tres</small></li><li><b>Dos en grano</b><small>uno molido</small></li></ul>
     </div>
     <div class="g-hero-art reveal" style="--i:2" data-act="cafe" data-id="P-CAS" role="button" tabindex="0" aria-label="Castillo de Ragonvalia">
       <p class="g-hero-tag">Disponible ahora<b>Castillo de Ragonvalia</b></p>
@@ -3167,9 +3174,9 @@ function meta(view, id) {
       : { t: "Política de privacidad · " + marca, d: "Qué datos personales pedimos, para qué los usamos y cómo pedirnos que los cambiemos o los borremos (Ley 1581 de 2012)." },
     suscripcion: en
       ? { t: "Colombian coffee subscription · " + marca,
-          d: "Freshly roasted Colombian specialty coffee every month, from COP 68,000. One or two farms per shipment, with the lot data sheet. Cancel anytime." }
+          d: "Freshly roasted Colombian specialty coffee every month, from COP " + fmtNum(Math.min(...PLANES.map((x) => x.mes))) + ". One or two farms per shipment, with the lot data sheet. Cancel anytime." }
       : { t: "Suscripción de café colombiano · " + marca,
-          d: "Café especial recién tostado cada mes, desde $68.000. Una o dos fincas por envío, con la ficha del lote. Cancelas cuando quieras." },
+          d: "Café especial recién tostado cada mes, desde $" + fmtNum(Math.min(...PLANES.map((x) => x.mes))) + ". Una o dos fincas por envío, con la ficha del lote. Cancelas cuando quieras." },
     /* Drops y gang: el título y la descripción llevan las palabras que la gente busca
        ("café de finca", "lotes numerados", "Norte de Santander"); la jerga de la marca
        va en el H1 y en el cuerpo. Las dos cosas caben sin pelearse. */
@@ -3357,8 +3364,8 @@ function portada(en) {
      La altura no va: la de cada finca está por confirmar y un rango inventado miente. */
   const vb = principal(p);
   const hechos = en
-    ? [[cop(vb.precio), "per 250 g"], ["Medium roast", "all three"], ["Whole bean or ground", "you choose"]]
-    : [[cop(vb.precio), "los 250 g"], ["Tostión media", "los tres"], ["En grano o molido", "tú escoges"]];
+    ? [[cop(vb.precio), "per 250 g"], ["Medium roast", "all three"], ["Two whole bean", "one ground"]]
+    : [[cop(vb.precio), "los 250 g"], ["Tostión media", "los tres"], ["Dos en grano", "uno molido"]];
   const sello = en ? "2026 HARVEST · MEDIUM ROAST · NORTE DE SANTANDER · " : "COSECHA 2026 · TOSTIÓN MEDIA · NORTE DE SANTANDER · ";
   return `<section class="g-hero hero" aria-labelledby="portada-titulo">
     <div class="g-hero-txt">
@@ -3659,7 +3666,7 @@ function bloqueCafeterias() {
     <div class="table-scroll"><table class="b2b-tabla">
       <thead><tr><th>${en ? "Coffee" : "Café"}</th><th>${en ? "Bag" : "Bolsa"}</th><th>1 kg</th><th>${en ? "5 kg or more" : "5 kg o más"}</th></tr></thead>
       <tbody>${filas}</tbody></table></div>
-    <p class="hint">${en ? "Monthly supply of 2 kg: see the Café plan in the subscription." : "Suministro de 2 kg al mes: mira el plan Cafetería en la suscripción."}
+    <p class="hint">${en ? "Monthly supply of 2 kg: see the Barista plan in the subscription." : "Suministro de 2 kg al mes: mira el plan Barista en la suscripción."}
       <a href="${ruta("suscripcion")}" data-act="go" data-to="suscripcion">${en ? "See the plan" : "Ver el plan"}</a></p>
   </section>`;
 }
@@ -3729,14 +3736,14 @@ function viewTienda() {
     <div class="view-head">
       <div><p class="eyebrow reveal">${t("nav_tienda")}</p>
         <h1 class="reveal" style="--i:1">${en ? "Everything <em>from the house</em>" : "Todo lo <em>de la casa</em>"}</h1>
-        <p class="reveal" style="--i:2">${en ? "Whole bean coffee from neighbouring farms, the gear to brew it and Nandez Coffee Gang merch."
-          : "Café en grano de fincas vecinas, lo necesario para prepararlo y el merch Nandez Coffee Gang."}</p></div>
+        <p class="reveal" style="--i:2">${en ? "Coffee from neighbouring farms, the gear to brew it and Nandez Coffee Gang merch."
+          : "Café de fincas vecinas, lo necesario para prepararlo y el merch Nandez Coffee Gang."}</p></div>
     </div>
     <div class="g-puertas">
       <a class="g-puerta reveal" style="--pc:${p.color || "#2F5A3C"};--i:3" href="${ruta("cafes")}" data-act="go" data-to="cafes">
         <span class="g-puerta-art">${fotoProducto(p, { clase: "g-prod-foto", sizes: "(min-width:900px) 520px, 90vw" })}</span>
-        <span class="g-puerta-txt"><small>01 · ${n} ${en ? "whole bean coffees" : "cafés en grano"}${ya < n ? ` · ${ya} ${en ? "on sale" : "a la venta"}` : ""}</small>
-          <b>${t("nav_cafes_esp")}</b><i>${en ? "One farm each, always whole bean." : "Una finca cada uno, siempre en grano."}</i></span></a>
+        <span class="g-puerta-txt"><small>01 · ${n} ${en ? "coffees" : "cafés"}${ya < n ? ` · ${ya} ${en ? "on sale" : "a la venta"}` : ""}</small>
+          <b>${t("nav_cafes_esp")}</b><i>${en ? "Two single farm, whole bean, and a ground blend." : "Dos de una sola finca, en grano, y un blend molido."}</i></span></a>
       <a class="g-puerta oscura reveal" style="--i:4" href="${ruta("accesorios")}" data-act="go" data-to="accesorios">
         <span class="g-puerta-art"><span class="g-pronto">Nandez Coffee Gang<i>${t("proximamente")}</i></span></span>
         <span class="g-puerta-txt"><small>02 · ${accesoriosVisibles().length} ${en ? "pieces" : "piezas"} · ${t("proximamente").toLowerCase()}</small>
@@ -3842,19 +3849,19 @@ function viewCafe() {
       <p class="eyebrow">${esc([conocido(f.productor) && tr(f.productor), conocido(f.finca) && tr(f.finca), f.municipio && !String(f.finca || "").includes(f.municipio) && f.municipio].filter(Boolean).join(" · ") || t("nav_cafes_esp"))}</p>
       <h1>${esc(tx(p.nombre))}</h1>
       <p class="lede">${esc(historiaPublica(f) || (f.municipio
-        ? (en ? `Whole bean coffee from ${f.municipio}, Norte de Santander${p.altitud ? `, grown at ${msnm(p.altitud)}` : ""}.`
-              : `Café en grano de ${f.municipio}, Norte de Santander${p.altitud ? `, cultivado a ${msnm(p.altitud)}` : ""}.`)
+        ? (en ? `${esMolido(p) ? "Ground" : "Whole bean"} coffee from ${f.municipio}, Norte de Santander${p.altitud ? `, grown at ${msnm(p.altitud)}` : ""}.`
+              : `Café ${esMolido(p) ? "molido" : "en grano"} de ${f.municipio}, Norte de Santander${p.altitud ? `, cultivado a ${msnm(p.altitud)}` : ""}.`)
         : (en ? "Whole bean coffee from Norte de Santander." : "Café en grano de Norte de Santander.")))}</p>
       ${compra}
     </div>
 
     <div class="prod-art reveal" style="--i:1">
-      <div class="prod-escena">
-        ${pronto ? `<span class="g-pronto">${t("proximamente")}<i>${esc(tx(p.sub))}</i></span>` : fotoProducto(p, { sizes: "(min-width:900px) 560px, 90vw", prioridad: true })}
+      <div class="prod-escena${CON_FOTO.has(p.id) ? " con-foto" : ""}">
+        ${pronto ? `<span class="g-pronto">${t("proximamente")}<i>${esc(tx(p.sub))}</i></span>` : ""}
+        ${!pronto || CON_FOTO.has(p.id) ? fotoProducto(p, { sizes: "(min-width:900px) 560px, 90vw", prioridad: true }) : ""}
         ${pronto ? "" : `<p class="prod-sello"><b>${esc(p.puntaje)}</b><small>SCA</small></p>`}
       </div>
       <ul class="notas-chips">${tx(p.notas).map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
-      <div class="foto-pend">${en ? "Photo of the farm and the producer" : "Foto de la finca y del productor"}</div>
     </div>
     </div>
 
@@ -4990,7 +4997,10 @@ function viewTerminos() {
     en ? "A plain summary of how buying from us works." : "Resumen claro de cómo funciona comprarnos.",
     [[en ? "Who sells" : "Quién vende", `<p>${esc(CONFIG.marca)} · Chinácota, Norte de Santander, Colombia · ${CONFIG.correo}.</p>`],
      [en ? "Prices" : "Precios", `<p>${en ? "Prices are in Colombian pesos (COP) and include VAT when it applies. Shipping is shown separately in the cart." : "Los precios están en pesos colombianos e incluyen IVA cuando aplica. El envío se muestra aparte en el carrito."}</p>`],
-     [en ? "Orders and payment" : "Pedidos y pago", `<p>${en ? `An order is confirmed when we reply and you pay by ${tx(CONFIG.pagos.manual)}. If a coffee sells out before that, we tell you and do not charge you.`
+     [en ? "Orders and payment" : "Pedidos y pago", `<p>${pasarelaLista() ? (en
+        ? "You pay on this page by card, PSE or Nequi, through Wompi. Your order is confirmed when the payment is approved, and you get the confirmation by email. If a coffee sells out before that, it is not charged."
+        : "Pagas en esta misma página con tarjeta, PSE o Nequi, a través de Wompi. El pedido queda confirmado cuando el pago se aprueba, y te llega la confirmación por correo. Si un café se agota antes, no se cobra.")
+      : en ? `An order is confirmed when we reply and you pay by ${tx(CONFIG.pagos.manual)}. If a coffee sells out before that, we tell you and do not charge you.`
         : `Un pedido queda confirmado cuando te respondemos y pagas por ${tx(CONFIG.pagos.manual)}. Si un café se agota antes, te avisamos y no te cobramos.`}</p>`],
      [en ? "Shipping and returns" : "Envíos y devoluciones", `<p>${enlace("envios", en ? "See the shipping and refund policy" : "Mira la política de envíos y reembolso")}.</p>`],
      [en ? "Subscription" : "Suscripción", `<p>${en ? `No minimum term. Write to ${CONFIG.correo} before the 25th and the next month is not charged.` : `Sin permanencia. Escribes a ${CONFIG.correo} antes del día 25 y el mes siguiente no se cobra.`}</p>`],

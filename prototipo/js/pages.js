@@ -508,7 +508,10 @@ function viewTerminos() {
     en ? "A plain summary of how buying from us works." : "Resumen claro de cómo funciona comprarnos.",
     [[en ? "Who sells" : "Quién vende", `<p>${esc(CONFIG.marca)} · Chinácota, Norte de Santander, Colombia · ${CONFIG.correo}.</p>`],
      [en ? "Prices" : "Precios", `<p>${en ? "Prices are in Colombian pesos (COP) and include VAT when it applies. Shipping is shown separately in the cart." : "Los precios están en pesos colombianos e incluyen IVA cuando aplica. El envío se muestra aparte en el carrito."}</p>`],
-     [en ? "Orders and payment" : "Pedidos y pago", `<p>${en ? `An order is confirmed when we reply and you pay by ${tx(CONFIG.pagos.manual)}. If a coffee sells out before that, we tell you and do not charge you.`
+     [en ? "Orders and payment" : "Pedidos y pago", `<p>${pasarelaLista() ? (en
+        ? "You pay on this page by card, PSE or Nequi, through Wompi. Your order is confirmed when the payment is approved, and you get the confirmation by email. If a coffee sells out before that, it is not charged."
+        : "Pagas en esta misma página con tarjeta, PSE o Nequi, a través de Wompi. El pedido queda confirmado cuando el pago se aprueba, y te llega la confirmación por correo. Si un café se agota antes, no se cobra.")
+      : en ? `An order is confirmed when we reply and you pay by ${tx(CONFIG.pagos.manual)}. If a coffee sells out before that, we tell you and do not charge you.`
         : `Un pedido queda confirmado cuando te respondemos y pagas por ${tx(CONFIG.pagos.manual)}. Si un café se agota antes, te avisamos y no te cobramos.`}</p>`],
      [en ? "Shipping and returns" : "Envíos y devoluciones", `<p>${enlace("envios", en ? "See the shipping and refund policy" : "Mira la política de envíos y reembolso")}.</p>`],
      [en ? "Subscription" : "Suscripción", `<p>${en ? `No minimum term. Write to ${CONFIG.correo} before the 25th and the next month is not charged.` : `Sin permanencia. Escribes a ${CONFIG.correo} antes del día 25 y el mes siguiente no se cobra.`}</p>`],
