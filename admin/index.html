@@ -2027,6 +2027,27 @@ function faltanDias() {
 /* El precio que se cobra hoy: el de preventa si lo hay, si no el de siempre. */
 const precioHoy = (p, v) => (enPreventa(p) && CONFIG.preventa.precio ? CONFIG.preventa.precio : v.precio);
 
+/* La franja del lanzamiento. La fecha va en el HTML armado, para que la vea
+   quien llega sin JavaScript y para que un crawler la lea; los días que faltan
+   los vuelve a contar el navegador al cargar, porque el build no corre cada
+   día y el número se quedaría viejo. Desaparece sola cuando la fecha pasa. */
+function cuentaRegresiva(en) {
+  const d = faltanDias();
+  if (d === null || d < 0) return null;
+  return d === 0 ? (en ? "today" : "es hoy") : d === 1 ? (en ? "tomorrow" : "es mañana") : (en ? `in ${d} days` : `faltan ${d} días`);
+}
+function franjaLanzamiento(en) {
+  const cuenta = cuentaRegresiva(en);
+  if (!cuenta) return "";
+  return `<aside class="g-franja" id="g-franja">
+    <a href="${ruta("cafes")}" data-act="go" data-to="cafes">
+      <b>${en ? "Launch" : "Lanzamiento"}</b>
+      <span>${esc(fmtFecha(CONFIG.lanzamiento))}</span>
+      <i data-cuenta>${esc(cuenta)}</i>
+      <em>${en ? "Reserve yours" : "Reserva la tuya"}</em>
+    </a></aside>`;
+}
+
 const fincaDe = (p) => {
   if (!p.mezcla) return S.fincas.find((f) => f.id === p.fincaId) || {};
   const fs = p.mezcla.map((id) => S.fincas.find((f) => f.id === id)).filter(Boolean);

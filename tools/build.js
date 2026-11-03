@@ -186,6 +186,7 @@ ${FUENTES_GANG}
 <script type="application/ld+json" id="ld-json">${ld}</script>
 </head>
 <body data-view="${view}">
+${ev(ctx, `franjaLanzamiento(${lang === "en"})`)}
 <header class="top">
   <div class="top-inner">
     <a class="brand" href="${lang === "en" ? "/en" : "/"}" data-act="go" data-to="inicio" aria-label="${ev(ctx, "CONFIG.marca")}">

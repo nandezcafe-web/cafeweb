@@ -746,3 +746,25 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
   align-self:end;justify-self:start;padding:6px 11px;border-radius:4px;background:var(--ink);color:var(--paper);
   text-align:left;font:600 11px/1 var(--mono);letter-spacing:.1em}
 .prod-escena .g-pronto i,.g-puerta-art .g-pronto i{display:none}
+
+/* ============================================================
+   LA FRANJA DEL LANZAMIENTO
+   Va arriba de todo, por encima de la cabecera pegajosa. Es una línea, no
+   un banner: el sitio ya tiene suficiente color y esto acompaña, no grita.
+   ============================================================ */
+.g-franja{background:var(--ink);color:var(--paper)}
+.g-franja a{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;gap:6px 14px;
+  max-width:1240px;margin:0 auto;padding:9px 20px;text-decoration:none;color:inherit;
+  font:600 11.5px var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.g-franja b{color:var(--marca)}
+.g-franja i{font-style:normal;opacity:.75}
+.g-franja em{font-style:normal;border-bottom:1px solid currentColor;padding-bottom:1px}
+.g-franja a:hover em{color:var(--marca);border-color:var(--marca)}
+/* separadores entre las piezas, sin escribirlos en el HTML */
+.g-franja span::before,.g-franja i::before,.g-franja em::before{content:"·";margin-right:14px;opacity:.45}
+@media (max-width:620px){
+  .g-franja a{gap:4px 10px;padding:8px 14px;font-size:10.5px;letter-spacing:.08em}
+  /* en pantalla angosta sobra la invitación: el resto de la página la repite */
+  .g-franja em{display:none}
+  .g-franja span::before,.g-franja i::before{margin-right:10px}
+}

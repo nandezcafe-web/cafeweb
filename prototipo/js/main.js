@@ -661,6 +661,13 @@ document.documentElement.classList.add("js");
 aplicarCfgGuardada();
 cargarCarrito();
 cargarBono();
+/* La franja viene con los días que había el día del build: se recuentan aquí */
+(() => {
+  const f = $("#g-franja"); if (!f) return;
+  const c = cuentaRegresiva(UI.lang === "en");
+  if (!c) return f.remove();
+  const n = f.querySelector("[data-cuenta]"); if (n) n.textContent = c;
+})();
 popVigilar();
 UI.au = newAuction();
 UI.lang = esIngles(location.pathname) ? "en" : "es";   // manda la URL, no lo guardado
