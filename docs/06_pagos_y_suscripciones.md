@@ -1,7 +1,7 @@
 # Pagos con Mercado Pago y suscripciones
 
 **Fecha:** 28 de octubre de 2026
-**Estado:** el carrito ya cobra por el link de Mercado Pago `link.mercadopago.com.co/nandezcoffee`. Falta el Access Token para pasar a Checkout Pro.
+**Estado:** la pasarela elegida es **Wompi** y el pago dentro de la página está construido y probado; falta pegar las llaves. Todo el detalle, la comparación de tarifas y los pasos: [13_activar_pagos.md](13_activar_pagos.md). Lo de abajo sobre Mercado Pago queda como respaldo.
 
 ---
 

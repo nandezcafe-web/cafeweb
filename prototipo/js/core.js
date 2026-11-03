@@ -73,6 +73,11 @@ const CONFIG = {
   /* Pagos. Mientras no haya links, el pedido sale por WhatsApp o correo.
      Ver docs/06_pagos_y_suscripciones.md */
   pagos: {
+    /* La pasarela que cobra DENTRO de la página. Se prende sola apenas haya llave
+       pública (pub_test_… para probar, pub_prod_… para vender). Los secretos NO van
+       aquí: van en Vercel. Pasos completos en docs/13_activar_pagos.md. */
+    pasarela: "wompi",
+    wompi: { llavePublica: "", widget: "https://checkout.wompi.co/widget.js" },
     /* Link de cobro personal: abre Mercado Pago pero el cliente escribe el monto.
        Cuando haya MP_ACCESS_TOKEN en Vercel, cambiar por "/api/checkout" y el total viaja solo. */
     mercadoPago: "https://link.mercadopago.com.co/nandezcoffee",

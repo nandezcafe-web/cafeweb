@@ -41,7 +41,7 @@ const ctx = {
   Session: { getEffectiveUser: () => ({ getEmail: () => "nandezcafe@gmail.com" }) },
   ScriptApp: { getService: () => ({ getUrl: () => "https://script.google.com/macros/s/X/exec" }),
     getProjectTriggers: () => disparadores.map((f) => ({ getHandlerFunction: () => f })),
-    newTrigger: (f) => { const t = { timeBased: () => t, everyDays: () => t, atHour: () => t, create: () => disparadores.push(f) }; return t; } },
+    newTrigger: (f) => { const t = { timeBased: () => t, everyDays: () => t, everyHours: () => t, atHour: () => t, create: () => disparadores.push(f) }; return t; } },
   Logger: { log: (m) => console.log("  log:", m) },
   /* el catálogo que publica tools/build.js, leído del disco como si viniera de la página */
   CacheService: { getScriptCache: () => ({ get: (k) => cacheMem[k] || null, put: (k, v) => { cacheMem[k] = v; } }) },
@@ -61,7 +61,8 @@ ctx.configurar();
 const ss = Object.values(libros)[0];
 ok(!ss.hojas["Hoja 1"] && ["Contactos", "Registros", "Envíos", "Entregas", "Pedidos", "Suscripciones", "Bonos"].every((h) => ss.hojas[h]), "configurar crea las hojas y quita la vacía");
 ok(/^[0-9a-f]{32}$/.test(props.CLAVE), "configurar genera una clave de 32 caracteres");
-ok(disparadores.length === 1 && disparadores[0] === "diario", "configurar programa el aviso diario una sola vez, aunque se ejecute dos veces");
+ok(disparadores.length === 2 && disparadores.includes("diario") && disparadores.includes("liberarReservas"),
+  "configurar programa el aviso diario y la liberación de reservas una sola vez, aunque se ejecute dos veces");
 
 /* ---- registros y bienvenida ---- */
 cuota = 50;

@@ -494,10 +494,22 @@ function cerrarCarrito() { const d = $("#cart"); if (d?.open) d.close(); renderT
 const mpEscribeMonto = () => /link\.mercadopago\./.test(CONFIG.pagos.mercadoPago);
 const mayus = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
+/* La pasarela está lista cuando hay llave pública; sin ella el carrito sigue como antes */
+const pasarelaLista = () => CONFIG.pagos.pasarela === "wompi" && /^pub_(test|prod)_/.test(CONFIG.pagos.wompi?.llavePublica || "");
+
 /* Formas de pago que la tienda puede ofrecer hoy; la primera queda marcada */
 function metodosPago() {
   const en = UI.lang === "en", ops = [];
-  if (CONFIG.pagos.mercadoPago) ops.push({
+  /* Con Wompi listo, el link de Mercado Pago sobra: pedirle a la persona que
+     escriba el monto es justo el paso donde se caen las ventas. */
+  if (pasarelaLista()) ops.push({
+    id: "wompi", nom: en ? "Card, PSE or Nequi" : "Tarjeta, PSE o Nequi",
+    sub: en ? "You pay right here, without leaving the page." : "Pagas aquí mismo, sin salir de la página.",
+    marcas: ["Visa", "Mastercard", "PSE", "Nequi", "Bancolombia"],
+    det: en ? "Wompi's secure checkout (Bancolombia group) opens over this page. Your card never goes through our servers."
+            : "Se abre el pago seguro de Wompi (Grupo Bancolombia) encima de esta página. Tu tarjeta no pasa por nuestros servidores.",
+  });
+  else if (CONFIG.pagos.mercadoPago) ops.push({
     id: "mp", nom: "Mercado Pago",
     sub: en ? "Card, PSE, Nequi or cash." : "Tarjeta, PSE, Nequi o efectivo.",
     marcas: ["Visa", "Mastercard", "PSE", "Nequi"],
@@ -611,11 +623,12 @@ function renderCarrito() {
     ${bloquePago(envio, E)}`;
   const pie = $("#cart-foot"), sel = pagoSel();
   pie.innerHTML = `
-    <button class="btn primary" data-act="${sel === "mp" ? "pedido-mp" : "pedido-wa"}">${sel === "mp"
-      ? `${t("pagar_ahora")} · ${cop(totalCarrito() - desc + envio)}`
+    <button class="btn primary" data-act="${{ mp: "pedido-mp", wompi: "pedido-wompi" }[sel] || "pedido-wa"}" ${UI.pagando ? "disabled" : ""}>${
+      UI.pagando ? (en ? "Opening the payment…" : "Abriendo el pago…")
+      : sel === "mp" || sel === "wompi" ? `${t("pagar_ahora")} · ${cop(totalCarrito() - desc + envio)}`
       : CONFIG.registro ? (en ? "Place the order" : "Hacer el pedido")
       : en ? `Send order by ${canalContacto()}` : `Enviar pedido por ${canalContacto()}`}</button>
-    ${sel === "mp" ? "" : `<p class="hint">${en ? `No payment yet: we confirm the order and you pay by ${tx(CONFIG.pagos.manual)}.`
+    ${sel === "mp" || sel === "wompi" ? "" : `<p class="hint">${en ? `No payment yet: we confirm the order and you pay by ${tx(CONFIG.pagos.manual)}.`
       : `Todavía no pagas: te confirmamos el pedido y pagas por ${tx(CONFIG.pagos.manual)}.`}</p>`}`;
 }
 
@@ -634,7 +647,7 @@ function quitarDelCarrito(pid, g) {
 /* Lo que la transportadora necesita para hacer la guía. El teléfono ya no es
    opcional: el mensajero llama antes de entregar. El correo sí, porque la guía
    también se puede mandar por WhatsApp. */
-function datosPedido() {
+function datosPedido({ correoObligatorio = false } = {}) {
   const en = UI.lang === "en", v = (id) => ($("#" + id)?.value || "").trim();
   const falta = (id, msg) => { toast(msg, { type: "err" }); $("#" + id)?.focus(); return null; };
   const d = { nombre: v("pd-nombre"), apellidos: v("pd-apellidos"), documento: v("pd-documento"), tel: v("pd-tel"),
@@ -647,6 +660,8 @@ function datosPedido() {
   if (!d.direccion) return falta("pd-direccion", en ? "Write the address it goes to." : "Escribe la dirección a la que va.");
   if (!d.ciudad) return falta("pd-ciudad", en ? "Write the city it goes to." : "Escribe la ciudad a la que va.");
   if (!d.departamento) return falta("pd-depto", en ? "Choose the department." : "Escoge el departamento.");
+  /* pagando en línea, la constancia del pago llega al correo: ahí sí es obligatorio */
+  if (correoObligatorio && !d.correo) return falta("pd-correo", en ? "Leave your email: the payment receipt goes there." : "Deja tu correo: ahí te llega la constancia del pago.");
   if (d.correo && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.correo)) return falta("pd-correo", en ? "Check the email." : "Revisa el correo.");
   return d;
 }
@@ -654,20 +669,23 @@ function datosPedido() {
 /* número de pedido que no choca entre clientes: fecha + cuatro letras al azar */
 const numeroPedido = () => "NDZ-" + isoToday().slice(5).replace("-", "") + "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
 
-function registrarPedido(d, canal) {
+/* srv: lo que devolvió api/pago.js. Con pasarela el servidor ya escribió el pedido
+   en la hoja con SUS números; aquí solo se lleva la cuenta local con esos mismos. */
+function registrarPedido(d, canal, srv) {
   const nombre = [d.nombre, d.apellidos].filter(Boolean).join(" ");
   const cl = upsertCliente(nombre, d.ciudad, d.tel);
-  const subtotal = totalCarrito(), envio = envioDe(subtotal), descuento = descuentoCarrito(), total = subtotal - descuento + envio;
+  const subtotal = srv ? srv.subtotal : totalCarrito(), envio = srv ? srv.envio : envioDe(subtotal);
+  const descuento = srv ? srv.descuento : descuentoCarrito(), total = subtotal - descuento + envio;
   /* El IVA ya está dentro del precio del café; el envío no lo lleva. Se guarda
      aparte porque es lo que pide la factura, no un cobro adicional. */
-  const iva = Math.round(ivaDe(subtotal - descuento));
-  const bono = descuento ? UI.bono.codigo : "";
+  const iva = srv ? srv.iva : Math.round(ivaDe(subtotal - descuento));
+  const bono = descuento ? (srv ? srv.bono : UI.bono.codigo) : "";
   const items = UI.carrito.map((i) => {
     const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
     /* g y stock son para la hoja: con ellos sabe qué presentación descontar */
     return { id: i.id, g: i.g, nombre: i.nombre, n: i.n, precio: i.precio, forma: tx(saleDe(p, v)), stock: v.stock };
   });
-  const pedido = { id: numeroPedido(), clienteId: cl.id, canal, nombre, documento: d.documento, direccion: d.direccion,
+  const pedido = { id: srv ? srv.reference : numeroPedido(), clienteId: cl.id, canal, nombre, documento: d.documento, direccion: d.direccion,
     detalle: d.detalle, ciudad: d.ciudad, departamento: d.departamento, tel: d.tel, correo: d.correo,
     items, subtotal, descuento, bono, envio, total, iva, fecha: isoToday() };
   S.pedidos.unshift(pedido);
@@ -690,8 +708,8 @@ function registrarPedido(d, canal) {
     `${d.direccion}${d.detalle ? " · " + d.detalle : ""}`,
     `${d.ciudad}, ${d.departamento} · tel ${d.tel}${d.correo ? " · " + d.correo : ""}`,
   ]);
-  UI.carrito = []; guardarCarrito(); if (bono) quitarBono(false); save(); cerrarCarrito(); render();
-  const guardado = enviarAviso("pedido", { ...pedido, texto });
+  UI.carrito = []; guardarCarrito(); if (UI.bono) quitarBono(false); save(); cerrarCarrito(); render();
+  const guardado = srv ? Promise.resolve(true) : enviarAviso("pedido", { ...pedido, texto });
   return { pedido, texto, guardado };
 }
 
@@ -791,6 +809,140 @@ function pagoEnMP(pedido, url) {
     <p class="hint">${en ? `Already paid? Write to ${CONFIG.correo} with your order number.`
                         : `¿Ya pagaste? Escríbenos a ${CONFIG.correo} con tu número de pedido.`}</p>`, "narrow");
 }
+
+/* ---------- pago con Wompi, dentro de la página ----------
+   api/pago.js rehace la cuenta con los precios del catálogo, aparta las bolsas en
+   la hoja y firma el monto. Aquí solo se abre el widget con lo que él devolvió:
+   el navegador nunca decide cuánto se cobra. Quien confirma el pago es el aviso
+   de Wompi a api/wompi.js, no lo que diga esta página. */
+/* La reserva sin pagar sobrevive a recargar la página o cerrar la pestaña: si la
+   persona vuelve a intentar, el servidor suelta la anterior en vez de apartar dos
+   veces las mismas bolsas. (Lo encontró la compra de prueba en el navegador.) */
+const reserva = {
+  leer: () => { try { return localStorage.getItem("nandez-reserva") || ""; } catch { return ""; } },
+  poner: (id) => { try { if (id) localStorage.setItem("nandez-reserva", id); else localStorage.removeItem("nandez-reserva"); } catch {} },
+};
+let widgetWompi = null;
+function cargarWidget() {
+  if (window.WidgetCheckout) return Promise.resolve();
+  return (widgetWompi ||= new Promise((ok, mal) => {
+    const s = document.createElement("script");
+    s.src = CONFIG.pagos.wompi.widget; s.async = true;
+    s.onload = () => (window.WidgetCheckout ? ok() : mal(new Error("widget")));
+    s.onerror = () => { widgetWompi = null; mal(new Error("widget")); };
+    document.head.append(s);
+  }));
+}
+
+async function pedidoWompi() {
+  const en = UI.lang === "en";
+  if (UI.pagando) return;
+  const d = datosPedido({ correoObligatorio: true }); if (!d) return;
+  UI.pagando = true; renderCarrito();
+  let j;
+  try {
+    const r = await fetch("/api/pago", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: UI.carrito.map((i) => ({ id: i.id, g: i.g, n: i.n })), bono: UI.bono?.codigo || "",
+        comprador: d, idioma: UI.lang, llavePublica: CONFIG.pagos.wompi.llavePublica, reemplaza: reserva.leer() }) });
+    j = await r.json();
+  } catch { j = { ok: false, error: "red" }; }
+  UI.pagando = false; renderCarrito();
+  if (!j || !j.ok) return errorPago(j || {});
+  /* la reserva queda anotada: si la persona reintenta, el servidor suelta esta primero */
+  reserva.poner(j.reference);
+  const visto = totalCarrito() - descuentoCarrito() + envioDe(totalCarrito());
+  if (j.total !== visto) {
+    /* El catálogo cambió desde que se cargó la página: se le muestra el total real
+       antes de abrir el pago, nunca un monto distinto en silencio. */
+    UI.cobro = { j, d };
+    return modal(en ? "The total changed" : "El total cambió", `
+      <p class="hint">${en ? `Prices were updated since you opened the page. Your total is now <b>${cop(j.total)}</b>, not ${cop(visto)}.`
+        : `Los precios se actualizaron desde que abriste la página. Tu total ahora es <b>${cop(j.total)}</b>, no ${cop(visto)}.`}</p>
+      <div class="dlg-actions"><button class="btn" data-act="close">${en ? "Cancel" : "Cancelar"}</button>
+        <button class="btn primary" data-act="pago-abrir">${t("pagar_ahora")} · ${cop(j.total)}</button></div>`, "narrow");
+  }
+  abrirWompi(j, d);
+}
+
+async function abrirWompi(j, d) {
+  const en = UI.lang === "en";
+  try { await cargarWidget(); }
+  catch { return toast(en ? "The payment window did not load. Check your connection and try again." : "No cargó la ventana de pago. Revisa tu conexión e intenta otra vez.", { type: "err" }); }
+  const doc = d.documento.replace(/[^\dA-Za-z]/g, ""), tel = d.tel.replace(/\D/g, "").slice(-10);
+  const checkout = new window.WidgetCheckout({
+    currency: j.currency, amountInCents: j.amountInCents, reference: j.reference,
+    publicKey: CONFIG.pagos.wompi.llavePublica, signature: j.signature, expirationTime: j.expirationTime, taxInCents: j.taxInCents,
+    /* un NIT se escribe con su dígito de verificación separado por guion */
+    customerData: { email: d.correo, fullName: `${d.nombre} ${d.apellidos}`, phoneNumber: tel, phoneNumberPrefix: "+57",
+      legalId: doc, legalIdType: /-/.test(d.documento) ? "NIT" : "CC" },
+    shippingAddress: { addressLine1: d.direccion, addressLine2: d.detalle || undefined, city: d.ciudad, region: d.departamento,
+      phoneNumber: tel, country: "CO" },
+  });
+  /* El carrito es un diálogo modal: mientras está abierto, todo lo demás de la
+     página queda inerte y el widget de Wompi se pintaría debajo, sin poder
+     tocarse. Se cierra antes; el carrito no se pierde, y si el pago no pasa se
+     vuelve a abrir. (Lo encontró la compra de prueba en el navegador.) */
+  cerrarCarrito();
+  checkout.open((resultado) => resultadoPago(resultado && resultado.transaction, j, d));
+}
+
+/* Lo que ve la persona al cerrar el widget. Es solo para ella: el pedido se marca
+   pagado cuando llega el aviso firmado de Wompi a la hoja, no por esto. */
+function resultadoPago(tr, j, d) {
+  const en = UI.lang === "en", estado = tr && tr.status;
+  if (estado === "APPROVED" || estado === "PENDING") {
+    registrarPedido(d, "wompi", j);
+    reserva.poner("");
+    const ok = estado === "APPROVED";
+    return modal(ok ? (en ? "Payment received" : "Pago recibido") : (en ? "Payment in process" : "Pago en proceso"), `
+      <ol class="pasos-pedido">
+        <li><b>${en ? `Order ${esc(j.reference)} · ${cop(j.total)}` : `Pedido ${esc(j.reference)} · ${cop(j.total)}`}</b>
+          <span>${ok ? (en ? `The receipt reaches ${esc(d.correo)} in a few minutes.` : `La constancia te llega a ${esc(d.correo)} en unos minutos.`)
+            : (en ? "Your bank is confirming it. We email you as soon as it clears." : "Tu banco lo está confirmando. Te escribimos apenas pase.")}</span></li>
+        <li><b>${en ? "We ship it." : "Lo despachamos."}</b>
+          <span>${en ? `It arrives in ${tx(CONFIG.envio.dias)} with ${CONFIG.envio.transportadora}; the tracking number reaches your email.`
+            : `Llega en ${tx(CONFIG.envio.dias)} por ${CONFIG.envio.transportadora}; la guía te llega al correo.`}</span></li>
+      </ol>
+      <div class="dlg-actions"><button class="btn primary" data-act="close">${en ? "Done" : "Listo"}</button></div>`, "narrow");
+  }
+  /* No pasó, o cerró la ventana: el carrito sigue como estaba para reintentar */
+  if (!estado) return;
+  modal(en ? "The payment did not go through" : "El pago no pasó", `
+    <p class="hint">${en ? "Nothing was charged. You can try again with another card or method."
+      : "No se cobró nada. Puedes intentar otra vez con otra tarjeta u otro medio."}</p>
+    <div class="dlg-actions"><button class="btn" data-act="close">${en ? "Close" : "Cerrar"}</button>
+      <button class="btn primary" data-act="pago-reintentar">${en ? "Try again" : "Intentar otra vez"}</button></div>`, "narrow");
+}
+
+function errorPago(j) {
+  const en = UI.lang === "en", e = j.error;
+  const campo = { nombre: "pd-nombre", documento: "pd-documento", tel: "pd-tel", direccion: "pd-direccion", correo: "pd-correo" }[e];
+  if (campo) { $("#" + campo)?.focus(); return toast(en ? "Check the highlighted field." : "Revisa el dato marcado.", { type: "err" }); }
+  if (e === "agotado") {
+    cargarStock();
+    return toast(en ? `Sold out meanwhile: ${(j.faltan || []).join(", ")}. We updated your order.`
+      : `Se agotó mientras tanto: ${(j.faltan || []).join(", ")}. Ajustamos tu pedido.`, { type: "err" });
+  }
+  if (e === "bono") {
+    quitarBono(false); renderCarrito(); renderTray();
+    return toast(en ? "That code no longer works; we removed it." : "Ese bono ya no sirve; lo quitamos.", { type: "err" });
+  }
+  if (["no-disponible", "producto", "cantidad", "carrito"].includes(e)) {
+    cargarStock();
+    return toast(en ? "Something in your order changed. Check it and try again." : "Algo de tu pedido cambió. Revísalo e intenta otra vez.", { type: "err" });
+  }
+  /* la pasarela no respondió: se ofrece la otra forma de pago, sin perder lo escrito */
+  UI.pago = "manual"; renderCarrito();
+  toast(en ? `Online payment is not available right now. You can still order and pay by ${tx(CONFIG.pagos.manual)}.`
+    : `El pago en línea no está disponible ahora. Igual puedes pedir y pagar por ${tx(CONFIG.pagos.manual)}.`, { type: "err" });
+}
+
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-act='pago-abrir'],[data-act='pago-reintentar']"); if (!el) return;
+  closeModal();
+  if (el.dataset.act === "pago-abrir" && UI.cobro) { const { j, d } = UI.cobro; UI.cobro = null; return abrirWompi(j, d); }
+  if (el.dataset.act === "pago-reintentar") { abrirCarrito(); pedidoWompi(); }
+});
 
 function copiar(texto) {
   const ok = () => toast(UI.lang === "en" ? "Copied." : "Copiado.");

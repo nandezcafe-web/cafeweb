@@ -18,6 +18,13 @@
       "precio": 40000,
       "gramos": 250,
       "proximamente": false,
+      "variantes": [
+        {
+          "g": 250,
+          "precio": 40000,
+          "stock": 90
+        }
+      ],
       "url": {
         "es": "https://cafeweb-five.vercel.app/cafe-castillo-de-ragonvalia",
         "en": "https://cafeweb-five.vercel.app/en/coffee-castillo-from-ragonvalia"
@@ -42,6 +49,13 @@
       "precio": 0,
       "gramos": 250,
       "proximamente": true,
+      "variantes": [
+        {
+          "g": 250,
+          "precio": 0,
+          "stock": 0
+        }
+      ],
       "url": {
         "es": "https://cafeweb-five.vercel.app/cafe-el-paraiso",
         "en": "https://cafeweb-five.vercel.app/en/coffee-el-paraiso"
@@ -66,6 +80,13 @@
       "precio": 0,
       "gramos": 250,
       "proximamente": true,
+      "variantes": [
+        {
+          "g": 250,
+          "precio": 0,
+          "stock": 0
+        }
+      ],
       "url": {
         "es": "https://cafeweb-five.vercel.app/cafe-blend-de-la-casa",
         "en": "https://cafeweb-five.vercel.app/en/coffee-house-blend"
@@ -77,5 +98,11 @@
     "instagram": "https://www.instagram.com/nandezcoffee/",
     "facebook": "https://www.facebook.com/profile.php?id=61594868961438",
     "youtube": "https://www.youtube.com/@N%C3%A1ndezCaf%C3%A9"
-  }
+  },
+  "envio": {
+    "costo": 12000,
+    "gratisDesde": 120000
+  },
+  "iva": 5,
+  "registro": "https://script.google.com/macros/s/AKfycbxfJa4ulz1ClLRG2cMHle2rt25wGaUYfIDQ4Ej4AqtMcG6jZiwS6s9TGGBnsBbBHsvuDg/exec"
 }

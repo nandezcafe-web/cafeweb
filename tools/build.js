@@ -283,9 +283,16 @@ escribir("data/catalogo.json", JSON.stringify({
   productos: ev(mundo("es"), `S.productos.map((p) => ({
     id: p.id, nombre: p.nombre, sale: p.sale, sub: p.sub, color: p.color || "#C9381A",
     precio: p.proximamente ? 0 : principal(p).precio, gramos: principal(p).g, proximamente: !!p.proximamente,
+    /* stock: el inventario de arranque; después manda la hoja Stock */
+    variantes: p.variantes.map((v) => ({ g: v.g, precio: p.proximamente ? 0 : v.precio, stock: v.stock || 0 })),
     url: { es: CONFIG.sitio + ruta("cafe", p.id, "es"), en: CONFIG.sitio + ruta("cafe", p.id, "en") } }))`)
     .map((p) => ({ ...p, foto: FOTO_CORREO[p.id] ? sitio + FOTO_CORREO[p.id] : "" })),
   redes: ev(mundo("es"), "CONFIG.redes"),
+  /* Lo que api/pago.js necesita para cobrar sin creerle al navegador: los precios
+     de arriba, el envío, el IVA y a qué hoja va el pedido. */
+  envio: ev(mundo("es"), "({ costo: CONFIG.envio.costo, gratisDesde: CONFIG.envio.gratisDesde })"),
+  iva: ev(mundo("es"), "CONFIG.iva || 0"),
+  registro: ev(mundo("es"), "CONFIG.registro || ''"),
 }, null, 2));
 
 /* para "agregar a la pantalla de inicio" en el celular */

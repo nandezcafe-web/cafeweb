@@ -79,7 +79,9 @@ function viewOperacion() {
     <div class="table-scroll"><table class="b2b-tabla co-tabla op-tabla">
       <thead><tr><th>Pedido</th><th>Cliente</th><th>Productos</th><th>Total</th><th>Estado</th><th></th></tr></thead>
       <tbody>${lista.length ? lista.map((p) => {
-        const e = OP_ESTADOS[p.estado] || { txt: p.estado };
+        /* Una reserva de la pasarela la marca pagada el aviso firmado de Wompi, no
+           una persona: sin botón, para no despachar algo que nunca se cobró. */
+        const e = p.canal === "wompi" && p.estado === "nuevo" ? { txt: "Pagando en línea" } : OP_ESTADOS[p.estado] || { txt: p.estado };
         return `<tr>
         <th scope="row"><span class="mono">${esc(p.id)}</span><small>${coFecha(p.fecha)}</small></th>
         <td>${esc(p.nombre)}${p.documento ? `<small class="mono">CC/NIT ${esc(p.documento)}</small>` : ""}
@@ -90,6 +92,7 @@ function viewOperacion() {
         <td><span class="op-estado op-${esc(p.estado)}">${esc(e.txt)}</span>${p.guia ? `<small>${esc(p.transportadora)} · ${esc(p.guia)}</small>` : ""}</td>
         <td class="op-acc">${e.sig ? `<button class="btn sm ${p.estado === "pagado" ? "primary" : ""}" data-act="op-avanzar" data-id="${esc(p.id)}">${e.accion}</button>` : ""}
           ${p.estado === "nuevo" ? `<button class="btn sm" data-act="op-cancelar" data-id="${esc(p.id)}">Cancelar</button>` : ""}
+          ${["pagado", "despachado", "entregado"].includes(p.estado) ? `<button class="btn sm" data-act="op-factura" data-id="${esc(p.id)}">Factura</button>` : ""}
           ${p.tel ? `<a class="btn sm" href="https://wa.me/57${esc(String(p.tel).replace(/\D/g, "").replace(/^57(?=\d{10}$)/, ""))}" target="_blank" rel="noopener">WhatsApp</a>` : ""}</td></tr>`;
       }).join("") : `<tr><td colspan="6" class="hint">Nada por aquí${OP.filtro === "pendientes" ? ": todo está despachado" : ""}.</td></tr>`}</tbody></table></div>
 
@@ -157,6 +160,50 @@ function opSubActivar(fila) {
     <div class="field"><label class="lbl" for="op-proximo">Fecha del ${s.envios ? "próximo" : "primer"} envío</label><input id="op-proximo" class="input" type="date" value="${isoToday()}"></div>
     <div class="dlg-actions"><button class="btn" data-act="close">Cancelar</button><button class="btn primary" data-act="op-sub-activar-ok" data-id="${s.fila}">Activar</button></div>`, "narrow");
 }
+/* ---------- datos para la factura ----------
+   La factura se hace a mano en el servicio gratuito de la DIAN; esto deja cada
+   dato en el orden en que lo pide el formulario. El precio de la tienda ya trae
+   el IVA adentro y la factura pide el valor unitario SIN impuesto y el IVA
+   aparte, así que acá se separan. Si hubo bono, va restado en cada línea, igual
+   que como se cobró. Es texto plano a propósito: se prueba fuera del navegador. */
+function textoFactura(p) {
+  const tasa = CONFIG.iva || 0, items = Array.isArray(p.items) ? p.items : [];
+  const subtotal = Number(p.subtotal) || 0, desc = Number(p.descuento) || 0, envio = Number(p.envio) || 0;
+  const factor = subtotal ? (subtotal - desc) / subtotal : 1, d2 = (n) => fmtNum(n, 2);
+  const L = ["ADQUIRIENTE", `Nombre: ${p.nombre || ""}`, `Cédula o NIT: ${p.documento || "FALTA: pedírselo"}`,
+    `Dirección: ${[p.direccion, p.detalle].filter(Boolean).join(", ") || "FALTA: pedírsela"}`,
+    `Municipio: ${[p.ciudad, p.departamento].filter(Boolean).join(", ")}`];
+  if (p.correo) L.push(`Correo: ${p.correo}`);
+  if (p.tel) L.push(`Teléfono: ${p.tel}`);
+  const lineas = items.filter((i) => i.p);
+  if (!lineas.length) return { texto: L.concat(["", "Este pedido es de antes de que se guardara el precio por línea.",
+    "Productos: " + String(p.productos || "").replace(/\n/g, "; ")]).join("\n"), cuadra: null };
+  L.push("", `PRODUCTOS · valor unitario sin IVA · IVA ${tasa} %`);
+  let base = 0, iva = 0;
+  lineas.forEach((i) => {
+    const n = Number(i.n) || 0, conIva = i.p * factor, sinIva = conIva / (1 + tasa / 100);
+    base += sinIva * n; iva += (conIva - sinIva) * n;
+    L.push(`${n} × ${i.nom || i.id} · ${d2(sinIva)} c/u`);
+  });
+  if (envio) L.push(`1 × Envío · ${d2(envio)} · sin IVA (transporte de carga: confirmar con el contador)`);
+  const total = base + iva + envio, cuadra = Math.abs(total - (Number(p.total) || 0)) < 1;
+  L.push("", "TOTALES", `Base gravable: ${d2(base)}`, `IVA ${tasa} %: ${d2(iva)}`);
+  if (envio) L.push(`Envío: ${d2(envio)}`);
+  L.push(`Total: ${d2(total)}`);
+  if (desc) L.push(`(Ya incluye el bono ${p.bono || ""} de ${cop(desc)}.)`);
+  return { texto: L.join("\n"), cuadra, base, iva, total };
+}
+function opFactura(id) {
+  const p = OP.datos.pedidos.find((x) => x.id === id); if (!p) return;
+  const f = textoFactura(p);
+  modal(`Factura de <em>${esc(id)}</em>`, `
+    <p class="hint">Cópialo y llénalo en el servicio gratuito de facturación de la DIAN.</p>
+    <pre class="pre">${esc(f.texto)}</pre>
+    ${f.cuadra === false ? `<p class="hint err">Ojo: la suma no cuadra con el total del pedido (${cop(p.total)}). Revísalo antes de facturar.</p>` : ""}
+    <div class="dlg-actions"><button class="btn" data-act="close">Cerrar</button>
+      <button class="btn primary" data-act="op-factura-copiar" data-id="${esc(id)}">Copiar</button></div>`, "narrow");
+}
+
 const opGuia = () => ({ transportadora: ($("#op-transp")?.value || "").trim(), guia: ($("#op-guia")?.value || "").trim() });
 const opAviso = (j) => (j.avisado ? " Le llegó la guía por correo." : "");
 
@@ -167,6 +214,12 @@ document.addEventListener("click", (e) => {
     case "op-cargar": OP.error = null; return opCargar();
     case "op-filtro": OP.filtro = id; return render();
     case "op-avanzar": return opAvanzar(id);
+    case "op-factura": return opFactura(id);
+    case "op-factura-copiar": {
+      const p = OP.datos.pedidos.find((x) => x.id === id); if (!p) return;
+      try { return navigator.clipboard.writeText(textoFactura(p).texto).then(() => toast("Copiado."), () => toast("No se pudo copiar: selecciónalo a mano.", { type: "err" })); }
+      catch { return toast("No se pudo copiar: selecciónalo a mano.", { type: "err" }); }
+    }
     case "op-cancelar":
       return modal("Cancelar el pedido", `<p class="hint">El pedido <b>${esc(id)}</b> queda cancelado. No se le avisa al cliente.</p>
         <div class="dlg-actions"><button class="btn" data-act="close">Volver</button><button class="btn primary" data-act="op-cancelar-ok" data-id="${esc(id)}">Sí, cancelar</button></div>`, "narrow");

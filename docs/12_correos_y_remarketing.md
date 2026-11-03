@@ -107,6 +107,16 @@ Antes, lo que quedaba de cada café vivía en el navegador de cada visitante: ca
 
 **Lo que todavía no hace:** el descuento ocurre cuando entra el pedido, no cuando se confirma el pago, así que un pedido que nunca se pague deja esas bolsas apartadas hasta que lo canceles en el panel. Cuando el pago sea automático, eso se mueve al webhook.
 
+### Pedidos con pago en línea
+
+Desde el 3 de noviembre de 2026 el script también lleva los pedidos que se pagan con Wompi. Los pasos para activarlo están en [13_activar_pagos.md](13_activar_pagos.md).
+
+- **Un pedido de la pasarela es una reserva mientras se paga** (canal `wompi`). Al crearlo no se le escribe a nadie; los dos correos («Pago recibido» al cliente y «Pago confirmado» a Nandez) salen cuando llega el pago confirmado.
+- **La acción `pago`** la llama `api/wompi.js` con la CLAVE, después de revisar la firma del aviso de Wompi. Es idempotente.
+- **El disparador `liberarReservas`**, cada hora, suelta las bolsas y el bono de las reservas que nadie pagó en 2 horas. `configurar` lo crea si no existe.
+- **Columnas nuevas al final de Pedidos:** `items` guarda ahora, por línea, cuánto se apartó del stock (`a`), para que una cancelación devuelva lo apartado y no lo pedido; `idioma` (para escribirle al confirmar el pago) y `transaccion` (pasarela, medio e identificador del pago).
+- **Cancelar un pedido devuelve también el bono** que había usado.
+
 ### Las columnas de envío
 
 Desde el 28 de octubre de 2026 el pedido trae lo que la transportadora pide para hacer la guía: **documento, direccion, detalle y departamento**. Van **al final** de la hoja Pedidos, después de `notas`, a propósito: una hoja que ya existe conserva el orden viejo y ninguna fila anterior se descuadra. Al publicar la versión nueva del script, los títulos de esas cuatro columnas aparecen solos la primera vez que algo toque la hoja; las filas de antes quedan con esas celdas vacías y el panel avisa, al despacharlas, que hay que pedir la dirección por WhatsApp.

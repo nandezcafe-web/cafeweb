@@ -36,7 +36,7 @@ const COLS_BONOS = ["codigo", "correo", "pct", "alta", "vence", "bienvenida", "u
    existe conserva el orden viejo y las filas de antes no se descuadran. */
 const COLS_PEDIDOS = ["id", "fecha", "estado", "nombre", "correo", "whatsapp", "ciudad", "productos", "subtotal", "descuento",
   "envio", "total", "bono", "canal", "pagado", "despachado", "transportadora", "guia", "notas",
-  "documento", "direccion", "detalle", "departamento", "items", "iva"];
+  "documento", "direccion", "detalle", "departamento", "items", "iva", "idioma", "transaccion"];
 /* Una fila por presentación ("P-CAS-250"). Esta hoja es el stock de verdad:
    el navegador solo copia lo que diga aquí. Se puede corregir a mano. */
 const COLS_STOCK = ["id", "nombre", "stock", "actualizado"];
@@ -68,6 +68,8 @@ function configurar() {
   /* el aviso de cada mañana: una sola vez, aunque se ejecute configurar de nuevo */
   if (!ScriptApp.getProjectTriggers().some((t) => t.getHandlerFunction() === "diario"))
     ScriptApp.newTrigger("diario").timeBased().everyDays(1).atHour(7).create();
+  if (!ScriptApp.getProjectTriggers().some((t) => t.getHandlerFunction() === "liberarReservas"))
+    ScriptApp.newTrigger("liberarReservas").timeBased().everyHours(1).create();
   Logger.log("Hoja de contactos: " + ss.getUrl());
   Logger.log("Clave del panel (pégala en la pestaña Correos): " + p.getProperty("CLAVE"));
 }
@@ -110,6 +112,7 @@ function doPost(e) {
   try { d = JSON.parse(e.postData.contents); } catch (err) { return json_({ ok: false, error: "json" }); }
   if (d.accion === "enviar") return enviar_(d);
   if (d.accion === "pedido") return cambiarPedido_(d);
+  if (d.accion === "pago") return pago_(d);
   if (d.accion === "suscripcion") return cambiarSub_(d);
   if (d.accion === "sub-envio") return envioSub_(d);
   const lock = LockService.getScriptLock();
@@ -124,7 +127,7 @@ function doPost(e) {
       guardar_(ss, correo, { nombre: corto_(d.nombre, 120), etiqueta: etiqueta, acepta: d.consentimiento === true,
         ciudad: corto_(d.ciudad, 80), idioma: idioma });
     }
-    if (tipo === "pedido") return json_({ ok: true, pedido: pedido_(ss, d, valido ? correo : "") });
+    if (tipo === "pedido") { const r = pedido_(ss, d, valido ? correo : ""); return json_({ ok: true, pedido: r.id, faltan: r.falta }); }
     if (tipo === "suscripcion" && valido) nuevaSub_(ss, correo, d);
     /* la bienvenida sale una sola vez por correo, y solo con la casilla marcada.
        Entrar por /la-gang es el mismo registro que el pie y el pop-up. */
@@ -216,27 +219,33 @@ function pedido_(ss, d, correo) {
   const h = hojaDe_(ss, H_PEDIDOS), id = corto_(d.id, 40) || "NDZ-" + Utilities.getUuid().slice(0, 8).toUpperCase();
   const items = Array.isArray(d.items) ? d.items : [];
   const productos = items.map((i) => num_(i.n) + " × " + corto_(i.nombre, 80) + (i.forma ? " (" + corto_(i.forma, 30).toLowerCase() + ")" : "")).join("\n");
+  /* Con pasarela es todo o nada: si no alcanza, no se escribe el pedido, no se
+     gasta el bono y no se aparta ninguna bolsa. La página le dice qué se agotó. */
+  if (d.canal === "wompi") { const faltan = faltantes_(ss, items); if (faltan.length) return { id: null, falta: faltan }; }
   let notas = "", bono = "";
   if (d.bono) {
     const b = bonoVigente_(ss, d.bono);
     if (b.fila) { bono = b.codigo; const hb = ss.getSheetByName(H_BONOS); hb.getRange(b.fila, 7).setValue(new Date()); hb.getRange(b.fila, 8).setValue(id); }
     else { bono = corto_(d.bono, 20); notas = "Ojo: el bono " + bono + " no sirve (" + b.error + "); se cobró con descuento."; }
   }
+  /* el pedido aparta las bolsas: si alguien pidió más de las que había, queda escrito */
+  const falta = descontarStock_(ss, items);
+  if (falta.length) notas = (notas ? notas + " " : "") + "Sin stock — " + falta.join("; ") + ".";
   h.appendRow([id, new Date(), "nuevo", corto_(d.nombre, 120), correo, corto_(d.tel, 40), corto_(d.ciudad, 80), productos,
     num_(d.subtotal), num_(d.descuento), num_(d.envio), num_(d.total), bono, corto_(d.canal, 20), "", "", "", "", notas,
     corto_(d.documento, 30), corto_(d.direccion, 200), corto_(d.detalle, 200), corto_(d.departamento, 60),
-    JSON.stringify(items.map((i) => ({ id: corto_(i.id, 40), g: num_(i.g), n: num_(i.n) }))), num_(d.iva)]);
-  /* el pedido aparta las bolsas: si alguien pidió más de las que había, queda escrito */
-  const falta = descontarStock_(ss, items);
-  if (falta.length) {
-    notas = (notas ? notas + " " : "") + "Sin stock — " + falta.join("; ") + ".";
-    h.getRange(h.getLastRow(), 19).setValue(notas);
-  }
+    /* nom y p (precio con IVA) son para la factura; a es lo que se apartó del stock */
+    JSON.stringify(items.map((i) => ({ id: corto_(i.id, 40), g: num_(i.g), n: num_(i.n), nom: corto_(i.nombre, 80), p: num_(i.precio), a: num_(i.a) }))),
+    num_(d.iva), corto_(d.idioma, 5), ""]);
   const en = d.idioma === "en", lineas = productos + "\n\nTotal: " + pesos_(d.total) + (num_(d.descuento) ? " (" + (en ? "with " : "con ") + bono + ")" : "") +
     (num_(d.iva) ? "\n" + (en ? "Includes " : "Incluye ") + pesos_(d.iva) + (en ? " of VAT" : " de IVA") : "");
   /* la dirección como se escribe en la guía */
   const envio = corto_(d.direccion, 200) + (d.detalle ? "\n" + corto_(d.detalle, 200) : "") +
     "\n" + corto_(d.ciudad, 80) + (d.departamento ? ", " + corto_(d.departamento, 60) : "");
+  /* Con pasarela el pedido es una reserva mientras la persona paga: ni a Nandez ni
+     al cliente se les escribe todavía. Los dos correos salen en pago_, con el pago
+     confirmado; así nadie recibe "te escribimos cómo pagar" después de pagar. */
+  if (d.canal === "wompi") return { id: id, falta: falta };
   /* a Nandez, enseguida; al cliente, la constancia de que llegó */
   if (MailApp.getRemainingDailyQuota() > 0)
     MailApp.sendEmail({ to: Session.getEffectiveUser().getEmail(), name: MARCA, subject: "Pedido nuevo " + id + " · " + pesos_(d.total),
@@ -254,7 +263,7 @@ function pedido_(ss, d, correo) {
     MailApp.sendEmail({ to: correo, name: MARCA, subject: (en ? "We got your order " : "Recibimos tu pedido ") + id,
       htmlBody: marco_(cuerpo_(texto), pieServicio_(id, en)), body: texto + "\n\n—\n" + MARCA });
   }
-  return id;
+  return { id: id, falta: falta };
 }
 /* ---------- stock compartido ----------
    Sin esta hoja cada navegador llevaba su propia cuenta y dos personas podían
@@ -272,27 +281,157 @@ function descontarStock_(ss, items) {
   const h = hojaDe_(ss, H_STOCK), filas = h.getDataRange().getValues(), falta = [];
   items.forEach((i) => {
     const id = claveStock_(i), piden = Math.max(0, num_(i.n));
+    i.a = 0;
     if (!num_(i.g) || !piden) return;
     const k = filas.findIndex((f, j) => j > 0 && String(f[0]) === id);
     const hay = k > 0 ? num_(filas[k][2]) : num_(i.stock);
     if (piden > hay) falta.push(corto_(i.nombre, 80) + ": pidió " + piden + " y había " + hay);
+    /* lo que de verdad se apartó (a): es lo que vuelve si el pedido se cancela */
+    i.a = Math.min(piden, Math.max(0, hay));
     const queda = Math.max(0, hay - piden);
-    if (k > 0) { h.getRange(k + 1, 3).setValue(queda); h.getRange(k + 1, 4).setValue(new Date()); }
+    if (k > 0) { h.getRange(k + 1, 3).setValue(queda); h.getRange(k + 1, 4).setValue(new Date()); filas[k][2] = queda; }
     else { h.appendRow([id, corto_(i.nombre, 80), queda, new Date()]); filas.push([id, "", queda, ""]); }
   });
   return falta;
 }
-/* Un pedido cancelado devuelve sus bolsas */
+/* ¿Alcanza para todo el pedido? Se mira sin tocar nada: la pasarela no aparta a medias */
+function faltantes_(ss, items) {
+  const filas = hojaDe_(ss, H_STOCK).getDataRange().getValues();
+  return items.filter((i) => {
+    const k = filas.findIndex((f, j) => j > 0 && String(f[0]) === claveStock_(i));
+    return num_(i.g) && num_(i.n) > (k > 0 ? num_(filas[k][2]) : num_(i.stock));
+  }).map((i) => corto_(i.nombre, 80));
+}
+/* Un pedido cancelado devuelve lo que apartó. Los pedidos de antes no guardaban
+   cuánto apartaron (a); para esos se devuelve lo pedido. */
 function devolverStock_(ss, items) {
   const h = hojaDe_(ss, H_STOCK), filas = h.getDataRange().getValues();
   items.forEach((i) => {
     const k = filas.findIndex((f, j) => j > 0 && String(f[0]) === claveStock_(i));
     if (k < 1) return;
-    h.getRange(k + 1, 3).setValue(num_(filas[k][2]) + Math.max(0, num_(i.n)));
+    const nuevo = num_(filas[k][2]) + Math.max(0, num_(i.a != null ? i.a : i.n));
+    h.getRange(k + 1, 3).setValue(nuevo);
     h.getRange(k + 1, 4).setValue(new Date());
+    filas[k][2] = nuevo;
   });
 }
+/* Un pedido cancelado devuelve también el bono que usó, para que no se pierda */
+function liberarBono_(ss, codigo, id) {
+  if (!codigo) return;
+  const hb = hojaDe_(ss, H_BONOS), filas = hb.getDataRange().getValues();
+  const k = filas.findIndex((f, j) => j > 0 && String(f[0]) === String(codigo) && String(f[7]) === String(id));
+  if (k > 0) { hb.getRange(k + 1, 7).setValue(""); hb.getRange(k + 1, 8).setValue(""); }
+}
 const itemsDe_ = (v) => { try { const a = JSON.parse(v || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
+
+/* ---------- pago confirmado por la pasarela ----------
+   Lo llama api/wompi.js cuando Wompi avisa, ya con la firma del aviso revisada.
+   Pide la CLAVE porque marcar pagado pone en marcha un despacho. Es idempotente:
+   Wompi repite el aviso hasta tres veces y aquí nada pasa dos veces.
+   Columnas (base 0): 2 estado · 11 total · 13 canal · 18 notas · 23 items · 25 idioma · 26 transaccion */
+const ESTADOS_PAGADO = ["pagado", "despachado", "entregado"];
+function pago_(d) {
+  if (!d.clave || d.clave !== clave_()) return json_({ ok: false, error: "clave" });
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const ss = libro_(), h = hojaDe_(ss, H_PEDIDOS), filas = h.getDataRange().getValues();
+    const i = filas.findIndex((f, k) => k > 0 && String(f[0]) === String(d.id));
+    if (i < 0) return json_({ ok: false, error: "no" });
+    const r = i + 1, f = filas[i], monto = num_(d.monto), total = num_(f[11]);
+    const ref = [corto_(d.pasarela, 20), corto_(d.metodo, 30), corto_(d.transaccion, 60)].filter(String).join(" · ");
+    const anotar = (txt) => { const n = (f[18] ? f[18] + " " : "") + txt; h.getRange(r, 19).setValue(n); f[18] = n; };
+    /* Anulado después de pagado: la plata volvió al cliente, así que no se despacha */
+    if (d.estado === "anulado" && ESTADOS_PAGADO.indexOf(f[2]) >= 0) {
+      anotar("Pago anulado por la pasarela (" + ref + ").");
+      const antes = f[2];
+      if (antes === "pagado") h.getRange(r, 3).setValue("nuevo");
+      avisoNandez_("Pago anulado " + f[0], "Wompi anuló el pago de " + f[0] + ". " +
+        (antes === "pagado" ? "Volvió a «nuevo»: no lo despaches." : "Ya estaba " + antes + ": revísalo.") + "\n\n" + ref);
+      return json_({ ok: true, estado: antes === "pagado" ? "nuevo" : antes, anulado: true });
+    }
+    if (d.estado !== "aprobado") {
+      /* Rechazado o con error: la reserva sigue porque la persona puede reintentar;
+         si al final no paga, liberarReservas devuelve las bolsas. */
+      if (ESTADOS_PAGADO.indexOf(f[2]) < 0) anotar("Pago " + corto_(d.estado, 20) + " (" + ref + ").");
+      return json_({ ok: true, estado: f[2] });
+    }
+    if (ESTADOS_PAGADO.indexOf(f[2]) >= 0) return json_({ ok: true, repetido: true });
+    if (monto < total) {
+      anotar("Ojo: pagó " + pesos_(monto) + " y el pedido suma " + pesos_(total) + " (" + ref + "). No se marcó pagado.");
+      avisoNandez_("Revisar el pago de " + f[0], "Pagó " + pesos_(monto) + " y el pedido suma " + pesos_(total) + ".\n\n" + ref);
+      return json_({ ok: true, estado: f[2], revisar: true });
+    }
+    /* Llegó el pago de una reserva que ya se había liberado: se vuelve a apartar */
+    if (f[2] === "cancelado") {
+      const its = itemsDe_(f[23]).map((x) => ({ id: x.id, g: x.g, n: x.n, nom: x.nom, nombre: x.nom, p: x.p }));
+      const falta = descontarStock_(ss, its);
+      h.getRange(r, 24).setValue(JSON.stringify(its.map((x) => ({ id: x.id, g: x.g, n: x.n, nom: x.nom, p: x.p, a: x.a }))));
+      let nota = "El pago llegó después de liberar la reserva; se volvió a apartar.";
+      if (falta.length) nota += " Sin stock — " + falta.join("; ") + ".";
+      /* el bono se había soltado al liberar: se vuelve a marcar usado */
+      if (f[12]) {
+        const b = bonoVigente_(ss, f[12]);
+        if (b.fila) { const hb = ss.getSheetByName(H_BONOS); hb.getRange(b.fila, 7).setValue(new Date()); hb.getRange(b.fila, 8).setValue(f[0]); }
+        else nota += " El bono " + f[12] + " ya no estaba libre (" + b.error + ").";
+      }
+      anotar(nota);
+    }
+    if (monto > total) anotar("Pagó " + pesos_(monto - total) + " de más.");
+    h.getRange(r, 3).setValue("pagado");
+    h.getRange(r, 15).setValue(new Date());
+    h.getRange(r, 27).setValue(ref);
+    correosPago_(f, monto, ref);
+    return json_({ ok: true, estado: "pagado" });
+  } finally { lock.releaseLock(); }
+}
+function avisoNandez_(asunto, texto) {
+  if (MailApp.getRemainingDailyQuota() < 1) return false;
+  MailApp.sendEmail({ to: Session.getEffectiveUser().getEmail(), name: MARCA, subject: asunto, body: texto });
+  return true;
+}
+/* Los dos correos del pago confirmado, armados desde la fila del pedido */
+function correosPago_(f, monto, ref) {
+  const en = f[25] === "en", id = String(f[0]), correo = String(f[4] || "");
+  const lineas = String(f[7]) + "\n\nTotal: " + pesos_(f[11]) + (num_(f[9]) ? " (" + (en ? "with " : "con ") + f[12] + ")" : "") +
+    (num_(f[24]) ? "\n" + (en ? "Includes " : "Incluye ") + pesos_(f[24]) + (en ? " of VAT" : " de IVA") : "");
+  const envio = [f[20], f[21]].filter(String).join("\n") + "\n" + [f[6], f[22]].filter(String).join(", ");
+  avisoNandez_("Pago confirmado " + id + " · " + pesos_(monto),
+    f[3] + (f[19] ? " · CC/NIT " + f[19] : "") + (f[5] ? " · tel " + f[5] : "") + (correo ? " · " + correo : "") +
+    "\n\n" + envio + "\n\n" + lineas + "\n\n" + ref + (f[18] ? "\n\n" + f[18] : "") +
+    "\n\nYa está pago: despáchalo desde el panel, pestaña Pedidos.");
+  if (!correoValido_(correo) || MailApp.getRemainingDailyQuota() < 1) return;
+  const texto = en
+    ? "We got the payment for your order " + id + ".\n\n" + lineas + "\n\nIt ships to:\n" + envio +
+      "\n\nIs anything wrong there? Just reply. We ship it in the next business days and send you the tracking number."
+    : "Recibimos el pago de tu pedido " + id + ".\n\n" + lineas + "\n\nVa a:\n" + envio +
+      "\n\n¿Algo quedó mal escrito? Responde este correo. Lo despachamos en los próximos días hábiles y te mandamos la guía.";
+  MailApp.sendEmail({ to: correo, name: MARCA, subject: (en ? "Payment received · " : "Pago recibido · ") + id,
+    htmlBody: marco_(cuerpo_(texto), pieServicio_(id, en)), body: texto + "\n\n—\n" + MARCA });
+}
+/* Cada hora: la reserva de la pasarela que nadie pagó devuelve sus bolsas. El
+   pago vence a los 30 minutos (api/pago.js), así que pasadas RESERVA_HORAS ya no
+   se puede pagar. Si aun así llega un pago tarde, pago_ la vuelve a apartar. */
+const RESERVA_HORAS = 2;
+function liberarReservas() {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const ss = libro_(), h = hojaDe_(ss, H_PEDIDOS), filas = h.getDataRange().getValues();
+    const limite = Date.now() - RESERVA_HORAS * 3600 * 1000;
+    let n = 0;
+    for (let i = 1; i < filas.length; i++) {
+      const f = filas[i];
+      if (f[13] !== "wompi" || f[2] !== "nuevo" || new Date(f[1]).getTime() > limite) continue;
+      devolverStock_(ss, itemsDe_(f[23]));
+      liberarBono_(ss, f[12], f[0]);
+      h.getRange(i + 1, 3).setValue("cancelado");
+      h.getRange(i + 1, 19).setValue((f[18] ? f[18] + " " : "") + "Reserva liberada: no se pagó en " + RESERVA_HORAS + " h.");
+      n++;
+    }
+    return n;
+  } finally { lock.releaseLock(); }
+}
 
 /* El panel mueve el pedido de estado. Al despacharlo con guía, el cliente recibe la guía. */
 function cambiarPedido_(d) {
@@ -302,8 +441,10 @@ function cambiarPedido_(d) {
   const i = filas.findIndex((f, k) => k > 0 && String(f[0]) === String(d.id));
   if (i < 0) return json_({ ok: false, error: "no" });
   const r = i + 1, f = filas[i];
-  /* cancelar devuelve las bolsas a la hoja, y solo la primera vez */
-  if (d.estado === "cancelado" && f[2] !== "cancelado") devolverStock_(ss, itemsDe_(f[23]));
+  /* la página solo puede soltar su propia reserva: sin pagar y de la pasarela */
+  if (d.soloReserva && (f[2] !== "nuevo" || f[13] !== "wompi")) return json_({ ok: false, error: "no-es-reserva" });
+  /* cancelar devuelve las bolsas y el bono, y solo la primera vez */
+  if (d.estado === "cancelado" && f[2] !== "cancelado") { devolverStock_(ss, itemsDe_(f[23])); liberarBono_(ss, f[12], f[0]); }
   h.getRange(r, 3).setValue(d.estado);
   if (d.estado === "pagado" && !f[14]) h.getRange(r, 15).setValue(new Date());
   if (d.notas != null) h.getRange(r, 19).setValue(corto_(d.notas, 500));
@@ -420,7 +561,7 @@ function doGet(e) {
       .map((f) => ({ id: f[0], fecha: f[1], estado: f[2], nombre: f[3], correo: f[4], tel: f[5], ciudad: f[6], productos: f[7],
         subtotal: f[8], descuento: f[9], envio: f[10], total: f[11], bono: f[12], canal: f[13], pagado: f[14], despachado: f[15],
         transportadora: f[16], guia: f[17], notas: f[18],
-        documento: f[19], direccion: f[20], detalle: f[21], departamento: f[22], iva: f[24] }));
+        documento: f[19], direccion: f[20], detalle: f[21], departamento: f[22], items: itemsDe_(f[23]), iva: f[24], idioma: f[25], transaccion: f[26] }));
     const subs = hojaDe_(ss, H_SUBS).getDataRange().getValues().map((f, i) => ({ fila: i + 1, correo: f[0], plan: f[1], kit: f[2], pago: f[3],
       cada: f[4], molienda: f[5], ciudad: f[6], alta: f[7], estado: f[8], proximo: f[9], ultimo: f[10], envios: f[11], notas: f[12] }))
       .slice(1).filter((s) => s.correo);

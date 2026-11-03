@@ -1,7 +1,34 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "prototipo", "runtimeExecutable": "node", "runtimeArgs": ["tools/serve.js", "prototipo", "5174"], "port": 5174 },
-    { "name": "panel", "runtimeExecutable": "node", "runtimeArgs": ["tools/serve.js", "admin", "5175"], "port": 5175 }
+    {
+      "name": "prototipo",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "tools/serve.js",
+        "prototipo",
+        "5174"
+      ],
+      "port": 5174
+    },
+    {
+      "name": "panel",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "tools/serve.js",
+        "admin",
+        "5175"
+      ],
+      "port": 5175
+    },
+    {
+      "name": "tienda-prueba",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "tools/pruebas/servidor.mjs",
+        "5190"
+      ],
+      "port": 5190
+    }
   ]
 }
