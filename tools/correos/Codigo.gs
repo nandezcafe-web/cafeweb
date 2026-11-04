@@ -183,8 +183,8 @@ function mandarBienvenida_(h, fila) {
   const codigo = String(f[0]), correo = String(f[1]), vence = fecha_(f[4], en);
   const enlace = SITIO + (en ? "/en/coffees" : "/cafes") + "?bono=" + codigo, pct = Number(f[2]) || BONO.pct;
   const intro = en
-    ? "You now have a plug for farm coffee: coffee from Norte de Santander that reaches your door with a name of its own. The farm, the grower and the roast date, on every bag.\n\nTo welcome you, your first bag is " + pct + " % off:"
-    : "Ahora tienes un plug de café de finca: café de Norte de Santander que llega a tu casa con nombre propio. La finca, quien la cultiva y la fecha de tostión, en cada bolsa.\n\nPara darte la bienvenida, tu primera bolsa tiene " + pct + " % menos:";
+    ? "You now have a coffee plug that connects you with the farms we pick in Norte de Santander, and soon with growers from other regions of Colombia. Every bag carries the right information: the farm, the grower, the altitude and the roast date.\n\nTo welcome you to the crew, your first order is " + pct + " % off:"
+    : "Ahora tienes un plug de café que te conecta con los cultivos que elegimos en Norte de Santander, y muy pronto con caficultores de otras regiones de Colombia. Cada bolsa trae la información correcta: la finca, quien la cultiva, la altura y la fecha de tostión.\n\nPara darte la bienvenida al crew, tu primera compra tiene " + pct + " % menos:";
   const vale = en ? "Yours until " + vence + ", for one order. The button gets it ready in your cart." : "Es tuyo hasta el " + vence + ", para un pedido. El botón lo deja listo en tu carrito.";
   const porQue = en
     ? ["Coffee from farms in Norte de Santander, and soon from other regions of Colombia", "Medium roast, whole bean or ground", "The farm and the roast date on every bag", "You hear about every drop before anyone else", "Shipping anywhere in Colombia"]
