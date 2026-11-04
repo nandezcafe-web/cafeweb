@@ -160,7 +160,10 @@ function unirseComunidad() {
      de un toque con el correo que ya dejó. Si no hay nada nuevo, no sale.
    No va en el HTML armado: lo pinta el navegador, así que los buscadores no lo ven. */
 const POP_KEY = "nandez-bono-pop";
-const POP_ESPERA = 3000;    /* a los 3 s: con la carga, nunca pasa de 5 */
+/* A los 3 s tapaba la portada antes de que se leyera la preventa. Ahora sale
+   cuando la persona ya bajó a ver los cafés, o a los POP_ESPERA si se queda quieta. */
+const POP_ESPERA = 12000;
+const POP_SCROLL = 700;     /* px bajados: ya pasó la portada */
 const POP_CERRADO = 7;      /* lo cerró sin registrarse: vuelve en una semana */
 const POP_MIEMBRO = 30;     /* ya es miembro: una novedad al mes */
 
@@ -197,7 +200,11 @@ function popVigilar() {
     if (popEstorba()) return void setTimeout(intentar, 2000);
     if (popMiembro()) popAbrirNovedad(popNovedad()); else popAbrir();
   };
-  setTimeout(intentar, POP_ESPERA);
+  let listo = false;
+  const una = () => { if (listo) return; listo = true; removeEventListener("scroll", alBajar); intentar(); };
+  const alBajar = () => { if (scrollY > POP_SCROLL) una(); };
+  addEventListener("scroll", alBajar, { passive: true });
+  setTimeout(una, POP_ESPERA);
 }
 
 /* Va en el centro, con un velo detrás: en una esquina pasaba de largo.

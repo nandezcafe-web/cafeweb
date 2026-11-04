@@ -31,9 +31,11 @@ function portada(en) {
   /* El precio sale del producto, no se escribe aquí: así no se queda viejo.
      La altura no va: la de cada finca está por confirmar y un rango inventado miente. */
   const vb = principal(p);
+  /* En preventa, el tercer dato es el cupo: cuántas bolsas hay de cada café. */
+  const cupo = enPreventa(p) && CONFIG.preventa.cupo;
   const hechos = en
-    ? [[cop(vb.precio), "per 250 g"], ["Medium roast", "all three"], ["Two whole bean", "one ground"]]
-    : [[cop(vb.precio), "los 250 g"], ["Tostión media", "los tres"], ["Dos en grano", "uno molido"]];
+    ? [[cop(vb.precio), "per 250 g"], ["Medium roast", "all three"], cupo ? [`${cupo} bags`, "of each coffee"] : ["Two whole bean", "one ground"]]
+    : [[cop(vb.precio), "los 250 g"], ["Tostión media", "los tres"], cupo ? [`${cupo} bolsas`, "de cada café"] : ["Dos en grano", "uno molido"]];
   const sello = en ? "2026 HARVEST · MEDIUM ROAST · NORTE DE SANTANDER · " : "COSECHA 2026 · TOSTIÓN MEDIA · NORTE DE SANTANDER · ";
   return `<section class="g-hero hero" aria-labelledby="portada-titulo">
     <div class="g-hero-txt">
@@ -49,7 +51,7 @@ function portada(en) {
       <ul class="g-hechos reveal" style="--i:5">${hechos.map(([a, b]) => `<li><b>${a}</b><small>${b}</small></li>`).join("")}</ul>
     </div>
     <div class="g-hero-art reveal" style="--i:2" data-act="cafe" data-id="${p.id}" role="button" tabindex="0" aria-label="${esc(tx(p.nombre))}">
-      <p class="g-hero-tag">${en ? "Available now" : "Disponible ahora"}<b>${esc(tx(p.nombre))}</b></p>
+      <p class="g-hero-tag">${enPreventa(p) ? esc(rotuloPreventa(en)) : (en ? "Available now" : "Disponible ahora")}<b>${esc(tx(p.nombre))}</b></p>
       ${fotoProducto(p, { sizes: "(min-width:900px) 480px, 80vw", clase: "g-hero-foto", prioridad: true })}
       <svg class="g-sello" viewBox="0 0 200 200" aria-hidden="true"><defs><path id="g-arco" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
         <circle cx="100" cy="100" r="92"/><circle cx="100" cy="100" r="4" style="fill:currentColor"/><text><textPath href="#g-arco">${sello}</textPath></text></svg>

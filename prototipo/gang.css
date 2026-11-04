@@ -807,3 +807,22 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
   .cookies{bottom:calc(86px + env(safe-area-inset-bottom,0px));left:10px;right:10px;padding:16px}
   .cookies-btn .btn{min-width:0;flex:1 1 130px}
 }
+
+/* ---- auditoría 4-11-2026 ----
+   Las fotos tienen el fondo claro arriba: el crema de la marca sobre durazno,
+   celeste o arena no se leía. Puntajes, número de serie y titular del hero van en tinta. */
+.g-prod-sca,.g-prod-n,.cc-score,.cc-score b,.g-hero-tag,.g-hero-tag b{color:var(--ink)}
+.cc-score small,.card-cafe.dark .cc-score small{color:var(--ink-2)!important}
+.prod-sello,.prod-sello b,.prod-sello small{color:var(--ink)}
+
+/* La preventa en la ficha: la fecha de salida y el cupo, aparte del párrafo del envío. */
+.pre-aviso{display:grid;grid-template-columns:auto 1fr;align-items:baseline;gap:4px 12px;margin:14px 0 0;padding:12px 14px;border:1px solid var(--ink);background:var(--paper-2,#e9e2d4)}
+.pre-aviso b{font:800 1rem var(--display);text-transform:uppercase;letter-spacing:.01em;color:var(--cherry)}
+.pre-aviso span{justify-self:end;font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.pre-aviso i{grid-column:1/-1;height:4px;background:linear-gradient(90deg,var(--ink) var(--q),rgba(20,18,16,.15) var(--q))}
+
+/* En el celular la bolsa va primero: así se ve el producto antes que el precio. */
+@media (max-width:900px){
+  .prod-top > .prod-art{order:-1}
+  .prod-top .prod-escena{aspect-ratio:1}
+}

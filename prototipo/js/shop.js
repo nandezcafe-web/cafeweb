@@ -339,9 +339,11 @@ function viewCafe() {
         <div><b class="precio-grande mono">${cop(precioHoy(p, v))}</b><small>${gramos(v.g)} · ${cop((precioHoy(p, v) / v.g) * 1000)} ${t("por_kg")}</small></div>
         <button class="btn primary lg" data-act="add" data-p="${p.id}" data-g="${v.g}" ${topeDe(p, v) ? "" : "disabled"}>${pre ? t("reservar") : t("agregar")}</button>
       </div>
+      ${pre ? `<p class="pre-aviso"><b>${en ? `Ships ${fmtFecha(entregaPreventa())}` : `Sale el ${fmtFecha(entregaPreventa())}`}</b>${CONFIG.preventa.cupo
+        ? `<span>${en ? `${quedanPreventa(v)} of ${CONFIG.preventa.cupo} bags left` : `quedan ${quedanPreventa(v)} de ${CONFIG.preventa.cupo} bolsas`}</span>
+           <i style="--q:${Math.round((quedanPreventa(v) / CONFIG.preventa.cupo) * 100)}%" aria-hidden="true"></i>` : ""}</p>` : ""}
       <p class="hint">${pre
-        ? (en ? `Pre-order${CONFIG.preventa.cupo ? `: ${quedanPreventa(v)} of ${CONFIG.preventa.cupo} bags left` : ""} · we ship from ${fmtFecha(entregaPreventa())}`
-              : `Preventa${CONFIG.preventa.cupo ? `: quedan ${quedanPreventa(v)} de ${CONFIG.preventa.cupo} bolsas` : ""} · despachamos desde el ${fmtFecha(entregaPreventa())}`)
+        ? (en ? "Pre-order: you pay today and we ship it in the order reservations arrive" : "Preventa: pagas hoy y despachamos en el orden en que llegaron las reservas")
         : `${v.stock} ${t("disponibles")}`} · ${en
         ? `ships from Cúcuta within Colombia in ${tx(E.dias)} · ${cop(E.costo)}, free from ${cop(E.gratisDesde)}`
         : `sale de Cúcuta y llega en ${tx(E.dias)} · envío ${cop(E.costo)}, gratis desde ${cop(E.gratisDesde)}`}</p>`;
