@@ -62,8 +62,10 @@ function viewInicio() {
 
   ${musica(en)}
 
+  ${faqInicio(en)}
+
   ${visible("diario") ? `<section class="g-sec" aria-labelledby="g-diario">
-    ${cabeza("05", t("nav_diario"),
+    ${cabeza("06", t("nav_diario"),
       `<span id="g-diario">${en ? "What we learn <em>buying coffee.</em>" : "Lo que aprendemos <em>comprando café.</em>"}</span>`, "",
       `<a class="g-link" href="${ruta("diario")}" data-act="go" data-to="diario">${en ? "All the entries" : "Todas las entradas"}</a>`)}
     <div class="g-diario">${S.entradas.slice(0, 3).map((e, i) => `<article class="g-io" style="--i:${i}">
@@ -73,6 +75,24 @@ function viewInicio() {
       <a class="g-link" href="${ruta("entrada", e.id)}" data-act="entrada" data-id="${e.id}">${t("leer")}</a>
     </article>`).join("")}</div>
   </section>` : ""}`;
+}
+
+/* Las preguntas frecuentes. Van visibles en la página y declaradas a Google
+   desde la MISMA lista: declarar una pregunta que no se ve es justo lo que
+   Google penaliza. Se usa <details> para que abran sin JavaScript. */
+function faqInicio(en) {
+  const fs = faqVisibles();
+  if (!fs.length) return "";
+  return `<section class="g-sec" aria-labelledby="g-faq">
+    <div class="g-head g-io">
+      <span class="g-num">05</span><p class="g-kicker">${en ? "Questions" : "Preguntas"}</p>
+      <h2><span id="g-faq">${en ? "What people ask us <em>before buying.</em>" : "Lo que nos preguntan <em>antes de comprar.</em>"}</span></h2>
+    </div>
+    <div class="faq-lista g-io">${fs.map((f) => `<details class="faq">
+      <summary><h3>${esc(tx(f.q))}</h3></summary>
+      <p>${esc(tx(f.a))}</p>
+    </details>`).join("")}</div>
+  </section>`;
 }
 
 /* La lista para tomar café: el reproductor de Spotify y un botón para compartirla.
@@ -403,7 +423,7 @@ function datosEstructurados(view, id) {
     description: meta("inicio").d,
   };
   const grafo = [org, { "@type": "WebSite", "@id": CONFIG.sitio + "/#sitio", url: CONFIG.sitio, name: CONFIG.marca, publisher: { "@id": org["@id"] }, inLanguage: UI.lang }];
-  if (view === "inicio" && false) grafo.push({ "@type": "FAQPage", mainEntity: FAQ.map((f) => ({ "@type": "Question", name: tx(f.q), acceptedAnswer: { "@type": "Answer", text: tx(f.a) } })) });
+  if (view === "inicio" && faqVisibles().length) grafo.push({ "@type": "FAQPage", inLanguage: UI.lang, mainEntity: faqVisibles().map((f) => ({ "@type": "Question", name: tx(f.q), acceptedAnswer: { "@type": "Answer", text: tx(f.a) } })) });
   if (view === "cafe" || view === "cafes") {
     (view === "cafe" ? [prodById(id) || S.productos[0]] : S.productos).forEach((p) => {
       const f = fincaDe(p);

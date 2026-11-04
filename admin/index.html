@@ -2375,6 +2375,12 @@ function meta(view, id) {
 }
 
 /* Preguntas que la gente escribe en el buscador y que responden los asistentes de IA */
+/* Las preguntas que se muestran hoy: la de la subasta sobra mientras la
+   subasta esté apagada, y una respuesta a algo que no existe hace daño en
+   vez de ayudar. Lo que se pinta y lo que se le declara a Google salen de
+   aquí, para que nunca se separen. */
+const faqVisibles = () => FAQ.filter((f) => !f.soloSi || visible(f.soloSi));
+
 const FAQ = [
   { q: { es: "¿Qué es el café de origen y en qué se diferencia del café común?", en: "What is single origin coffee and how is it different?" },
     a: { es: "El café de origen viene de una sola finca y una sola cosecha, no de la mezcla de muchos productores. Por eso se puede saber quién lo cultivó, a qué altura y con qué proceso, y por eso una taza sabe distinta de otra.",
@@ -2390,7 +2396,7 @@ const FAQ = [
        esta respuesta la leen los asistentes de IA desde llms.txt. */
     a: { es: "Son montañas con noches frías, que maduran el grano despacio. Es una región menos conocida que Huila o Nariño, y por eso todavía se consiguen microlotes excepcionales a precios sensatos. La altura y la vereda de cada finca van en la ficha de su café.",
          en: "These are mountains with cold nights, which ripen the cherry slowly. It is a lesser known region than Huila or Nariño, so exceptional microlots can still be found at sensible prices. Each farm's altitude and village are on its coffee's data sheet." } },
-  { q: { es: "¿Cómo funciona una subasta de café?", en: "How does a coffee auction work?" },
+  { soloSi: "subasta", q: { es: "¿Cómo funciona una subasta de café?", en: "How does a coffee auction work?" },
     a: { es: "Se publica un lote pequeño con su puntaje y su ficha, se abre con un precio de salida y los compradores pujan en dólares por kilo de café verde. Se adjudica solo si se alcanza el precio de reserva y participan al menos tres compradores distintos.",
          en: "A small lot is published with its score and data sheet, opens at a starting price and buyers bid in US dollars per kilo of green coffee. It is awarded only if the reserve price is met and at least three different buyers take part." } },
   { q: { es: "¿Le compran directo al productor?", en: "Do you buy directly from the grower?" },
