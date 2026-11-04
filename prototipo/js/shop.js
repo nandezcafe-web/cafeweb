@@ -39,13 +39,21 @@ function fotoProducto(p, { sizes = "(min-width:900px) 360px, 70vw", clase = "pro
     ${prioridad ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`;
 }
 
+/* El sello de la preventa: cuántas bolsas del cupo quedan, para que se vea que son 90 y se acaban. */
+function selloPreventa(p, v = principal(p)) {
+  const en = UI.lang === "en";
+  if (!CONFIG.preventa.cupo) return t("en_preventa");
+  const n = quedanPreventa(v);
+  return n > 0 ? `${t("en_preventa")} · ${en ? `${n} left` : `quedan ${n}`}` : (en ? "Pre-order sold out" : "Preventa agotada");
+}
+
 function cafeCard(p, i = 0) {
   const f = fincaDe(p), v = principal(p), en = UI.lang === "en", pronto = !!p.proximamente;
   return `<article class="card-cafe reveal${pronto ? " pronto" : ""}" style="--i:${i};--pc:${p.color || "#2F5A3C"}">
     <div class="cc-art${CON_FOTO.has(p.id) ? " con-foto" : ""}" data-act="cafe" data-id="${p.id}" role="button" tabindex="0" aria-label="${esc(tx(p.nombre))}">
       ${fotoProducto(p)}
       ${pronto ? `<span class="g-pronto">${t("proximamente")}<i>${esc(tx(p.sub))}</i></span>` : ""}
-      ${pronto ? "" : `<span class="state st-publicado">${enPreventa(p) ? t("en_preventa") : `${v.stock} ${t("disponibles")}`}</span>
+      ${pronto ? "" : `<span class="state st-publicado">${enPreventa(p) ? esc(selloPreventa(p, v)) : `${v.stock} ${t("disponibles")}`}</span>
       ${p.puntaje ? `<div class="cc-score"><b>${esc(p.puntaje)}</b><small style="color:${LV[p.nivel].c}">SCA · ${lvl(p.nivel)}</small></div>` : ""}`}
     </div>
     <div class="cc-body">
@@ -68,7 +76,7 @@ function tarjetaInicio(p, i = 0) {
       ${fotoProducto(p, { clase: "g-prod-foto", sizes: "(min-width:1000px) 400px, 90vw" })}
       ${pronto ? `<span class="g-pronto">${t("proximamente")}<i>${esc(tx(p.sub))}</i></span>` : ""}
       ${pronto || !p.puntaje ? "" : `<p class="g-prod-sca"><b>${esc(p.puntaje)}</b><small>SCA · ${lvl(p.nivel)}</small></p>`}
-      ${enPreventa(p) ? `<span class="g-pronto">${t("en_preventa")}</span>` : ""}
+      ${enPreventa(p) ? `<span class="g-pronto">${esc(selloPreventa(p, v))}</span>` : ""}
       <span class="g-prod-n">0${i + 1}</span>
     </div>
     <div class="g-prod-body">
@@ -329,10 +337,11 @@ function viewCafe() {
 
       <div class="buy-row">
         <div><b class="precio-grande mono">${cop(precioHoy(p, v))}</b><small>${gramos(v.g)} · ${cop((precioHoy(p, v) / v.g) * 1000)} ${t("por_kg")}</small></div>
-        <button class="btn primary lg" data-act="add" data-p="${p.id}" data-g="${v.g}" ${v.stock || pre ? "" : "disabled"}>${pre ? t("reservar") : t("agregar")}</button>
+        <button class="btn primary lg" data-act="add" data-p="${p.id}" data-g="${v.g}" ${topeDe(p, v) ? "" : "disabled"}>${pre ? t("reservar") : t("agregar")}</button>
       </div>
       <p class="hint">${pre
-        ? (en ? `Pre-order: we ship from ${fmtFecha(entregaPreventa())}` : `Preventa: despachamos desde el ${fmtFecha(entregaPreventa())}`)
+        ? (en ? `Pre-order${CONFIG.preventa.cupo ? `: ${quedanPreventa(v)} of ${CONFIG.preventa.cupo} bags left` : ""} · we ship from ${fmtFecha(entregaPreventa())}`
+              : `Preventa${CONFIG.preventa.cupo ? `: quedan ${quedanPreventa(v)} de ${CONFIG.preventa.cupo} bolsas` : ""} · despachamos desde el ${fmtFecha(entregaPreventa())}`)
         : `${v.stock} ${t("disponibles")}`} · ${en
         ? `ships from Cúcuta within Colombia in ${tx(E.dias)} · ${cop(E.costo)}, free from ${cop(E.gratisDesde)}`
         : `sale de Cúcuta y llega en ${tx(E.dias)} · envío ${cop(E.costo)}, gratis desde ${cop(E.gratisDesde)}`}</p>`;
@@ -405,6 +414,9 @@ function cargarStock() {
       let cambio = false;
       S.productos.forEach((p) => {
         p.variantes.forEach((v) => {
+          /* en preventa la hoja cuenta aparte lo que queda del cupo */
+          const q = j.stock[`${p.id}-${v.g}-pre`];
+          if (q != null && q !== v.cupoQueda) { v.cupoQueda = q; cambio = true; }
           const n = j.stock[`${p.id}-${v.g}`];
           if (n == null || n === v.stock) return;
           v.stock = n; cambio = true;
@@ -421,8 +433,9 @@ function podarCarrito() {
   const antes = JSON.stringify(UI.carrito);
   UI.carrito = UI.carrito.filter((i) => {
     const p = prodById(i.id), v = p && p.variantes.find((x) => x.g === i.g);
-    if (!v || !v.stock) return false;
-    i.n = Math.min(i.n, v.stock);
+    const tope = v ? topeDe(p, v) : 0;
+    if (!tope) return false;
+    i.n = Math.min(i.n, tope);
     return true;
   });
   if (JSON.stringify(UI.carrito) === antes) return;
@@ -482,6 +495,7 @@ function addCarrito(pid, g) {
   const tope = topeDe(p, v);
   if (c) { if (c.n < tope) c.n++; else return toast(UI.lang === "en" ? "No more of that size." : "No queda más de esa presentación.", { type: "err" }); }
   else UI.carrito.push({ id: p.id, g: v.g, n: 1, precio: precioHoy(p, v), nombre: `${tx(p.nombre)} ${gramos(v.g)}` });
+  medir("agregar", { nombre: tx(p.nombre), ids: [p.id], valor: precioHoy(p, v), n: 1 });
   guardarCarrito(); render(); abrirCarrito();
 }
 
@@ -860,6 +874,7 @@ async function pedidoWompi() {
   const en = UI.lang === "en";
   if (UI.pagando) return;
   const d = datosPedido({ correoObligatorio: true }); if (!d) return;
+  medir("pagar", { ids: UI.carrito.map((i) => i.id), valor: totalCarrito(), n: unidadesCarrito() });
   UI.pagando = true; renderCarrito();
   let j;
   try {

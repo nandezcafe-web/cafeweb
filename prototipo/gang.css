@@ -768,3 +768,42 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
   .g-franja em{display:none}
   .g-franja span::before,.g-franja i::before{margin-right:10px}
 }
+
+/* ============================================================
+   LAS TRES TARJETAS DEL INICIO, RENGLÓN CON RENGLÓN
+   Cada tarjeta acomodaba su texto por su cuenta: un nombre en dos líneas o
+   una finca larga corría el resto hacia abajo, y el precio y el botón
+   quedaban a tres alturas distintas. Con subgrid las tres comparten las
+   filas (foto, finca, nombre, notas, precio), así que cada renglón arranca
+   a la misma altura en las tres aunque una tenga más texto.
+   ============================================================ */
+@supports (grid-template-rows:subgrid){
+  .g-prod{grid-row:span 5;grid-template-rows:subgrid;row-gap:0}
+  .g-prod-body{grid-row:span 4;grid-template-rows:subgrid;align-content:stretch}
+  .g-prod-body > *{align-self:start}
+  .g-prod-body > .g-prod-foot{align-self:end}
+}
+/* Con el sello de preventa en la esquina, el puntaje SCA baja un renglón en
+   vez de quedar debajo del sello. */
+.g-prod-art:has(.g-pronto) .g-prod-sca{top:52px}
+
+/* ============================================================
+   EL AVISO DE COOKIES
+   Abajo, discreto y con las dos opciones del mismo tamaño: un "aceptar"
+   grande junto a un "no" escondido no es una autorización libre, y la
+   Ley 1581 pide que lo sea.
+   ============================================================ */
+.cookies{position:fixed;z-index:90;left:16px;right:16px;bottom:16px;max-width:620px;margin:0 auto;
+  display:grid;gap:12px;padding:18px 20px;background:var(--ink);color:var(--paper);
+  border-radius:14px;box-shadow:0 26px 54px -20px rgba(29,20,15,.55)}
+.cookies p{margin:0;font-size:13.5px;line-height:1.5;color:rgba(245,240,230,.9)}
+.cookies a{color:var(--marca)}
+.cookies-btn{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+.cookies-btn .btn{flex:1 1 auto;justify-content:center;min-width:150px}
+.cookies-btn .btn:not(.primary){border-color:rgba(245,240,230,.5);color:var(--paper)}
+.cookies-btn .btn:not(.primary):hover{background:var(--paper);color:var(--ink)}
+/* en el móvil va encima del dock, como el pop-up del bono */
+@media (max-width:860px){
+  .cookies{bottom:calc(86px + env(safe-area-inset-bottom,0px));left:10px;right:10px;padding:16px}
+  .cookies-btn .btn{min-width:0;flex:1 1 130px}
+}

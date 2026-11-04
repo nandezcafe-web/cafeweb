@@ -1651,7 +1651,7 @@ const CONFIG = {
      - cupo: cuántas bolsas se aceptan por café. En 0 no se habla de cupo.
      - precio: precio de preventa. En 0 se cobra el de siempre.
      Para cerrarla, `activa: false`. */
-  preventa: { activa: true, entregaDesde: "", cupo: 0, precio: 0 },
+  preventa: { activa: true, entregaDesde: "", cupo: 90, precio: 0 },
   /* EL DROP QUE VIENE. Un lote pequeño que sale un día, a una hora, y se acaba.
      Mientras un dato esté vacío, la página dice "por confirmar": no se inventa ninguno.
      - estado: "expectativa" (anunciado, sin abrir) · "abierto" (se puede comprar) · "agotado"
@@ -1710,6 +1710,10 @@ const CONFIG = {
            transportadora: "Interrapidísimo", contraentrega: false },
   /* Pagos. Mientras no haya links, el pedido sale por WhatsApp o correo.
      Ver docs/06_pagos_y_suscripciones.md */
+  /* Medición. Vacío = no se carga nada y no se pregunta nada. El del píxel
+     sale de Meta Business (15 o 16 dígitos) y el de Google Analytics de GA4
+     (G-XXXXXXXXXX). Ver prototipo/js/medir.js. */
+  medicion: { metaPixel: "", ga4: "" },
   pagos: {
     /* La pasarela que cobra DENTRO de la página. Se prende sola apenas haya llave
        pública (pub_test_… para probar, pub_prod_… para vender). Los secretos NO van
@@ -1853,9 +1857,11 @@ function seed() {
         /* Por ahora solo la bolsa de 250 g. El kilo se cotiza según la cantidad,
            y eso vive en el plan Barista de la suscripción. */
         variantes: [
-          { g: 250, precio: 40000, label: { es: "Bolsa", en: "Bag" }, nota: { es: "unas 16 tazas", en: "about 16 cups" }, stock: 90, principal: true },
+          { g: 250, precio: 40000, label: { es: "Bolsa", en: "Bag" }, nota: { es: "unas 16 tazas", en: "about 16 cups" }, stock: 0, principal: true },
         ],
-        presentacion: 250, precio: 40000, stock: 90 },
+        /* stock 0 a propósito: hasta el 20 de noviembre los tres van en preventa y
+           sus 90 bolsas son el cupo (CONFIG.preventa.cupo), que cuenta la hoja. */
+        presentacion: 250, precio: 40000, stock: 0 },
 
       /* Castillo y El Paraíso van EN GRANO, cada uno de su finca. El tercero es un blend de
          los dos, MOLIDO en molienda fina. Los tres llevan tostión media. El Paraíso y el blend
@@ -2028,7 +2034,10 @@ function faltanDias() {
 const precioHoy = (p, v) => (enPreventa(p) && CONFIG.preventa.precio ? CONFIG.preventa.precio : v.precio);
 /* Cuántas se pueden pedir de una presentación. En preventa no hay inventario
    todavía: el tope es el cupo anunciado, y sin cupo no hay tope. */
-const topeDe = (p, v) => (enPreventa(p) ? CONFIG.preventa.cupo || Infinity : v.stock);
+const topeDe = (p, v) => (enPreventa(p) ? (CONFIG.preventa.cupo ? quedanPreventa(v) : Infinity) : v.stock);
+/* Lo que queda del cupo de una presentación. La hoja lleva la cuenta para todos
+   ("P-PAR-250-pre"); mientras no haya reservas, o sin hoja, es el cupo entero. */
+const quedanPreventa = (v) => (v.cupoQueda != null ? v.cupoQueda : CONFIG.preventa.cupo || 0);
 /* "preventa, sale el 20 de nov": va junto a la forma (en grano, molido) en el
    carrito, el mensaje del pedido, la hoja y los correos. */
 const rotuloPreventa = (en = UI.lang === "en") => (en ? "pre-order, ships " : "preventa, sale el ") + fmtFecha(entregaPreventa());

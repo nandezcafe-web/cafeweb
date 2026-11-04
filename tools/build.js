@@ -18,9 +18,9 @@ const escribir = (rel, txt) => { const f = path.join(SRC, rel); fs.mkdirSync(pat
 const cssBase = ["styles.css", "auction.css"].map(read).join("\n");
 const css = cssBase + "\n" + read("gang.css");
 const mod = (f) => `/* ---- ${f}.js ---- */\n` + read(`js/${f}.js`);
-const MODS = ["core", "fases", "shop", "pages", "auction", "main"];
+const MODS = ["core", "medir", "fases", "shop", "pages", "auction", "main"];
 /* huella de los archivos: obliga al navegador a bajar la versión nueva tras cada despliegue */
-const TODOS = ["core", "fases", "shop", "pages", "auction", "main", "quote", "inventory", "clients", "market", "correos", "operacion", "admin"];
+const TODOS = ["core", "medir", "fases", "shop", "pages", "auction", "main", "quote", "inventory", "clients", "market", "correos", "operacion", "admin"];
 /* huella de las imágenes: si una foto cambia, cambia su dirección y ningún navegador sirve la vieja */
 const IMG_DIRS = ["grano", "portada", "productos", "marca"].map((d) => path.join(SRC, "img", d));
 const IMG_V = require("crypto").createHash("md5")

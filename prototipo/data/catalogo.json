@@ -18,16 +18,16 @@
       "precio": 40000,
       "gramos": 250,
       "proximamente": false,
-      "preventa": false,
-      "entrega": "",
-      "cierre": "",
+      "preventa": true,
+      "entrega": "2026-11-20",
+      "cierre": "2026-11-20",
       "preventaPrecio": 0,
-      "cupo": 0,
+      "cupo": 90,
       "variantes": [
         {
           "g": 250,
           "precio": 40000,
-          "stock": 90
+          "stock": 0
         }
       ],
       "url": {
@@ -58,7 +58,7 @@
       "entrega": "2026-11-20",
       "cierre": "2026-11-20",
       "preventaPrecio": 0,
-      "cupo": 0,
+      "cupo": 90,
       "variantes": [
         {
           "g": 250,
@@ -94,7 +94,7 @@
       "entrega": "2026-11-20",
       "cierre": "2026-11-20",
       "preventaPrecio": 0,
-      "cupo": 0,
+      "cupo": 90,
       "variantes": [
         {
           "g": 250,

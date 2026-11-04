@@ -135,6 +135,7 @@ function unirseComunidad() {
       if (!listo) return toast(en ? "It did not save. Try again in a moment." : "No se pudo guardar. Intenta otra vez en un momento.", { type: "err" });
       el.value = ""; if (ok) ok.checked = false;
       popCerrar(false);
+      medir("registro", { nombre: "comunidad" });
       toast(en ? `You are in. Check your inbox: your ${BONO_PCT} % welcome code is there.` : `Ya eres parte. Revisa tu correo: ahí está tu bono del ${BONO_PCT} %.`);
     });
     return;
@@ -452,6 +453,11 @@ function render(arranque) {
   document.documentElement.lang = UI.lang;
   renderNav();
   actualizarMeta();
+  /* ver la ficha de un café es el evento que Meta usa para armar el público */
+  if (UI.view === "cafe" && UI.cafe) {
+    const pr = prodById(UI.cafe);
+    if (pr) medir("ver", { nombre: tx(pr.nombre), ids: [pr.id], valor: principal(pr).precio });
+  }
   const v = $("#view");
   /* La portada ya viene escrita en el HTML. Al arrancar no se reescribe:
      así la entrada se ve una sola vez y no parpadea al cargar el JavaScript. */
@@ -610,6 +616,8 @@ document.addEventListener("click", (e) => {
     case "quitar": return quitarDelCarrito(el.dataset.p, el.dataset.g);
     case "cart-close": return cerrarCarrito();
     case "pop-no": return popCerrar();
+    case "cookies-si": return cookiesResponder(true);
+    case "cookies-no": return cookiesResponder(false);
     case "pop-avisame": return popAvisame(el.dataset.id);
     case "pedido-wa": return pedidoWA();
     case "pedido-mp": return pedidoMP();
@@ -661,6 +669,7 @@ document.documentElement.classList.add("js");
 aplicarCfgGuardada();
 cargarCarrito();
 cargarBono();
+medicionAviso();
 /* La franja viene con los días que había el día del build: se recuentan aquí */
 (() => {
   const f = $("#g-franja"); if (!f) return;
