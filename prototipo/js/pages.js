@@ -484,6 +484,16 @@ function viewContacto() {
       `<p>${en ? `Write with your order number (it starts with NDZ). Orders arrive in ${tx(E.dias)}.` : `Escríbenos con tu número de pedido (empieza por NDZ). Los pedidos llegan en ${tx(E.dias)}.`} ${enlace("envios", en ? "Shipping and refund policy" : "Política de envíos y reembolso")}.</p>`]]);
 }
 
+/* La preventa, en palabras de contrato: cuándo sale, qué pasa si se atrasa y cómo
+   se devuelve la plata. Sale en envíos y en términos solo mientras esté abierta. */
+function seccionPreventa(en) {
+  if (!preventaAbierta()) return [];
+  const f = fmtFecha(entregaPreventa());
+  return [[en ? "Pre-order" : "Preventa", `<p>${en
+    ? `A coffee marked "pre-order" is paid now and ships on ${f}, in the order the reservations came in. If your order also has a coffee that is available now, the whole order ships together on ${f}. If we cannot ship on that date, we write to you before it and you choose: wait for the new date or get your money back in full. You can cancel a pre-order for a full refund any time before it ships.`
+    : `Un café marcado "preventa" se paga hoy y se despacha el ${f}, en el orden en que llegaron las reservas. Si tu pedido trae también un café disponible, el pedido completo sale junto el ${f}. Si no pudiéramos despachar ese día, te escribimos antes y tú escoges: esperar la nueva fecha o que te devolvamos todo tu dinero. Puedes cancelar una preventa y recibir el reembolso completo en cualquier momento antes del despacho.`}</p>`]];
+}
+
 function viewEnvios() {
   const en = UI.lang === "en", E = CONFIG.envio;
   return paginaTexto(en ? "Shipping and refund policy" : "Política de envíos y reembolso", en ? "What it costs, <em>when it arrives</em>" : "Cuánto cuesta, <em>cuándo llega</em>",
@@ -494,6 +504,7 @@ function viewEnvios() {
      [en ? "Time" : "Tiempo",
       `<p>${en ? `We ship from Cúcuta with ${E.transportadora}. It arrives in ${tx(E.dias)}; rural areas can take a few days more. We send you the tracking number.`
         : `Despachamos desde Cúcuta por ${E.transportadora}. Llega en ${tx(E.dias)}; a zonas rurales puede tardar unos días más. Te mandamos la guía para que lo sigas.`}</p>`],
+     ...seccionPreventa(en),
      [en ? "If something goes wrong" : "Si algo sale mal",
       `<p>${en ? `If the bag arrives broken, wet or is not what you ordered, write to ${CONFIG.correo} within 5 days of receiving it, with a photo and your order number. We send it again or refund you, at our cost.`
         : `Si la bolsa llega rota, mojada o no es lo que pediste, escríbenos a ${CONFIG.correo} dentro de los 5 días siguientes a recibirla, con una foto y tu número de pedido. Te la volvemos a enviar o te devolvemos el dinero, por nuestra cuenta.`}</p>`],
@@ -513,6 +524,7 @@ function viewTerminos() {
         : "Pagas en esta misma página con tarjeta, PSE o Nequi, a través de Wompi. El pedido queda confirmado cuando el pago se aprueba, y te llega la confirmación por correo. Si un café se agota antes, no se cobra.")
       : en ? `An order is confirmed when we reply and you pay by ${tx(CONFIG.pagos.manual)}. If a coffee sells out before that, we tell you and do not charge you.`
         : `Un pedido queda confirmado cuando te respondemos y pagas por ${tx(CONFIG.pagos.manual)}. Si un café se agota antes, te avisamos y no te cobramos.`}</p>`],
+     ...seccionPreventa(en),
      [en ? "Shipping and returns" : "Envíos y devoluciones", `<p>${enlace("envios", en ? "See the shipping and refund policy" : "Mira la política de envíos y reembolso")}.</p>`],
      [en ? "Subscription" : "Suscripción", `<p>${en ? `No minimum term. Write to ${CONFIG.correo} before the 25th and the next month is not charged.` : `Sin permanencia. Escribes a ${CONFIG.correo} antes del día 25 y el mes siguiente no se cobra.`}</p>`],
      ...(!visible("subasta") ? [] : [[en ? "Auction" : "Subasta", `<p>${en ? "Only registered bidders may bid. A bid is a commitment to buy; the winner has 48 hours to pay, after which the lot goes to the runner-up. The lot is awarded only if it reaches the reserve price with at least 3 bidders."

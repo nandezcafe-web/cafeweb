@@ -42,6 +42,14 @@ export function numeroPedido(ahora = new Date()) {
 }
 
 const gramos = (g) => (g >= 1000 ? g / 1000 + " kg" : g + " g");
+/* Un café en preventa se cobra aunque no tenga bolsas: se despacha el día de
+   `entrega`. Vale hasta el final del día de `cierre` (hora de Colombia), aunque el
+   catálogo no se haya vuelto a publicar. Igual que en la página, deja de serlo
+   apenas el café tiene bolsas: desde ahí se vende de lo que hay. */
+export const enPreventa = (p, ahora = new Date()) =>
+  !!(p && p.preventa && !(p.variantes || []).some((v) => Number(v.stock) > 0)
+    && (!p.cierre || new Date(p.cierre + "T23:59:59-05:00") >= ahora));
+const fechaCorta = (iso) => new Date(iso + "T12:00:00-05:00").toLocaleDateString("es-CO", { day: "numeric", month: "short", year: "numeric", timeZone: "America/Bogota" });
 /* Más que esto en un solo pedido es más probable un error (o alguien apartando
    todo el inventario) que una compra: se le pide escribir por WhatsApp. */
 export const MAX_BOLSAS = 30;
@@ -60,9 +68,15 @@ export function cotizar(cat, items, pctBono = 0) {
     if (p.proximamente || !(v.precio > 0)) return { error: "no-disponible", id: p.id };
     if (!Number.isInteger(n) || n < 1) return { error: "cantidad", id: p.id };
     const ya = lineas.find((l) => l.id === p.id && l.g === v.g);
+    /* En preventa: el precio de preventa si lo hay, y lo que se aparta es el cupo
+       (0 = sin tope), no unas bolsas que todavía no existen. */
+    const pre = enPreventa(p);
     if (ya) ya.n += n;
-    else lineas.push({ id: p.id, g: v.g, n, precio: v.precio, stock: Number(v.stock) || 0,
-      nombre: `${p.nombre?.es || p.id} ${gramos(v.g)}`, forma: p.sale?.es || "" });
+    else lineas.push({ id: p.id, g: v.g, n, precio: pre && p.preventaPrecio > 0 ? p.preventaPrecio : v.precio,
+      stock: pre ? Number(p.cupo) || 0 : Number(v.stock) || 0,
+      nombre: `${p.nombre?.es || p.id} ${gramos(v.g)}`,
+      forma: (p.sale?.es || "") + (pre ? " · preventa, sale el " + fechaCorta(p.entrega || p.cierre) : ""),
+      ...(pre ? { preventa: true } : {}) });
   }
   if (lineas.reduce((s, l) => s + l.n, 0) > MAX_BOLSAS) return { error: "cantidad" };
   const subtotal = lineas.reduce((s, l) => s + l.precio * l.n, 0);

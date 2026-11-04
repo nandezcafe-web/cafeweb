@@ -218,7 +218,7 @@ function bonoVigente_(ss, codigo) {
 function pedido_(ss, d, correo) {
   const h = hojaDe_(ss, H_PEDIDOS), id = corto_(d.id, 40) || "NDZ-" + Utilities.getUuid().slice(0, 8).toUpperCase();
   const items = Array.isArray(d.items) ? d.items : [];
-  const productos = items.map((i) => num_(i.n) + " × " + corto_(i.nombre, 80) + (i.forma ? " (" + corto_(i.forma, 30).toLowerCase() + ")" : "")).join("\n");
+  const productos = items.map((i) => num_(i.n) + " × " + corto_(i.nombre, 80) + (i.forma ? " (" + corto_(i.forma, 60).toLowerCase() + ")" : "")).join("\n");
   /* Con pasarela es todo o nada: si no alcanza, no se escribe el pedido, no se
      gasta el bono y no se aparta ninguna bolsa. La página le dice qué se agotó. */
   if (d.canal === "wompi") { const faltan = faltantes_(ss, items); if (faltan.length) return { id: null, falta: faltan }; }
@@ -235,7 +235,8 @@ function pedido_(ss, d, correo) {
     num_(d.subtotal), num_(d.descuento), num_(d.envio), num_(d.total), bono, corto_(d.canal, 20), "", "", "", "", notas,
     corto_(d.documento, 30), corto_(d.direccion, 200), corto_(d.detalle, 200), corto_(d.departamento, 60),
     /* nom y p (precio con IVA) son para la factura; a es lo que se apartó del stock */
-    JSON.stringify(items.map((i) => ({ id: corto_(i.id, 40), g: num_(i.g), n: num_(i.n), nom: corto_(i.nombre, 80), p: num_(i.precio), a: num_(i.a) }))),
+    JSON.stringify(items.map((i) => ({ id: corto_(i.id, 40), g: num_(i.g), n: num_(i.n), nom: corto_(i.nombre, 80), p: num_(i.precio), a: num_(i.a),
+      ...(i.preventa ? { preventa: true, stock: num_(i.stock) } : {}) }))),
     num_(d.iva), corto_(d.idioma, 5), ""]);
   const en = d.idioma === "en", lineas = productos + "\n\nTotal: " + pesos_(d.total) + (num_(d.descuento) ? " (" + (en ? "with " : "con ") + bono + ")" : "") +
     (num_(d.iva) ? "\n" + (en ? "Includes " : "Incluye ") + pesos_(d.iva) + (en ? " of VAT" : " de IVA") : "");
@@ -268,7 +269,10 @@ function pedido_(ss, d, correo) {
 /* ---------- stock compartido ----------
    Sin esta hoja cada navegador llevaba su propia cuenta y dos personas podían
    comprar la última bolsa. Acá hay una sola cifra para todos. */
-const claveStock_ = (i) => corto_(i.id, 40) + "-" + num_(i.g);
+/* Una reserva de preventa va contra su propio cupo ("P-PAR-250-pre"), no contra
+   las bolsas, que todavía no existen. Sin cupo (stock 0) no hay nada que contar. */
+const claveStock_ = (i) => corto_(i.id, 40) + "-" + num_(i.g) + (i.preventa ? "-pre" : "");
+const sinTope_ = (i) => !!i.preventa && !num_(i.stock);
 function stockMapa_(ss) {
   const m = {};
   hojaDe_(ss, H_STOCK).getDataRange().getValues().slice(1).forEach((f) => { if (f[0]) m[String(f[0])] = num_(f[2]); });
@@ -282,7 +286,7 @@ function descontarStock_(ss, items) {
   items.forEach((i) => {
     const id = claveStock_(i), piden = Math.max(0, num_(i.n));
     i.a = 0;
-    if (!num_(i.g) || !piden) return;
+    if (!num_(i.g) || !piden || sinTope_(i)) return;
     const k = filas.findIndex((f, j) => j > 0 && String(f[0]) === id);
     const hay = k > 0 ? num_(filas[k][2]) : num_(i.stock);
     if (piden > hay) falta.push(corto_(i.nombre, 80) + ": pidió " + piden + " y había " + hay);
@@ -298,6 +302,7 @@ function descontarStock_(ss, items) {
 function faltantes_(ss, items) {
   const filas = hojaDe_(ss, H_STOCK).getDataRange().getValues();
   return items.filter((i) => {
+    if (sinTope_(i)) return false;
     const k = filas.findIndex((f, j) => j > 0 && String(f[0]) === claveStock_(i));
     return num_(i.g) && num_(i.n) > (k > 0 ? num_(filas[k][2]) : num_(i.stock));
   }).map((i) => corto_(i.nombre, 80));
@@ -364,7 +369,7 @@ function pago_(d) {
     }
     /* Llegó el pago de una reserva que ya se había liberado: se vuelve a apartar */
     if (f[2] === "cancelado") {
-      const its = itemsDe_(f[23]).map((x) => ({ id: x.id, g: x.g, n: x.n, nom: x.nom, nombre: x.nom, p: x.p }));
+      const its = itemsDe_(f[23]).map((x) => ({ id: x.id, g: x.g, n: x.n, nom: x.nom, nombre: x.nom, p: x.p, preventa: x.preventa, stock: x.stock }));
       const falta = descontarStock_(ss, its);
       h.getRange(r, 24).setValue(JSON.stringify(its.map((x) => ({ id: x.id, g: x.g, n: x.n, nom: x.nom, p: x.p, a: x.a }))));
       let nota = "El pago llegó después de liberar la reserva; se volvió a apartar.";

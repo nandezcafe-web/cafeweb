@@ -2026,6 +2026,12 @@ function faltanDias() {
 }
 /* El precio que se cobra hoy: el de preventa si lo hay, si no el de siempre. */
 const precioHoy = (p, v) => (enPreventa(p) && CONFIG.preventa.precio ? CONFIG.preventa.precio : v.precio);
+/* Cuántas se pueden pedir de una presentación. En preventa no hay inventario
+   todavía: el tope es el cupo anunciado, y sin cupo no hay tope. */
+const topeDe = (p, v) => (enPreventa(p) ? CONFIG.preventa.cupo || Infinity : v.stock);
+/* "preventa, sale el 20 de nov": va junto a la forma (en grano, molido) en el
+   carrito, el mensaje del pedido, la hoja y los correos. */
+const rotuloPreventa = (en = UI.lang === "en") => (en ? "pre-order, ships " : "preventa, sale el ") + fmtFecha(entregaPreventa());
 
 /* La franja del lanzamiento. La fecha va en el HTML armado, para que la vea
    quien llega sin JavaScript y para que un crawler la lea; los días que faltan

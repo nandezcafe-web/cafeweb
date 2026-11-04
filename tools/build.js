@@ -286,6 +286,9 @@ escribir("data/catalogo.json", JSON.stringify({
     precio: p.proximamente ? 0 : principal(p).precio, gramos: principal(p).g, proximamente: !!p.proximamente,
     /* En preventa se cobra desde ya y se despacha el día del lanzamiento */
     preventa: enPreventa(p), entrega: enPreventa(p) ? entregaPreventa() : "",
+    /* y lo que api/_tienda.js necesita para cobrarla: el precio de preventa (0 = el
+       de siempre), el cupo por presentación (0 = sin tope) y el último día */
+    ...(enPreventa(p) ? { preventaPrecio: CONFIG.preventa.precio || 0, cupo: CONFIG.preventa.cupo || 0, cierre: CONFIG.lanzamiento } : {}),
     /* stock: el inventario de arranque; después manda la hoja Stock */
     variantes: p.variantes.map((v) => ({ g: v.g, precio: p.proximamente ? 0 : v.precio, stock: v.stock || 0 })),
     url: { es: CONFIG.sitio + ruta("cafe", p.id, "es"), en: CONFIG.sitio + ruta("cafe", p.id, "en") } }))`)

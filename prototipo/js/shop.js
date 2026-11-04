@@ -46,7 +46,7 @@ function cafeCard(p, i = 0) {
       ${fotoProducto(p)}
       ${pronto ? `<span class="g-pronto">${t("proximamente")}<i>${esc(tx(p.sub))}</i></span>` : ""}
       ${pronto ? "" : `<span class="state st-publicado">${enPreventa(p) ? t("en_preventa") : `${v.stock} ${t("disponibles")}`}</span>
-      <div class="cc-score"><b>${esc(p.puntaje)}</b><small style="color:${LV[p.nivel].c}">SCA · ${lvl(p.nivel)}</small></div>`}
+      ${p.puntaje ? `<div class="cc-score"><b>${esc(p.puntaje)}</b><small style="color:${LV[p.nivel].c}">SCA · ${lvl(p.nivel)}</small></div>` : ""}`}
     </div>
     <div class="cc-body">
       <p class="kicker">${esc(tr(f.finca || t("por_confirmar")))}<br>${alturaDe(p) ? esc(alturaDe(p)) : (en ? "altitude to be confirmed" : "altura por confirmar")}</p>
@@ -67,7 +67,8 @@ function tarjetaInicio(p, i = 0) {
     <div class="g-prod-art" data-act="cafe" data-id="${p.id}" role="button" tabindex="0" aria-label="${esc(tx(p.nombre))}">
       ${fotoProducto(p, { clase: "g-prod-foto", sizes: "(min-width:1000px) 400px, 90vw" })}
       ${pronto ? `<span class="g-pronto">${t("proximamente")}<i>${esc(tx(p.sub))}</i></span>` : ""}
-      ${pronto ? "" : `<p class="g-prod-sca"><b>${esc(p.puntaje)}</b><small>SCA · ${lvl(p.nivel)}</small></p>`}
+      ${pronto || !p.puntaje ? "" : `<p class="g-prod-sca"><b>${esc(p.puntaje)}</b><small>SCA · ${lvl(p.nivel)}</small></p>`}
+      ${enPreventa(p) ? `<span class="g-pronto">${t("en_preventa")}</span>` : ""}
       <span class="g-prod-n">0${i + 1}</span>
     </div>
     <div class="g-prod-body">
@@ -76,8 +77,8 @@ function tarjetaInicio(p, i = 0) {
       <p class="g-notas">${pronto ? esc(tx(p.sub)) : tx(p.notas).join(" · ")}</p>
       <div class="g-prod-foot">${pronto
         ? `${precioRotulo(p, v, en)}<button class="btn sm" data-act="espera" data-id="${p.id}">${t("avisame")}</button>`
-        : `<b class="mono">${cop(v.precio)}</b><small>${gramos(v.g)} · ${t("en_grano").toLowerCase()}</small>
-        <button class="btn primary sm" data-act="add" data-p="${p.id}" data-g="${v.g}" ${v.stock ? "" : "disabled"}>${t("agregar")}</button>`}</div>
+        : `<b class="mono">${cop(precioHoy(p, v))}</b><small>${gramos(v.g)} · ${esc(tx(saleDe(p, v))).toLowerCase()}</small>
+        <button class="btn primary sm" data-act="add" data-p="${p.id}" data-g="${v.g}" ${topeDe(p, v) ? "" : "disabled"}>${enPreventa(p) ? t("reserva_corta") : t("agregar")}</button>`}</div>
     </div></article>`;
 }
 
@@ -351,7 +352,7 @@ function viewCafe() {
       <div class="prod-escena${CON_FOTO.has(p.id) ? " con-foto" : ""}">
         ${pronto ? `<span class="g-pronto">${t("proximamente")}<i>${esc(tx(p.sub))}</i></span>` : ""}
         ${!pronto || CON_FOTO.has(p.id) ? fotoProducto(p, { sizes: "(min-width:900px) 560px, 90vw", prioridad: true }) : ""}
-        ${pronto ? "" : `<p class="prod-sello"><b>${esc(p.puntaje)}</b><small>SCA</small></p>`}
+        ${pronto || !p.puntaje ? "" : `<p class="prod-sello"><b>${esc(p.puntaje)}</b><small>SCA</small></p>`}
       </div>
       <ul class="notas-chips">${tx(p.notas).map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
     </div>
@@ -478,9 +479,7 @@ function quitarBono(pintar = true) { UI.bono = null; try { localStorage.removeIt
 
 function addCarrito(pid, g) {
   const p = prodById(pid), v = p.variantes.find((x) => x.g === +g), c = enCarrito(p.id, v.g);
-  /* En preventa no se descuenta de un inventario que todavía no existe: el
-     tope es el cupo anunciado, y sin cupo anunciado no hay tope. */
-  const tope = enPreventa(p) ? (CONFIG.preventa.cupo || Infinity) : v.stock;
+  const tope = topeDe(p, v);
   if (c) { if (c.n < tope) c.n++; else return toast(UI.lang === "en" ? "No more of that size." : "No queda más de esa presentación.", { type: "err" }); }
   else UI.carrito.push({ id: p.id, g: v.g, n: 1, precio: precioHoy(p, v), nombre: `${tx(p.nombre)} ${gramos(v.g)}` });
   guardarCarrito(); render(); abrirCarrito();
@@ -595,11 +594,11 @@ function renderCarrito() {
       const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
       return `<li class="cart-item">
         <div class="cart-art">${CON_FOTO.has(p.id) ? fotoProducto(p, { sizes: "72px", clase: "" }) : ridge(p, { w: 120, h: 90, label: false })}</div>
-        <div class="cart-txt"><b>${esc(tx(p.nombre))}</b><small>${gramos(i.g)} · ${esc(tx(saleDe(p, v))).toLowerCase()}</small>
+        <div class="cart-txt"><b>${esc(tx(p.nombre))}</b><small>${gramos(i.g)} · ${esc(tx(saleDe(p, v))).toLowerCase()}${enPreventa(p) ? " · " + esc(rotuloPreventa(en)) : ""}</small>
           <div class="cart-qty">
             <button class="btn sm" data-act="qty" data-p="${i.id}" data-g="${i.g}" data-d="-1" aria-label="${en ? "Remove one" : "Quitar uno"}">−</button>
             <span class="mono">${i.n}</span>
-            <button class="btn sm" data-act="qty" data-p="${i.id}" data-g="${i.g}" data-d="1" aria-label="${en ? "Add one" : "Agregar uno"}" ${i.n >= v.stock ? "disabled" : ""}>+</button>
+            <button class="btn sm" data-act="qty" data-p="${i.id}" data-g="${i.g}" data-d="1" aria-label="${en ? "Add one" : "Agregar uno"}" ${i.n >= topeDe(p, v) ? "disabled" : ""}>+</button>
             <button class="cart-del" data-act="quitar" data-p="${i.id}" data-g="${i.g}">${en ? "Remove" : "Quitar"}</button>
           </div></div>
         <b class="mono cart-precio">${cop(i.precio * i.n)}</b></li>`;
@@ -615,7 +614,10 @@ function renderCarrito() {
         : `Incluye ${cop(ivaDe(totalCarrito() - desc))} de IVA (${CONFIG.iva} %)`}</p>` : ""}
       <p class="hint">${envio
         ? (en ? `Add ${cop(falta)} more and shipping is free. ` : `Te faltan ${cop(falta)} para el envío gratis. `)
-        : ""}${en ? "Arrives in " : "Llega en "}${tx(E.dias)} ${en ? "with " : "por "}${esc(E.transportadora)}${en ? ", anywhere in Colombia." : ", a cualquier ciudad de Colombia."}</p>
+        : ""}${UI.carrito.some((i) => enPreventa(prodById(i.id)))
+        ? (en ? `Pre-order: the whole order ships together on ${fmtFecha(entregaPreventa())} by ${esc(E.transportadora)}, and arrives ${tx(E.dias)} later.`
+              : `Preventa: el pedido completo sale junto el ${fmtFecha(entregaPreventa())} por ${esc(E.transportadora)} y llega ${tx(E.dias)} después.`)
+        : `${en ? "Arrives in " : "Llega en "}${tx(E.dias)} ${en ? "with " : "por "}${esc(E.transportadora)}${en ? ", anywhere in Colombia." : ", a cualquier ciudad de Colombia."}`}</p>
     </div>
 
     <div class="form-grid cart-form">
@@ -651,7 +653,7 @@ function renderCarrito() {
 function cambiarCantidad(pid, g, d) {
   const p = prodById(pid), v = p.variantes.find((x) => x.g === +g), c = enCarrito(pid, +g);
   if (!c) return;
-  c.n = Math.max(0, Math.min(v.stock, c.n + d));
+  c.n = Math.max(0, Math.min(topeDe(p, v), c.n + d));
   if (!c.n) UI.carrito = UI.carrito.filter((i) => !(i.id === pid && i.g === +g));
   guardarCarrito(); renderCarrito(); renderNav(); renderTray();
 }
@@ -698,8 +700,12 @@ function registrarPedido(d, canal, srv) {
   const bono = descuento ? (srv ? srv.bono : UI.bono.codigo) : "";
   const items = UI.carrito.map((i) => {
     const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
-    /* g y stock son para la hoja: con ellos sabe qué presentación descontar */
-    return { id: i.id, g: i.g, nombre: i.nombre, n: i.n, precio: i.precio, forma: tx(saleDe(p, v)), stock: v.stock };
+    /* g y stock son para la hoja: con ellos sabe qué presentación descontar.
+       Una reserva aparta del cupo de la preventa (0 = sin tope), no de las bolsas. */
+    const pre = enPreventa(p);
+    return { id: i.id, g: i.g, nombre: i.nombre, n: i.n, precio: i.precio,
+      forma: tx(saleDe(p, v)) + (pre ? " · " + rotuloPreventa() : ""), stock: pre ? CONFIG.preventa.cupo || 0 : v.stock,
+      ...(pre ? { preventa: true } : {}) };
   });
   const pedido = { id: srv ? srv.reference : numeroPedido(), clienteId: cl.id, canal, nombre, documento: d.documento, direccion: d.direccion,
     detalle: d.detalle, ciudad: d.ciudad, departamento: d.departamento, tel: d.tel, correo: d.correo,
@@ -707,6 +713,7 @@ function registrarPedido(d, canal, srv) {
   S.pedidos.unshift(pedido);
   UI.carrito.forEach((i) => {
     const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
+    if (enPreventa(p)) return;
     v.stock = Math.max(0, v.stock - i.n);
     p.stock = principal(p).stock;
   });
