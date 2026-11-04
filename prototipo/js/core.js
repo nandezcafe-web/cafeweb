@@ -222,7 +222,7 @@ function seed() {
         pago: { pagadoKg: 17000, referenciaKg: 16040, fecha: "2026-09-12" },
         receta: { metodo: "Prensa francesa", dosis: "30 g", agua: "500 ml", temp: "94 °C", tiempo: "4:00", molienda: { es: "Gruesa", en: "Coarse" } },
         /* Por ahora solo la bolsa de 250 g. El kilo se cotiza según la cantidad,
-           y eso vive en el plan Cafetería de la suscripción. */
+           y eso vive en el plan Barista de la suscripción. */
         variantes: [
           { g: 250, precio: 40000, label: { es: "Bolsa", en: "Bag" }, nota: { es: "unas 16 tazas", en: "about 16 cups" }, stock: 90, principal: true },
         ],
