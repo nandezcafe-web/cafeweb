@@ -187,8 +187,8 @@ function mandarBienvenida_(h, fila) {
     : "Ahora tienes un plug de café de finca: café de Norte de Santander que llega a tu casa con nombre propio. La finca, quien la cultiva y la fecha de tostión, en cada bolsa.\n\nPara darte la bienvenida, tu primera bolsa tiene " + pct + " % menos:";
   const vale = en ? "Yours until " + vence + ", for one order. The button gets it ready in your cart." : "Es tuyo hasta el " + vence + ", para un pedido. El botón lo deja listo en tu carrito.";
   const porQue = en
-    ? ["Farm coffee from Norte de Santander, with a name of its own", "Medium roast, whole bean or ground", "The farm and the roast date on every bag", "You hear about every drop before anyone else", "Shipping anywhere in Colombia"]
-    : ["Café de finca de Norte de Santander, con nombre propio", "Tostión media, en grano o molido", "La finca y la fecha de tostión en cada bolsa", "Te enteras de cada drop antes que nadie", "Envíos a toda Colombia"];
+    ? ["Coffee from farms in Norte de Santander, and soon from other regions of Colombia", "Medium roast, whole bean or ground", "The farm and the roast date on every bag", "You hear about every drop before anyone else", "Shipping anywhere in Colombia"]
+    : ["Café de fincas de Norte de Santander, y muy pronto de otras regiones de Colombia", "Tostión media, en grano o molido", "La finca y la fecha de tostión en cada bolsa", "Te enteras de cada drop antes que nadie", "Envíos a toda Colombia"];
   const cierre = en ? "How do you brew at home? Reply and we will tell you where to start. A real person reads it."
     : "¿Cómo lo preparas en casa? Respóndenos y te decimos con cuál empezar. Del otro lado te lee una persona.";
   const html = titulo_(en ? "Welcome to " : "Bienvenido a ", COMUNIDAD) + centrado_(intro) + codigoHtml_(codigo) +
