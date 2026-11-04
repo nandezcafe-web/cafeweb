@@ -129,7 +129,8 @@ function subastaCard(i = 0) {
     </div></article>`;
 }
 
-function fincaCard(f, i = 0) {
+/* enFicha: dentro de la ficha del café, donde "Ver el café" llevaría a la misma página */
+function fincaCard(f, i = 0, { enFicha = false } = {}) {
   const cafes = S.productos.filter((p) => p.fincaId === f.id || (p.mezcla || []).includes(f.id)), en = UI.lang === "en";
   return `<article class="finca reveal ${f.propia ? "propia" : ""}" style="--i:${i}">
     <div class="finca-art">${ridge(f, { w: 380, h: 120 })}</div>
@@ -141,6 +142,7 @@ function fincaCard(f, i = 0) {
       <div class="finca-foot">
         <span class="var-chip">${esc(tr(f.variedad))}</span>
         ${f.proxima ? `<span class="pronto">${en ? "First harvest" : "Primera cosecha"} ${f.proxima}</span>`
+          : enFicha ? ""
           : cafes.length ? `<button class="btn sm" data-act="cafe" data-id="${cafes[0].id}">${t("ver_cafe")}</button>`
           : visible("subasta") ? `<button class="btn sm" data-act="go" data-to="subasta">${t("nav_subasta")}</button>` : ""}
       </div>
@@ -294,12 +296,7 @@ function viewCafes() {
           : "Dos de una sola finca, en grano, y un blend de los dos, molido. Todos de Norte de Santander."}</p></div>
     </div>
     <div class="dos">${S.productos.map((p, i) => cafeCard(p, i)).join("")}${visible("subasta") ? subastaCard(S.productos.length) : ""}</div>
-    ${bloqueCafeterias()}
-    <section class="section">
-      <div class="section-head"><p class="eyebrow">${en ? "The neighbours" : "Los vecinos"}</p>
-        <h2>${en ? "Who <em>grows it</em>" : "Quién <em>lo cultiva</em>"}</h2></div>
-      <div class="fincas">${S.fincas.map((f, i) => fincaCard(f, i)).join("")}</div>
-    </section>`;
+    ${CONFIG.cafeterias ? bloqueCafeterias() : ""}`;
 }
 
 /* ---------- ficha del café ---------- */
@@ -382,6 +379,17 @@ function viewCafe() {
       </table>
       <dl class="leyenda">${Object.values(LV).map((o) => `<div style="--c:${o.c}"><dt><i></i>${tx(o.label)}</dt><dd>${tx(o.desc)}</dd></div>`).join("")}</dl>
     </section>
+
+    ${(() => {
+      /* Quién lo cultiva: solo la finca de este café (las dos, en el blend), como
+         complemento de la ficha. En la tienda, con los tres cafés, sobraba. */
+      const fs = (p.mezcla || [p.fincaId]).map((id) => S.fincas.find((x) => x.id === id)).filter(Boolean);
+      return fs.length ? `<section class="prod-fincas reveal" style="--i:3">
+      <div class="section-head"><p class="eyebrow">${en ? "The farm" : "La finca"}</p>
+        <h2>${en ? "Who <em>grows it</em>" : "Quién <em>lo cultiva</em>"}</h2></div>
+      <div class="fincas n${fs.length}">${fs.map((x, i) => fincaCard(x, i, { enFicha: true })).join("")}</div>
+    </section>` : "";
+    })()}
 
     <section class="prod-receta reveal" style="--i:3">
       <div class="section-head"><p class="eyebrow">${t("receta")}</p>

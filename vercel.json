@@ -16,16 +16,6 @@
       "permanent": true
     },
     {
-      "source": "/cafe-castillo-de-arboledas",
-      "destination": "/cafe-castillo-de-ragonvalia",
-      "permanent": true
-    },
-    {
-      "source": "/en/coffee-castillo-from-arboledas",
-      "destination": "/en/coffee-castillo-from-ragonvalia",
-      "permanent": true
-    },
-    {
       "source": "/en/cafes",
       "destination": "/en/coffees",
       "permanent": true
@@ -53,6 +43,46 @@
     {
       "source": "/en/diario-(.*)",
       "destination": "/en/journal-$1",
+      "permanent": true
+    },
+    {
+      "source": "/cafe-castillo-de-ragonvalia",
+      "destination": "/cafe-castillo",
+      "permanent": true
+    },
+    {
+      "source": "/cafe-castillo-de-arboledas",
+      "destination": "/cafe-castillo",
+      "permanent": true
+    },
+    {
+      "source": "/cafe-el-paraiso",
+      "destination": "/cafe-cenicafe-1",
+      "permanent": true
+    },
+    {
+      "source": "/cafe-blend-de-la-casa",
+      "destination": "/cafe-blend",
+      "permanent": true
+    },
+    {
+      "source": "/en/coffee-castillo-from-ragonvalia",
+      "destination": "/en/coffee-castillo",
+      "permanent": true
+    },
+    {
+      "source": "/en/coffee-castillo-from-arboledas",
+      "destination": "/en/coffee-castillo",
+      "permanent": true
+    },
+    {
+      "source": "/en/coffee-el-paraiso",
+      "destination": "/en/coffee-cenicafe-1",
+      "permanent": true
+    },
+    {
+      "source": "/en/coffee-house-blend",
+      "destination": "/en/coffee-blend",
       "permanent": true
     }
   ],

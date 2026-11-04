@@ -3,8 +3,8 @@
     {
       "id": "P-CAS",
       "nombre": {
-        "es": "Castillo de Ragonvalia",
-        "en": "Castillo from Ragonvalia"
+        "es": "Castillo",
+        "en": "Castillo"
       },
       "sale": {
         "es": "En grano",
@@ -31,24 +31,24 @@
         }
       ],
       "url": {
-        "es": "https://cafeweb-five.vercel.app/cafe-castillo-de-ragonvalia",
-        "en": "https://cafeweb-five.vercel.app/en/coffee-castillo-from-ragonvalia"
+        "es": "https://cafeweb-five.vercel.app/cafe-castillo",
+        "en": "https://cafeweb-five.vercel.app/en/coffee-castillo"
       },
       "foto": "https://cafeweb-five.vercel.app/img/correo/p-cas.jpg"
     },
     {
       "id": "P-PAR",
       "nombre": {
-        "es": "El Paraíso",
-        "en": "El Paraíso"
+        "es": "Cenicafé 1",
+        "en": "Cenicafé 1"
       },
       "sale": {
         "es": "En grano",
         "en": "Whole bean"
       },
       "sub": {
-        "es": "Cenicafé 1 · Palocolorado, Chinácota",
-        "en": "Cenicafé 1 · Palocolorado, Chinácota"
+        "es": "Finca El Paraíso · Palocolorado, Chinácota",
+        "en": "El Paraíso farm · Palocolorado, Chinácota"
       },
       "color": "#2C4FA3",
       "precio": 40000,
@@ -67,16 +67,16 @@
         }
       ],
       "url": {
-        "es": "https://cafeweb-five.vercel.app/cafe-el-paraiso",
-        "en": "https://cafeweb-five.vercel.app/en/coffee-el-paraiso"
+        "es": "https://cafeweb-five.vercel.app/cafe-cenicafe-1",
+        "en": "https://cafeweb-five.vercel.app/en/coffee-cenicafe-1"
       },
       "foto": "https://cafeweb-five.vercel.app/img/correo/p-par.jpg"
     },
     {
       "id": "P-BLE",
       "nombre": {
-        "es": "Blend de la casa",
-        "en": "House blend"
+        "es": "Blend",
+        "en": "Blend"
       },
       "sale": {
         "es": "Molido",
@@ -103,8 +103,8 @@
         }
       ],
       "url": {
-        "es": "https://cafeweb-five.vercel.app/cafe-blend-de-la-casa",
-        "en": "https://cafeweb-five.vercel.app/en/coffee-house-blend"
+        "es": "https://cafeweb-five.vercel.app/cafe-blend",
+        "en": "https://cafeweb-five.vercel.app/en/coffee-blend"
       },
       "foto": "https://cafeweb-five.vercel.app/img/correo/p-ble.jpg"
     }

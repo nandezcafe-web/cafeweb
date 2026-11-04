@@ -10,11 +10,11 @@ function viewInicio() {
   /* Los títulos afirman, no describen: "Sabes de dónde viene" es una función
      de producto; "Cada bolsa tiene remitente" es una frase de la marca. */
   const principios = en
-    ? [["Every bag has a sender.", "It does not come from “Colombia”. It comes from a farm with a name, and the blend carries both: Castillo from Ragonvalia and El Paraíso from Chinácota."],
+    ? [["Every bag has a sender.", "It does not come from “Colombia”. It comes from a farm with a name, and the blend carries both: Castillo from El Roble in Ragonvalia and Cenicafé 1 from El Paraíso in Chinácota."],
        ["What we do not know, we say.", "Altitude, variety, process and score come with who checked them and when. What is missing says “to be confirmed” until we confirm it. Making it up would be easier; that is why we don't."],
        ["Three coffees, not thirty.", "A lot goes on the shelf only if we cup it and it convinces us. We would rather sell out than fill your shelf with filler."],
        ["Whoever drinks it grinds it.", "Two go whole bean, because coffee starts fading minutes after it is ground. The blend goes ground, for whoever has no grinder and is not about to buy one."]]
-    : [["Cada bolsa tiene remitente.", "No viene de “Colombia”. Viene de una finca con nombre, y el blend trae las dos: Castillo de Ragonvalia y El Paraíso de Chinácota."],
+    : [["Cada bolsa tiene remitente.", "No viene de “Colombia”. Viene de una finca con nombre, y el blend trae las dos: Castillo de El Roble, en Ragonvalia, y Cenicafé 1 de El Paraíso, en Chinácota."],
        ["Lo que no sabemos, lo decimos.", "La altura, la variedad, el proceso y el puntaje van con quién los comprobó y cuándo. Lo que falta dice “por confirmar” hasta que lo confirmemos. Inventarlo sería más fácil; por eso no lo hacemos."],
        ["Tres cafés, no treinta.", "Un lote entra solo si lo catamos y nos convence. Preferimos que se agote a llenarte la estantería de relleno."],
        ["Lo muele quien se lo toma.", "Dos van en grano, porque el café empieza a perderse a los minutos de molerlo. El blend va molido, para quien no tiene molino y no piensa comprar uno."]];
@@ -423,6 +423,11 @@ function datosEstructurados(view, id) {
     description: meta("inicio").d,
   };
   const grafo = [org, { "@type": "WebSite", "@id": CONFIG.sitio + "/#sitio", url: CONFIG.sitio, name: CONFIG.marca, publisher: { "@id": org["@id"] }, inLanguage: UI.lang }];
+  /* La miga de pan, con la dirección completa de cada eslabón */
+  const camino = migas(view, id);
+  if (camino.length > 1) grafo.push({ "@type": "BreadcrumbList",
+    itemListElement: camino.map(([nombre, v, vid], i) => ({
+      "@type": "ListItem", position: i + 1, name: nombre, item: CONFIG.sitio + ruta(v, vid) })) });
   if (view === "inicio" && faqVisibles().length) grafo.push({ "@type": "FAQPage", inLanguage: UI.lang, mainEntity: faqVisibles().map((f) => ({ "@type": "Question", name: tx(f.q), acceptedAnswer: { "@type": "Answer", text: tx(f.a) } })) });
   if (view === "cafe" || view === "cafes") {
     (view === "cafe" ? [prodById(id) || S.productos[0]] : S.productos).forEach((p) => {

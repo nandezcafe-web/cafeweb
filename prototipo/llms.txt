@@ -3,9 +3,9 @@
 > Familia cafetera de Chinácota, Norte de Santander (Colombia). Compramos lote por lote a fincas vecinas y vendemos cada café tostado con su ficha verificable: el municipio y la altura de cada finca van en la ficha de su café. Nuestra propia finca (5.000 plantas de Geisha) da su primera cosecha en 2027.
 
 ## Qué vendemos
-- Castillo de Ragonvalia: variedad Castillo, 1.870 msnm, proceso Lavado, 84 puntos SCA, en grano, desde $40.000 (https://cafeweb-five.vercel.app/cafe-castillo-de-ragonvalia)
-- El Paraíso: variedad Cenicafé 1, 1.300 msnm, en grano, desde $40.000 (https://cafeweb-five.vercel.app/cafe-el-paraiso)
-- Blend de la casa: variedad Castillo + Cenicafé 1, 1.300 – 1.870 msnm, molido, desde $40.000 (https://cafeweb-five.vercel.app/cafe-blend-de-la-casa)
+- Castillo: variedad Castillo, 1.870 msnm, proceso Lavado, 84 puntos SCA, en grano, desde $40.000 (https://cafeweb-five.vercel.app/cafe-castillo)
+- Cenicafé 1: variedad Cenicafé 1, 1.300 msnm, en grano, desde $40.000 (https://cafeweb-five.vercel.app/cafe-cenicafe-1)
+- Blend: variedad Castillo + Cenicafé 1, 1.300 – 1.870 msnm, molido, desde $40.000 (https://cafeweb-five.vercel.app/cafe-blend)
 - Merch Nandez Coffee Gang, próximamente (https://cafeweb-five.vercel.app/accesorios)
 - Suscripción mensual desde $48.000, con kit de bienvenida para preparar en casa, filtros y una receta cada mes (https://cafeweb-five.vercel.app/suscripcion)
 
@@ -29,9 +29,9 @@ Sí. Vamos a la finca y medimos el factor de rendimiento y la humedad delante de
 - https://cafeweb-five.vercel.app/tienda
 - https://cafeweb-five.vercel.app/cafes
 - https://cafeweb-five.vercel.app/accesorios
-- https://cafeweb-five.vercel.app/cafe-castillo-de-ragonvalia
-- https://cafeweb-five.vercel.app/cafe-el-paraiso
-- https://cafeweb-five.vercel.app/cafe-blend-de-la-casa
+- https://cafeweb-five.vercel.app/cafe-castillo
+- https://cafeweb-five.vercel.app/cafe-cenicafe-1
+- https://cafeweb-five.vercel.app/cafe-blend
 - https://cafeweb-five.vercel.app/suscripcion
 - https://cafeweb-five.vercel.app/contacto
 - https://cafeweb-five.vercel.app/envios-y-devoluciones

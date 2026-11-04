@@ -33,26 +33,26 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://cafeweb-five.vercel.app/cafe-castillo-de-ragonvalia</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://cafeweb-five.vercel.app/cafe-castillo-de-ragonvalia"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://cafeweb-five.vercel.app/en/coffee-castillo-from-ragonvalia"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://cafeweb-five.vercel.app/cafe-castillo-de-ragonvalia"/>
+    <loc>https://cafeweb-five.vercel.app/cafe-castillo</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://cafeweb-five.vercel.app/cafe-castillo"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cafeweb-five.vercel.app/en/coffee-castillo"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cafeweb-five.vercel.app/cafe-castillo"/>
     <lastmod>2026-11-04</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://cafeweb-five.vercel.app/cafe-el-paraiso</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://cafeweb-five.vercel.app/cafe-el-paraiso"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://cafeweb-five.vercel.app/en/coffee-el-paraiso"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://cafeweb-five.vercel.app/cafe-el-paraiso"/>
+    <loc>https://cafeweb-five.vercel.app/cafe-cenicafe-1</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://cafeweb-five.vercel.app/cafe-cenicafe-1"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cafeweb-five.vercel.app/en/coffee-cenicafe-1"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cafeweb-five.vercel.app/cafe-cenicafe-1"/>
     <lastmod>2026-11-04</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://cafeweb-five.vercel.app/cafe-blend-de-la-casa</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://cafeweb-five.vercel.app/cafe-blend-de-la-casa"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://cafeweb-five.vercel.app/en/coffee-house-blend"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://cafeweb-five.vercel.app/cafe-blend-de-la-casa"/>
+    <loc>https://cafeweb-five.vercel.app/cafe-blend</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://cafeweb-five.vercel.app/cafe-blend"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cafeweb-five.vercel.app/en/coffee-blend"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cafeweb-five.vercel.app/cafe-blend"/>
     <lastmod>2026-11-04</lastmod>
     <priority>0.9</priority>
   </url>
@@ -129,26 +129,26 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://cafeweb-five.vercel.app/en/coffee-castillo-from-ragonvalia</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://cafeweb-five.vercel.app/cafe-castillo-de-ragonvalia"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://cafeweb-five.vercel.app/en/coffee-castillo-from-ragonvalia"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://cafeweb-five.vercel.app/cafe-castillo-de-ragonvalia"/>
+    <loc>https://cafeweb-five.vercel.app/en/coffee-castillo</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://cafeweb-five.vercel.app/cafe-castillo"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cafeweb-five.vercel.app/en/coffee-castillo"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cafeweb-five.vercel.app/cafe-castillo"/>
     <lastmod>2026-11-04</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://cafeweb-five.vercel.app/en/coffee-el-paraiso</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://cafeweb-five.vercel.app/cafe-el-paraiso"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://cafeweb-five.vercel.app/en/coffee-el-paraiso"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://cafeweb-five.vercel.app/cafe-el-paraiso"/>
+    <loc>https://cafeweb-five.vercel.app/en/coffee-cenicafe-1</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://cafeweb-five.vercel.app/cafe-cenicafe-1"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cafeweb-five.vercel.app/en/coffee-cenicafe-1"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cafeweb-five.vercel.app/cafe-cenicafe-1"/>
     <lastmod>2026-11-04</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://cafeweb-five.vercel.app/en/coffee-house-blend</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://cafeweb-five.vercel.app/cafe-blend-de-la-casa"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://cafeweb-five.vercel.app/en/coffee-house-blend"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://cafeweb-five.vercel.app/cafe-blend-de-la-casa"/>
+    <loc>https://cafeweb-five.vercel.app/en/coffee-blend</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://cafeweb-five.vercel.app/cafe-blend"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cafeweb-five.vercel.app/en/coffee-blend"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cafeweb-five.vercel.app/cafe-blend"/>
     <lastmod>2026-11-04</lastmod>
     <priority>0.9</priority>
   </url>

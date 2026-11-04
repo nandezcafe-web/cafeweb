@@ -479,7 +479,7 @@ function viewContacto() {
       `<p>${en ? "We grow coffee in Chinácota: 5,000 Geisha plants whose first harvest comes in 2027. Meanwhile we buy small lots from neighbouring farms in Norte de Santander and roast them under our own name."
         : "Sembramos café en Chinácota: 5.000 plantas de Geisha que dan su primera cosecha en 2027. Mientras tanto le compramos lotes pequeños a fincas vecinas de Norte de Santander y los tostamos con nuestro nombre."}</p>`],
      [en ? "Cafés and roasters" : "Cafeterías y tostadores",
-      `<p>${en ? "Coffee by the kilo, volume prices and roasting to your profile." : "Café por kilos, precio por volumen y tueste a tu perfil."} ${enlace("cafes", en ? "See prices by the kilo" : "Ver precios por kilo")}.</p>`],
+      `<p>${en ? "Coffee by the kilo, volume prices and roasting to your profile." : "Café por kilos, precio por volumen y tueste a tu perfil."}${CONFIG.cafeterias ? ` ${enlace("cafes", en ? "See prices by the kilo" : "Ver precios por kilo")}.` : ""}</p>`],
      [en ? "Your order" : "Tu pedido",
       `<p>${en ? `Write with your order number (it starts with NDZ). Orders arrive in ${tx(E.dias)}.` : `Escríbenos con tu número de pedido (empieza por NDZ). Los pedidos llegan en ${tx(E.dias)}.`} ${enlace("envios", en ? "Shipping and refund policy" : "Política de envíos y reembolso")}.</p>`]]);
 }
