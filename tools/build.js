@@ -284,8 +284,14 @@ escribir("data/catalogo.json", JSON.stringify({
   productos: ev(mundo("es"), `S.productos.map((p) => ({
     id: p.id, nombre: p.nombre, sale: p.sale, sub: p.sub, color: p.color || "#C9381A",
     precio: p.proximamente ? 0 : principal(p).precio, gramos: principal(p).g, proximamente: !!p.proximamente,
-    /* En preventa se cobra desde ya y se despacha el día del lanzamiento */
+    /* En preventa se cobra desde ya y se despacha el día del lanzamiento.
+       api/_tienda.js necesita además hasta cuándo vale (cierre), el precio de
+       preventa y el cupo: sin esos tres, el servidor aparta contra un cupo de 0
+       y la hoja rechaza la reserva. */
     preventa: enPreventa(p), entrega: enPreventa(p) ? entregaPreventa() : "",
+    cierre: enPreventa(p) ? CONFIG.lanzamiento : "",
+    preventaPrecio: enPreventa(p) ? (CONFIG.preventa.precio || 0) : 0,
+    cupo: enPreventa(p) ? (CONFIG.preventa.cupo || 0) : 0,
     /* y lo que api/_tienda.js necesita para cobrarla: el precio de preventa (0 = el
        de siempre), el cupo por presentación (0 = sin tope) y el último día */
     ...(enPreventa(p) ? { preventaPrecio: CONFIG.preventa.precio || 0, cupo: CONFIG.preventa.cupo || 0, cierre: CONFIG.lanzamiento } : {}),

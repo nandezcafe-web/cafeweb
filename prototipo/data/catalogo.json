@@ -20,6 +20,9 @@
       "proximamente": false,
       "preventa": false,
       "entrega": "",
+      "cierre": "",
+      "preventaPrecio": 0,
+      "cupo": 0,
       "variantes": [
         {
           "g": 250,
@@ -53,9 +56,9 @@
       "proximamente": false,
       "preventa": true,
       "entrega": "2026-11-20",
+      "cierre": "2026-11-20",
       "preventaPrecio": 0,
       "cupo": 0,
-      "cierre": "2026-11-20",
       "variantes": [
         {
           "g": 250,
@@ -89,9 +92,9 @@
       "proximamente": false,
       "preventa": true,
       "entrega": "2026-11-20",
+      "cierre": "2026-11-20",
       "preventaPrecio": 0,
       "cupo": 0,
-      "cierre": "2026-11-20",
       "variantes": [
         {
           "g": 250,
