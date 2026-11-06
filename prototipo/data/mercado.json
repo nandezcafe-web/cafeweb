@@ -1,6 +1,13 @@
 {
   "historial": [
     {
+      "fecha": "2026-11-06",
+      "precioCarga": 2020000,
+      "ny": 280,
+      "tasaFnc": 3239.5,
+      "trm": null
+    },
+    {
       "fecha": "2026-11-05",
       "precioCarga": 2005000,
       "ny": 277.15,
@@ -211,5 +218,5 @@
       "trm": 3128
     }
   ],
-  "actualizado": "2026-11-05T21:17:04.466Z"
+  "actualizado": "2026-11-06T20:39:27.501Z"
 }
