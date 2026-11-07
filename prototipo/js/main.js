@@ -1,3 +1,9 @@
+/* El catálogo siempre sale del código publicado. El navegador guarda todo S, y quien
+   ya había entrado seguía viendo los nombres, notas y puntajes de su primera visita.
+   Del visitante solo se conserva lo suyo (pedidos, lista de espera). El panel no pasa
+   por aquí: allá los productos se editan. */
+{ const nuevo = seed(); S.fincas = nuevo.fincas; S.productos = nuevo.productos; S.entradas = nuevo.entradas; }
+
 /* ============================================================
    INICIO, navegación, idioma y eventos de la página pública
    ============================================================ */

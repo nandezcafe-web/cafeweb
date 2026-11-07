@@ -2632,7 +2632,7 @@ html.js .tz:not(.in) .tz-at{opacity:0}
     <div class="g-prod-body">
       <p class="g-kicker">Castillo y Cenicafé 1 · 1.300 – 1.870 msnm</p>
       <h3>Blend</h3>
-      <p class="g-notas">Caramelo · Avellana · Frutos amarillos</p>
+      <p class="g-notas">Durazno · Almendra · Avellana · Panela · Chocolate · Manzanilla</p>
       <div class="g-prod-foot"><b class="mono">$40.000</b><small>250 g · molido</small>
         <button class="btn primary sm" data-act="add" data-p="P-BLE" data-g="250" >Reservar</button></div>
     </div></article></div>
@@ -2940,10 +2940,10 @@ function seed() {
         variedad: "Geisha", exclusiva: true, premios: { es: "Ganador de concursos de calidad (por confirmar)", en: "Quality competition winner (to be confirmed)" },
         historia: { es: "PENDIENTE: la historia de don Domingo, cuántos años lleva con el Geisha y qué premios ha ganado.",
                     en: "PENDING: Domingo's story, how long he has grown Geisha and which awards he has won." }, pendiente: true },
-      { id: "F-02", productor: "Productor por confirmar", finca: "Finca El Paraíso", vereda: "Palocolorado", municipio: "Chinácota", altitud: 1300,
+      { id: "F-02", productor: "Bernardo Becerra", finca: "Finca El Paraíso", vereda: "Palocolorado", municipio: "Chinácota", altitud: 1300,
         variedad: "Cenicafé 1", exclusiva: false,
         historia: { es: "PENDIENTE: quién cultiva El Paraíso y por qué su café sabe distinto.", en: "PENDING: who grows El Paraíso and why its coffee tastes different." }, pendiente: true },
-      { id: "F-03", productor: "Productor por confirmar", finca: "Finca El Roble", municipio: "Ragonvalia", altitud: 1870,
+      { id: "F-03", productor: "Domingo Torres", finca: "Finca El Roble", municipio: "Ragonvalia", altitud: 1870,
         variedad: "Castillo", exclusiva: false,
         historia: { es: "PENDIENTE: historia de la finca.", en: "PENDING: farm story." }, pendiente: true },
       { id: "F-00", productor: "Familia Nandez", finca: "Nuestra finca", municipio: "Chinácota", altitud: 1750,
@@ -3023,7 +3023,7 @@ function seed() {
         variedad: "Castillo y Cenicafé 1", proceso: "Lavado", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026",
         sale: { es: "Molido", en: "Ground" }, saleNota: { es: "Molienda fina: lista para el gotero o la cafetera de goteo.", en: "Fine grind: ready for a pour-over cone or a drip machine." },
         altitud: null, puntaje: 87, nivel: "DECLARADO", fuente: "Unión de las dos catas", fecha: "2026-11-03",
-        notas: { es: ["Caramelo", "Avellana", "Frutos amarillos"], en: ["Caramel", "Hazelnut", "Yellow fruits"] },
+        notas: { es: ["Durazno", "Almendra", "Avellana", "Panela", "Chocolate", "Manzanilla"], en: ["Peach", "Almond", "Hazelnut", "Brown sugar", "Chocolate", "Chamomile"] },
         /* El blend no tiene formato propio: su taza es la unión de las dos catas, así
            que la rueda dibuja los dos cafés (`de`) en vez de un promedio inventado. */
         taza: { de: ["P-CAS", "P-PAR"], fecha: "2026-11-03",
@@ -5991,6 +5991,12 @@ function updateAuction() {
 function refreshAgo() { document.querySelectorAll("#au-feed [data-t]").forEach((el) => (el.textContent = ago(+el.dataset.t))); }
 
 /* ---- main.js ---- */
+/* El catálogo siempre sale del código publicado. El navegador guarda todo S, y quien
+   ya había entrado seguía viendo los nombres, notas y puntajes de su primera visita.
+   Del visitante solo se conserva lo suyo (pedidos, lista de espera). El panel no pasa
+   por aquí: allá los productos se editan. */
+{ const nuevo = seed(); S.fincas = nuevo.fincas; S.productos = nuevo.productos; S.entradas = nuevo.entradas; }
+
 /* ============================================================
    INICIO, navegación, idioma y eventos de la página pública
    ============================================================ */
