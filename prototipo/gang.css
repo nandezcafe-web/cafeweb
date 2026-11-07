@@ -231,12 +231,10 @@ dialog.drawer{border-left:1px solid var(--ink)}
 .foot-marca span,.foot-nota{color:var(--ink-3);font-size:13px}
 .foot-links a{font:600 11.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;text-decoration:none;border-bottom:1px solid transparent}
 .foot-links a:hover{color:var(--cherry);border-bottom-color:var(--cherry)}
-.g-wordmark{display:grid;margin:0;overflow:hidden;line-height:.78;user-select:none;pointer-events:none}
-.g-wordmark b{font:800 clamp(5rem,21.5vw,19rem)/.8 var(--display);letter-spacing:-.055em;text-transform:uppercase;color:var(--cherry);margin-bottom:-.12em;white-space:nowrap}
-.g-wordmark small{font:600 clamp(.9rem,2.4vw,1.6rem) var(--display);letter-spacing:.32em;text-transform:uppercase;color:var(--ink);margin:0 0 6px .3em}
+.g-wordmark{margin:0;user-select:none;pointer-events:none;width:100%}
+.g-wordmark img{display:block;width:100%;height:auto}
 body[data-view=subasta] .foot{border-top-color:rgba(245,240,230,.3)}
 body[data-view=subasta] .foot-marca b,body[data-view=subasta] .foot-links a{color:var(--crema)}
-body[data-view=subasta] .g-wordmark small{color:var(--crema)}
 
 /* ---- la barra del celular: negra, recta, el naranja marca dónde estás ---- */
 @media (max-width:760px){
@@ -449,7 +447,6 @@ html.js .g-io.in{opacity:1;transform:none}
   .g-prod:last-child:nth-child(odd) .g-prod-art,.g-prod-art{aspect-ratio:1}
   .g-manifiesto{padding-inline:16px}
   .g-sub{padding:26px 20px}
-  .g-wordmark b{font-size:24vw}
   .fincas{grid-template-columns:1fr}
   .finca,.finca.propia{border-right:0}
   .dos,.planes,.entradas{grid-template-columns:1fr}
@@ -604,7 +601,6 @@ h1 em,h2 em{color:var(--marca)}
 .g-hero-art{background:var(--marca)}
 .g-hero-tag{color:var(--ink)}
 .g-hero-tag b{color:var(--paper)}
-.g-wordmark b{color:var(--marca)}
 .g-musica-player::after{background:var(--marca)}
 .g-eq i{background:var(--marca)}
 /* sobre negro va el naranja del logo, que ahí sí se lee */
@@ -876,4 +872,3 @@ html.js .tz:not(.in) .tz-at{opacity:0}
 @media (prefers-reduced-motion:reduce){
   .tz-capa,.tz-at{transition:none}
 }
-.g-ig{font:600 13px var(--mono);letter-spacing:.04em;color:var(--ink);text-decoration:none;border-bottom:1px solid currentColor}.g-ig:hover{color:var(--accent,var(--ink))}

@@ -391,7 +391,9 @@ const unSolo = pagina(ctxEs, { view: "inicio" }, "es")
   .replace(new RegExp(MODS.map((f) => `<script src="/js/${f}.js\\?v=${VERSION}"></script>`).join("\\s*")), `<script>\n${GRANO_DENTRO}\n${MODS.map(mod).join("\n")}\n</script>`)
   /* las fotos ya salen embebidas: el srcset sobra, cada una va en un solo tamaño */
   .replace(/\s*srcset="[^"]*"\s*sizes="[^"]*"/g, "")
-  .replace(/<source media="[^"]*">/g, "");
+  .replace(/<source media="[^"]*">/g, "")
+  /* el pie lo pinta el JavaScript: en el archivo suelto también va dentro */
+  .replaceAll("/img/marca/logo-pie.png", () => LOGO_DENTRO);
 escribir("nandez.html", unSolo);
 
 /* ---------- 5. panel interno ---------- */
