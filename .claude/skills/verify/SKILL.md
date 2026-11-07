@@ -6,7 +6,7 @@ description: How to run and drive the Nandez Coffee site (public SPA, single-fil
 # Verificar un cambio en Nandez Coffee
 
 ## Levantar
-- Producción: `https://cafeweb-five.vercel.app` (Vercel despliega `main` solo; el push lo hace el usuario).
+- Producción: `https://www.nandezcoffee.com` (Vercel despliega `main` solo; el push lo hace el usuario).
 - Local: `.claude/launch.json` → `prototipo` (puerto 5174, sitio público) y `panel` (5175, admin). Usar preview_start con el nombre.
 - Build: `node tools/build.js` genera el HTML estático por ruta y el archivo único `prototipo/nandez.html`.
 

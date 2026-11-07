@@ -21,4 +21,4 @@ User-agent: Applebot
 Allow: /
 Disallow: /api/
 
-Sitemap: https://cafeweb-five.vercel.app/sitemap.xml
+Sitemap: https://www.nandezcoffee.com/sitemap.xml

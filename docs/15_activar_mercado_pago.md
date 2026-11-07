@@ -50,10 +50,10 @@ Debe salir todo en ✓ (incluido «Vercel tiene MP_ACCESS_TOKEN»). Luego una co
 ## Lo demás que quedó pendiente (no es código)
 
 ### Dominio nandezcoffee.com
-Hoy está **estacionado en Hostinger** (muestra «Parked Domain»), no apunta a la página. Hasta que apunte, `CONFIG.sitio` se queda en `cafeweb-five.vercel.app`: si se cambiara antes, Google y Meta verían como oficial una dirección que no responde la tienda.
-1. Vercel → proyecto → *Settings → Domains* → agregar `nandezcoffee.com` y `www.nandezcoffee.com`.
-2. En Hostinger → *DNS*: quitar los registros del estacionamiento y poner lo que Vercel indique (normalmente `A @ → 76.76.21.21` y `CNAME www → cname.vercel-dns.com`).
-3. Cuando `https://nandezcoffee.com` abra la tienda, cambiar en una sola línea `CONFIG.sitio` en `prototipo/js/core.js` (y `SITIO` en `tools/correos/Codigo.gs`) y correr `node tools/build.js`.
+**Conectado el 7 de noviembre de 2026.** La dirección oficial es `https://www.nandezcoffee.com`; `nandezcoffee.com` redirige ahí (308) y `cafeweb-five.vercel.app` sigue respondiendo.
+- Vercel: proyecto `cafeweb`, *Settings → Domains*.
+- Hostinger, DNS: `A @ → 216.198.79.1` y `CNAME www → f2ae260d008bf6e7.vercel-dns-017.com`. No hay registros de correo.
+- `CONFIG.sitio` (`prototipo/js/core.js`) y `SITIO` (`tools/correos/Codigo.gs`) ya usan el dominio. Los enlaces de los correos cambian cuando se vuelva a pegar `Codigo.gs` en Apps Script.
 
 ### Meta Pixel
 Se crea en [business.facebook.com/events_manager](https://business.facebook.com/events_manager) → *Conectar orígenes de datos* → *Web* → *Meta Pixel*. Copiar el **ID** (15 o 16 dígitos) y pegarlo en `CONFIG.medicion.metaPixel`. La cuenta de anuncios `NandezCoffeeGang` no tiene ningún conjunto de datos hoy.

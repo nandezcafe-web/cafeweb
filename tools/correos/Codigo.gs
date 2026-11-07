@@ -22,7 +22,7 @@
    ============================================================ */
 const MARCA = "Nandez Coffee";
 const COMUNIDAD = "Nandez Coffee Gang";
-const SITIO = "https://cafeweb-five.vercel.app";   // cambiar cuando haya dominio propio
+const SITIO = "https://www.nandezcoffee.com";
 /* El bono de bienvenida: 10 % en la primera compra, un solo uso, vence a los 30 días.
    A los 23 días, si no lo ha usado, le llega un recordatorio (le quedan 7). */
 const BONO = { pct: 10, dias: 30, recordarA: 23 };

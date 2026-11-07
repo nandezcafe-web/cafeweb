@@ -20,7 +20,7 @@ let vercel = {}; try { vercel = JSON.parse(leer("vercel.json")); } catch {}
 
 const llave = (core.match(/llavePublica:\s*"([^"]*)"/) || [])[1] || "";
 const registro = (core.match(/registro:\s*"([^"]*)"/) || [])[1] || "";
-const sitio = (core.match(/sitio:\s*"([^"]*)"/) || [])[1] || "https://cafeweb-five.vercel.app";
+const sitio = (core.match(/CONFIG\.sitio\s*=\s*"([^"]*)"/) || [])[1] || "https://www.nandezcoffee.com";
 const ambiente = llave.startsWith("pub_prod_") ? "producción" : llave.startsWith("pub_test_") ? "pruebas" : "";
 
 const filas = [];

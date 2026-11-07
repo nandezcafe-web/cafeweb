@@ -31,10 +31,10 @@
         }
       ],
       "url": {
-        "es": "https://cafeweb-five.vercel.app/cafe-castillo",
-        "en": "https://cafeweb-five.vercel.app/en/coffee-castillo"
+        "es": "https://www.nandezcoffee.com/cafe-castillo",
+        "en": "https://www.nandezcoffee.com/en/coffee-castillo"
       },
-      "foto": "https://cafeweb-five.vercel.app/img/correo/p-cas.jpg"
+      "foto": "https://www.nandezcoffee.com/img/correo/p-cas.jpg"
     },
     {
       "id": "P-PAR",
@@ -67,10 +67,10 @@
         }
       ],
       "url": {
-        "es": "https://cafeweb-five.vercel.app/cafe-cenicafe-1",
-        "en": "https://cafeweb-five.vercel.app/en/coffee-cenicafe-1"
+        "es": "https://www.nandezcoffee.com/cafe-cenicafe-1",
+        "en": "https://www.nandezcoffee.com/en/coffee-cenicafe-1"
       },
-      "foto": "https://cafeweb-five.vercel.app/img/correo/p-par.jpg"
+      "foto": "https://www.nandezcoffee.com/img/correo/p-par.jpg"
     },
     {
       "id": "P-BLE",
@@ -103,10 +103,10 @@
         }
       ],
       "url": {
-        "es": "https://cafeweb-five.vercel.app/cafe-blend",
-        "en": "https://cafeweb-five.vercel.app/en/coffee-blend"
+        "es": "https://www.nandezcoffee.com/cafe-blend",
+        "en": "https://www.nandezcoffee.com/en/coffee-blend"
       },
-      "foto": "https://cafeweb-five.vercel.app/img/correo/p-ble.jpg"
+      "foto": "https://www.nandezcoffee.com/img/correo/p-ble.jpg"
     }
   ],
   "redes": {
