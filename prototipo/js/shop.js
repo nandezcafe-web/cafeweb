@@ -299,6 +299,50 @@ function viewCafes() {
     ${CONFIG.cafeterias ? bloqueCafeterias() : ""}`;
 }
 
+/* ---------- la taza ----------
+   La catación en una rueda: los ocho atributos del formato SCA, de 1 a 9, en el
+   orden del formato y con la escala completa, sin acercarla para exagerar. */
+const ATRIBUTOS_TAZA = [["fragancia", "Fragancia", "Fragrance"], ["aroma", "Aroma", "Aroma"], ["sabor", "Sabor", "Flavor"], ["residual", "Residual", "Aftertaste"],
+  ["acidez", "Acidez", "Acidity"], ["dulzor", "Dulzor", "Sweetness"], ["boca", "Boca", "Mouthfeel"], ["global", "Global", "Overall"]];
+function ruedaTaza(T, en) {
+  const cx = 230, cy = 205, R = 122, n = ATRIBUTOS_TAZA.length;
+  const punto = (i, r) => { const a = (-90 + (i * 360) / n) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; };
+  const radio = (v) => (R * (v - 1)) / 8;
+  const linea = (f) => ATRIBUTOS_TAZA.map((_, i) => punto(i, f(i)).map((x) => x.toFixed(1)).join(",")).join(" ");
+  const etiquetas = ATRIBUTOS_TAZA.map(([k, es, ing], i) => {
+    const [x, y] = punto(i, R + 20), lado = Math.abs(x - cx) < 4 ? "middle" : x > cx ? "start" : "end";
+    const alto = i === 0 ? y - 16 : i === 4 ? y + 8 : y - 3;
+    return `<text class="tz-k" x="${x.toFixed(1)}" y="${alto.toFixed(1)}" text-anchor="${lado}">${en ? ing : es}</text>
+      <text class="tz-v" x="${x.toFixed(1)}" y="${(alto + 18).toFixed(1)}" text-anchor="${lado}">${T[k]}</text>`;
+  }).join("");
+  const dicho = ATRIBUTOS_TAZA.map(([k, es, ing]) => `${en ? ing : es} ${T[k]}`).join(", ");
+  return `<svg class="tz-rueda" viewBox="0 0 460 410" role="img" aria-label="${esc(dicho)}">
+    ${[3, 5, 7, 9].map((v) => `<polygon class="tz-aro" points="${linea(() => radio(v))}"/>`).join("")}
+    ${ATRIBUTOS_TAZA.map((_, i) => { const [x, y] = punto(i, R); return `<line class="tz-aro" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`; }).join("")}
+    <polygon class="tz-forma" points="${linea((i) => radio(T[ATRIBUTOS_TAZA[i][0]]))}"/>
+    ${ATRIBUTOS_TAZA.map(([k], i) => { const [x, y] = punto(i, radio(T[k])); return `<circle class="tz-punto" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.5"/>`; }).join("")}
+    ${etiquetas}</svg>`;
+}
+function bloqueTaza(p, en) {
+  const T = p.taza;
+  if (!T) return "";
+  return `<section class="prod-taza reveal" style="--i:2">
+      <div class="section-head"><p class="eyebrow">${en ? "The cup" : "La taza"}</p>
+        <h2>${en ? "What the <em>cupper found</em>" : "Lo que encontró <em>el catador</em>"}</h2></div>
+      <div class="tz">
+        <div class="tz-graf">${ruedaTaza(T, en)}<p class="hint">${en ? "Each attribute is scored from 1 to 9. The total is not the sum: it comes out of the SCA formula." : "Cada atributo se califica de 1 a 9. El total no es la suma: sale de la fórmula de la SCA."}</p></div>
+        <div class="tz-dato">
+          <p class="tz-total"><small>${en ? "Total score" : "Puntaje total"}</small><b>${esc(p.puntaje)}</b><small>${en ? "SCA points" : "Puntos SCA"}</small></p>
+          <dl>
+            <div><dt>${en ? "Notes" : "Notas"}</dt><dd>${esc(tx(p.notas).join(", "))}</dd></div>
+            ${T.datos.map(([k, v]) => `<div><dt>${esc(tx(k))}</dt><dd>${esc(tx(v))}</dd></div>`).join("")}
+            <div><dt>${en ? "Cupped by" : "Catador"}</dt><dd>${esc(T.catador)} · ${fmtFecha(T.fecha)}</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>`;
+}
+
 /* ---------- ficha del café ---------- */
 function viewCafe() {
   const p = prodById(UI.cafe) || S.productos[0], f = fincaDe(p), v = varSel(p), fi = p.ficha, en = UI.lang === "en";
@@ -365,6 +409,8 @@ function viewCafe() {
       <ul class="notas-chips">${tx(p.notas).map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
     </div>
     </div>
+
+    ${bloqueTaza(p, en)}
 
     <section class="prod-ficha reveal" style="--i:2">
       <div class="section-head"><p class="eyebrow">${t("ficha")}</p>

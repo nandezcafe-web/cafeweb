@@ -834,3 +834,29 @@ body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
 .prod-fincas .fincas.n1{grid-template-columns:minmax(0,420px)}
 .prod-fincas .fincas.n2{grid-template-columns:repeat(2,minmax(0,420px))}
 @media (max-width:760px){.prod-fincas .fincas.n1,.prod-fincas .fincas.n2{grid-template-columns:1fr}}
+
+/* La taza: la rueda de la catación a un lado y el puntaje al otro. La forma va
+   en la tinta de cada café (--pc). */
+.prod-taza{margin-top:clamp(48px,7vw,88px)}
+.tz{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);border:1px solid var(--ink);margin-top:24px}
+.tz-graf{padding:clamp(16px,3vw,32px);border-right:1px solid var(--ink);min-width:0}
+.tz-graf .hint{margin:10px 0 0;text-align:center}
+.tz-rueda{display:block;width:100%;max-width:560px;height:auto;margin-inline:auto}
+.tz-aro{fill:none;stroke:var(--ink);stroke-opacity:.16;stroke-width:1}
+.tz-forma{fill:var(--pc);fill-opacity:.16;stroke:var(--pc);stroke-width:2.5;stroke-linejoin:round}
+.tz-punto{fill:var(--paper);stroke:var(--pc);stroke-width:2.5}
+.tz-k{font:600 12.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;fill:var(--ink)}
+.tz-v{font:800 17px var(--display);fill:var(--pc)}
+.tz-dato{display:flex;flex-direction:column;min-width:0}
+.tz-total{margin:0;padding:clamp(20px,3vw,32px);text-align:center;border-bottom:1px solid var(--ink)}
+.tz-total small{display:block;font:600 11px var(--mono);letter-spacing:.2em;text-transform:uppercase}
+.tz-total b{display:block;margin:6px 0;font:800 clamp(5rem,10vw,8rem)/.9 var(--display);letter-spacing:-.05em;color:var(--pc)}
+.tz-dato dl{margin:0;flex:1;display:flex;flex-direction:column}
+.tz-dato dl div{flex:1;display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:center;padding:12px clamp(16px,2.4vw,24px);border-bottom:1px solid rgba(20,18,16,.16)}
+.tz-dato dl div:last-child{border-bottom:0}
+.tz-dato dt{font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.tz-dato dd{margin:0;font-size:1rem}
+@media (max-width:760px){
+  .tz{grid-template-columns:1fr}
+  .tz-graf{border-right:0;border-bottom:1px solid var(--ink);padding:14px 8px}
+}

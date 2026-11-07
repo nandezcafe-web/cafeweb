@@ -3,9 +3,9 @@
 > Familia cafetera de Chinácota, Norte de Santander (Colombia). Compramos lote por lote a fincas vecinas y vendemos cada café tostado con su ficha verificable: el municipio y la altura de cada finca van en la ficha de su café. Nuestra propia finca (5.000 plantas de Geisha) da su primera cosecha en 2027.
 
 ## Qué vendemos
-- Castillo: variedad Castillo, 1.870 msnm, proceso Lavado, 84 puntos SCA, en grano, desde $40.000 (https://cafeweb-five.vercel.app/cafe-castillo)
-- Cenicafé 1: variedad Cenicafé 1, 1.300 msnm, en grano, desde $40.000 (https://cafeweb-five.vercel.app/cafe-cenicafe-1)
-- Blend: variedad Castillo + Cenicafé 1, 1.300 – 1.870 msnm, molido, desde $40.000 (https://cafeweb-five.vercel.app/cafe-blend)
+- Castillo: variedad Castillo, 1.870 msnm, proceso Lavado, 87 puntos SCA, en grano, desde $40.000 (https://cafeweb-five.vercel.app/cafe-castillo)
+- Cenicafé 1: variedad Cenicafé 1, 1.300 msnm, proceso Lavado, 87 puntos SCA, en grano, desde $40.000 (https://cafeweb-five.vercel.app/cafe-cenicafe-1)
+- Blend: variedad Castillo + Cenicafé 1, 1.300 – 1.870 msnm, proceso Lavado, molido, desde $40.000 (https://cafeweb-five.vercel.app/cafe-blend)
 - Merch Nandez Coffee Gang, próximamente (https://cafeweb-five.vercel.app/accesorios)
 - Suscripción mensual desde $48.000, con kit de bienvenida para preparar en casa, filtros y una receta cada mes (https://cafeweb-five.vercel.app/suscripcion)
 
