@@ -115,3 +115,44 @@ export async function hojaGet(registro, params) {
   return r.json();
 }
 export const registroDe = (cat) => process.env.REGISTRO_URL || cat.registro || "";
+
+/* Abre un pedido para cobrar dentro de la página, con la pasarela que sea (`canal`:
+   "wompi" o "mercadopago"): revisa al comprador y el bono, vuelve a hacer la cuenta
+   con los precios del catálogo y aparta las bolsas en la hoja, todo o nada. Devuelve
+   { ok: false, status, cuerpo } para responder tal cual, o { ok: true, id, q, bono }. */
+export async function abrirPedido(req, b, canal) {
+  const falla = (status, cuerpo) => ({ ok: false, status, cuerpo: { ok: false, ...cuerpo } });
+  try {
+    const cat = await catalogo(req), registro = registroDe(cat);
+    if (!registro) return falla(503, { error: "sin-hoja" });
+    const c = comprador(b.comprador);
+    if (c.error) return falla(400, { error: c.error });
+
+    let pct = 0, bono = "";
+    if (b.bono) {
+      const v = await hojaGet(registro, { accion: "bono", codigo: String(b.bono).trim().toUpperCase().slice(0, 20) });
+      if (!v.ok) return falla(400, { error: "bono", motivo: v.error || "no" });
+      pct = Number(v.pct) || 0; bono = v.codigo;
+    }
+    const q = cotizar(cat, b.items, pct);
+    if (q.error) return falla(400, q);
+
+    /* Si la persona reintenta, la reserva anterior que no pagó se suelta primero.
+       La hoja solo la cancela si sigue sin pagar y es de una pasarela. */
+    if (b.reemplaza && process.env.NANDEZ_CLAVE)
+      await hoja(registro, { accion: "pedido", clave: process.env.NANDEZ_CLAVE, id: String(b.reemplaza).slice(0, 40),
+        estado: "cancelado", soloReserva: true }).catch(() => null);
+
+    const id = numeroPedido(), idioma = b.idioma === "en" ? "en" : "es";
+    const r = await hoja(registro, { tipo: "pedido", id, canal, idioma,
+      nombre: `${c.d.nombre} ${c.d.apellidos}`, documento: c.d.documento, tel: c.d.tel, correo: c.d.correo,
+      direccion: c.d.direccion, detalle: c.d.detalle, ciudad: c.d.ciudad, departamento: c.d.departamento,
+      items: q.lineas, subtotal: q.subtotal, descuento: q.descuento, bono, envio: q.envio, total: q.total, iva: q.iva });
+    if (!r || !r.ok) return falla(502, { error: "hoja" });
+    /* Con pasarela es todo o nada: si falta una bolsa, la hoja no aparta ninguna */
+    if (r.faltan && r.faltan.length) return falla(409, { error: "agotado", faltan: r.faltan });
+    return { ok: true, id: r.pedido, q, c: c.d, bono, idioma };
+  } catch {
+    return falla(502, { error: "hoja" });
+  }
+}

@@ -352,7 +352,7 @@ const redesHTML = () => `<div class="g-redes-fila"><ul class="g-redes">${Object.
   const url = CONFIG.redes[k], ic = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${svg}</svg>`;
   return `<li>${url ? `<a href="${esc(url)}" target="_blank" rel="noopener" aria-label="${nombre}">${ic}</a>`
                     : `<span aria-label="${nombre} (${t("por_confirmar").toLowerCase()})" title="${nombre} · ${t("por_confirmar")}">${ic}</span>`}</li>`;
-}).join("")}</ul>${Object.values(CONFIG.redes).some(Boolean) ? "" : `<small>${UI.lang === "en" ? "Socials coming soon" : "Muy pronto en redes"}</small>`}</div>`;
+}).join("")}</ul>${CONFIG.redes.instagram ? `<a class="g-ig" href="${esc(CONFIG.redes.instagram)}" target="_blank" rel="noopener">@${esc(CONFIG.redes.instagram.replace(/\/+$/, "").split("/").pop())}</a>` : ""}${Object.values(CONFIG.redes).some(Boolean) ? "" : `<small>${UI.lang === "en" ? "Socials coming soon" : "Muy pronto en redes"}</small>`}</div>`;
 
 const FOOT = () => {
   const en = UI.lang === "en";
@@ -701,6 +701,7 @@ document.documentElement.classList.add("js");
 aplicarCfgGuardada();
 cargarCarrito();
 cargarBono();
+volverDeMercado();
 medicionAviso();
 /* La franja viene con los días que había el día del build: se recuentan aquí */
 (() => {

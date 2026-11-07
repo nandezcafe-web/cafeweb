@@ -33,10 +33,10 @@ function viewSuscripcion() {
   const kit = subKit(), seis = subSeis();
   const op = (k, v, activo, txt) => `<button type="button" id="sub-${k}-${v}" data-act="sub-op" data-k="${k}" data-v="${v}" aria-pressed="${activo}">${txt}</button>`;
   const como = en
-    ? [["montana", "Every month or every two", "Choose how often it arrives, and change it whenever you like. Each box costs the same."],
+    ? [["montana", "One box every month", "It arrives the first week of each month, always the same price. Pause or cancel whenever you like."],
        ["hoja", "Two ways to pay", "Monthly, with a one-time sign-up that brings the kit. Or six boxes paid in advance, which costs less."],
        ["ficha", "No minimum term", `Paying monthly, write to us before the 25th and next month is not charged. Six boxes paid in advance cover the six.`]]
-    : [["montana", "Cada mes o cada dos", "Escoges cada cuánto te llega y lo cambias cuando quieras. Cada envío cuesta lo mismo."],
+    : [["montana", "Un envío cada mes", "Te llega la primera semana de cada mes, siempre al mismo precio. Lo pausas o lo cancelas cuando quieras."],
        ["hoja", "Dos formas de pagar", "Mes a mes, con una inscripción única que trae el kit. O seis envíos por adelantado, que sale más barato."],
        ["ficha", "Sin permanencia", "Mes a mes, nos escribes antes del día 25 y el mes siguiente ya no se cobra. Los seis envíos por adelantado cubren los seis."]];
   const ruta = en
@@ -133,8 +133,6 @@ function suscribir(id) {
     <div class="form-grid">
       <div class="field"><label class="lbl" for="sub-mail">${en ? "Email" : "Correo"}</label><input id="sub-mail" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none" autocorrect="off" enterkeyhint="send"></div>
       <div class="field"><label class="lbl" for="sub-ciudad">${en ? "City" : "Ciudad"}</label><input id="sub-ciudad" class="input" autocomplete="address-level2"></div>
-      ${casa ? `<div class="field"><label class="lbl" for="sub-cada">${en ? "How often?" : "¿Cada cuánto?"}</label>
-        <select id="sub-cada" class="input"><option value="1">${en ? "Every month" : "Cada mes"}</option><option value="2">${en ? "Every two months" : "Cada dos meses"}</option></select></div>` : ""}
       <div class="field"><label class="lbl" for="sub-molienda">${en ? "How do you want it ground?" : "¿Cómo quieres la molienda?"}</label>
         <select id="sub-molienda" class="input">${MOLIENDAS.map((o) => `<option value="${o.id}" ${o.id === mol ? "selected" : ""}>${tx(o)}</option>`).join("")}</select></div>
       <small class="hint" style="grid-column:1/-1;margin:0">${en ? "Only subscribers choose the grind: each box is ground to order." : "Solo en la suscripción eliges la molienda: cada envío se muele a tu gusto."}</small>
@@ -150,7 +148,7 @@ function suscribirOk(id) {
   const conOpciones = !!casa && !casa.plano;
   const kit = conOpciones ? subKit() : false, seis = conOpciones ? subSeis() : false;
   const mol = MOLIENDAS.find((o) => o.id === $("#sub-molienda")?.value) || MOLIENDAS[0];
-  const cada = $("#sub-cada")?.value === "2" ? 2 : 1;
+  const cada = 1;   /* solo mensual */
   const x = precioPlan(p, kit, seis);
   const d = { mail, plan: id, kit, seis, cada, ciudad: $("#sub-ciudad").value.trim(), molienda: mol.id, fecha: isoToday() };
   S.suscriptores.unshift(d); save(); closeModal(); render();
@@ -158,7 +156,7 @@ function suscribirOk(id) {
     : x.total ? `${cop(x.total)} por 6 envíos` : `${cop(x.luego)} al mes`;
   registrar("suscripcion", d,
     `Hola ${CONFIG.marca}, avísenme cuando abra la suscripción.\nPlan: ${tx(p.nombre)}` +
-    (casa ? `\nKit: ${kit ? tx(KITS[p.kit].nombre) : "ya tengo mi equipo"}\nForma de pago: ${seis ? "6 envíos por adelantado" : "mes a mes"}\nFrecuencia: ${cada === 2 ? "cada dos meses" : "cada mes"}` : "") +
+    (casa ? `\nKit: ${kit ? tx(KITS[p.kit].nombre) : "ya tengo mi equipo"}\nForma de pago: ${seis ? "6 envíos por adelantado" : "mes a mes"}\nFrecuencia: cada mes` : "") +
     `\nValor: ${pago}\nMolienda: ${mol.es}\nCorreo: ${mail}${d.ciudad ? "\nCiudad: " + d.ciudad : ""}`,
     `Suscripción · ${tx(p.nombre)}`);
 }
@@ -488,10 +486,29 @@ function viewContacto() {
    se devuelve la plata. Sale en envíos y en términos solo mientras esté abierta. */
 function seccionPreventa(en) {
   if (!preventaAbierta()) return [];
-  const f = fmtFecha(entregaPreventa());
-  return [[en ? "Pre-order" : "Preventa", `<p>${en
-    ? `A coffee marked "pre-order" is paid now and ships on ${f}, in the order the reservations came in. If your order also has a coffee that is available now, the whole order ships together on ${f}. If we cannot ship on that date, we write to you before it and you choose: wait for the new date or get your money back in full. You can cancel a pre-order for a full refund any time before it ships.`
-    : `Un café marcado "preventa" se paga hoy y se despacha el ${f}, en el orden en que llegaron las reservas. Si tu pedido trae también un café disponible, el pedido completo sale junto el ${f}. Si no pudiéramos despachar ese día, te escribimos antes y tú escoges: esperar la nueva fecha o que te devolvamos todo tu dinero. Puedes cancelar una preventa y recibir el reembolso completo en cualquier momento antes del despacho.`}</p>`]];
+  const f = fmtFecha(entregaPreventa()), cupo = CONFIG.preventa.cupo, mail = CONFIG.correo;
+  const li = (xs) => `<ul>${xs.map((x) => `<li>${x}</li>`).join("")}</ul>`;
+  return [[en ? "Pre-order policy" : "Política de preventa", en
+    ? `<p>A coffee marked "pre-order" is not on the shelf yet: you pay now and we roast and ship it from <b>${f}</b>.</p>` + li([
+        `<b>Payment.</b> You pay the full amount when you order, in the cart. The order is confirmed when the payment is approved and you get the receipt by email.`,
+        `<b>Price.</b> The price you see is the final one. Shipping is shown separately in the cart.`,
+        `<b>Limited run.</b> ${cupo ? `There are ${cupo} bags per coffee in pre-order. When they run out, the coffee shows as sold out.` : "Pre-order quantities are limited."} Reservations are served in the order they were paid.`,
+        `<b>Shipping.</b> Everything ships from ${f}, in payment order, with ${CONFIG.envio.transportadora}. You get the tracking number by email. If your order also has a coffee that is available now, the whole order ships together on that date.`,
+        `<b>Delay.</b> If we cannot ship on ${f}, we write to you <i>before</i> that date with the new one. You choose: wait for it, or get a full refund.`,
+        `<b>Cancel.</b> You can cancel any time before we ship, for a full refund. Write to ${mail} with your order number.`,
+        `<b>Refund.</b> We return the money to the same payment method, within 10 business days of the cancellation. Your bank or Mercado Pago may take a few more days to show it.`,
+        `<b>Address.</b> To change the delivery address, write to ${mail} before the order ships.`,
+        `<b>After it ships.</b> The usual terms apply: see the shipping and refund policy.`])
+    : `<p>Un café marcado "preventa" todavía no está en bodega: lo pagas hoy y lo tostamos y despachamos desde el <b>${f}</b>.</p>` + li([
+        `<b>Pago.</b> Pagas el valor completo al pedir, en el carrito. El pedido queda confirmado cuando el pago se aprueba, y te llega la constancia por correo.`,
+        `<b>Precio.</b> El precio que ves es el final. El envío se muestra aparte en el carrito.`,
+        `<b>Cupo limitado.</b> ${cupo ? `Hay ${cupo} bolsas por café en preventa. Cuando se acaban, el café aparece agotado.` : "Las bolsas de preventa son limitadas."} Las reservas se atienden en el orden en que se pagaron.`,
+        `<b>Despacho.</b> Todo sale desde el ${f}, en orden de pago, por ${CONFIG.envio.transportadora}. La guía te llega al correo. Si tu pedido trae también un café disponible, el pedido completo sale junto ese día.`,
+        `<b>Retraso.</b> Si no pudiéramos despachar el ${f}, te escribimos <i>antes</i> de esa fecha con la nueva. Tú escoges: esperarla o que te devolvamos todo tu dinero.`,
+        `<b>Cancelación.</b> Puedes cancelar en cualquier momento antes del despacho y recibes el reembolso completo. Escribe a ${mail} con tu número de pedido.`,
+        `<b>Reembolso.</b> Devolvemos la plata al mismo medio con el que pagaste, dentro de los 10 días hábiles siguientes a la cancelación. Tu banco o Mercado Pago puede tardar unos días más en mostrarla.`,
+        `<b>Dirección.</b> Para cambiar la dirección de entrega, escríbenos a ${mail} antes de que el pedido salga.`,
+        `<b>Después del despacho.</b> Aplican las condiciones de siempre: mira la política de envíos y reembolso.`])]];
 }
 
 function viewEnvios() {
@@ -519,9 +536,9 @@ function viewTerminos() {
     en ? "A plain summary of how buying from us works." : "Resumen claro de cómo funciona comprarnos.",
     [[en ? "Who sells" : "Quién vende", `<p>${esc(CONFIG.marca)} · Chinácota, Norte de Santander, Colombia · ${CONFIG.correo}.</p>`],
      [en ? "Prices" : "Precios", `<p>${en ? "Prices are in Colombian pesos (COP) and include VAT when it applies. Shipping is shown separately in the cart." : "Los precios están en pesos colombianos e incluyen IVA cuando aplica. El envío se muestra aparte en el carrito."}</p>`],
-     [en ? "Orders and payment" : "Pedidos y pago", `<p>${pasarelaLista() ? (en
-        ? "You pay on this page by card, PSE or Nequi, through Wompi. Your order is confirmed when the payment is approved, and you get the confirmation by email. If a coffee sells out before that, it is not charged."
-        : "Pagas en esta misma página con tarjeta, PSE o Nequi, a través de Wompi. El pedido queda confirmado cuando el pago se aprueba, y te llega la confirmación por correo. Si un café se agota antes, no se cobra.")
+     [en ? "Orders and payment" : "Pedidos y pago", `<p>${pagoEnLinea() ? (en
+        ? `You pay by card, PSE or Nequi, through ${pasarelaNombre()}. Your order is confirmed when the payment is approved, and you get the confirmation by email. If a coffee sells out before that, it is not charged.`
+        : `Pagas con tarjeta, PSE o Nequi, a través de ${pasarelaNombre()}. El pedido queda confirmado cuando el pago se aprueba, y te llega la confirmación por correo. Si un café se agota antes, no se cobra.`)
       : en ? `An order is confirmed when we reply and you pay by ${tx(CONFIG.pagos.manual)}. If a coffee sells out before that, we tell you and do not charge you.`
         : `Un pedido queda confirmado cuando te respondemos y pagas por ${tx(CONFIG.pagos.manual)}. Si un café se agota antes, te avisamos y no te cobramos.`}</p>`],
      ...seccionPreventa(en),

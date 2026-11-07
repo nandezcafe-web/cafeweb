@@ -62,7 +62,7 @@ const CONFIG = {
   fnc: { precioCarga: 2105000, factorBase: 94, fecha: "2026-09-25" },
   mercado: { ny: 278.6, trm: 3306.86 },
   storageKey: "nandez-v12",
-  whatsapp: "",                 // 573001234567 · mientras esté vacío, pedidos y avisos salen por correo
+  whatsapp: "573008923390",     // con indicativo, sin + ni espacios · si se vacía, pedidos y avisos salen por correo
   correo: "nandezcafe@gmail.com",
   /* Formulario externo (Formspree, Getform…): si hay URL, pedidos, suscriptores y postores
      llegan ahí además de abrir WhatsApp o el correo. Sin base de datos, es lo que evita
@@ -92,10 +92,11 @@ const CONFIG = {
     /* La pasarela que cobra DENTRO de la página. Se prende sola apenas haya llave
        pública (pub_test_… para probar, pub_prod_… para vender). Los secretos NO van
        aquí: van en Vercel. Pasos completos en docs/13_activar_pagos.md. */
-    pasarela: "wompi",
+    pasarela: "mercadopago",   // "mercadopago" (ya) o "wompi" (cuando haya cuenta y llave)
     wompi: { llavePublica: "", widget: "https://checkout.wompi.co/widget.js" },
-    /* Link de cobro personal: abre Mercado Pago pero el cliente escribe el monto.
-       Cuando haya MP_ACCESS_TOKEN en Vercel, cambiar por "/api/checkout" y el total viaja solo. */
+    /* Con pasarela: "mercadopago" el cobro lo crea api/checkout.js con el total del servidor
+       (necesita MP_ACCESS_TOKEN y NANDEZ_CLAVE en Vercel). Este link personal ya no se usa
+       salvo que la pasarela quede en otro valor: abre Mercado Pago y el cliente escribe el monto. */
     mercadoPago: "https://link.mercadopago.com.co/nandezcoffee",
     porProducto: {},            // { "C-GEI-250": "https://mpago.la/xxxx" }
     suscripcion: {},            // { descubrir: "https://mpago.la/xxxx" }
@@ -177,7 +178,7 @@ const ES_EN = {
   "Finca El Paraíso": "El Paraíso farm",
   Lavado: "Washed", Natural: "Natural", Honey: "Honey", "Anaeróbico": "Anaerobic",
   Productor: "Grower", "GPS en visita de campo": "GPS on a farm visit", "Bitácora con fotos": "Photo log",
-  "Q-grader independiente": "Independent Q-grader", "Informe de trilla": "Milling report", "Catación propia": "Our own cupping",
+  "Q-grader independiente": "Independent Q-grader", "Catación SCA": "SCA cupping", "Unión de las dos catas": "Both cuppings combined", "Castillo y Cenicafé 1": "Castillo and Cenicafé 1", "Informe de trilla": "Milling report", "Catación propia": "Our own cupping",
   "Fermentación 36 h · Marquesina 18 días": "36 h fermentation · 18 days in a drying tent",
   "Fermentación 18 h": "18 h fermentation",
   "Anaeróbico 96 h · Camas africanas 28 días": "96 h anaerobic · 28 days on raised beds",
@@ -217,19 +218,20 @@ function seed() {
         variedad: "Castillo", proceso: "Lavado", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026",
         color: "#C9381A",
         sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que lo muelas el día que lo preparas: así guarda el aroma.", en: "We ship it whole so you grind it the day you brew it, which keeps the aroma." },
-        altitud: 1870, puntaje: 87, nivel: "DOCUMENTADO", fuente: "Edgar Soto · formato SCA", fecha: "2026-11-03",
+        altitud: 1870, puntaje: 87, nivel: "DOCUMENTADO", fuente: "Catación SCA", fecha: "2026-11-03",
         notas: { es: ["Durazno", "Almendra", "Panela", "Manzanilla"], en: ["Peach", "Almond", "Brown sugar", "Chamomile"] },
         /* La taza, copiada del formato combinado SCA (v2, 2024) de la catación. Cada
            atributo va de 1 a 9; el total no es la suma, lo calcula la fórmula de la SCA. */
-        taza: { catador: "Edgar Soto", fecha: "2026-11-03",
+        taza: { fecha: "2026-11-03",
           fragancia: 7, aroma: 6, sabor: 7, residual: 6, acidez: 7, dulzor: 6, boca: 6, global: 7,
           datos: [[{ es: "Boca", en: "Mouthfeel" }, { es: "Suave", en: "Smooth" }],
                   [{ es: "Gustos", en: "Main tastes" }, { es: "Ácido y dulce", en: "Acidic and sweet" }]] },
         ficha: {
           variedad: A("Castillo", "DECLARADO", "Productor", "2026-09-12"),
           altitud: A(1870, "DECLARADO", "Productor", "2026-11-03"),
-          proceso: A("Lavado", "DECLARADO", "Productor", "2026-09-12", { detalle: "Fermentación 18 h" }),
-          puntaje: A(87, "DOCUMENTADO", "Edgar Soto · formato SCA", "2026-11-03", { vig: 6 }),
+          proceso: A("Lavado", "DECLARADO", "Productor", "2026-09-12"),
+          tostion: A("2026-11-02", "DECLARADO", "Nandez Coffee", "2026-11-07"),
+          puntaje: A(87, "DOCUMENTADO", "Catación SCA", "2026-11-03", { vig: 6 }),
           factor: A(94, "DOCUMENTADO", "Informe de trilla", "2026-09-13"),
         },
         pago: { pagadoKg: 17000, referenciaKg: 16040, fecha: "2026-09-12" },
@@ -251,9 +253,9 @@ function seed() {
         nombre: { es: "Cenicafé 1", en: "Cenicafé 1" }, sub: { es: "Finca El Paraíso · Palocolorado, Chinácota", en: "El Paraíso farm · Palocolorado, Chinácota" },
         variedad: "Cenicafé 1", proceso: "Lavado", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026",
         sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que no pierda aroma.", en: "We ship it whole so it keeps its aroma." },
-        altitud: 1300, puntaje: 87, nivel: "DOCUMENTADO", fuente: "Edgar Soto · formato SCA", fecha: "2026-11-03",
+        altitud: 1300, puntaje: 87, nivel: "DOCUMENTADO", fuente: "Catación SCA", fecha: "2026-11-03",
         notas: { es: ["Durazno", "Avellana", "Chocolate"], en: ["Peach", "Hazelnut", "Chocolate"] },
-        taza: { catador: "Edgar Soto", fecha: "2026-11-03",
+        taza: { fecha: "2026-11-03",
           fragancia: 7, aroma: 7, sabor: 6, residual: 6, acidez: 7, dulzor: 7, boca: 6, global: 6,
           datos: [[{ es: "Acidez", en: "Acidity" }, { es: "Cítrica", en: "Citric" }],
                   [{ es: "Dulzor", en: "Sweetness" }, { es: "Panela", en: "Brown sugar" }],
@@ -263,7 +265,8 @@ function seed() {
           variedad: A("Cenicafé 1", "DECLARADO", "Productor", "2026-10-28"),
           altitud: A(1300, "DECLARADO", "Productor", "2026-11-03"),
           proceso: A("Lavado", "DECLARADO", "Productor", "2026-11-07"),
-          puntaje: A(87, "DOCUMENTADO", "Edgar Soto · formato SCA", "2026-11-03", { vig: 6 }),
+          tostion: A("2026-11-02", "DECLARADO", "Nandez Coffee", "2026-11-07"),
+          puntaje: A(87, "DOCUMENTADO", "Catación SCA", "2026-11-03", { vig: 6 }),
           factor: A("—", "DECLARADO", "Productor", "2026-10-28"),
         },
         pago: null,
@@ -275,17 +278,23 @@ function seed() {
 
       /* El blend no tiene una finca sino dos: `mezcla` dice cuáles (fincaDe las junta). */
       { id: "P-BLE", fincaId: null, mezcla: ["F-03", "F-02"], loteId: null, color: "#9A6610",
-        nombre: { es: "Blend", en: "Blend" }, sub: { es: "Castillo + Cenicafé 1 · molido", en: "Castillo + Cenicafé 1 · ground" },
-        variedad: "Castillo + Cenicafé 1", proceso: "Lavado", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026",
+        nombre: { es: "Blend", en: "Blend" }, sub: { es: "Castillo y Cenicafé 1 · molido", en: "Castillo and Cenicafé 1 · ground" },
+        variedad: "Castillo y Cenicafé 1", proceso: "Lavado", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026",
         sale: { es: "Molido", en: "Ground" }, saleNota: { es: "Molienda fina: lista para el gotero o la cafetera de goteo.", en: "Fine grind: ready for a pour-over cone or a drip machine." },
-        altitud: null, puntaje: null, nivel: "DECLARADO", fuente: "Nandez Coffee", fecha: "2026-10-28",
+        altitud: null, puntaje: 87, nivel: "DECLARADO", fuente: "Unión de las dos catas", fecha: "2026-11-03",
         notas: { es: ["Caramelo", "Avellana", "Frutos amarillos"], en: ["Caramel", "Hazelnut", "Yellow fruits"] },
+        /* El blend no tiene formato propio: su taza es la unión de las dos catas, así
+           que la rueda dibuja los dos cafés (`de`) en vez de un promedio inventado. */
+        taza: { de: ["P-CAS", "P-PAR"], fecha: "2026-11-03",
+          datos: [[{ es: "Boca", en: "Mouthfeel" }, { es: "Suave", en: "Smooth" }],
+                  [{ es: "Gustos", en: "Main tastes" }, { es: "Ácido y dulce", en: "Acidic and sweet" }]] },
         ficha: {
-          variedad: A("Castillo + Cenicafé 1", "DECLARADO", "Nandez Coffee", "2026-10-28"),
+          variedad: A("Castillo y Cenicafé 1", "DECLARADO", "Nandez Coffee", "2026-10-28"),
           /* el blend viene de las dos fincas: 1.300 de El Paraíso y 1.870 de El Roble */
           altitud: A("1.300 – 1.870", "DECLARADO", "Productor", "2026-11-03"),
           proceso: A("Lavado", "DECLARADO", "Productor", "2026-11-07"),
-          puntaje: A("—", "DECLARADO", "Productor", "2026-10-28"),
+          tostion: A("2026-11-02", "DECLARADO", "Nandez Coffee", "2026-11-07"),
+          puntaje: A(87, "DECLARADO", "Unión de las dos catas", "2026-11-03", { vig: 6 }),
           factor: A("—", "DECLARADO", "Productor", "2026-10-28"),
         },
         pago: null,
@@ -807,8 +816,8 @@ const FAQ = [
     a: { es: "En 2026 una bolsa de 250 g de café especial en Colombia va entre $35.000 y $70.000, según la variedad y el puntaje de catación. Un Geisha o un lote de subasta cuesta más porque se produce en cantidades muy pequeñas.",
          en: "In 2026 a 250 g bag of specialty coffee in Colombia runs between COP 35,000 and 70,000, depending on variety and cupping score. A Geisha or an auction lot costs more because very little of it exists." } },
   { q: { es: "¿Qué significa el puntaje SCA de un café?", en: "What does the SCA score mean?" },
-    a: { es: "Es la calificación de un catador certificado sobre 100 puntos. Desde 80 se considera café especial y desde 86 es excepcional. Publicamos quién hizo la catación y en qué fecha, porque el puntaje envejece junto con el café.",
-         en: "It is a certified cupper's score out of 100. From 80 it counts as specialty and from 86 it is exceptional. We publish who cupped it and when, because the score ages along with the coffee." } },
+    a: { es: "Es la calificación de un catador certificado sobre 100 puntos. Desde 80 se considera café especial y desde 86 es excepcional. Publicamos la fecha de la catación, porque el puntaje envejece junto con el café.",
+         en: "It is a certified cupper's score out of 100. From 80 it counts as specialty and from 86 it is exceptional. We publish the cupping date, because the score ages along with the coffee." } },
   { q: { es: "¿Por qué se cultiva buen café en Norte de Santander?", en: "Why is good coffee grown in Norte de Santander?" },
     /* Sin alturas ni municipios hasta que estén confirmados los de cada finca:
        esta respuesta la leen los asistentes de IA desde llms.txt. */

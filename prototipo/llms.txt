@@ -5,7 +5,7 @@
 ## Qué vendemos
 - Castillo: variedad Castillo, 1.870 msnm, proceso Lavado, 87 puntos SCA, en grano, desde $40.000 (https://cafeweb-five.vercel.app/cafe-castillo)
 - Cenicafé 1: variedad Cenicafé 1, 1.300 msnm, proceso Lavado, 87 puntos SCA, en grano, desde $40.000 (https://cafeweb-five.vercel.app/cafe-cenicafe-1)
-- Blend: variedad Castillo + Cenicafé 1, 1.300 – 1.870 msnm, proceso Lavado, molido, desde $40.000 (https://cafeweb-five.vercel.app/cafe-blend)
+- Blend: variedad Castillo y Cenicafé 1, 1.300 – 1.870 msnm, proceso Lavado, 87 puntos SCA, molido, desde $40.000 (https://cafeweb-five.vercel.app/cafe-blend)
 - Merch Nandez Coffee Gang, próximamente (https://cafeweb-five.vercel.app/accesorios)
 - Suscripción mensual desde $48.000, con kit de bienvenida para preparar en casa, filtros y una receta cada mes (https://cafeweb-five.vercel.app/suscripcion)
 
@@ -18,7 +18,7 @@ El café de origen viene de una sola finca y una sola cosecha, no de la mezcla d
 ### ¿Cuánto cuesta un café especial colombiano?
 En 2026 una bolsa de 250 g de café especial en Colombia va entre $35.000 y $70.000, según la variedad y el puntaje de catación. Un Geisha o un lote de subasta cuesta más porque se produce en cantidades muy pequeñas.
 ### ¿Qué significa el puntaje SCA de un café?
-Es la calificación de un catador certificado sobre 100 puntos. Desde 80 se considera café especial y desde 86 es excepcional. Publicamos quién hizo la catación y en qué fecha, porque el puntaje envejece junto con el café.
+Es la calificación de un catador certificado sobre 100 puntos. Desde 80 se considera café especial y desde 86 es excepcional. Publicamos la fecha de la catación, porque el puntaje envejece junto con el café.
 ### ¿Por qué se cultiva buen café en Norte de Santander?
 Son montañas con noches frías, que maduran el grano despacio. Es una región menos conocida que Huila o Nariño, y por eso todavía se consiguen microlotes excepcionales a precios sensatos. La altura y la vereda de cada finca van en la ficha de su café.
 ### ¿Le compran directo al productor?

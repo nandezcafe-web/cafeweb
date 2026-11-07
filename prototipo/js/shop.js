@@ -57,7 +57,7 @@ function cafeCard(p, i = 0) {
       ${p.puntaje ? `<div class="cc-score"><b>${esc(p.puntaje)}</b><small style="color:${LV[p.nivel].c}">SCA · ${lvl(p.nivel)}</small></div>` : ""}`}
     </div>
     <div class="cc-body">
-      <p class="kicker">${esc(tr(f.finca || t("por_confirmar")))}<br>${alturaDe(p) ? esc(alturaDe(p)) : (en ? "altitude to be confirmed" : "altura por confirmar")}</p>
+      <p class="kicker">${esc(f.mezcla ? tr(p.variedad) : tr(f.finca || t("por_confirmar")))}<br>${alturaDe(p) ? esc(alturaDe(p)) : (en ? "altitude to be confirmed" : "altura por confirmar")}</p>
       <h3>${esc(tx(p.nombre))}</h3>
       <p class="notas-linea">${tx(p.notas).join(" · ")}</p>
       <div class="cc-foot">${pronto
@@ -80,7 +80,7 @@ function tarjetaInicio(p, i = 0) {
       <span class="g-prod-n">0${i + 1}</span>
     </div>
     <div class="g-prod-body">
-      <p class="g-kicker">${esc(tr(f.finca || t("por_confirmar")))} · ${alturaDe(p) ? esc(alturaDe(p)) : (en ? "altitude tbc" : "altura por confirmar")}</p>
+      <p class="g-kicker">${esc(f.mezcla ? tr(p.variedad) : tr(f.finca || t("por_confirmar")))} · ${alturaDe(p) ? esc(alturaDe(p)) : (en ? "altitude tbc" : "altura por confirmar")}</p>
       <h3>${esc(tx(p.nombre))}</h3>
       <p class="g-notas">${pronto ? esc(tx(p.sub)) : tx(p.notas).join(" · ")}</p>
       <div class="g-prod-foot">${pronto
@@ -300,48 +300,77 @@ function viewCafes() {
 }
 
 /* ---------- la taza ----------
-   La catación en una rueda: los ocho atributos del formato SCA, de 1 a 9, en el
-   orden del formato y con la escala completa, sin acercarla para exagerar. */
-const ATRIBUTOS_TAZA = [["fragancia", "Fragancia", "Fragrance"], ["aroma", "Aroma", "Aroma"], ["sabor", "Sabor", "Flavor"], ["residual", "Residual", "Aftertaste"],
-  ["acidez", "Acidez", "Acidity"], ["dulzor", "Dulzor", "Sweetness"], ["boca", "Boca", "Mouthfeel"], ["global", "Global", "Overall"]];
-function ruedaTaza(T, en) {
-  const cx = 230, cy = 205, R = 122, n = ATRIBUTOS_TAZA.length;
+   La catación en una rueda chica: los ocho atributos del formato SCA, de 1 a 9, con
+   la escala completa, sin acercarla para exagerar. Entra creciendo desde el centro
+   al llegar a la vista, y tocar un atributo explica qué significa. El blend dibuja
+   sus dos cafés, porque su taza es la unión de las dos catas. */
+const ATRIBUTOS_TAZA = [
+  ["fragancia", "Fragancia", "Fragrance", "El olor del café recién molido, antes del agua.", "The smell of freshly ground coffee, before the water."],
+  ["aroma", "Aroma", "Aroma", "El olor cuando le cae el agua caliente.", "The smell once the hot water hits it."],
+  ["sabor", "Sabor", "Flavor", "Lo que se siente al probarlo: gusto y aroma juntos.", "What you get when you taste it: taste and aroma together."],
+  ["residual", "Residual", "Aftertaste", "Lo que queda en la boca después de tragar.", "What stays in your mouth after you swallow."],
+  ["acidez", "Acidez", "Acidity", "La viveza de la taza, como la de una fruta.", "The brightness of the cup, like that of a fruit."],
+  ["dulzor", "Dulzor", "Sweetness", "El dulce natural del café, sin azúcar.", "The coffee's natural sweetness, with no sugar."],
+  ["boca", "Boca", "Mouthfeel", "El cuerpo y la textura sobre la lengua.", "The body and texture on the tongue."],
+  ["global", "Global", "Overall", "La impresión general del catador.", "The cupper's overall impression."],
+];
+const seriesTaza = (p) => (p.taza.de ? p.taza.de.map(prodById) : [p]).map((q) => ({ n: tx(q.nombre), c: q.color, T: q.taza }));
+function ruedaTaza(p, en) {
+  const cx = 180, cy = 140, R = 92, n = ATRIBUTOS_TAZA.length, S2 = seriesTaza(p);
   const punto = (i, r) => { const a = (-90 + (i * 360) / n) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; };
   const radio = (v) => (R * (v - 1)) / 8;
   const linea = (f) => ATRIBUTOS_TAZA.map((_, i) => punto(i, f(i)).map((x) => x.toFixed(1)).join(",")).join(" ");
-  const etiquetas = ATRIBUTOS_TAZA.map(([k, es, ing], i) => {
-    const [x, y] = punto(i, R + 20), lado = Math.abs(x - cx) < 4 ? "middle" : x > cx ? "start" : "end";
-    const alto = i === 0 ? y - 16 : i === 4 ? y + 8 : y - 3;
-    return `<text class="tz-k" x="${x.toFixed(1)}" y="${alto.toFixed(1)}" text-anchor="${lado}">${en ? ing : es}</text>
-      <text class="tz-v" x="${x.toFixed(1)}" y="${(alto + 18).toFixed(1)}" text-anchor="${lado}">${T[k]}</text>`;
+  const atributos = ATRIBUTOS_TAZA.map(([k, es, ing, de, dn], i) => {
+    const [ex, ey] = punto(i, R), [x, y] = punto(i, R + 14), lado = Math.abs(x - cx) < 4 ? "middle" : x > cx ? "start" : "end";
+    const alto = i === 0 ? y - 15 : i === 4 ? y + 7 : y - 2;
+    const vals = S2.map((s) => s.T[k]), lo = Math.min(...vals), hi = Math.max(...vals), nombre = en ? ing : es;
+    const dicho = S2.length > 1 ? S2.map((s) => `${s.n} ${s.T[k]}`).join(" · ") : (en ? `${lo} of 9` : `${lo} de 9`);
+    return `<g class="tz-at" style="--i:${i}" tabindex="0" role="button" aria-label="${esc(`${nombre}: ${dicho}`)}" data-l="${esc(nombre)}" data-v="${esc(dicho)}" data-d="${esc(en ? dn : de)}">
+      <line class="tz-eje" x1="${cx}" y1="${cy}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}"/>
+      <circle class="tz-toque" cx="${x.toFixed(1)}" cy="${alto.toFixed(1)}" r="24"/>
+      <text class="tz-k" x="${x.toFixed(1)}" y="${alto.toFixed(1)}" text-anchor="${lado}">${nombre}</text>
+      <text class="tz-v" x="${x.toFixed(1)}" y="${(alto + 15).toFixed(1)}" text-anchor="${lado}">${lo === hi ? lo : `${lo}–${hi}`}</text></g>`;
   }).join("");
-  const dicho = ATRIBUTOS_TAZA.map(([k, es, ing]) => `${en ? ing : es} ${T[k]}`).join(", ");
-  return `<svg class="tz-rueda" viewBox="0 0 460 410" role="img" aria-label="${esc(dicho)}">
+  return `<svg class="tz-rueda" viewBox="0 0 360 282" role="group" aria-label="${en ? "Cupping wheel" : "Rueda de la catación"}">
     ${[3, 5, 7, 9].map((v) => `<polygon class="tz-aro" points="${linea(() => radio(v))}"/>`).join("")}
-    ${ATRIBUTOS_TAZA.map((_, i) => { const [x, y] = punto(i, R); return `<line class="tz-aro" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`; }).join("")}
-    <polygon class="tz-forma" points="${linea((i) => radio(T[ATRIBUTOS_TAZA[i][0]]))}"/>
-    ${ATRIBUTOS_TAZA.map(([k], i) => { const [x, y] = punto(i, radio(T[k])); return `<circle class="tz-punto" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.5"/>`; }).join("")}
-    ${etiquetas}</svg>`;
+    ${atributos}
+    ${S2.map((s, m) => `<g class="tz-capa" style="--c:${s.c};--m:${m};transform-origin:${cx}px ${cy}px">
+      <polygon class="tz-forma" points="${linea((i) => radio(s.T[ATRIBUTOS_TAZA[i][0]]))}"/>
+      ${ATRIBUTOS_TAZA.map(([k], i) => { const [x, y] = punto(i, radio(s.T[k])); return `<circle class="tz-punto" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5"/>`; }).join("")}</g>`).join("")}
+  </svg>`;
 }
 function bloqueTaza(p, en) {
   const T = p.taza;
   if (!T) return "";
-  return `<section class="prod-taza reveal" style="--i:2">
+  const S2 = seriesTaza(p);
+  return `<section class="prod-taza">
       <div class="section-head"><p class="eyebrow">${en ? "The cup" : "La taza"}</p>
         <h2>${en ? "What the <em>cupper found</em>" : "Lo que encontró <em>el catador</em>"}</h2></div>
-      <div class="tz">
-        <div class="tz-graf">${ruedaTaza(T, en)}<p class="hint">${en ? "Each attribute is scored from 1 to 9. The total is not the sum: it comes out of the SCA formula." : "Cada atributo se califica de 1 a 9. El total no es la suma: sale de la fórmula de la SCA."}</p></div>
+      <div class="tz g-io">
+        <div class="tz-graf">${ruedaTaza(p, en)}
+          ${S2.length > 1 ? `<ul class="tz-leyenda">${S2.map((s) => `<li style="--c:${s.c}">${esc(s.n)}</li>`).join("")}</ul>` : ""}</div>
         <div class="tz-dato">
-          <p class="tz-total"><small>${en ? "Total score" : "Puntaje total"}</small><b>${esc(p.puntaje)}</b><small>${en ? "SCA points" : "Puntos SCA"}</small></p>
+          <p class="tz-total"><b>${esc(p.puntaje)}</b><small>${en ? "SCA points" : "Puntos SCA"}${T.de ? `<br>${en ? "both cuppings combined" : "unión de las dos catas"}` : ""}</small></p>
+          <p class="tz-lee" aria-live="polite"><b>${en ? "Tap an attribute" : "Toca un atributo"}</b><span>${en ? "Each one is scored from 1 to 9; the total comes out of the SCA formula, it is not the sum." : "Cada uno va de 1 a 9; el total sale de la fórmula de la SCA, no es la suma."}</span></p>
           <dl>
             <div><dt>${en ? "Notes" : "Notas"}</dt><dd>${esc(tx(p.notas).join(", "))}</dd></div>
             ${T.datos.map(([k, v]) => `<div><dt>${esc(tx(k))}</dt><dd>${esc(tx(v))}</dd></div>`).join("")}
-            <div><dt>${en ? "Cupped by" : "Catador"}</dt><dd>${esc(T.catador)} · ${fmtFecha(T.fecha)}</dd></div>
+            <div><dt>${en ? "Cupped" : "Catado"}</dt><dd>${fmtFecha(T.fecha)}</dd></div>
           </dl>
         </div>
       </div>
     </section>`;
 }
+/* Tocar, señalar o llegar con el teclado a un atributo cuenta qué es. */
+function leerTaza(e) {
+  const a = e.target.closest?.(".tz-at");
+  if (!a) return;
+  const z = a.closest(".tz"), o = z.querySelector(".tz-lee");
+  z.querySelectorAll(".tz-at.on").forEach((x) => x.classList.remove("on"));
+  a.classList.add("on");
+  o.innerHTML = `<b>${esc(a.dataset.l)} · ${esc(a.dataset.v)}</b><span>${esc(a.dataset.d)}</span>`;
+}
+if (typeof document !== "undefined" && document.addEventListener) ["pointerover", "focusin", "click"].forEach((t) => document.addEventListener(t, leerTaza));
 
 /* ---------- ficha del café ---------- */
 function viewCafe() {
@@ -394,8 +423,8 @@ function viewCafe() {
       <p class="eyebrow">${esc([conocido(f.productor) && tr(f.productor), conocido(f.finca) && tr(f.finca), f.municipio && !String(f.finca || "").includes(f.municipio) && f.municipio].filter(Boolean).join(" · ") || t("nav_cafes_esp"))}</p>
       <h1>${esc(tx(p.nombre))}</h1>
       <p class="lede">${esc(historiaPublica(f) || (f.municipio
-        ? (en ? `${esMolido(p) ? "Ground" : "Whole bean"} coffee from ${f.municipio}, Norte de Santander${p.altitud ? `, grown at ${msnm(p.altitud)}` : ""}.`
-              : `Café ${esMolido(p) ? "molido" : "en grano"} de ${f.municipio}, Norte de Santander${p.altitud ? `, cultivado a ${msnm(p.altitud)}` : ""}.`)
+        ? (en ? `${esMolido(p) ? "Ground" : "Whole bean"} coffee from ${f.municipio}, Norte de Santander${p.altitud ? `, grown at ${msnm(p.altitud)}` : ""}${f.mezcla ? `. Varieties: ${tr(p.variedad)}` : ""}.`
+              : `Café ${esMolido(p) ? "molido" : "en grano"} de ${f.municipio}, Norte de Santander${p.altitud ? `, cultivado a ${msnm(p.altitud)}` : ""}${f.mezcla ? `. Variedades: ${tr(p.variedad)}` : ""}.`)
         : (en ? "Whole bean coffee from Norte de Santander." : "Café en grano de Norte de Santander.")))}</p>
       ${compra}
     </div>
@@ -419,8 +448,7 @@ function viewCafe() {
         <thead><tr><th scope="col">${en ? "Data" : "Dato"}</th><th scope="col">${en ? "Value" : "Valor"}</th><th scope="col">${en ? "Level" : "Nivel"}</th><th scope="col">${en ? "Who checked it" : "Quién lo comprobó"}</th></tr></thead>
         <tbody>
         ${attr(en ? "Variety" : "Variedad", fi.variedad)}${attr(en ? "Altitude" : "Altitud", fi.altitud, msnm)}
-        ${attr(en ? "Process" : "Proceso", fi.proceso)}${attr(en ? "SCA score" : "Puntaje SCA", fi.puntaje, (x) => x)}
-        ${attr(en ? "Yield factor" : "Factor de rendimiento", fi.factor, (x) => x)}
+        ${attr(en ? "Process" : "Proceso", fi.proceso)}${attr(en ? "Roasted" : "Tostión", fi.tostion, fmtFecha)}${attr(en ? "SCA score" : "Puntaje SCA", fi.puntaje, (x) => x)}
         </tbody>
       </table>
       <dl class="leyenda">${Object.values(LV).map((o) => `<div style="--c:${o.c}"><dt><i></i>${tx(o.label)}</dt><dd>${tx(o.desc)}</dd></div>`).join("")}</dl>
@@ -581,6 +609,11 @@ const mayus = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
 /* La pasarela está lista cuando hay llave pública; sin ella el carrito sigue como antes */
 const pasarelaLista = () => CONFIG.pagos.pasarela === "wompi" && /^pub_(test|prod)_/.test(CONFIG.pagos.wompi?.llavePublica || "");
+/* Mercado Pago con total del servidor (api/checkout.js): se prende con pasarela: "mercadopago",
+   cuando MP_ACCESS_TOKEN ya está en Vercel. Si el servidor no responde, el carrito ofrece el pago manual. */
+const mpLista = () => CONFIG.pagos.pasarela === "mercadopago";
+const pagoEnLinea = () => pasarelaLista() || mpLista();
+const pasarelaNombre = () => (pasarelaLista() ? "Wompi" : "Mercado Pago");
 
 /* Formas de pago que la tienda puede ofrecer hoy; la primera queda marcada */
 function metodosPago() {
@@ -593,6 +626,13 @@ function metodosPago() {
     marcas: ["Visa", "Mastercard", "PSE", "Nequi", "Bancolombia"],
     det: en ? "Wompi's secure checkout (Bancolombia group) opens over this page. Your card never goes through our servers."
             : "Se abre el pago seguro de Wompi (Grupo Bancolombia) encima de esta página. Tu tarjeta no pasa por nuestros servidores.",
+  });
+  else if (mpLista()) ops.push({
+    id: "mp", nom: en ? "Card, PSE or Nequi" : "Tarjeta, PSE o Nequi",
+    sub: en ? "Secure payment with Mercado Pago." : "Pago seguro con Mercado Pago.",
+    marcas: ["Visa", "Mastercard", "PSE", "Nequi"],
+    det: en ? "We take you to Mercado Pago to pay and bring you back here. Your card never goes through our servers."
+            : "Te llevamos a Mercado Pago para pagar y te traemos de vuelta. Tu tarjeta no pasa por nuestros servidores.",
   });
   else if (CONFIG.pagos.mercadoPago) ops.push({
     id: "mp", nom: "Mercado Pago",
@@ -855,6 +895,7 @@ function pedidoWA() {
 
 /* Mercado Pago: link de pago por producto, link general, o /api/checkout (Checkout Pro) */
 async function pedidoMP() {
+  if (mpLista()) return pedidoMercado();
   const d = datosPedido(); if (!d) return;
   /* Mercado Pago no recibe líneas negativas: el bono baja el precio de cada bolsa */
   const factor = UI.bono ? 1 - UI.bono.pct / 100 : 1;
@@ -865,18 +906,6 @@ async function pedidoMP() {
   const { pedido, texto } = registrarPedido(d, "mercadopago");
   if (directo) return void window.open(directo, "_blank", "noopener");
   const url = CONFIG.pagos.mercadoPago;
-  if (url.startsWith("/api/")) {
-    try {
-      const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items, pedido: pedido.id, comprador: { nombre: d.nombre, ciudad: d.ciudad, tel: d.tel } }) });
-      const j = await r.json();
-      if (j.init_point) return void (window.location.href = j.init_point);
-      throw new Error(j.error || "sin init_point");
-    } catch (e) {
-      toast(UI.lang === "en" ? "Payment could not start; send us the order instead." : "No se pudo abrir el pago; envíanos el pedido y lo confirmamos.", { type: "err" });
-      return confirmacionPedido(pedido, texto);
-    }
-  }
   if (mpEscribeMonto()) return pagoEnMP(pedido, url);
   window.open(url, "_blank", "noopener");
 }
@@ -900,6 +929,80 @@ function pagoEnMP(pedido, url) {
       <a class="btn primary" href="${esc(url)}" target="_blank" rel="noopener">${en ? "Open Mercado Pago" : "Abrir Mercado Pago"}</a></div>
     <p class="hint">${en ? `Already paid? Write to ${CONFIG.correo} with your order number.`
                         : `¿Ya pagaste? Escríbenos a ${CONFIG.correo} con tu número de pedido.`}</p>`, "narrow");
+}
+
+/* ---------- pago con Mercado Pago (api/checkout.js) ----------
+   Igual que con Wompi, el servidor hace la cuenta, aparta las bolsas y crea el cobro.
+   La diferencia: Mercado Pago es una página aparte. Antes de irse, se guarda el pedido;
+   al volver (?pago=ok) se recoge y se muestra el resultado. Quien marca el pago como
+   recibido es el aviso de Mercado Pago a api/webhook.js, no esta vuelta. */
+const MP_KEY = "nandez-mp";
+async function pedidoMercado() {
+  const en = UI.lang === "en";
+  if (UI.pagando) return;
+  const d = datosPedido({ correoObligatorio: true }); if (!d) return;
+  medir("pagar", { ids: UI.carrito.map((i) => i.id), valor: totalCarrito(), n: unidadesCarrito() });
+  UI.pagando = true; renderCarrito();
+  let j;
+  try {
+    const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: UI.carrito.map((i) => ({ id: i.id, g: i.g, n: i.n })), bono: UI.bono?.codigo || "",
+        comprador: d, idioma: UI.lang, reemplaza: reserva.leer() }) });
+    j = await r.json();
+  } catch { j = { ok: false, error: "red" }; }
+  UI.pagando = false; renderCarrito();
+  if (!j || !j.ok || !j.url) return errorPago(j || {});
+  reserva.poner(j.reference);
+  const visto = totalCarrito() - descuentoCarrito() + envioDe(totalCarrito());
+  if (j.total !== visto) {
+    UI.cobro = { j, d, mp: true };
+    return modal(en ? "The total changed" : "El total cambió", `
+      <p class="hint">${en ? `Prices were updated since you opened the page. Your total is now <b>${cop(j.total)}</b>, not ${cop(visto)}.`
+        : `Los precios se actualizaron desde que abriste la página. Tu total ahora es <b>${cop(j.total)}</b>, no ${cop(visto)}.`}</p>
+      <div class="dlg-actions"><button class="btn" data-act="close">${en ? "Cancel" : "Cancelar"}</button>
+        <button class="btn primary" data-act="pago-abrir">${t("pagar_ahora")} · ${cop(j.total)}</button></div>`, "narrow");
+  }
+  irAMercado(j, d);
+}
+function irAMercado(j, d) {
+  try { localStorage.setItem(MP_KEY, JSON.stringify({ j, d })); } catch {}
+  window.location.href = j.url;
+}
+/* Al volver de Mercado Pago: la dirección trae ?pago=ok|pendiente|fallo&pedido=… */
+function volverDeMercado() {
+  const q = new URLSearchParams(location.search), est = q.get("pago"); if (!est) return;
+  history.replaceState(history.state, "", location.pathname + location.hash);
+  let g = null; try { g = JSON.parse(localStorage.getItem(MP_KEY)); } catch {}
+  const mio = !!(g && g.j && g.j.reference === q.get("pedido"));
+  try { localStorage.removeItem(MP_KEY); } catch {}
+  if (est === "ok" || est === "pendiente") {
+    if (mio) { registrarPedido(g.d, "mercadopago", g.j); reserva.poner(""); }
+    return pagoMostrar(est === "ok", mio ? g.j : { reference: q.get("pedido") || "", total: 0 }, mio ? g.d.correo : "");
+  }
+  const en = UI.lang === "en";
+  modal(en ? "The payment did not go through" : "El pago no pasó", `
+    <p class="hint">${en ? "Nothing was charged. Your cart is still here: you can try again."
+      : "No se cobró nada. Tu carrito sigue aquí: puedes intentar otra vez."}</p>
+    <div class="dlg-actions"><button class="btn" data-act="close">${en ? "Close" : "Cerrar"}</button>
+      <button class="btn primary" data-act="pago-reintentar">${en ? "Try again" : "Intentar otra vez"}</button></div>`, "narrow");
+}
+/* Lo que ve la persona cuando el pago quedó aprobado o en proceso (Wompi y Mercado Pago) */
+function pagoMostrar(ok, j, correo) {
+  const en = UI.lang === "en", pre = preventaAbierta();
+  modal(ok ? (en ? "Payment received" : "Pago recibido") : (en ? "Payment in process" : "Pago en proceso"), `
+    <ol class="pasos-pedido">
+      <li><b>${j.reference ? (en ? `Order ${esc(j.reference)}` : `Pedido ${esc(j.reference)}`) + (j.total ? ` · ${cop(j.total)}` : "") : (en ? "Your order" : "Tu pedido")}</b>
+        <span>${ok ? (correo ? (en ? `The receipt reaches ${esc(correo)} in a few minutes.` : `La constancia te llega a ${esc(correo)} en unos minutos.`)
+              : (en ? "The receipt reaches your email in a few minutes." : "La constancia te llega al correo en unos minutos."))
+          : (en ? "Your bank is confirming it. We email you as soon as it clears." : "Tu banco lo está confirmando. Te escribimos apenas pase.")}</span></li>
+      <li><b>${pre ? (en ? "Pre-order: we ship it from launch day." : "Preventa: lo despachamos desde el día del lanzamiento.")
+                   : (en ? "We ship it." : "Lo despachamos.")}</b>
+        <span>${pre ? (en ? `Dispatch starts ${fmtFecha(entregaPreventa())}. You get the tracking number by email.`
+                          : `Los despachos arrancan el ${fmtFecha(entregaPreventa())}. La guía te llega al correo.`)
+          : (en ? `It arrives in ${tx(CONFIG.envio.dias)} with ${CONFIG.envio.transportadora}; the tracking number reaches your email.`
+            : `Llega en ${tx(CONFIG.envio.dias)} por ${CONFIG.envio.transportadora}; la guía te llega al correo.`)}</span></li>
+    </ol>
+    <div class="dlg-actions"><button class="btn primary" data-act="close">${en ? "Done" : "Listo"}</button></div>`, "narrow");
 }
 
 /* ---------- pago con Wompi, dentro de la página ----------
@@ -986,17 +1089,7 @@ function resultadoPago(tr, j, d) {
   if (estado === "APPROVED" || estado === "PENDING") {
     registrarPedido(d, "wompi", j);
     reserva.poner("");
-    const ok = estado === "APPROVED";
-    return modal(ok ? (en ? "Payment received" : "Pago recibido") : (en ? "Payment in process" : "Pago en proceso"), `
-      <ol class="pasos-pedido">
-        <li><b>${en ? `Order ${esc(j.reference)} · ${cop(j.total)}` : `Pedido ${esc(j.reference)} · ${cop(j.total)}`}</b>
-          <span>${ok ? (en ? `The receipt reaches ${esc(d.correo)} in a few minutes.` : `La constancia te llega a ${esc(d.correo)} en unos minutos.`)
-            : (en ? "Your bank is confirming it. We email you as soon as it clears." : "Tu banco lo está confirmando. Te escribimos apenas pase.")}</span></li>
-        <li><b>${en ? "We ship it." : "Lo despachamos."}</b>
-          <span>${en ? `It arrives in ${tx(CONFIG.envio.dias)} with ${CONFIG.envio.transportadora}; the tracking number reaches your email.`
-            : `Llega en ${tx(CONFIG.envio.dias)} por ${CONFIG.envio.transportadora}; la guía te llega al correo.`}</span></li>
-      </ol>
-      <div class="dlg-actions"><button class="btn primary" data-act="close">${en ? "Done" : "Listo"}</button></div>`, "narrow");
+    return pagoMostrar(estado === "APPROVED", j, d.correo);
   }
   /* No pasó, o cerró la ventana: el carrito sigue como estaba para reintentar */
   if (!estado) return;
@@ -1033,8 +1126,8 @@ function errorPago(j) {
 document.addEventListener("click", (e) => {
   const el = e.target.closest("[data-act='pago-abrir'],[data-act='pago-reintentar']"); if (!el) return;
   closeModal();
-  if (el.dataset.act === "pago-abrir" && UI.cobro) { const { j, d } = UI.cobro; UI.cobro = null; return abrirWompi(j, d); }
-  if (el.dataset.act === "pago-reintentar") { abrirCarrito(); pedidoWompi(); }
+  if (el.dataset.act === "pago-abrir" && UI.cobro) { const { j, d, mp } = UI.cobro; UI.cobro = null; return mp ? irAMercado(j, d) : abrirWompi(j, d); }
+  if (el.dataset.act === "pago-reintentar") { abrirCarrito(); mpLista() ? pedidoMercado() : pedidoWompi(); }
 });
 
 function copiar(texto) {

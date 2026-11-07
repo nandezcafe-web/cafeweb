@@ -215,13 +215,16 @@ function bonoVigente_(ss, codigo) {
 }
 
 /* ---------- pedidos ---------- */
+/* Los canales que cobran dentro de la página: reservan las bolsas mientras la persona paga */
+const PASARELAS = ["wompi", "mercadopago"];
+const esPasarela_ = (canal) => PASARELAS.indexOf(String(canal)) >= 0;
 function pedido_(ss, d, correo) {
   const h = hojaDe_(ss, H_PEDIDOS), id = corto_(d.id, 40) || "NDZ-" + Utilities.getUuid().slice(0, 8).toUpperCase();
   const items = Array.isArray(d.items) ? d.items : [];
   const productos = items.map((i) => num_(i.n) + " × " + corto_(i.nombre, 80) + (i.forma ? " (" + corto_(i.forma, 60).toLowerCase() + ")" : "")).join("\n");
   /* Con pasarela es todo o nada: si no alcanza, no se escribe el pedido, no se
      gasta el bono y no se aparta ninguna bolsa. La página le dice qué se agotó. */
-  if (d.canal === "wompi") { const faltan = faltantes_(ss, items); if (faltan.length) return { id: null, falta: faltan }; }
+  if (esPasarela_(d.canal)) { const faltan = faltantes_(ss, items); if (faltan.length) return { id: null, falta: faltan }; }
   let notas = "", bono = "";
   if (d.bono) {
     const b = bonoVigente_(ss, d.bono);
@@ -246,7 +249,7 @@ function pedido_(ss, d, correo) {
   /* Con pasarela el pedido es una reserva mientras la persona paga: ni a Nandez ni
      al cliente se les escribe todavía. Los dos correos salen en pago_, con el pago
      confirmado; así nadie recibe "te escribimos cómo pagar" después de pagar. */
-  if (d.canal === "wompi") return { id: id, falta: falta };
+  if (esPasarela_(d.canal)) return { id: id, falta: falta };
   /* a Nandez, enseguida; al cliente, la constancia de que llegó */
   if (MailApp.getRemainingDailyQuota() > 0)
     MailApp.sendEmail({ to: Session.getEffectiveUser().getEmail(), name: MARCA, subject: "Pedido nuevo " + id + " · " + pesos_(d.total),
@@ -351,7 +354,7 @@ function pago_(d) {
       anotar("Pago anulado por la pasarela (" + ref + ").");
       const antes = f[2];
       if (antes === "pagado") h.getRange(r, 3).setValue("nuevo");
-      avisoNandez_("Pago anulado " + f[0], "Wompi anuló el pago de " + f[0] + ". " +
+      avisoNandez_("Pago anulado " + f[0], "La pasarela anuló el pago de " + f[0] + ". " +
         (antes === "pagado" ? "Volvió a «nuevo»: no lo despaches." : "Ya estaba " + antes + ": revísalo.") + "\n\n" + ref);
       return json_({ ok: true, estado: antes === "pagado" ? "nuevo" : antes, anulado: true });
     }
@@ -427,7 +430,7 @@ function liberarReservas() {
     let n = 0;
     for (let i = 1; i < filas.length; i++) {
       const f = filas[i];
-      if (f[13] !== "wompi" || f[2] !== "nuevo" || new Date(f[1]).getTime() > limite) continue;
+      if (!esPasarela_(f[13]) || f[2] !== "nuevo" || new Date(f[1]).getTime() > limite) continue;
       devolverStock_(ss, itemsDe_(f[23]));
       liberarBono_(ss, f[12], f[0]);
       h.getRange(i + 1, 3).setValue("cancelado");
@@ -447,7 +450,7 @@ function cambiarPedido_(d) {
   if (i < 0) return json_({ ok: false, error: "no" });
   const r = i + 1, f = filas[i];
   /* la página solo puede soltar su propia reserva: sin pagar y de la pasarela */
-  if (d.soloReserva && (f[2] !== "nuevo" || f[13] !== "wompi")) return json_({ ok: false, error: "no-es-reserva" });
+  if (d.soloReserva && (f[2] !== "nuevo" || !esPasarela_(f[13]))) return json_({ ok: false, error: "no-es-reserva" });
   /* cancelar devuelve las bolsas y el bono, y solo la primera vez */
   if (d.estado === "cancelado" && f[2] !== "cancelado") { devolverStock_(ss, itemsDe_(f[23])); liberarBono_(ss, f[12], f[0]); }
   h.getRange(r, 3).setValue(d.estado);
