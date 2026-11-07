@@ -163,8 +163,8 @@ function pagina(ctx, { view, id }, lang) {
 <link rel="alternate" hreflang="x-default" href="${alt.es}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${ev(ctx, "CONFIG.marca")}">
-<meta property="og:title" content="${M.t}">
-<meta property="og:description" content="${M.d.replace(/"/g, "&quot;")}">
+<meta property="og:title" content="${M.ot || M.t}">
+<meta property="og:description" content="${(M.od || M.d).replace(/"/g, "&quot;")}">
 <meta property="og:url" content="${url}">
 <meta property="og:locale" content="${lang === "en" ? "en_US" : "es_CO"}">
 <meta name="twitter:card" content="summary_large_image">

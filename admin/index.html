@@ -2324,9 +2324,12 @@ function meta(view, id) {
   const M = {
     inicio: en
       ? { t: marca + " · Single origin Colombian coffee from Norte de Santander",
-          d: "A coffee-growing family from Chinácota, Colombia. We buy small lots from farms across Norte de Santander and roast them under our own name: two single farm coffees, whole bean, and a ground blend of the two." }
+          d: "A coffee-growing family from Chinácota, Colombia. We buy small lots from farms across Norte de Santander and roast them under our own name: two single farm coffees, whole bean, and a ground blend of the two.",
+          /* ot y od: lo que se ve al compartir el link (WhatsApp corta en unos 100 caracteres). Sin ellos, salen t y d. */
+          ot: marca + " · Your farm coffee plug", od: "Every bag carries its farm, its grower and its score. Coffee from Norte de Santander with a name of its own." }
       : { t: marca + " · Café de origen de Norte de Santander",
-          d: "Familia cafetera de Chinácota. Compramos lotes pequeños en fincas de Norte de Santander y los tostamos con nuestro nombre: dos cafés de una sola finca, en grano, y un blend molido de los dos." },
+          d: "Familia cafetera de Chinácota. Compramos lotes pequeños en fincas de Norte de Santander y los tostamos con nuestro nombre: dos cafés de una sola finca, en grano, y un blend molido de los dos.",
+          ot: marca + " · Tu plug de café de finca", od: "Cada bolsa trae su finca, su productor y su puntaje. Café de Norte de Santander con nombre propio." },
     tienda: en
       ? { t: "Shop · " + marca, d: "Specialty coffee from Norte de Santander, whole bean and ground, plus brewing gear and Nandez Coffee Gang merch." }
       : { t: "Tienda · " + marca, d: "Café de especialidad de Norte de Santander, en grano y molido, accesorios para prepararlo y merch Nandez Coffee Gang." },

@@ -409,8 +409,8 @@ function actualizarMeta() {
   const set = (sel, attr, val) => { const el = document.head.querySelector(sel); if (el) el.setAttribute(attr, val); };
   set('meta[name="description"]', "content", M.d);
   set('link[rel="canonical"]', "href", url);
-  set('meta[property="og:title"]', "content", M.t);
-  set('meta[property="og:description"]', "content", M.d);
+  set('meta[property="og:title"]', "content", M.ot || M.t);
+  set('meta[property="og:description"]', "content", M.od || M.d);
   set('meta[property="og:url"]', "content", url);
   set('meta[property="og:locale"]', "content", UI.lang === "en" ? "en_US" : "es_CO");
   set('link[rel="alternate"][hreflang="es"]', "href", CONFIG.sitio + ruta(UI.view, id, "es"));
