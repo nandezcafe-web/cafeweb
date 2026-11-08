@@ -246,7 +246,7 @@ function viewTienda() {
         <span class="g-puerta-txt"><small>01 · ${n} ${en ? "coffees" : "cafés"}${ya < n ? ` · ${ya} ${en ? "on sale" : "a la venta"}` : ""}</small>
           <b>${t("nav_cafes_esp")}</b><i>${en ? "Two single farm, whole bean, and a ground blend." : "Dos de una sola finca, en grano, y un blend molido."}</i></span></a>
       <a class="g-puerta oscura reveal" style="--i:4" href="${ruta("accesorios")}" data-act="go" data-to="accesorios">
-        <span class="g-puerta-art"><span class="g-pronto">Nandez Coffee Gang<i>${t("proximamente")}</i></span></span>
+        <span class="g-puerta-art"><img class="g-prod-foto" src="${foto("/img/productos/m-gor.jpg")}" width="640" height="640" alt="" loading="lazy" decoding="async"><span class="g-acc-pronto">${t("proximamente")}</span><span class="g-pronto">Nandez Coffee Gang<i>${t("proximamente")}</i></span></span>
         <span class="g-puerta-txt"><small>02 · ${accesoriosVisibles().length} ${en ? "pieces" : "piezas"} · ${t("proximamente").toLowerCase()}</small>
           <b>${t("nav_accesorios")}</b><i>${conPreparar()
             ? (en ? "Dripper, grinder, kettle, and things to wear." : "Gotero, molino, tetera, y algo para ponerse.")
@@ -255,13 +255,17 @@ function viewTienda() {
 }
 
 function accesorioCard(a, i = 0) {
-  return `<article class="g-acc reveal" style="--pc:${a.color};--i:${i}">
-    <div class="g-acc-art" data-act="espera" data-id="${a.id}" role="button" tabindex="0" aria-label="${esc(tx(a.nombre))}">
-      <span class="g-acc-n">${String(i + 1).padStart(2, "0")}</span><b>${esc(tx(a.nombre))}</b></div>
+  /* Con foto, el merch se asoma borroso (el desenfoque va en el archivo: la foto
+     nítida no se publica) y el nombre baja al texto de la tarjeta. */
+  return `<article class="g-acc reveal${a.foto ? " con-foto" : ""}" style="--pc:${a.color};--i:${i}">
+    <div class="g-acc-art" data-act="espera" data-id="${a.id}" role="button" tabindex="0" aria-label="${esc(`${tx(a.nombre)} · ${t("proximamente")} · ${t("avisame")}`)}">
+      ${a.foto ? `<img class="g-acc-foto" src="${foto(a.foto)}" width="640" height="640" alt="" loading="lazy" decoding="async"><span class="g-acc-pronto">${t("proximamente")}</span>`
+        : `<span class="g-acc-n">${String(i + 1).padStart(2, "0")}</span><b>${esc(tx(a.nombre))}</b>`}</div>
     <div class="g-acc-body">
+      ${a.foto ? `<h3>${esc(tx(a.nombre))}</h3>` : ""}
       <p>${esc(tx(a.desc))}</p>
       <div class="g-prod-foot">${a.proximamente
-        ? `<b>${t("proximamente")}</b><button class="btn sm" data-act="espera" data-id="${a.id}">${t("avisame")}</button>`
+        ? `${a.foto ? "" : `<b>${t("proximamente")}</b>`}<button class="btn sm" data-act="espera" data-id="${a.id}">${t("avisame")}</button>`
         : `<b class="mono">${cop(a.precio)}</b>`}</div>
     </div></article>`;
 }

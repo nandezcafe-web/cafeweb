@@ -2208,14 +2208,14 @@ const ACCESORIOS = [
     desc: { es: "Para verter despacio y en círculos.", en: "To pour slowly, in circles." } },
   { id: "A-SRV", grupo: "preparar", color: "#6B645C", proximamente: true, nombre: { es: "Servidor de vidrio 600 ml", en: "600 ml glass server" },
     desc: { es: "Para dos tazas, o una muy larga.", en: "For two cups, or one very long one." } },
-  { id: "M-CAM", grupo: "merch", color: "#C9381A", proximamente: true, nombre: { es: "Camiseta Nandez Coffee Gang", en: "Nandez Coffee Gang T-shirt" },
-    desc: { es: "Diseño por confirmar.", en: "Design to be confirmed." } },
-  { id: "M-GOR", grupo: "merch", color: "#141210", proximamente: true, nombre: { es: "Gorra Nandez", en: "Nandez cap" },
-    desc: { es: "Diseño por confirmar.", en: "Design to be confirmed." } },
-  { id: "M-TAZ", grupo: "merch", color: "#2F5A3C", proximamente: true, nombre: { es: "Taza de cerámica", en: "Ceramic mug" },
-    desc: { es: "Diseño por confirmar.", en: "Design to be confirmed." } },
-  { id: "M-TOT", grupo: "merch", color: "#9A6610", proximamente: true, nombre: { es: "Bolsa de tela", en: "Tote bag" },
-    desc: { es: "Diseño por confirmar.", en: "Design to be confirmed." } },
+  { id: "M-CAM", grupo: "merch", foto: "/img/productos/m-cam.jpg", color: "#C9381A", proximamente: true, nombre: { es: "Camiseta Nandez Coffee Gang", en: "Nandez Coffee Gang T-shirt" },
+    desc: { es: "Déjanos tu correo y te avisamos el día que salga.", en: "Leave your email and we will tell you the day it is out." } },
+  { id: "M-GOR", grupo: "merch", foto: "/img/productos/m-gor.jpg", color: "#141210", proximamente: true, nombre: { es: "Gorra Nandez", en: "Nandez cap" },
+    desc: { es: "Déjanos tu correo y te avisamos el día que salga.", en: "Leave your email and we will tell you the day it is out." } },
+  { id: "M-TAZ", grupo: "merch", foto: "/img/productos/m-taz.jpg", color: "#2F5A3C", proximamente: true, nombre: { es: "Taza de cerámica", en: "Ceramic mug" },
+    desc: { es: "Déjanos tu correo y te avisamos el día que salga.", en: "Leave your email and we will tell you the day it is out." } },
+  { id: "M-TOT", grupo: "merch", foto: "/img/productos/m-tot.jpg", color: "#9A6610", proximamente: true, nombre: { es: "Bolsa de tela", en: "Tote bag" },
+    desc: { es: "Déjanos tu correo y te avisamos el día que salga.", en: "Leave your email and we will tell you the day it is out." } },
 ];
 const itemById = (id) => prodById(id) || ACCESORIOS.find((a) => a.id === id);
 const accesoriosVisibles = () => ACCESORIOS.filter((a) => CONFIG.accesoriosVisibles.includes(a.grupo));

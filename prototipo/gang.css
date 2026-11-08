@@ -872,3 +872,18 @@ html.js .tz:not(.in) .tz-at{opacity:0}
 @media (prefers-reduced-motion:reduce){
   .tz-capa,.tz-at{transition:none}
 }
+
+/* El merch que viene: la foto borrosa llena el marco y "Próximamente" va encima. */
+.g-acc.con-foto .g-acc-art{padding:0;display:block}
+.g-acc-foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.04);transition:transform .6s var(--ease-out)}
+.g-acc.con-foto .g-acc-art::after{content:"";position:absolute;inset:0;background:rgba(20,18,16,.26)}
+.g-acc-pronto{position:absolute;z-index:1;inset:0;display:grid;place-items:center;padding:12px;text-align:center;color:var(--paper);font:800 clamp(1.5rem,2.7vw,2.3rem)/1 var(--display);letter-spacing:-.03em;text-transform:uppercase}
+@media (hover:hover) and (pointer:fine){.g-acc.con-foto:hover .g-acc-foto{transform:scale(1.1)}}
+.g-acc-body h3{margin:0;font-size:1.25rem;line-height:1.05;text-transform:uppercase}
+@media (max-width:760px){.g-acc-pronto{font-size:1.05rem}}
+
+/* La puerta del merch: la gorra borrosa con un velo para que se lea lo de encima.
+   Sin el giro del hover: la foto llena el marco y se le verían las esquinas. */
+.g-puerta.oscura .g-puerta-art::after{content:"";position:absolute;inset:0;z-index:1;background:rgba(20,18,16,.26)}
+.g-puerta.oscura .g-acc-pronto{z-index:2;font-size:clamp(1.7rem,3.6vw,3rem)}
+@media (hover:hover) and (pointer:fine){.g-puerta.oscura:hover .g-prod-foto{transform:scale(1.04)}}
