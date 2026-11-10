@@ -179,7 +179,8 @@ function pagina(ctx, { view, id }, lang) {
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#F5F0E6">
 <meta name="color-scheme" content="light">
-${FUENTES_GANG}
+${ev(ctx, "CONFIG.medicion && CONFIG.medicion.metaDominio") ? `<meta name="facebook-domain-verification" content="${ev(ctx, "CONFIG.medicion.metaDominio")}">
+` : ""}${FUENTES_GANG}
 <link rel="stylesheet" href="/styles.css?v=${VERSION}">
 <link rel="stylesheet" href="/auction.css?v=${VERSION}">
 <link rel="stylesheet" href="/gang.css?v=${VERSION}">

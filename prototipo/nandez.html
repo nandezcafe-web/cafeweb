@@ -2865,8 +2865,12 @@ const CONFIG = {
      propia: la bitácora de Nandez en la Hoja de Google (visitas, cafés vistos,
      carritos), que se ve en el panel, pestaña Actividad. Solo anota a quien
      acepta las cookies, y se prende sola cuando el script de la hoja ya la
-     recibe; con false no se anota nada. */
-  medicion: { metaPixel: "1805850087187226", ga4: "", propia: true },
+     recibe; con false no se anota nada.
+     metaDominio: la cadena que Meta da en Seguridad de la marca → Dominios para
+     verificar nandezcoffee.com. Puesta aquí, sale en el <head> de las 30 páginas;
+     vacía, no sale nada. Se puede verificar por ahí o por el registro TXT del DNS:
+     con una de las dos basta. Sin verificar, iOS recorta las compras. */
+  medicion: { metaPixel: "1805850087187226", ga4: "", propia: true, metaDominio: "" },
   pagos: {
     /* La pasarela que cobra DENTRO de la página. Se prende sola apenas haya llave
        pública (pub_test_… para probar, pub_prod_… para vender). Los secretos NO van
@@ -3851,7 +3855,7 @@ function bitacoraEnviar(cuerpo) {
 }
 function bitacora(evento, datos) {
   if (!bitacoraActiva()) return;
-  bitacoraEnviar({ tipo: "evento", evento, detalle: datos.nombre || "", valor: Number(datos.valor) || 0, pagina: location.pathname });
+  bitacoraEnviar({ tipo: "evento", evento, detalle: datos.nombre || datos.pedido || "", valor: Number(datos.valor) || 0, pagina: location.pathname });
   /* si acaba de dejar el correo y ya tenía carrito, ese carrito ya tiene dueño */
   if (evento === "registro" && UI.carrito.length) bitacoraCarrito();
 }
@@ -3903,12 +3907,17 @@ function medir(evento, datos = {}) {
   bitacora(evento, datos);
   const [meta, google] = par;
   const valor = Number(datos.valor) || 0;
+  /* El número del pedido va como order_id: es lo que deja a Meta contar una sola
+     compra el día que el mismo pago llegue también desde el servidor (la API de
+     conversiones). Google pide lo mismo con otro nombre, transaction_id. */
   if (window.fbq) window.fbq("track", meta, {
     content_name: datos.nombre || "", content_ids: datos.ids || [], content_type: "product",
     value: valor, currency: "COP", ...(datos.n ? { num_items: datos.n } : {}),
+    ...(datos.pedido ? { order_id: datos.pedido } : {}),
   });
   if (window.gtag) window.gtag("event", google, {
     currency: "COP", value: valor,
+    ...(datos.pedido ? { transaction_id: datos.pedido } : {}),
     ...(datos.ids ? { items: datos.ids.map((id) => ({ item_id: id })) } : {}),
   });
 }
@@ -5126,6 +5135,9 @@ function registrarPedido(d, canal, srv) {
   ]);
   /* el pedido salió: ese carrito ya no está abandonado, y el correo queda para el siguiente */
   recordarCorreo(d.correo);
+  /* Qué se compró, guardado aparte: la compra se le cuenta a Meta cuando la
+     pasarela confirma el pago, y para entonces el carrito ya está vacío. */
+  UI.comprado = { ref: pedido.id, ids: items.map((i) => i.id), n: items.reduce((s, i) => s + i.n, 0) };
   UI.carrito = []; guardarCarrito(); bitacoraCarrito(true); if (UI.bono) quitarBono(false); save(); cerrarCarrito(); render();
   const guardado = srv ? Promise.resolve(true) : enviarAviso("pedido", { ...pedido, texto });
   return { pedido, texto, guardado };
@@ -5276,7 +5288,11 @@ function volverDeMercado() {
 function pagoMostrar(ok, j, correo) {
   const en = UI.lang === "en", pre = preventaAbierta();
   /* la compra se cuenta cuando la pasarela dijo que sí, no al abrir la caja */
-  if (ok) medir("compra", { nombre: j.reference || "", valor: j.total || 0 });
+  if (ok) {
+    /* los cafés del pedido, si es el pedido que se armó en este navegador */
+    const c = UI.comprado && UI.comprado.ref === j.reference ? UI.comprado : null;
+    medir("compra", { pedido: j.reference || "", valor: j.total || 0, ids: c ? c.ids : [], ...(c ? { n: c.n } : {}) });
+  }
   modal(ok ? (en ? "Payment received" : "Pago recibido") : (en ? "Payment in process" : "Pago en proceso"), `
     <ol class="pasos-pedido">
       <li><b>${j.reference ? (en ? `Order ${esc(j.reference)}` : `Pedido ${esc(j.reference)}`) + (j.total ? ` · ${cop(j.total)}` : "") : (en ? "Your order" : "Tu pedido")}</b>

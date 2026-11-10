@@ -994,6 +994,9 @@ function registrarPedido(d, canal, srv) {
   ]);
   /* el pedido salió: ese carrito ya no está abandonado, y el correo queda para el siguiente */
   recordarCorreo(d.correo);
+  /* Qué se compró, guardado aparte: la compra se le cuenta a Meta cuando la
+     pasarela confirma el pago, y para entonces el carrito ya está vacío. */
+  UI.comprado = { ref: pedido.id, ids: items.map((i) => i.id), n: items.reduce((s, i) => s + i.n, 0) };
   UI.carrito = []; guardarCarrito(); bitacoraCarrito(true); if (UI.bono) quitarBono(false); save(); cerrarCarrito(); render();
   const guardado = srv ? Promise.resolve(true) : enviarAviso("pedido", { ...pedido, texto });
   return { pedido, texto, guardado };
@@ -1144,7 +1147,11 @@ function volverDeMercado() {
 function pagoMostrar(ok, j, correo) {
   const en = UI.lang === "en", pre = preventaAbierta();
   /* la compra se cuenta cuando la pasarela dijo que sí, no al abrir la caja */
-  if (ok) medir("compra", { nombre: j.reference || "", valor: j.total || 0 });
+  if (ok) {
+    /* los cafés del pedido, si es el pedido que se armó en este navegador */
+    const c = UI.comprado && UI.comprado.ref === j.reference ? UI.comprado : null;
+    medir("compra", { pedido: j.reference || "", valor: j.total || 0, ids: c ? c.ids : [], ...(c ? { n: c.n } : {}) });
+  }
   modal(ok ? (en ? "Payment received" : "Pago recibido") : (en ? "Payment in process" : "Pago en proceso"), `
     <ol class="pasos-pedido">
       <li><b>${j.reference ? (en ? `Order ${esc(j.reference)}` : `Pedido ${esc(j.reference)}`) + (j.total ? ` · ${cop(j.total)}` : "") : (en ? "Your order" : "Tu pedido")}</b>

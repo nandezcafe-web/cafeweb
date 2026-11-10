@@ -103,7 +103,7 @@ function bitacoraEnviar(cuerpo) {
 }
 function bitacora(evento, datos) {
   if (!bitacoraActiva()) return;
-  bitacoraEnviar({ tipo: "evento", evento, detalle: datos.nombre || "", valor: Number(datos.valor) || 0, pagina: location.pathname });
+  bitacoraEnviar({ tipo: "evento", evento, detalle: datos.nombre || datos.pedido || "", valor: Number(datos.valor) || 0, pagina: location.pathname });
   /* si acaba de dejar el correo y ya tenía carrito, ese carrito ya tiene dueño */
   if (evento === "registro" && UI.carrito.length) bitacoraCarrito();
 }
@@ -155,12 +155,17 @@ function medir(evento, datos = {}) {
   bitacora(evento, datos);
   const [meta, google] = par;
   const valor = Number(datos.valor) || 0;
+  /* El número del pedido va como order_id: es lo que deja a Meta contar una sola
+     compra el día que el mismo pago llegue también desde el servidor (la API de
+     conversiones). Google pide lo mismo con otro nombre, transaction_id. */
   if (window.fbq) window.fbq("track", meta, {
     content_name: datos.nombre || "", content_ids: datos.ids || [], content_type: "product",
     value: valor, currency: "COP", ...(datos.n ? { num_items: datos.n } : {}),
+    ...(datos.pedido ? { order_id: datos.pedido } : {}),
   });
   if (window.gtag) window.gtag("event", google, {
     currency: "COP", value: valor,
+    ...(datos.pedido ? { transaction_id: datos.pedido } : {}),
     ...(datos.ids ? { items: datos.ids.map((id) => ({ item_id: id })) } : {}),
   });
 }

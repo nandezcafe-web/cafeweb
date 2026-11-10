@@ -2632,8 +2632,12 @@ const CONFIG = {
      propia: la bitácora de Nandez en la Hoja de Google (visitas, cafés vistos,
      carritos), que se ve en el panel, pestaña Actividad. Solo anota a quien
      acepta las cookies, y se prende sola cuando el script de la hoja ya la
-     recibe; con false no se anota nada. */
-  medicion: { metaPixel: "1805850087187226", ga4: "", propia: true },
+     recibe; con false no se anota nada.
+     metaDominio: la cadena que Meta da en Seguridad de la marca → Dominios para
+     verificar nandezcoffee.com. Puesta aquí, sale en el <head> de las 30 páginas;
+     vacía, no sale nada. Se puede verificar por ahí o por el registro TXT del DNS:
+     con una de las dos basta. Sin verificar, iOS recorta las compras. */
+  medicion: { metaPixel: "1805850087187226", ga4: "", propia: true, metaDominio: "" },
   pagos: {
     /* La pasarela que cobra DENTRO de la página. Se prende sola apenas haya llave
        pública (pub_test_… para probar, pub_prod_… para vender). Los secretos NO van
