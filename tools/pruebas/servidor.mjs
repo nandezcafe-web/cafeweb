@@ -16,6 +16,7 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { RAIZ, hojaSimulada, conectar, hojaResponde, api, llamar, WOMPI } from "./simulador.mjs";
+import { mercadoPagoSimulado, TOKEN_VALIDO } from "./mp-simulado.mjs";
 
 const PUERTO = Number(process.argv[2]) || 5190;
 const SITIO = path.join(RAIZ, "prototipo");
@@ -24,6 +25,37 @@ const mundo = hojaSimulada(catalogo);
 conectar(mundo);
 process.chdir(RAIZ);   // api/_tienda.js lee prototipo/data/catalogo.json desde aquí
 const { pago, wompi } = await api();
+/* Mercado Pago simulado detrás de api/tarjeta.js, api/checkout.js y api/webhook.js */
+const MP = mercadoPagoSimulado(), fetchHoja = globalThis.fetch;
+globalThis.fetch = (url, op) => (new URL(url).host === "api.mercadopago.com" ? MP.fetch(url, op) : fetchHoja(url, op));
+process.env.MP_ACCESS_TOKEN = TOKEN_VALIDO;
+const deApi = async (f) => (await import(new URL("file:///" + path.join(RAIZ, "api", f).split(path.sep).join("/")).href)).default;
+const MANEJADORES = { "/api/pago": pago, "/api/wompi": wompi, "/api/tarjeta": await deApi("tarjeta.js"),
+  "/api/checkout": await deApi("checkout.js"), "/api/webhook": await deApi("webhook.js") };
+
+/* Los campos de tarjeta de Mercado Pago, simulados: el titular decide el resultado
+   (APRO aprueba, FUND sin fondos, SECU código mal, OTHE otro rechazo), como en su ambiente de pruebas */
+const SDK_MP = `window.MercadoPago = function (llave) { this.llave = llave; };
+MercadoPago.prototype.bricks = function () { return { create: function (tipo, id, cfg) {
+  var caja = document.getElementById(id);
+  caja.innerHTML = '<div data-mp-prueba style="display:grid;gap:6px;padding:10px;border:1px dashed #888;border-radius:8px;background:#fff;color:#111;font:14px sans-serif">' +
+    '<b>Mercado Pago · campos simulados</b><span data-monto>' + Number(cfg.initialization.amount) + '</span>' +
+    '<input data-num aria-label="Número de tarjeta" value="5031 7557 3453 0604">' +
+    '<select data-titular aria-label="Titular"><option>APRO</option><option>FUND</option><option>SECU</option><option>OTHE</option></select>' +
+    '<input data-cvv aria-label="Código de seguridad" value="123"></div>';
+  window.__ladrillos = (window.__ladrillos || 0) + 1;
+  return Promise.resolve({
+    getFormData: function () {
+      var q = function (s) { return caja.querySelector(s); };
+      if (!q("[data-num]")) return Promise.reject(new Error("sin campos"));
+      if (q("[data-num]").value.replace(/\\D/g, "").length < 15 || q("[data-cvv]").value.length < 3) return Promise.resolve(null);
+      return Promise.resolve({ token: "tok_" + q("[data-titular]").value + "_" + Math.random().toString(36).slice(2, 10),
+        payment_method_id: "master", issuer_id: "1", installments: 1, transaction_amount: cfg.initialization.amount,
+        payer: { email: (cfg.initialization.payer || {}).email || "", identification: { type: "CC", number: "1090123456" } } });
+    },
+    unmount: function () { caja.innerHTML = ""; return Promise.resolve(); }
+  });
+} }; };`;
 
 const TIPOS = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8",
   ".json": "application/json", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp",
@@ -64,8 +96,8 @@ http.createServer(async (req, res) => {
   try {
     if (u.pathname === "/hoja-prueba")
       return responder(res, 200, hojaResponde(mundo.gs, req.method, await leer(req), u.searchParams));
-    if (u.pathname === "/api/pago" || u.pathname === "/api/wompi") {
-      const r = await llamar(u.pathname === "/api/pago" ? pago : wompi, JSON.parse((await leer(req)) || "{}"));
+    if (MANEJADORES[u.pathname]) {
+      const r = await llamar(MANEJADORES[u.pathname], JSON.parse((await leer(req)) || "{}"), { host: req.headers.host });
       const { codigo, ...cuerpo } = r;
       return responder(res, codigo, cuerpo);
     }
@@ -77,11 +109,13 @@ http.createServer(async (req, res) => {
       return responder(res, 200, { ...c, aviso });
     }
     if (u.pathname === "/widget-prueba.js") return responder(res, 200, WIDGET, TIPOS[".js"]);
+    if (u.pathname === "/mp-sdk-prueba.js") return responder(res, 200, SDK_MP, TIPOS[".js"]);
     if (u.pathname === "/estado-prueba") {
       const H = mundo.H;
       return responder(res, 200, { pedidos: H("Pedidos").slice(1).map((f) => ({ id: f[0], estado: f[2], nombre: f[3], correo: f[4],
           total: f[11], iva: f[24], canal: f[13], notas: f[18], transaccion: f[26], documento: f[19], direccion: f[20], departamento: f[22] })),
-        stock: H("Stock").slice(1), correos: mundo.correos.map((c) => ({ para: c.to, asunto: c.subject })) });
+        stock: H("Stock").slice(1), correos: mundo.correos.map((c) => ({ para: c.to, asunto: c.subject })),
+        mp: { cobros: MP.cobros.map((c) => ({ llave: c.llave, monto: c.cuerpo.transaction_amount, correo: c.cuerpo.payer?.email })), pagos: Object.values(MP.pagos) } });
     }
     /* la página: rutas limpias como en Vercel (/cafes → cafes.html) */
     let f = path.join(SITIO, decodeURIComponent(u.pathname));
@@ -91,12 +125,13 @@ http.createServer(async (req, res) => {
     if (!fs.existsSync(f)) return responder(res, 404, fs.readFileSync(path.join(SITIO, "404.html"), "utf8"), TIPOS[".html"]);
     let cuerpo = fs.readFileSync(f);
     if (u.pathname === "/js/core.js") {
-      /* los tres cambios de la tienda de prueba, solo en lo que se sirve */
+      /* los cambios de la tienda de prueba, solo en lo que se sirve: la hoja simulada, las
+         llaves de prueba y el widget y los campos de tarjeta simulados */
       const txt = cuerpo.toString("utf8")
         .replace(/registro: "[^"]*"/, 'registro: "/hoja-prueba"')
-        .replace(/llavePublica: ""/, 'llavePublica: "pub_test_PRUEBA"')
-        .replace(/widget: "https:\/\/checkout\.wompi\.co\/widget\.js"/, 'widget: "/widget-prueba.js"');
-      if (!txt.includes('"/hoja-prueba"') || !txt.includes("pub_test_PRUEBA") || !txt.includes("/widget-prueba.js"))
+        .replace('wompi: { llavePublica: "", widget: "https://checkout.wompi.co/widget.js" }', 'wompi: { llavePublica: "pub_test_PRUEBA", widget: "/widget-prueba.js" }')
+        .replace('mp: { llavePublica: "", sdk: "https://sdk.mercadopago.com/js/v2" }', 'mp: { llavePublica: "TEST-PRUEBA", sdk: "/mp-sdk-prueba.js" }');
+      if (!txt.includes('"/hoja-prueba"') || !txt.includes("pub_test_PRUEBA") || !txt.includes('"/mp-sdk-prueba.js"'))
         throw new Error("no se pudo preparar core.js para la tienda de prueba");
       cuerpo = txt;
     }

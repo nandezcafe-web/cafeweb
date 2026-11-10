@@ -660,6 +660,7 @@ document.addEventListener("click", (e) => {
     case "pedido-wa": return pedidoWA();
     case "pedido-mp": return pedidoMP();
     case "pedido-wompi": return pedidoWompi();
+    case "pedido-tarjeta": return pedidoTarjeta();
     case "copiar": return copiar(el.dataset.texto);
     case "cotizar": return cotizar(id);
     case "cotizar-ok": return cotizarOk();

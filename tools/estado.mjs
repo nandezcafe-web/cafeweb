@@ -31,6 +31,11 @@ const MP = pasarela === "mercadopago";
 revisar(pasarela === "wompi" || MP, `La pasarela elegida es ${MP ? "Mercado Pago" : "Wompi"} (CONFIG.pagos.pasarela)`, 'Poner pasarela: "mercadopago" o "wompi" en prototipo/js/core.js');
 if (!MP) revisar(!!ambiente, `Llave pública de Wompi en la página${ambiente ? " · " + ambiente : ""}`,
   "Pegar la llave pública (pub_test_… para probar) en CONFIG.pagos.wompi.llavePublica, prototipo/js/core.js");
+/* sin esta llave Mercado Pago igual cobra, pero la tarjeta se paga afuera, en su página */
+const llaveMP = (core.match(/mp:\s*\{\s*llavePublica:\s*"([^"]*)"/) || [])[1] || "";
+if (MP) revisar(/^(APP_USR|TEST)-/.test(llaveMP), `Tarjeta dentro de la página: llave pública de Mercado Pago${llaveMP.startsWith("TEST-") ? " · pruebas" : ""}`,
+  "Pegar la llave pública de Mercado Pago (APP_USR-…, junto al Access Token) en CONFIG.pagos.mp.llavePublica, prototipo/js/core.js");
+if (MP) revisar(!!leer("api/tarjeta.js"), "El cobro con tarjeta dentro de la página está en api/tarjeta.js", "Falta api/tarjeta.js");
 revisar(/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(registro), "La hoja de Google está conectada (CONFIG.registro)",
   "Publicar tools/correos/Codigo.gs como aplicación web y pegar la URL /exec en CONFIG.registro");
 revisar(cat.registro === registro && Array.isArray(cat.productos) && cat.productos.every((p) => Array.isArray(p.variantes)),

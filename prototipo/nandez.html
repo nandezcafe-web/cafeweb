@@ -2532,7 +2532,7 @@ html.js .tz:not(.in) .tz-at{opacity:0}
     <a href="/cafes" data-act="go" data-to="cafes">
       <b>Lanzamiento</b>
       <span>20 de nov de 2026</span>
-      <i data-cuenta>faltan 12 días</i>
+      <i data-cuenta>faltan 10 días</i>
       <em>Reserva la tuya</em>
     </a></aside>
 <header class="top">
@@ -2849,6 +2849,11 @@ const CONFIG = {
        (necesita MP_ACCESS_TOKEN y NANDEZ_CLAVE en Vercel). Este link personal ya no se usa
        salvo que la pasarela quede en otro valor: abre Mercado Pago y el cliente escribe el monto. */
     mercadoPago: "https://link.mercadopago.com.co/nandezcoffee",
+    /* La tarjeta DENTRO de la página (Checkout Bricks de Mercado Pago): los campos los
+       pone Mercado Pago y la tarjeta nunca pasa por nuestros servidores. Se prende sola
+       con la llave pública (APP_USR-… para vender, TEST-… para probar); el cobro lo hace
+       api/tarjeta.js con MP_ACCESS_TOKEN. PSE y Nequi siguen por Mercado Pago. */
+    mp: { llavePublica: "", sdk: "https://sdk.mercadopago.com/js/v2" },
     porProducto: {},            // { "C-GEI-250": "https://mpago.la/xxxx" }
     suscripcion: {},            // { descubrir: "https://mpago.la/xxxx" }
     /* Cómo se paga mientras no haya pago en línea. POR CONFIRMAR con la cuenta real. */
@@ -2870,6 +2875,48 @@ const DEPARTAMENTOS = ["Amazonas", "Antioquia", "Arauca", "Atlántico", "Bogotá
   "Casanare", "Cauca", "Cesar", "Chocó", "Córdoba", "Cundinamarca", "Guainía", "Guaviare", "Huila", "La Guajira", "Magdalena",
   "Meta", "Nariño", "Norte de Santander", "Putumayo", "Quindío", "Risaralda", "San Andrés y Providencia", "Santander",
   "Sucre", "Tolima", "Valle del Cauca", "Vaupés", "Vichada"];
+
+/* Ciudades que, al escribirlas, llenan solas el departamento: las capitales, las más
+   grandes y los 40 municipios de Norte de Santander. Un nombre que existe en dos
+   departamentos va dos veces, y ese no se llena solo: mejor preguntar que mandar el
+   café a Toledo de Antioquia. La que no esté aquí se escribe y se escoge a mano. */
+const CIUDADES = [
+  ["Leticia", "Amazonas"], ["Medellín", "Antioquia"], ["Arauca", "Arauca"], ["Barranquilla", "Atlántico"], ["Bogotá", "Bogotá D.C."],
+  ["Cartagena", "Bolívar"], ["Tunja", "Boyacá"], ["Manizales", "Caldas"], ["Florencia", "Caquetá"], ["Florencia", "Cauca"],
+  ["Yopal", "Casanare"], ["Popayán", "Cauca"], ["Valledupar", "Cesar"], ["Quibdó", "Chocó"], ["Montería", "Córdoba"],
+  ["Inírida", "Guainía"], ["San José del Guaviare", "Guaviare"], ["Neiva", "Huila"], ["Riohacha", "La Guajira"],
+  ["Santa Marta", "Magdalena"], ["Villavicencio", "Meta"], ["Pasto", "Nariño"], ["Mocoa", "Putumayo"],
+  ["Armenia", "Quindío"], ["Armenia", "Antioquia"], ["Pereira", "Risaralda"], ["San Andrés", "San Andrés y Providencia"],
+  ["Bucaramanga", "Santander"], ["Sincelejo", "Sucre"], ["Ibagué", "Tolima"], ["Cali", "Valle del Cauca"], ["Mitú", "Vaupés"],
+  ["Puerto Carreño", "Vichada"],
+  ["Soacha", "Cundinamarca"], ["Zipaquirá", "Cundinamarca"], ["Chía", "Cundinamarca"], ["Facatativá", "Cundinamarca"],
+  ["Fusagasugá", "Cundinamarca"], ["Girardot", "Cundinamarca"], ["Mosquera", "Cundinamarca"], ["Madrid", "Cundinamarca"],
+  ["Funza", "Cundinamarca"], ["Cajicá", "Cundinamarca"],
+  ["Bello", "Antioquia"], ["Itagüí", "Antioquia"], ["Envigado", "Antioquia"], ["Sabaneta", "Antioquia"], ["Apartadó", "Antioquia"],
+  ["Rionegro", "Antioquia"], ["Rionegro", "Santander"], ["Copacabana", "Antioquia"], ["La Estrella", "Antioquia"], ["Marinilla", "Antioquia"],
+  ["Soledad", "Atlántico"], ["Malambo", "Atlántico"], ["Puerto Colombia", "Atlántico"], ["Magangué", "Bolívar"], ["Turbaco", "Bolívar"],
+  ["Duitama", "Boyacá"], ["Sogamoso", "Boyacá"], ["Chiquinquirá", "Boyacá"], ["Paipa", "Boyacá"],
+  ["Floridablanca", "Santander"], ["Girón", "Santander"], ["Piedecuesta", "Santander"], ["Barrancabermeja", "Santander"], ["San Gil", "Santander"],
+  ["Palmira", "Valle del Cauca"], ["Buenaventura", "Valle del Cauca"], ["Tuluá", "Valle del Cauca"], ["Cartago", "Valle del Cauca"],
+  ["Buga", "Valle del Cauca"], ["Jamundí", "Valle del Cauca"], ["Yumbo", "Valle del Cauca"],
+  ["Dosquebradas", "Risaralda"], ["Santa Rosa de Cabal", "Risaralda"], ["Calarcá", "Quindío"], ["Chinchiná", "Caldas"], ["La Dorada", "Caldas"],
+  ["Espinal", "Tolima"], ["Melgar", "Tolima"], ["Pitalito", "Huila"], ["Garzón", "Huila"], ["Ipiales", "Nariño"], ["Tumaco", "Nariño"],
+  ["Aguachica", "Cesar"], ["Lorica", "Córdoba"], ["Sahagún", "Córdoba"], ["Cereté", "Córdoba"], ["Ciénaga", "Magdalena"],
+  ["Maicao", "La Guajira"], ["Acacías", "Meta"], ["Aguazul", "Casanare"], ["Corozal", "Sucre"], ["Santander de Quilichao", "Cauca"],
+  ["Puerto Asís", "Putumayo"], ["Saravena", "Arauca"],
+  ...["Cúcuta", "Ábrego", "Arboledas", "Bochalema", "Bucarasica", "Cácota", "Cáchira", "Chinácota", "Chitagá", "Convención",
+    "Cucutilla", "Durania", "El Carmen", "El Tarra", "El Zulia", "Gramalote", "Hacarí", "Herrán", "La Esperanza", "La Playa",
+    "Labateca", "Los Patios", "Lourdes", "Mutiscua", "Ocaña", "Pamplona", "Pamplonita", "Puerto Santander", "Ragonvalia",
+    "Salazar", "San Calixto", "San Cayetano", "Santiago", "Sardinata", "Silos", "Teorama", "Tibú", "Toledo", "Villa Caro",
+    "Villa del Rosario"].map((c) => [c, "Norte de Santander"]),
+  ["Puerto Santander", "Amazonas"], ["San Cayetano", "Cundinamarca"], ["Santiago", "Putumayo"], ["Toledo", "Antioquia"],
+];
+/* El departamento de una ciudad, solo si el nombre no se repite en otro departamento */
+const sinTildes = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+function deptoDe(ciudad) {
+  const n = sinTildes(ciudad), d = [...new Set(CIUDADES.filter(([c]) => sinTildes(c) === n).map(([, x]) => x))];
+  return d.length === 1 ? d[0] : "";
+}
 
 const COSTOS = { transporte: 300, trilla: 500, tueste: 5000, empaque: 1300, indirectos: 8,
   mermaTueste: 17, cerezaAPergamino: 5, margenObjetivo: 35, primaSugerida: 15 };
@@ -4558,7 +4605,13 @@ function addCarrito(pid, g) {
   if (c) { if (c.n < tope) c.n++; else return toast(UI.lang === "en" ? "No more of that size." : "No queda más de esa presentación.", { type: "err" }); }
   else UI.carrito.push({ id: p.id, g: v.g, n: 1, precio: precioHoy(p, v), nombre: `${tx(p.nombre)} ${gramos(v.g)}` });
   medir("agregar", { nombre: tx(p.nombre), ids: [p.id], valor: precioHoy(p, v), n: 1 });
-  guardarCarrito(); render(); abrirCarrito();
+  guardarCarrito(); render(); abrirCarrito(); irAlPago();
+}
+/* Con los datos completos (los de la última compra), el carrito abre en el pago */
+function irAlPago() {
+  const llenos = ["pd-nombre", "pd-documento", "pd-tel", "pd-direccion", "pd-ciudad", "pd-depto", "pd-correo"].every((k) => $("#" + k)?.value.trim());
+  /* un temporizador y no requestAnimationFrame: este último no corre si la pestaña no se pinta */
+  if (llenos) setTimeout(() => $("#cart-body .pay")?.scrollIntoView({ block: "start" }), 60);
 }
 
 function renderTray() {
@@ -4590,6 +4643,7 @@ const pasarelaLista = () => CONFIG.pagos.pasarela === "wompi" && /^pub_(test|pro
 /* Mercado Pago con total del servidor (api/checkout.js): se prende con pasarela: "mercadopago",
    cuando MP_ACCESS_TOKEN ya está en Vercel. Si el servidor no responde, el carrito ofrece el pago manual. */
 const mpLista = () => CONFIG.pagos.pasarela === "mercadopago";
+const tarjetaLista = () => mpLista() && /^(APP_USR|TEST)-/.test(CONFIG.pagos.mp?.llavePublica || "");
 const pagoEnLinea = () => pasarelaLista() || mpLista();
 const pasarelaNombre = () => (pasarelaLista() ? "Wompi" : "Mercado Pago");
 
@@ -4605,13 +4659,25 @@ function metodosPago() {
     det: en ? "Wompi's secure checkout (Bancolombia group) opens over this page. Your card never goes through our servers."
             : "Se abre el pago seguro de Wompi (Grupo Bancolombia) encima de esta página. Tu tarjeta no pasa por nuestros servidores.",
   });
-  else if (mpLista()) ops.push({
-    id: "mp", nom: en ? "Card, PSE or Nequi" : "Tarjeta, PSE o Nequi",
-    sub: en ? "Secure payment with Mercado Pago." : "Pago seguro con Mercado Pago.",
-    marcas: ["Visa", "Mastercard", "PSE", "Nequi"],
-    det: en ? "We take you to Mercado Pago to pay and bring you back here. Your card never goes through our servers."
-            : "Te llevamos a Mercado Pago para pagar y te traemos de vuelta. Tu tarjeta no pasa por nuestros servidores.",
-  });
+  else if (mpLista()) {
+    /* Con la llave pública, la tarjeta se paga aquí mismo; PSE y Nequi siguen por
+       Mercado Pago, que de todos modos manda al banco. Sin llave, todo va por allá. */
+    if (tarjetaLista()) ops.push({
+      id: "tarjeta", nom: en ? "Credit or debit card" : "Tarjeta de crédito o débito",
+      sub: en ? "You pay right here, without leaving the page." : "Pagas aquí mismo, sin salir de la página.",
+      marcas: ["Visa", "Mastercard", "Amex", "Diners"], tarjeta: true,
+      det: en ? "Secure fields by Mercado Pago: your card never goes through our servers."
+              : "Campos seguros de Mercado Pago: tu tarjeta no pasa por nuestros servidores.",
+    });
+    ops.push({
+      id: "mp", nom: tarjetaLista() ? (en ? "PSE, Nequi or Mercado Pago account" : "PSE, Nequi o cuenta de Mercado Pago")
+        : (en ? "Card, PSE or Nequi" : "Tarjeta, PSE o Nequi"),
+      sub: en ? "Secure payment with Mercado Pago." : "Pago seguro con Mercado Pago.",
+      marcas: tarjetaLista() ? ["PSE", "Nequi"] : ["Visa", "Mastercard", "PSE", "Nequi"],
+      det: en ? "We take you to Mercado Pago to pay and bring you back here. Your card never goes through our servers."
+              : "Te llevamos a Mercado Pago para pagar y te traemos de vuelta. Tu tarjeta no pasa por nuestros servidores.",
+    });
+  }
   else if (CONFIG.pagos.mercadoPago) ops.push({
     id: "mp", nom: "Mercado Pago",
     sub: en ? "Card, PSE, Nequi or cash." : "Tarjeta, PSE, Nequi o efectivo.",
@@ -4658,7 +4724,9 @@ function bloquePago(envio, E) {
             <span class="pay-nom">${esc(o.nom)}<small>${esc(o.sub)}</small></span>
             ${marcas(o.marcas)}
           </button>
-          ${o.id === sel ? `<p class="pay-det">${esc(o.det)}</p>` : ""}`).join("")}
+          ${o.id !== sel ? "" : o.tarjeta
+            ? `<div class="pay-det pay-tarjeta"><p>${esc(o.det)}</p><div id="mp-tarjeta" aria-live="polite"><p class="hint">${en ? "Loading the card form…" : "Cargando los campos de la tarjeta…"}</p></div></div>`
+            : `<p class="pay-det">${esc(o.det)}</p>`}`).join("")}
       </div>
     </section>`;
 }
@@ -4673,9 +4741,11 @@ function renderCarrito() {
     return;
   }
   const E = CONFIG.envio, envio = envioDe(totalCarrito()), falta = E.gratisDesde - totalCarrito(), desc = descuentoCarrito();
-  /* lo que ya escribió la persona sobrevive a que el carrito se vuelva a pintar */
-  const escrito = Object.fromEntries(["pd-nombre", "pd-apellidos", "pd-documento", "pd-tel", "pd-direccion", "pd-detalle",
-    "pd-ciudad", "pd-depto", "pd-correo", "pd-bono"].map((k) => [k, $("#" + k)?.value || ""]));
+  /* lo que ya escribió la persona sobrevive a que el carrito se vuelva a pintar; la
+     primera vez que se pinta, se llena con lo de su última compra (si la hubo) */
+  const primera = !$("#pd-nombre"), guardado = recordado.campos();
+  const escrito = Object.fromEntries(["pd-nombre", "pd-documento", "pd-tel", "pd-direccion", "pd-detalle",
+    "pd-ciudad", "pd-depto", "pd-correo", "pd-bono"].map((k) => [k, $("#" + k)?.value || (primera && guardado[k]) || ""]));
   const val = (k) => (escrito[k] ? ` value="${esc(escrito[k])}"` : "");
   cuerpo.innerHTML = `
     <ul class="cart-items">${UI.carrito.map((i) => {
@@ -4709,13 +4779,15 @@ function renderCarrito() {
     </div>
 
     <div class="form-grid cart-form">
-      <div class="field"><label class="lbl" for="pd-nombre">${en ? "Name" : "Nombre"}</label><input id="pd-nombre" class="input" autocomplete="given-name" enterkeyhint="next"${val("pd-nombre")}></div>
-      <div class="field"><label class="lbl" for="pd-apellidos">${en ? "Last name" : "Apellidos"}</label><input id="pd-apellidos" class="input" autocomplete="family-name" enterkeyhint="next"${val("pd-apellidos")}></div>
+      ${guardado["pd-nombre"] ? `<p class="hint cart-recordado" style="grid-column:1/-1">${en ? "We used the details from your last order." : "Usamos los datos de tu última compra."}
+        <button class="cart-del" data-act="olvidar-datos">${en ? "Forget my details" : "Olvidar mis datos"}</button></p>` : ""}
+      <div class="field" style="grid-column:1/-1"><label class="lbl" for="pd-nombre">${en ? "Full name" : "Nombre y apellidos"}</label><input id="pd-nombre" class="input" autocomplete="name" autocapitalize="words" enterkeyhint="next"${val("pd-nombre")}></div>
       <div class="field"><label class="lbl" for="pd-documento">${en ? "ID or tax number" : "Cédula o NIT"}</label><input id="pd-documento" class="input mono" inputmode="numeric" autocomplete="off" enterkeyhint="next"${val("pd-documento")}></div>
       <div class="field"><label class="lbl" for="pd-tel">${en ? "Phone (the courier calls it)" : "Teléfono (al que llama el mensajero)"}</label><input id="pd-tel" class="input" type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="next" placeholder="300 000 0000"${val("pd-tel")}></div>
       <div class="field" style="grid-column:1/-1"><label class="lbl" for="pd-direccion">${en ? "Address" : "Dirección"}</label><input id="pd-direccion" class="input" autocomplete="street-address" enterkeyhint="next" placeholder="${en ? "Calle 10 # 5-23" : "Calle 10 # 5-23"}"${val("pd-direccion")}></div>
       <div class="field" style="grid-column:1/-1"><label class="lbl" for="pd-detalle">${en ? "Neighbourhood, apartment or directions (optional)" : "Barrio, apartamento o indicaciones (opcional)"}</label><input id="pd-detalle" class="input" autocomplete="address-line2" enterkeyhint="next"${val("pd-detalle")}></div>
-      <div class="field"><label class="lbl" for="pd-ciudad">${en ? "City" : "Ciudad"}</label><input id="pd-ciudad" class="input" autocomplete="address-level2" enterkeyhint="next"${val("pd-ciudad")}></div>
+      <div class="field"><label class="lbl" for="pd-ciudad">${en ? "City" : "Ciudad"}</label><input id="pd-ciudad" class="input" list="ciudades-co" autocomplete="address-level2" enterkeyhint="next"${val("pd-ciudad")}>
+        <datalist id="ciudades-co">${CIUDADES.filter(([c], i, a) => a.findIndex(([x]) => x === c) === i).map(([c]) => `<option value="${esc(c)}">${esc(deptoDe(c) || (en ? "several departments" : "varios departamentos"))}</option>`).join("")}</datalist></div>
       <div class="field"><label class="lbl" for="pd-depto">${en ? "Department" : "Departamento"}</label>
         <select id="pd-depto" class="input" autocomplete="address-level1">
           <option value="">${en ? "Choose" : "Escoge"}</option>
@@ -4729,14 +4801,131 @@ function renderCarrito() {
     ${bloquePago(envio, E)}`;
   const pie = $("#cart-foot"), sel = pagoSel();
   pie.innerHTML = `
-    <button class="btn primary" data-act="${{ mp: "pedido-mp", wompi: "pedido-wompi" }[sel] || "pedido-wa"}" ${UI.pagando ? "disabled" : ""}>${
+    <button class="btn primary" data-act="${{ mp: "pedido-mp", wompi: "pedido-wompi", tarjeta: "pedido-tarjeta" }[sel] || "pedido-wa"}" ${UI.pagando ? "disabled" : ""}>${
       UI.pagando ? (en ? "Opening the payment…" : "Abriendo el pago…")
-      : sel === "mp" || sel === "wompi" ? `${t("pagar_ahora")} · ${cop(totalCarrito() - desc + envio)}`
+      : sel === "mp" || sel === "wompi" || sel === "tarjeta" ? `${t("pagar_ahora")} · ${cop(totalCarrito() - desc + envio)}`
       : CONFIG.registro ? (en ? "Place the order" : "Hacer el pedido")
       : en ? `Send order by ${canalContacto()}` : `Enviar pedido por ${canalContacto()}`}</button>
-    ${sel === "mp" || sel === "wompi" ? "" : `<p class="hint">${en ? `No payment yet: we confirm the order and you pay by ${tx(CONFIG.pagos.manual)}.`
+    ${sel === "mp" || sel === "wompi" || sel === "tarjeta" ? "" : `<p class="hint">${en ? `No payment yet: we confirm the order and you pay by ${tx(CONFIG.pagos.manual)}.`
       : `Todavía no pagas: te confirmamos el pedido y pagas por ${tx(CONFIG.pagos.manual)}.`}</p>`}`;
+  /* los campos de la tarjeta se montan cada vez que el carrito se repinta: el monto cambió */
+  if (sel === "tarjeta") setTimeout(montarTarjeta);
 }
+
+/* ---------- la tarjeta dentro de la página (Checkout Bricks de Mercado Pago) ----------
+   Los campos los pinta Mercado Pago, cada uno en su propio recuadro seguro, y lo que
+   sale de ahí es un token de un solo uso: la tarjeta nunca pasa por nuestros
+   servidores. El botón es el mismo «Pagar ahora» del carrito (el del formulario va
+   escondido). api/tarjeta.js cobra con el total del servidor, no con el de aquí. */
+let sdkMP = null, ladrillo = null;
+function cargarSdkMP() {
+  if (window.MercadoPago) return Promise.resolve();
+  return (sdkMP ||= new Promise((ok, mal) => {
+    const s = document.createElement("script");
+    s.src = CONFIG.pagos.mp.sdk; s.async = true;
+    s.onload = () => (window.MercadoPago ? ok() : mal(new Error("sdk")));
+    s.onerror = () => { sdkMP = null; mal(new Error("sdk")); };
+    document.head.append(s);
+  }));
+}
+async function montarTarjeta() {
+  const en = UI.lang === "en", caja = $("#mp-tarjeta");
+  if (!caja || caja.dataset.montado) return;
+  caja.dataset.montado = "1";
+  try { await cargarSdkMP(); }
+  catch { caja.innerHTML = `<p class="hint err">${en ? "The card form did not load. Pay with PSE or Nequi, or try again." : "No cargaron los campos de la tarjeta. Paga con PSE o Nequi, o intenta otra vez."}</p>`; return; }
+  /* el carrito pudo repintarse mientras cargaba: esta caja ya no existe */
+  if (!document.body.contains(caja)) return;
+  try { await ladrillo?.unmount?.(); } catch {}
+  caja.innerHTML = "";
+  const total = totalCarrito() - descuentoCarrito() + envioDe(totalCarrito());
+  try {
+    const mp = new window.MercadoPago(CONFIG.pagos.mp.llavePublica, { locale: en ? "en-US" : "es-CO" });
+    ladrillo = await mp.bricks().create("cardPayment", "mp-tarjeta", {
+      initialization: { amount: total, payer: { email: $("#pd-correo")?.value.trim() || undefined } },
+      /* una sola cuota, como en Mercado Pago; el botón propio va escondido */
+      customization: { visual: { hidePaymentButton: true, hideFormTitle: true }, paymentMethods: { maxInstallments: 1 } },
+      callbacks: { onReady: () => {}, onSubmit: () => Promise.resolve(), onError: (e) => console.warn("tarjeta", e) },
+    });
+  } catch {
+    caja.innerHTML = `<p class="hint err">${en ? "The card form did not load. Pay with PSE or Nequi, or try again." : "No cargaron los campos de la tarjeta. Paga con PSE o Nequi, o intenta otra vez."}</p>`;
+  }
+}
+
+/* El botón del pie cambia sin repintar el carrito: repintarlo borraría la tarjeta escrita */
+function botonPagando(on) {
+  const en = UI.lang === "en", b = $("#cart-foot .btn");
+  UI.pagando = on;
+  if (!b) return;
+  b.disabled = on;
+  b.textContent = on ? (en ? "Paying…" : "Pagando…") : `${t("pagar_ahora")} · ${cop(totalCarrito() - descuentoCarrito() + envioDe(totalCarrito()))}`;
+}
+
+/* Por qué no pasó, en palabras de cliente (status_detail de Mercado Pago) */
+function motivoRechazo(det, en) {
+  const m = {
+    cc_rejected_insufficient_amount: ["The card has no funds for this amount.", "La tarjeta no tiene cupo para este valor."],
+    cc_rejected_bad_filled_security_code: ["Check the security code.", "Revisa el código de seguridad."],
+    cc_rejected_bad_filled_date: ["Check the expiration date.", "Revisa la fecha de vencimiento."],
+    cc_rejected_bad_filled_card_number: ["Check the card number.", "Revisa el número de la tarjeta."],
+    cc_rejected_bad_filled_other: ["Check the card details.", "Revisa los datos de la tarjeta."],
+    cc_rejected_call_for_authorize: ["Your bank asks you to authorize this payment: call them, or use another card.", "Tu banco pide que autorices este pago: llámalos o usa otra tarjeta."],
+    cc_rejected_card_disabled: ["The card is not active yet. Call your bank, or use another card.", "La tarjeta no está activa. Llama a tu banco o usa otra tarjeta."],
+    cc_rejected_duplicated_payment: ["You already made a payment for this amount. Check your email before trying again.", "Ya hiciste un pago por este valor. Revisa tu correo antes de intentar otra vez."],
+    cc_rejected_max_attempts: ["Too many attempts with this card. Use another card.", "Demasiados intentos con esta tarjeta. Usa otra."],
+  }[det];
+  return m ? m[en ? 0 : 1] : (en ? "The bank did not approve the payment. Try another card, or PSE." : "El banco no aprobó el pago. Prueba con otra tarjeta o con PSE.");
+}
+
+async function pedidoTarjeta() {
+  const en = UI.lang === "en";
+  if (UI.pagando) return;
+  const d = datosPedido({ correoObligatorio: true }); if (!d) return;
+  if (!ladrillo?.getFormData) return toast(en ? "The card form is still loading." : "Los campos de la tarjeta todavía están cargando.", { type: "err" });
+  let f = null;
+  try { f = await ladrillo.getFormData(); } catch {}
+  if (!f || !f.token) return toast(en ? "Check the card details." : "Revisa los datos de la tarjeta.", { type: "err" });
+  const visto = totalCarrito() - descuentoCarrito() + envioDe(totalCarrito());
+  medir("pagar", { ids: UI.carrito.map((i) => i.id), valor: totalCarrito(), n: unidadesCarrito() });
+  botonPagando(true);
+  let j;
+  try {
+    const r = await fetch("/api/tarjeta", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: UI.carrito.map((i) => ({ id: i.id, g: i.g, n: i.n })), bono: UI.bono?.codigo || "",
+        comprador: d, idioma: UI.lang, reemplaza: reserva.leer(), total: visto,
+        tarjeta: { token: f.token, payment_method_id: f.payment_method_id, issuer_id: f.issuer_id,
+          identificacion: f.payer?.identification || null } }) });
+    j = await r.json();
+  } catch { j = { ok: false, error: "red" }; }
+  botonPagando(false);
+  if (j && j.reference) reserva.poner(j.reference);
+  if (j && j.ok && (j.estado === "aprobado" || j.estado === "pendiente")) {
+    registrarPedido(d, "mercadopago", j);
+    reserva.poner("");
+    return pagoMostrar(j.estado === "aprobado", j, d.correo);
+  }
+  if (j && j.error === "rechazado") {
+    return modal(en ? "The payment did not go through" : "El pago no pasó", `
+      <p class="hint">${esc(motivoRechazo(j.detalle, en))} ${en ? "Nothing was charged." : "No se cobró nada."}</p>
+      <div class="dlg-actions"><button class="btn" data-act="close">${en ? "Close" : "Cerrar"}</button>
+        <button class="btn primary" data-act="pago-otra-tarjeta">${en ? "Try another card" : "Intentar con otra tarjeta"}</button></div>`, "narrow");
+  }
+  if (j && j.error === "total-cambio") {
+    /* El servidor no cobró: los precios cambiaron desde que se abrió la página */
+    return modal(en ? "The total changed" : "El total cambió", `
+      <p class="hint">${en ? `Prices were updated since you opened the page. Your total is now <b>${cop(j.total)}</b>. Nothing was charged.`
+        : `Los precios se actualizaron desde que abriste la página. Tu total ahora es <b>${cop(j.total)}</b>. No se cobró nada.`}</p>
+      <div class="dlg-actions"><button class="btn primary" data-act="recargar-precios">${en ? "See the new prices" : "Ver los precios nuevos"}</button></div>`, "narrow");
+  }
+  errorPago(j || {});
+}
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-act='pago-otra-tarjeta'],[data-act='recargar-precios']"); if (!el) return;
+  closeModal();
+  if (el.dataset.act === "recargar-precios") return location.reload();
+  /* el token ya se usó: los campos se vuelven a montar en blanco */
+  abrirCarrito(); renderCarrito();
+});
 
 function cambiarCantidad(pid, g, d) {
   const p = prodById(pid), v = p.variantes.find((x) => x.g === +g), c = enCarrito(pid, +g);
@@ -4756,11 +4945,14 @@ function quitarDelCarrito(pid, g) {
 function datosPedido({ correoObligatorio = false } = {}) {
   const en = UI.lang === "en", v = (id) => ($("#" + id)?.value || "").trim();
   const falta = (id, msg) => { toast(msg, { type: "err" }); $("#" + id)?.focus(); return null; };
-  const d = { nombre: v("pd-nombre"), apellidos: v("pd-apellidos"), documento: v("pd-documento"), tel: v("pd-tel"),
+  const completo = v("pd-nombre").replace(/\s+/g, " "), corte = completo.indexOf(" ");
+  const d = { nombre: corte > 0 ? completo.slice(0, corte) : completo, apellidos: corte > 0 ? completo.slice(corte + 1) : "",
+    documento: v("pd-documento"), tel: v("pd-tel"),
     direccion: v("pd-direccion"), detalle: v("pd-detalle"), ciudad: v("pd-ciudad"), departamento: v("pd-depto"),
     correo: v("pd-correo").toLowerCase() };
-  if (!d.nombre) return falta("pd-nombre", en ? "Write your name." : "Escribe tu nombre.");
-  if (!d.apellidos) return falta("pd-apellidos", en ? "Write your last name." : "Escribe tus apellidos.");
+  if (!d.nombre) return falta("pd-nombre", en ? "Write your full name." : "Escribe tu nombre y apellidos.");
+  /* la guía va a nombre completo: con una sola palabra el mensajero no encuentra a nadie */
+  if (!d.apellidos) return falta("pd-nombre", en ? "Add your last name too." : "Escribe también tus apellidos.");
   if (d.documento.replace(/\D/g, "").length < 5) return falta("pd-documento", en ? "Check the ID or tax number." : "Revisa la cédula o el NIT.");
   if (d.tel.replace(/\D/g, "").length < 7) return falta("pd-tel", en ? "Leave a phone the courier can call." : "Deja un teléfono al que pueda llamar el mensajero.");
   if (!d.direccion) return falta("pd-direccion", en ? "Write the address it goes to." : "Escribe la dirección a la que va.");
@@ -4795,6 +4987,7 @@ function registrarPedido(d, canal, srv) {
       forma: tx(saleDe(p, v)) + (pre ? " · " + rotuloPreventa() : ""), stock: pre ? CONFIG.preventa.cupo || 0 : v.stock,
       ...(pre ? { preventa: true } : {}) };
   });
+  recordado.poner(d);
   const pedido = { id: srv ? srv.reference : numeroPedido(), clienteId: cl.id, canal, nombre, documento: d.documento, direccion: d.direccion,
     detalle: d.detalle, ciudad: d.ciudad, departamento: d.departamento, tel: d.tel, correo: d.correo,
     items, subtotal, descuento, bono, envio, total, iva, fecha: isoToday() };
@@ -4991,6 +5184,34 @@ function pagoMostrar(ok, j, correo) {
 /* La reserva sin pagar sobrevive a recargar la página o cerrar la pestaña: si la
    persona vuelve a intentar, el servidor suelta la anterior en vez de apartar dos
    veces las mismas bolsas. (Lo encontró la compra de prueba en el navegador.) */
+/* Los datos de envío de la última compra, guardados SOLO en el navegador de quien
+   compró: la segunda vez no se escribe nada. «Olvidar mis datos» los borra. Nada
+   de esto sale del navegador ni va a la hoja. */
+const COMPRADOR_KEY = "nandez-comprador";
+const recordado = {
+  leer: () => { try { return JSON.parse(localStorage.getItem(COMPRADOR_KEY)) || null; } catch { return null; } },
+  poner: (d) => { try { localStorage.setItem(COMPRADOR_KEY, JSON.stringify({ nombre: d.nombre, apellidos: d.apellidos,
+    documento: d.documento, tel: d.tel, direccion: d.direccion, detalle: d.detalle, ciudad: d.ciudad, departamento: d.departamento, correo: d.correo })); } catch {} },
+  olvidar: () => { try { localStorage.removeItem(COMPRADOR_KEY); } catch {} },
+  campos() {
+    const r = this.leer(); if (!r) return {};
+    return { "pd-nombre": [r.nombre, r.apellidos].filter(Boolean).join(" "), "pd-documento": r.documento, "pd-tel": r.tel,
+      "pd-direccion": r.direccion, "pd-detalle": r.detalle, "pd-ciudad": r.ciudad, "pd-depto": r.departamento, "pd-correo": r.correo };
+  },
+};
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("[data-act='olvidar-datos']")) return;
+  recordado.olvidar();
+  ["pd-nombre", "pd-documento", "pd-tel", "pd-direccion", "pd-detalle", "pd-ciudad", "pd-depto", "pd-correo"].forEach((k) => { const el = $("#" + k); if (el) el.value = ""; });
+  renderCarrito();
+  toast(UI.lang === "en" ? "Your details were removed from this browser." : "Tus datos se borraron de este navegador.");
+});
+/* Al escribir una ciudad conocida, el departamento se llena solo */
+document.addEventListener("input", (e) => {
+  if (e.target.id !== "pd-ciudad") return;
+  const d = deptoDe(e.target.value), sel = $("#pd-depto");
+  if (d && sel && sel.value !== d) sel.value = d;
+});
 const reserva = {
   leer: () => { try { return localStorage.getItem("nandez-reserva") || ""; } catch { return ""; } },
   poner: (id) => { try { if (id) localStorage.setItem("nandez-reserva", id); else localStorage.removeItem("nandez-reserva"); } catch {} },
@@ -5686,7 +5907,9 @@ function viewPrivacidad() {
   return paginaTexto(en ? "Privacy policy" : "Política de privacidad", en ? "Your data, <em>only for your order</em>" : "Tus datos, <em>solo para tu pedido</em>",
     en ? "Policy under Colombian Law 1581 of 2012 on personal data." : "Política según la Ley 1581 de 2012 de protección de datos personales.",
     [[en ? "What we ask for" : "Qué pedimos", `<p>${en ? "To ship an order: name, ID or tax number, address, city, department, phone and email. The ID number is what the courier asks for to issue the waybill and what the invoice needs. Nothing else."
-        : "Para despacharte un pedido: nombre, cédula o NIT, dirección, ciudad, departamento, teléfono y correo. La cédula es lo que pide la transportadora para hacer la guía y lo que lleva la factura. Nada más."}</p>`],
+        : "Para despacharte un pedido: nombre, cédula o NIT, dirección, ciudad, departamento, teléfono y correo. La cédula es lo que pide la transportadora para hacer la guía y lo que lleva la factura. Nada más."}</p>
+      <p>${en ? "So you do not type them again, your shipping details stay saved in your own browser after you buy. They are not sent anywhere else, and the “Forget my details” button in the cart erases them."
+        : "Para que no los vuelvas a escribir, tus datos de envío quedan guardados en tu propio navegador después de comprar. No se mandan a ningún otro lado, y el botón «Olvidar mis datos» del carrito los borra."}</p>`],
      [en ? "The community" : "La comunidad", `<p>${en ? `If you join the ${CONFIG.comunidad} community and tick the box, we use your email to send you news and members-only offers. You can leave with the link at the end of every email or by writing to ${CONFIG.correo}.`
         : `Si te unes a la comunidad ${CONFIG.comunidad} y marcas la casilla, usamos tu correo para enviarte noticias y ofertas solo para miembros. Te sales con el enlace al final de cada correo o escribiéndonos a ${CONFIG.correo}.`}</p>`],
      [en ? "What we use it for" : "Para qué lo usamos", `<p>${en ? "To confirm and ship orders and send the notices and news you asked for. We do not sell or share your data, except with the carrier that delivers your order."
@@ -6670,6 +6893,7 @@ document.addEventListener("click", (e) => {
     case "pedido-wa": return pedidoWA();
     case "pedido-mp": return pedidoMP();
     case "pedido-wompi": return pedidoWompi();
+    case "pedido-tarjeta": return pedidoTarjeta();
     case "copiar": return copiar(el.dataset.texto);
     case "cotizar": return cotizar(id);
     case "cotizar-ok": return cotizarOk();

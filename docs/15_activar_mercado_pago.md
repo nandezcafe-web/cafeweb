@@ -31,7 +31,21 @@ node tools/estado.mjs --en-vivo
 ```
 Debe salir todo en ✓ (incluido «Vercel tiene MP_ACCESS_TOKEN»). Luego una compra pequeña real (o de prueba) y revisar: «Pago recibido» al correo del comprador, «Pago confirmado» a nandezcafe@gmail.com, el pedido **pagado** en la hoja y el cupo descontado.
 
-## Lo que ve el cliente
+## La tarjeta dentro de la página (10 de noviembre de 2026)
+
+Con la **llave pública** de Mercado Pago (`APP_USR-…`, está junto al Access Token en *Credenciales de producción*) pegada en `CONFIG.pagos.mp.llavePublica`, la tarjeta se paga **sin salir de la página**: los campos aparecen dentro del carrito, los pone Mercado Pago (Checkout Bricks) y lo que sale de ahí es un token de un solo uso, así que la tarjeta nunca pasa por nuestros servidores. Cobra `api/tarjeta.js` con el mismo `MP_ACCESS_TOKEN`; no hay que configurar nada más. Sin la llave, todo sigue como abajo: la persona va a Mercado Pago y vuelve.
+
+- **Tarjeta:** aquí mismo. Aprobada o rechazada al instante (sin «en revisión»), y si se aprueba el pedido queda **pagado en ese momento**, sin esperar el aviso.
+- **PSE, Nequi o cuenta de Mercado Pago:** siguen por Mercado Pago. PSE de todos modos pasa por la página del banco.
+- **Rechazada:** el motivo en palabras de cliente («la tarjeta no tiene cupo», «revisa el código de seguridad»…) y «Intentar con otra tarjeta», que suelta la reserva anterior.
+- **Si los precios cambiaron** desde que abrió la página, no se cobra: se le muestra el total nuevo.
+- **Nunca dos cobros por un pedido:** la llave de idempotencia es el número de la reserva.
+
+Además, el carrito pide menos: **un solo campo de nombre y apellidos**; la **ciudad llena sola el departamento** (salvo nombres que existen en dos departamentos, como Toledo); y **los datos quedan guardados en el navegador de quien compró**, así que la segunda compra no se escribe nada y el carrito abre directo en el pago. «Olvidar mis datos» los borra.
+
+Pruebas: `node tools/pruebas/tarjeta.mjs 150` (166/166 y 8 invariantes el 10-nov-2026) y la tienda de prueba `node tools/pruebas/servidor.mjs`, con campos de tarjeta simulados.
+
+## Lo que ve el cliente (sin la llave pública)
 1. Llena el carrito y sus datos (el correo es obligatorio: ahí llega la constancia).
 2. «Pagar ahora» → se abre Mercado Pago (tarjeta, PSE o Nequi; **sin efectivo**, porque un cobro en corresponsal tarda días y la reserva se libera a las 2 horas).
 3. Al terminar vuelve a la página con «Pago recibido» y la fecha de despacho de la preventa. Si no paga o cancela, vuelve con el carrito intacto para reintentar.
