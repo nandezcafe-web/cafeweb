@@ -171,7 +171,7 @@ function pagina(ctx, { view, id }, lang) {
 <meta property="og:image" content="${ev(ctx, "CONFIG.sitio")}/img/marca/compartir.jpg?v=${IMG_V}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="${lang === "en" ? "Nandez Coffee: whole bean coffee with a first name, from Norte de Santander" : "Nandez Coffee: café en grano con nombre propio, de Norte de Santander"}">
+<meta property="og:image:alt" content="${lang === "en" ? "Nandez Coffee: the Castillo bag, on pre-order until 20 November" : "Nandez Coffee: la bolsa del Castillo, en preventa hasta el 20 de noviembre"}">
 <meta name="twitter:image" content="${ev(ctx, "CONFIG.sitio")}/img/marca/compartir.jpg?v=${IMG_V}">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/img/marca/icono-32.png?v=${IMG_V}">
