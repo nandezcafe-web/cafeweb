@@ -114,20 +114,47 @@ git push -u origin main
 
 ### El panel, en un proyecto aparte
 
-El panel sale del mismo repositorio que la tienda, pero se publica como **otro proyecto**, en su propia dirección y sin ningún enlace desde la página pública. Así comparte la marca y el dominio, pero quien entra a la tienda nunca lo ve.
+El panel sale del mismo repositorio que la tienda, pero se publica como **otro proyecto**, con su propia dirección y sin ningún enlace desde la página pública. Comparte dominio y marca; quien entra a la tienda nunca lo ve.
 
-1. En Vercel, *Add New → Project* y vuelve a importar **el mismo repositorio**.
-2. En **Root Directory** pon `admin` (no `prototipo`). Llámalo, por ejemplo, `nandez-panel`.
-3. Deploy. Queda en `nandez-panel.vercel.app`.
-4. *Settings → Domains → Add*: escribe `panel.nandezcoffee.com`. Vercel te da un registro **CNAME** que apunta a `cname.vercel-dns.com`; agrégalo donde tengas el DNS del dominio. En unos minutos el panel responde ahí.
+**Antes de empezar:** el panel que se publica es el archivo `admin/index.html` que esté en el repositorio. Vercel no lo genera (solo ve la carpeta `admin/`), así que después de tocar cualquier `prototipo/js/*.js` hay que correr `node tools/build.js` y subir el commit, o el panel publicado se queda con la versión vieja.
 
-Queda `www.nandezcoffee.com` para la tienda y `panel.nandezcoffee.com` para el panel: mismo dominio, dos sitios distintos.
+#### 1. El proyecto en Vercel
 
-**No se enlaza desde la tienda** y `admin/robots.txt` le dice a los buscadores que no lo indexen (`Disallow: /`), así que no aparece en Google. Aun así, una dirección sin enlaces no es un secreto: quien la adivine llega al login.
+1. *Add New → Project* y vuelve a importar **el mismo repositorio** (`cafeweb`).
+2. En **Root Directory** pon `admin` — no `prototipo`. Es el único ajuste que hay que cambiar: `admin/vercel.json` ya trae lo demás (copia el HTML, y manda `X-Robots-Tag: noindex` para que no lo indexen).
+3. Ponle un nombre, por ejemplo `nandez-panel`.
+4. **Deploy.** Queda en `nandez-panel.vercel.app` y ya se puede entrar.
 
-**Deployment Protection.** Si el plan de Vercel lo permite (*Settings → Deployment Protection → Password Protection*), ponle una contraseña ahí también. Esa sí la revisa el servidor antes de entregar nada, así que es la única que impide descargar el panel; el login de adentro solo protege lo que el panel muestra.
+#### 2. La dirección propia
 
-**Cada `git push` vuelve a desplegar los dos proyectos**, porque leen el mismo repositorio. Si cambias quién entra al panel (`node tools/clave.js`), eso aplica cuando subas el commit.
+En el proyecto del panel: *Settings → Domains → Add* → `panel.nandezcoffee.com`. Vercel te pide un registro **CNAME**.
+
+El DNS de `nandezcoffee.com` no está en Vercel: lo maneja **Hostinger** (los nameservers son `horizon.dns-parking.com` y `orbit.dns-parking.com`). El registro se agrega allá:
+
+*hPanel → Dominios → nandezcoffee.com → DNS / Nameservers → Agregar registro*
+
+| Campo | Valor |
+|---|---|
+| Tipo | `CNAME` |
+| Nombre | `panel` |
+| Apunta a | el valor que te dé Vercel (normalmente `cname.vercel-dns.com`) |
+| TTL | el que venga por defecto |
+
+Copia el destino de la pantalla de Vercel, no de aquí: cambia según la cuenta. En unos minutos (a veces hasta una hora) Vercel marca el dominio como válido y emite el certificado solo.
+
+Queda `www.nandezcoffee.com` para la tienda y `panel.nandezcoffee.com` para el panel: mismo dominio, dos sitios distintos, dos proyectos distintos.
+
+#### 3. Cerrarle la puerta
+
+El panel no se enlaza desde la tienda y `admin/robots.txt` le dice a los buscadores que no lo indexen, así que no sale en Google. **Pero una dirección sin enlaces no es un secreto:** quien la escriba llega al login, y ese login corre en el navegador, así que protege lo que el panel *muestra*, no el archivo.
+
+Si el plan de Vercel lo permite, en el proyecto del panel: *Settings → Deployment Protection → Password Protection*. Esa contraseña la revisa el servidor antes de entregar nada, así que es la única que impide descargar el panel. Es una sola para todos, aparte de las cuentas de adentro.
+
+Lo que de verdad resguarda los datos es la clave del script de Google: se pega una vez en la pestaña **Correos** y vive solo en el navegador de quien la pegó. Sin ella, el panel no lee pedidos, correos, actividad ni stock, aunque alguien entre.
+
+#### 4. De ahí en adelante
+
+Cada `git push` vuelve a desplegar **los dos proyectos**, porque leen el mismo repositorio. Un cambio en quién entra al panel (`node tools/clave.js`) aplica cuando subas el commit.
 
 ## Configurar antes de publicar de verdad
 
