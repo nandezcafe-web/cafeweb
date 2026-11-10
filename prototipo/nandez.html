@@ -3851,8 +3851,6 @@ function bitacoraEnviar(cuerpo) {
 }
 function bitacora(evento, datos) {
   if (!bitacoraActiva()) return;
-  /* la ficha se vuelve a pintar con cada clic: el mismo café seguido cuenta una vez */
-  if (evento === "ver") { if (M.visto === datos.nombre) return; M.visto = datos.nombre; }
   bitacoraEnviar({ tipo: "evento", evento, detalle: datos.nombre || "", valor: Number(datos.valor) || 0, pagina: location.pathname });
   /* si acaba de dejar el correo y ya tenía carrito, ese carrito ya tiene dueño */
   if (evento === "registro" && UI.carrito.length) bitacoraCarrito();
@@ -3898,6 +3896,10 @@ function medir(evento, datos = {}) {
   if (!medicionPuede()) return;
   const par = MED_NOMBRES[evento]; if (!par) return;
   if (!M.listo) { if (M.cola.length < 20) M.cola.push([evento, datos]); return; }
+  /* La ficha del café se vuelve a pintar con cada clic (agregar al carrito,
+     cambiar de presentación): sin esto, Meta contaría varios ViewContent por
+     una sola visita a la ficha. El mismo café seguido se cuenta una vez. */
+  if (evento === "ver") { if (M.visto === datos.nombre) return; M.visto = datos.nombre; }
   bitacora(evento, datos);
   const [meta, google] = par;
   const valor = Number(datos.valor) || 0;
