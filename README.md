@@ -73,13 +73,31 @@ Para correr la revisión a mano: `node tools/precio-fnc.mjs`, o en GitHub → *A
 
 Las páginas traen el contenido ya escrito en el HTML —porque los crawlers de IA no ejecutan JavaScript— y encima el mismo JavaScript toma el control en el navegador. Detalles en [docs/07_seo.md](docs/07_seo.md).
 
-## Cambiar la contraseña del panel
+## Quién entra al panel
+
+Cada persona tiene su propio correo y su propia contraseña. Un comando para las tres cosas:
 
 ```bash
-node tools/clave.js "una clave larga y aleatoria"
+node tools/clave.js "la contraseña" correo@dominio.com
 ```
 
-El correo del panel es `nandezcafe@gmail.com` (se cambia con un segundo argumento). El comando guarda el verificador en `AUTH`, dentro de `prototipo/js/admin.js`, y vuelve a armar el sitio; después solo falta hacer commit y subir. En el repositorio nunca queda la contraseña: solo un verificador PBKDF2 con sal.
+```bash
+node tools/clave.js --lista
+```
+
+```bash
+node tools/clave.js --quitar <etiqueta>
+```
+
+**Agregar y cambiar son lo mismo:** si ese correo ya tenía cuenta se le pone la contraseña nueva, y si no, se crea. La contraseña debe tener al menos 10 caracteres.
+
+La **etiqueta** es el nombre corto con que se lista y se quita una cuenta (por defecto, lo que va antes del `@`). Se puede escoger como tercer argumento: `node tools/clave.js "la contraseña" ana@dominio.com contadora`. Con la etiqueta no se entra, solo sirve para administrar.
+
+El comando escribe en `AUTH`, dentro de `prototipo/js/admin.js`, y vuelve a armar el sitio; después falta hacer commit y subir para que aplique en el panel publicado.
+
+En el repositorio **no queda ni la contraseña ni el correo**: solo la huella del correo (sha256) y un verificador PBKDF2 de 310.000 vueltas, cada cuenta con su propia sal. Por eso `--lista` muestra etiquetas y no correos: una vez guardado, el correo ya no se puede leer de vuelta. Tampoco se puede quitar la última cuenta, porque entonces no entraría nadie.
+
+**Lo que este login no hace:** corre en el navegador, así que protege lo que el panel *muestra*, no el archivo en sí; quien conozca la dirección puede descargar su HTML. Lo que de verdad guarda los datos es la clave del script de Google, que se pega en la pestaña Correos y vive solo en el navegador de quien la pegó: sin ella el panel no lee pedidos, correos ni actividad. Para una puerta de verdad, ver *Deployment Protection* más abajo.
 
 ## Publicar en Vercel
 
@@ -96,7 +114,20 @@ git push -u origin main
 
 ### El panel, en un proyecto aparte
 
-Repite *Add New → Project* con el mismo repositorio, pero en **Root Directory** pon `admin`. Así el panel queda en otro dominio, no enlazado desde la tienda. Si el plan de Vercel lo permite, actívale además *Deployment Protection* con contraseña: el login del panel corre en el navegador y **no reemplaza una protección de servidor**.
+El panel sale del mismo repositorio que la tienda, pero se publica como **otro proyecto**, en su propia dirección y sin ningún enlace desde la página pública. Así comparte la marca y el dominio, pero quien entra a la tienda nunca lo ve.
+
+1. En Vercel, *Add New → Project* y vuelve a importar **el mismo repositorio**.
+2. En **Root Directory** pon `admin` (no `prototipo`). Llámalo, por ejemplo, `nandez-panel`.
+3. Deploy. Queda en `nandez-panel.vercel.app`.
+4. *Settings → Domains → Add*: escribe `panel.nandezcoffee.com`. Vercel te da un registro **CNAME** que apunta a `cname.vercel-dns.com`; agrégalo donde tengas el DNS del dominio. En unos minutos el panel responde ahí.
+
+Queda `www.nandezcoffee.com` para la tienda y `panel.nandezcoffee.com` para el panel: mismo dominio, dos sitios distintos.
+
+**No se enlaza desde la tienda** y `admin/robots.txt` le dice a los buscadores que no lo indexen (`Disallow: /`), así que no aparece en Google. Aun así, una dirección sin enlaces no es un secreto: quien la adivine llega al login.
+
+**Deployment Protection.** Si el plan de Vercel lo permite (*Settings → Deployment Protection → Password Protection*), ponle una contraseña ahí también. Esa sí la revisa el servidor antes de entregar nada, así que es la única que impide descargar el panel; el login de adentro solo protege lo que el panel muestra.
+
+**Cada `git push` vuelve a desplegar los dos proyectos**, porque leen el mismo repositorio. Si cambias quién entra al panel (`node tools/clave.js`), eso aplica cuando subas el commit.
 
 ## Configurar antes de publicar de verdad
 

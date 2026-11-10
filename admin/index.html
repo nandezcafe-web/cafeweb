@@ -4276,14 +4276,19 @@ document.addEventListener("click", (ev) => {
    correos. El inventario por lote, los costos, el cotizador y el
    mercado van en otro panel (quote.js, inventory.js, clients.js y
    market.js siguen en el repositorio para ese, pero aquí no se cargan).
-   Entrada con correo y contraseña. No se guarda la contraseña:
-   solo un verificador PBKDF2 (310.000 vueltas) con sal aleatoria.
-   Para cambiarla:  node tools/clave.js "nueva contraseña"
+   Entra cada quien con su correo y su contraseña (ver AUTH, abajo).
    ============================================================ */
+/* Quién puede entrar. Una línea por persona: el correo no se guarda en claro,
+   solo su huella (sha256, primeros 32), y la contraseña tampoco, solo un
+   verificador PBKDF2 de 310.000 vueltas con su propia sal. La etiqueta es para
+   poder listarlas y quitarlas desde la consola; con ella no se entra.
+     Agregar o cambiar:  node tools/clave.js "la contraseña" correo@dominio.com
+     Quitar:             node tools/clave.js --quitar etiqueta
+     Ver quiénes hay:    node tools/clave.js --lista */
 const AUTH = {
-  correo: "9cbdfca2c4a1d804c916b1c3c55cc6b4",                                   // sha256(correo), primeros 32
-  sal: "ba601ed3f29325a72f19fc4ee5dfc298",
-  clave: "841bca32c6e95ede767eede4eb4a881558a4cd800b59087eb5306009c95d4add",
+  cuentas: [
+    { etiqueta: "nandezcafe", correo: "9cbdfca2c4a1d804c916b1c3c55cc6b4", sal: "580570908cf1f921f0fbb4b90a7db886", clave: "9407fe73eb4bbab1b186b11be0e38697e10c773aefec81f9c02f90ba6f3b48e9" },
+  ],
   vueltas: 310000,
   sesion: "altura-admin-ok",
 };
@@ -4291,12 +4296,18 @@ const AUTH = {
 const hex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
 const bytes = (h) => new Uint8Array(h.match(/../g).map((x) => parseInt(x, 16)));
 
+/* Se prueban todas las cuentas hasta el final, aunque la primera ya calce: si
+   se cortara en la que coincide, el tiempo de respuesta diría qué correos
+   existen. Por eso también se deriva la clave para las que no coinciden. */
 async function verificar(correo, clave) {
   const mailHash = hex(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(correo.trim().toLowerCase()))).slice(0, 32);
-  if (mailHash !== AUTH.correo) return false;
   const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(clave), "PBKDF2", false, ["deriveBits"]);
-  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt: bytes(AUTH.sal), iterations: AUTH.vueltas, hash: "SHA-256" }, key, 256);
-  return hex(bits) === AUTH.clave;
+  let entra = false;
+  for (const c of AUTH.cuentas) {
+    const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt: bytes(c.sal), iterations: AUTH.vueltas, hash: "SHA-256" }, key, 256);
+    if (c.correo === mailHash && hex(bits) === c.clave) entra = true;
+  }
+  return entra;
 }
 
 const sesionActiva = () => { try { return sessionStorage.getItem(AUTH.sesion) === "1"; } catch { return false; } };
