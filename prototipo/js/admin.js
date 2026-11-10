@@ -10,8 +10,8 @@
    ============================================================ */
 const AUTH = {
   correo: "9cbdfca2c4a1d804c916b1c3c55cc6b4",                                   // sha256(correo), primeros 32
-  sal: "1ff14fbbed369eeb919122ef72f5bd55",
-  clave: "d12b70f2e5137463cb0525de8b27eb8878b8bda447d9a2e8e92c2a4d2cf78abd",
+  sal: "ba601ed3f29325a72f19fc4ee5dfc298",
+  clave: "841bca32c6e95ede767eede4eb4a881558a4cd800b59087eb5306009c95d4add",
   vueltas: 310000,
   sesion: "altura-admin-ok",
 };

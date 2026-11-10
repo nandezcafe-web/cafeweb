@@ -7,7 +7,11 @@
 
 ## 1. Dónde estamos
 
-- **Todavía no hay píxel.** Se revisó por la conexión con Meta el 10 de noviembre de 2026: ni la cuenta publicitaria **NandezCoffeeGang** (en el portafolio Bushido Agencia) ni el portafolio **Nandez Café** tienen un píxel (Meta ahora lo llama *conjunto de datos*).
+> **Actualización, 10 de noviembre de 2026:** el píxel ya existe y está puesto en la página. Se llama **Nandez Coffee Gang**, su número es `1805850087187226` y está conectado a la cuenta **NandezCoffeeGang**. Quedó a nombre del portafolio **Bushido Agencia**, no de Nandez Café: funciona igual, pero si algún día la marca se separa de la agencia conviene compartirlo o moverlo al portafolio de Nandez Café (paso 2.7). Los pasos 2 y 3 ya están hechos; falta el 4 (probarlo) y el 5.
+
+Antes de esa fecha:
+
+- **Todavía no había píxel.** Se revisó por la conexión con Meta el 10 de noviembre de 2026: ni la cuenta publicitaria **NandezCoffeeGang** (en el portafolio Bushido Agencia) ni el portafolio **Nandez Café** tienen un píxel (Meta ahora lo llama *conjunto de datos*).
 - **La página ya está lista para recibirlo.** [prototipo/js/medir.js](../prototipo/js/medir.js) carga el píxel, pide permiso con el aviso de cookies y manda los eventos. Lo único que falta es el número del píxel en `CONFIG.medicion.metaPixel` ([prototipo/js/core.js](../prototipo/js/core.js)).
 - La cuenta **Nandez** del portafolio Nandez Café está cerrada; la que está activa y con medio de pago es **NandezCoffeeGang**.
 

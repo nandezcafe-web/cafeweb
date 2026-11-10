@@ -91,7 +91,7 @@ const CONFIG = {
      carritos), que se ve en el panel, pestaña Actividad. Solo anota a quien
      acepta las cookies, y se prende sola cuando el script de la hoja ya la
      recibe; con false no se anota nada. */
-  medicion: { metaPixel: "", ga4: "", propia: true },
+  medicion: { metaPixel: "1805850087187226", ga4: "", propia: true },
   pagos: {
     /* La pasarela que cobra DENTRO de la página. Se prende sola apenas haya llave
        pública (pub_test_… para probar, pub_prod_… para vender). Los secretos NO van
