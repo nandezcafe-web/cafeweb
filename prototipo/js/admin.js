@@ -1,5 +1,9 @@
 /* ============================================================
    PANEL INTERNO · aplicación aparte, no va en la página pública
+   Solo el seguimiento de la página: pedidos, actividad, stock y
+   correos. El inventario por lote, los costos, el cotizador y el
+   mercado van en otro panel (quote.js, inventory.js, clients.js y
+   market.js siguen en el repositorio para ese, pero aquí no se cargan).
    Entrada con correo y contraseña. No se guarda la contraseña:
    solo un verificador PBKDF2 (310.000 vueltas) con sal aleatoria.
    Para cambiarla:  node tools/clave.js "nueva contraseña"
@@ -31,7 +35,7 @@ function viewLogin() {
       <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor">${[0, 72, 144, 216, 288].map((r) => `<ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(${r} 12 12)"/>`).join("")}</g><circle cx="12" cy="12" r="1.3" fill="var(--paper)"/></svg>
       <p class="eyebrow">${esc(CONFIG.marca)} · panel interno</p>
       <h1>Entrar</h1>
-      <p class="hint">Pedidos, cotizador, inventario, clientes, correos y mercado. Esta parte no aparece en la página pública.</p>
+      <p class="hint">Pedidos, actividad de la página, stock y correos. Esta parte no aparece en la página pública.</p>
       <form class="login-form" onsubmit="return false">
         <div class="field"><label class="lbl" for="lg-mail">Correo</label>
           <input id="lg-mail" class="input" type="email" autocomplete="username" placeholder="correo@dominio.com"></div>
@@ -50,30 +54,27 @@ async function entrar() {
   const ok = await verificar($("#lg-mail").value, $("#lg-pass").value);
   if (!ok) { b.disabled = false; b.textContent = "Entrar"; err.hidden = false; $("#lg-pass").select(); return; }
   try { sessionStorage.setItem(AUTH.sesion, "1"); } catch {}
-  UI.animate = true; render(); vigilarMercado();
+  UI.animate = true; render();
 }
 function salir() { try { sessionStorage.removeItem(AUTH.sesion); } catch {} UI.animate = true; render(); }
 
 /* ---------- panel ---------- */
-const ATABS = [["pedidos", "Pedidos"], ["cotizador", "Cotizador"], ["inventario", "Inventario"], ["clientes", "Clientes"], ["correos", "Correos"], ["mercado", "Mercado"]];
-const APANELS = { pedidos: viewOperacion, cotizador: viewCotizador, inventario: viewInventario, clientes: viewClientes, correos: viewCorreos, mercado: viewMercado };
+const ATABS = [["pedidos", "Pedidos"], ["actividad", "Actividad"], ["stock", "Stock"], ["correos", "Correos"]];
+const APANELS = { pedidos: viewOperacion, actividad: viewActividad, stock: viewStock, correos: viewCorreos };
 
 function viewPanel() {
-  const quieto = S.compras.reduce((s, c) => s + enJuego(c), 0);
+  if (!APANELS[UI.atab]) UI.atab = "pedidos";
   return `<div class="admin-bar reveal">
       <div><span class="lbl">${esc(CONFIG.marca)} · interno</span><b>Panel de administración</b></div>
       <div class="seg" role="group" aria-label="Secciones">
         ${ATABS.map(([k, t]) => `<button data-act="atab" data-tab="${k}" aria-pressed="${UI.atab === k}">${t}</button>`).join("")}
       </div>
-      <div class="admin-side"><span class="mono" title="Plata sin recuperar">${copK(quieto)} en bodega</span>
-        <button class="btn sm" data-act="salir">Salir</button></div>
+      <div class="admin-side"><button class="btn sm" data-act="salir">Salir</button></div>
     </div>
-    ${avisoMercado()}
     <div class="admin-body">${APANELS[UI.atab]()}</div>`;
 }
 
-const FOOT = `<footer class="foot"><span>Panel interno de <b>${CONFIG.marca}</b>. Datos de ejemplo mientras no se carguen los reales.</span>
-  <button class="btn sm" data-act="reset-demo">Reiniciar datos de la demo</button></footer>`;
+const FOOT = `<footer class="foot"><span>Panel interno de <b>${CONFIG.marca}</b>. Todo lo que ves aquí sale de la Hoja de Google.</span></footer>`;
 
 function render() {
   const ae = document.activeElement, fid = ae && ae.id && !ae.closest("dialog") ? ae.id : null;
@@ -83,7 +84,6 @@ function render() {
   const v = $("#view");
   v.classList.toggle("calm", !UI.animate);
   v.innerHTML = dentro ? viewPanel() + FOOT : viewLogin();
-  if (dentro && UI.atab === "cotizador") renderCot();
   if (UI.animate) countUp();
   UI.animate = false;
   if (fid) { const n = document.getElementById(fid); if (n) { n.focus({ preventScroll: true }); if (sel) try { n.setSelectionRange(...sel); } catch {} } }
@@ -106,31 +106,11 @@ document.addEventListener("click", (e) => {
     case "salir": return salir();
     case "close": return closeModal();
     case "atab": UI.atab = el.dataset.tab; UI.animate = true; return render();
-    case "cot-reset": UI.q = nuevaCot(); UI.animate = false; return render();
-    case "cot-save": return cotSave();
-    case "cot-save-ok": return cotSaveOk();
-    case "mkt-save": return guardarMercado();
-    case "mkt-auto": return actualizarMercado({ avisar: "siempre" });
-    case "inv-paso": return invPaso(id, el.dataset.p);
-    case "inv-paso-ok": return invPasoOk();
-    case "cl-ver": return clienteVer(id);
-    case "cl-wa": return clienteWa(id);
-    case "cl-nuevo": return clienteNuevo(id);
-    case "cl-guardar": return clienteGuardar();
-    case "reset-demo":
-      try { localStorage.removeItem(CONFIG.storageKey); } catch {}
-      S = seed(); UI.q = null; UI.animate = true; return render();
   }
 });
 document.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && (e.target.id === "lg-mail" || e.target.id === "lg-pass")) { e.preventDefault(); entrar(); }
 });
-document.addEventListener("input", (e) => {
-  const t = e.target;
-  if (t.dataset.q && UI.q) { UI.q[t.dataset.q] = t.type === "number" ? (parseFloat(t.value) || 0) : t.value; renderCot(); }
-});
 $("#dlg").addEventListener("click", (e) => { if (e.target === $("#dlg")) closeModal(); });
 
-aplicarCfgGuardada();
 render();
-if (sesionActiva()) vigilarMercado();

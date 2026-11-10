@@ -136,8 +136,9 @@ function compartirLista() {
    La usan el formulario del pie y el pop-up del bono: un solo camino, para que
    el código lo cree siempre la hoja (BONO en tools/correos/Codigo.gs) y nadie
    reparta descuentos por su cuenta. */
-function apuntarComunidad(correo, listo) {
-  enviarAviso("comunidad", { correo, consentimiento: true }).then((ok) => {
+/* origen: por dónde llegó ("pop" o "pie"), para que el panel cuente cuántos trae cada uno */
+function apuntarComunidad(correo, listo, origen) {
+  enviarAviso("comunidad", { correo, consentimiento: true, origen }).then((ok) => {
     /* solo se guarda si la hoja lo recibió: si no, no quedó apuntada en
        ninguna parte y hay que poder intentarlo otra vez */
     if (ok) { S.espera.push({ id: nextId("CM"), producto: "comunidad", correo, fecha: isoToday(), consentimiento: true }); save(); popPausa(POP_MIEMBRO); }
@@ -161,9 +162,9 @@ function unirseComunidad() {
       if (!listo) return toast(en ? "It did not save. Try again in a moment." : "No se pudo guardar. Intenta otra vez en un momento.", { type: "err" });
       el.value = ""; if (ok) ok.checked = false;
       popCerrar(false);
-      medir("registro", { nombre: "comunidad" });
+      medir("registro", { nombre: "pie de página" });
       toast(en ? `You are in. Check your inbox: your ${BONO_PCT} % welcome code is there.` : `Ya eres parte. Revisa tu correo: ahí está tu bono del ${BONO_PCT} %.`);
-    });
+    }, "pie");
     return;
   }
   S.espera.push({ id: nextId("CM"), producto: "comunidad", correo, fecha: isoToday(), consentimiento: true }); save();
@@ -340,12 +341,13 @@ function popApuntar() {
   const btn = $('[data-form="pop"] button[type="submit"]'); if (btn) btn.disabled = true;
   apuntarComunidad(correo, (listo) => {
     if (!listo) { if (btn) btn.disabled = false; return toast(en ? "It did not save. Try again in a moment." : "No se pudo guardar. Intenta otra vez en un momento.", { type: "err" }); }
+    medir("registro", { nombre: "pop-up" });
     const caja = $("#g-pop .g-pop-dice");
     if (caja) caja.innerHTML = `<h2>${en ? "You are in" : "Ya eres parte"}</h2>
       <p>${en ? `Check your inbox: your ${BONO_PCT} % code is there, ready for your first order.`
               : `Revisa tu correo: ahí está tu bono del ${BONO_PCT} %, listo para tu primer pedido.`}</p>`;
     setTimeout(() => popCerrar(false), 5000);
-  });
+  }, "pop");
 }
 
 /* Íconos de las redes. Si la dirección no está, el ícono se ve pero no lleva a ningún lado. */

@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
 :root{
   /* Línea gráfica Nandez: marrón tueste #4A2E1B · arena kraft #E6D7C3 · verde flor #2E4732 · terracota #C05A3E.
@@ -1490,6 +1490,30 @@ html[lang=en] .ruta li::before{content:"Month " counter(ruta)}
 /* El IVA incluido, debajo del total: dato, no cifra protagonista */
 .cart-iva{margin:2px 0 0;text-align:right;color:var(--ink-3);font-size:12px}
 
+/* ---- panel: actividad de la página ---- */
+.ac-dos{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:14px}
+.ac-caja{display:grid;gap:14px;padding:22px;align-content:start}
+.ac-caja h3{font-size:1.4rem}.ac-caja .ac-sub{margin-top:6px}
+.ac-embudo{display:grid;gap:12px}
+.ac-paso{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center}
+.ac-paso-t{font:600 14px var(--sans)}
+.ac-paso b{font-size:1.15rem;text-align:right}
+.ac-barra{grid-column:1/-1;height:10px;border-radius:4px;background:var(--paper-2);overflow:hidden}
+.ac-barra i{display:block;height:100%;border-radius:0 4px 4px 0;background:var(--leaf)}
+.ac-paso small{grid-column:1/-1;font-size:12.5px;color:var(--ink-3)}
+.ac-dias{display:flex;align-items:flex-end;gap:2px;height:110px}
+.ac-dia{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;min-width:0}
+.ac-dia i{display:block;width:100%;max-width:22px;border-radius:4px 4px 0 0;background:var(--leaf)}
+.ac-dia:hover i{background:var(--ink)}
+.ac-dia small{font:500 10.5px var(--mono);color:var(--ink-3)}
+.ac-mini{margin-top:0;min-width:0}
+.ac-feed{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:13.5px;color:var(--ink-2);max-height:420px;overflow:auto}
+.ac-feed li{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px}
+.ac-feed time{color:var(--ink-3);font-size:12.5px}
+.ac .co-head .co-etiquetas{display:inline-flex}
+.brand .panel-rotulo{display:inline-block;margin-left:12px;font:600 10.5px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+.ac-feed li.hint{display:block}
+
 /* sala de subasta */
 .auction{color:#E6D7C3}
 .auction .kicker{color:#c9b497}
@@ -1612,12 +1636,901 @@ details.rule p{color:#d3c0a5;margin:8px 0 0;font-size:14px}
 .au-result h3{transform:none}
 .vs .hot i{background:var(--ember)}
 
+/* ============================================================
+   NANDEZ COFFEE GANG · línea gráfica editorial (octubre 2026)
+   Una capa encima de styles.css y auction.css. Lo que cambia:
+     · el color: naranja del logo (#EF4724), crema de papel y negro carbón;
+     · la letra: Bricolage Grotesque en negrita para titulares, Instrument
+       Serif en cursiva para el acento, Instrument Sans para leer y
+       IBM Plex Mono para los datos;
+     · el material: ya no hay vidrio ni esquinas redondas. Todo es papel,
+       líneas de 1 px y bloques de color, como una revista.
+   Las piezas nuevas del inicio llevan prefijo g- y viven solo aquí.
+   ============================================================ */
+:root{
+  --paper:#F5F0E6;--paper-2:#EBE4D6;--card:#FAF7F0;
+  --ink:#141210;--ink-2:#3B3631;--ink-3:#6B645C;--line:rgba(20,18,16,.22);
+  --cherry:#EF4724;--cherry-2:#D63B1A;--leaf:#1F5A3C;--gold:#C98A1E;--doc:#2C4FA3;
+  --roast:#141210;--roast-2:#1C1916;--roast-3:#262220;--ember:#EF4724;--crema:#F5F0E6;
+  --display:"Bricolage Grotesque","Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --serif:"Instrument Serif","Iowan Old Style",Georgia,serif;
+  --sans:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --r:0;
+  --borde:clamp(16px,3vw,40px);
+}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--paper);color:var(--ink);font:15.5px/1.55 var(--sans)}
+/* el papel: sin manchas de color detrás, solo un grano muy leve */
+body::before,body[data-view=subasta]::before{background:none;animation:none;inset:0}
+body::after{opacity:.06}
+body[data-view=subasta]::after{opacity:.1}
+
+/* ---- la letra ---- */
+h1,h2,h3{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:.95;font-variation-settings:"opsz" 96,"wdth" 100}
+h1 em,h2 em,h3 em{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.015em;color:var(--cherry)}
+body[data-view=subasta] h1 em,body[data-view=subasta] h2 em,body[data-view=subasta] h3 em{color:var(--cherry)}
+.eyebrow,.portada-sobre,.kicker,.lbl,.plan-cada,.ent-meta,.b2b-tabla thead th,.ficha-tabla thead th,.ficha-tabla tbody th{font-family:var(--mono);letter-spacing:.16em;text-transform:uppercase}
+.eyebrow{color:var(--ink);font-weight:600;font-size:11px}
+.eyebrow::before{content:"";width:18px;height:1px;background:var(--cherry)}
+body[data-view=subasta] .eyebrow{color:var(--crema)}
+.section-head h2,.view-head h1,.view-head h2{font-size:clamp(2.2rem,5.4vw,4.4rem);text-transform:uppercase;letter-spacing:-.035em}
+.section-head h2 em,.view-head h1 em,.view-head h2 em{text-transform:none;font-size:.92em}
+.section-head p,.view-head p{font-size:1.05rem;color:var(--ink-2);max-width:56ch}
+.view-head{border-bottom:1px solid var(--ink)}
+.lede,.portada-lede{font-family:var(--sans)}
+.brand b,.foot-marca b,.cart-txt b,.stat b,.cc-score b,.tool b,.b2b-tabla tbody th,.ficha-tabla .fv,.var b,.receta b,.pago-finca .pf-mas b,
+.plan h3,.plan-kit b,.ruta b,.entrada h3,.finca-body h3,.cc-body h3,.level h3,.legal-b h3,.espera h3,.cart-head h3,.dlg-head h3,.principio b,.cereza-capas b{font-family:var(--display);font-weight:800;letter-spacing:-.02em;font-style:normal}
+.ficha-tabla .fv,.var b,.receta b,.b2b-tabla tbody th{font-weight:700}
+.cereza-capas i{font-family:var(--serif)}
+a:focus-visible,button:focus-visible,:focus-visible{outline:2px solid var(--cherry);outline-offset:3px}
+
+/* ---- la cabecera: una barra de papel con línea negra abajo, el logo a la izquierda ---- */
+.top,body[data-view=subasta] .top{position:sticky;top:0;z-index:50;padding:0;pointer-events:auto}
+.top-inner,body[data-view=subasta] .top-inner,body.nav-compacta .top-inner{
+  max-width:none;border-radius:0;padding:12px var(--borde);gap:16px 28px;flex-wrap:nowrap;
+  background:color-mix(in srgb,var(--paper) 94%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--ink);transition:padding .3s var(--ease-out)}
+body.nav-compacta .top-inner{padding-block:8px}
+body[data-view=subasta] .top-inner{background:color-mix(in srgb,var(--roast) 94%,transparent);border-bottom-color:rgba(245,240,230,.25)}
+.top-inner::before{content:none}
+.brand{gap:0}
+.brand .mark,.brand b,.brand small{display:none}
+.brand .logo{display:block;height:30px;width:auto;transition:height .3s var(--ease-out)}
+body.nav-compacta .brand .logo{height:24px}
+.tabs,body[data-view=subasta] .tabs,.tabs.con-luz{background:transparent;gap:2px;padding:0;margin-inline:auto}
+.tab{padding:8px 12px;border-radius:0;font:600 12px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink);transition:color .2s var(--ease-out)}
+body[data-view=subasta] .tab{color:rgba(245,240,230,.8)}
+.tab-luz{display:none}
+.tabs .tab[aria-current=page],.tabs.con-luz .tab[aria-current=page],body[data-view=subasta] .tab[aria-current=page]{
+  background:transparent;color:var(--cherry);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:7px}
+@media (hover:hover) and (pointer:fine){.tab:not([aria-current=page]):hover{background:transparent;color:var(--cherry)}}
+.nav-time{font-size:11px;letter-spacing:0;text-transform:none}
+.lang,body[data-view=subasta] .lang,.dock-hoja .lang{border-radius:0;background:transparent;border:1px solid var(--ink);padding:2px;gap:0}
+body[data-view=subasta] .lang{border-color:rgba(245,240,230,.4)}
+.lang button{border-radius:0;font:600 11px var(--mono);letter-spacing:.1em;padding:6px 9px;color:var(--ink)}
+body[data-view=subasta] .lang button{color:var(--crema)}
+.lang button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+body[data-view=subasta] .lang button[aria-pressed=true]{background:var(--crema);color:var(--ink)}
+.cart-btn,body[data-view=subasta] .cart-btn{border-radius:0;border:1px solid var(--ink);background:transparent;color:var(--ink);width:40px;height:40px}
+body[data-view=subasta] .cart-btn{border-color:rgba(245,240,230,.4);color:var(--crema)}
+.cart-btn.lleno{background:var(--cherry);border-color:var(--cherry);color:#fff}
+.cart-n{border-radius:0;background:var(--ink);top:-6px;right:-6px}
+.cart-btn.lleno .cart-n{background:var(--ink)}
+.menu-btn{border-radius:0;border-color:var(--ink);background:transparent}
+
+/* ---- botones: rectos, en mayúscula pequeña, con el naranja para el principal ---- */
+.btn,body[data-view=subasta] .btn:not(.primary){position:relative;border-radius:0;border:1px solid var(--ink);background:transparent;color:var(--ink);
+  backdrop-filter:none;-webkit-backdrop-filter:none;padding:12px 20px;font:600 12.5px var(--sans);letter-spacing:.1em;text-transform:uppercase;
+  transition:background .2s var(--ease-out),color .2s var(--ease-out),border-color .2s var(--ease-out),transform .15s var(--ease-out)}
+.btn::before{content:none}
+.btn:hover,body[data-view=subasta] .btn:not(.primary):hover{background:var(--ink);color:var(--paper)}
+.btn.primary,body[data-view=subasta] .btn.primary{background:var(--cherry);border-color:var(--cherry);color:#fff}
+.btn.primary:hover,body[data-view=subasta] .btn.primary:hover{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.btn.primary:disabled:hover{background:var(--cherry);border-color:var(--cherry);color:#fff}
+.btn:disabled:hover{background:transparent;color:var(--ink)}
+.btn.claro{background:var(--paper);border-color:var(--paper);color:var(--ink)}
+.btn.claro:hover{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.btn.lg{padding:16px 28px;font-size:13.5px}
+.btn.sm{padding:9px 14px;font-size:11px;letter-spacing:.08em}
+body[data-view=subasta] .btn:not(.primary){border-color:rgba(245,240,230,.5);color:var(--crema)}
+body[data-view=subasta] .btn:not(.primary):hover{background:var(--crema);color:var(--ink)}
+@media (hover:hover) and (pointer:fine){.btn:not(:disabled):hover{transform:none}.btn:hover .ico{transform:translateX(4px)}}
+@media (hover:none),(pointer:coarse){.btn:hover{background:transparent;color:var(--ink)}.btn.primary:hover{background:var(--cherry);border-color:var(--cherry);color:#fff}}
+
+/* ---- superficies: papel, 1 px de tinta, sin esquinas ---- */
+.card-cafe,.finca,.plan,.entrada,.val,.var,.item,.lot,.mode,.step,.wpanel,.levels,.receta div,.tool,.res-card,.login-card,.llamar,.espera,.foto-pend,.prod-escena,.plan-kit,.sub-resumen{
+  border-radius:0;background:var(--card);border:1px solid var(--ink);backdrop-filter:none;-webkit-backdrop-filter:none}
+.attr{border-radius:0;background:var(--card);border-color:var(--ink);backdrop-filter:none;-webkit-backdrop-filter:none}
+.chip,.chip-radio span,.notas-chips li,.input,.search,.ref-chip,.ruta-comunidad li,.var-chip,.tag,.excl,.status,.est,.rpill,.state,.lvtag{border-radius:0}
+.input,.search{background:var(--paper);border:1px solid var(--ink)}
+.input:focus,.search:focus{outline:2px solid var(--cherry);outline-offset:0}
+.notas-chips li{background:transparent;border-color:var(--ink);font:italic 15px var(--serif)}
+.var-chip{background:var(--ink);color:var(--paper)}
+dialog,dialog.drawer{border-radius:0;background:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none;border:1px solid var(--ink)}
+dialog.drawer{border-left:1px solid var(--ink)}
+.dlg-head,.cart-foot,.cart-head{background:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none;border-color:var(--ink)}
+.tray{border-radius:0;background:var(--ink);backdrop-filter:none;-webkit-backdrop-filter:none;color:var(--paper)}
+.tray::before{content:none}
+.toast{border-radius:0}
+.plan-tag{border-radius:0;background:var(--cherry);color:#fff}
+.plan-ahorro{border-radius:0;background:var(--cherry);color:#fff}
+.seg,.sub-opciones .seg{border-radius:0;background:transparent;border:1px solid var(--ink);padding:3px;backdrop-filter:none;-webkit-backdrop-filter:none}
+.seg button,.sub-opciones .seg button{border-radius:0;font:600 12px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+.seg button[aria-pressed=true],.sub-opciones .seg button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+.card-cafe,.finca,.entrada,.plan,.tool,.mode,.lot{transition:background .25s var(--ease-out),color .25s var(--ease-out)}
+@media (hover:hover) and (pointer:fine){
+  .card-cafe:hover,.finca:hover,.entrada:hover,.tool:hover,.mode:hover,.lot:hover{transform:none}
+  .entrada:hover,.finca:hover{background:var(--paper-2)}
+}
+
+/* ---- el catálogo (página de cafés): la misma rejilla de tres del inicio ---- */
+.dos{gap:0;border:1px solid var(--ink);grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.card-cafe,.card-cafe.dark{border:0;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);margin:0 0 -1px;background:var(--paper)}
+.card-cafe.dark{background:var(--ink);color:var(--paper)}
+.cc-art,.cc-art.con-foto,.card-cafe.dark .cc-art{height:auto;aspect-ratio:1;background:var(--pc,var(--paper-2));border-bottom:1px solid var(--ink);padding:0;place-items:end center}
+.cc-art.con-foto::after{content:none}
+.cc-art.con-foto .prod-foto{height:82%;margin-bottom:0}
+.cc-art svg{opacity:.9}
+.card-cafe.dark .cc-art{background:var(--roast-2)}
+.cc-score{left:18px;top:16px;color:var(--paper)}
+.cc-score b{font:800 2.8rem/1 var(--display);letter-spacing:-.03em;color:var(--paper)}
+.cc-score small,.card-cafe.dark .cc-score small{color:var(--paper)!important;opacity:.85}
+.state{font:600 10.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;background:var(--paper);color:var(--ink);border:1px solid var(--ink);padding:5px 9px}
+.st-en-subasta{background:var(--cherry)!important;color:#fff!important;border-color:var(--cherry)!important}
+.cc-body{padding:20px 20px 22px;gap:8px}
+.cc-body h3{font-size:clamp(1.6rem,2.4vw,2.1rem);text-transform:uppercase;line-height:.95}
+.cc-body .kicker{color:var(--ink-3)}
+.notas-linea{font:italic 1.1rem/1.3 var(--serif);color:var(--ink-2)}
+.card-cafe.dark .notas-linea,.card-cafe.dark .kicker{color:rgba(245,240,230,.75)}
+.cc-foot,.card-cafe.dark .cc-foot{border-top:1px solid var(--ink);padding-top:14px;align-items:center}
+.card-cafe.dark .cc-foot{border-color:rgba(245,240,230,.3)}
+.cc-foot b{font:700 1.15rem var(--mono)}
+.cc-foot small{font-size:12px}
+.card-cafe.dark .btn.primary{background:var(--cherry);border-color:var(--cherry)}
+.card-cafe.pronto .cc-art{background:repeating-linear-gradient(135deg,var(--paper-2) 0 10px,var(--paper) 10px 22px)}
+
+/* ---- la ficha de cada café ---- */
+.prod-buy h1{font-size:clamp(2.4rem,5vw,4rem);text-transform:uppercase}
+.prod-escena{background:var(--pc,var(--paper-2));border:1px solid var(--ink)}
+.prod-escena .g-pronto{font-size:clamp(2rem,4.2vw,3.6rem);align-self:center}
+.prod-escena::after{content:none}
+.prod-sello b{font:800 clamp(2.6rem,4vw,3.4rem)/1 var(--display);color:var(--paper)}
+.prod-sello small{color:var(--paper)}
+.var{border-radius:0;border:1px solid var(--ink);background:transparent}
+.var.on{background:var(--ink);color:var(--paper);outline:0;border-color:var(--ink)}
+.var.on small{color:rgba(245,240,230,.75)}
+.var:hover{border-color:var(--cherry)}
+.buy-row,.cierre,.sale{border-color:var(--ink)}
+.sale-tag{border-radius:0;color:var(--cherry);border-color:var(--cherry)}
+.precio-grande{font-family:var(--display);font-weight:800;letter-spacing:-.03em}
+.ficha-tabla{border-top-color:var(--ink)}
+.ficha-tabla tbody th,.ficha-tabla td{border-bottom-color:var(--line)}
+.lvtag{border-radius:0}
+.foto-pend{background:repeating-linear-gradient(135deg,var(--paper-2) 0 10px,var(--paper) 10px 22px);border-style:solid}
+.pago-finca{border-radius:0;border-color:var(--ink);background:var(--ink)}
+.pago-finca>div{background:var(--card)}
+.pago-finca .pf-mas b{color:var(--cherry)}
+.pronto-aviso{display:grid;gap:12px;padding:22px;border:1px dashed var(--ink);margin:20px 0}
+.pronto-aviso b{font:800 1.3rem/1.1 var(--display);text-transform:uppercase}
+.pronto-aviso p{margin:0;color:var(--ink-2)}
+.pronto-aviso .btn{justify-self:start}
+
+/* ---- suscripción, diario, fincas, preguntas ---- */
+.planes{gap:0;border:1px solid var(--ink);margin-top:10px}
+.plan{border:0;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);margin-bottom:-1px;padding:28px 26px}
+.plan h3{font-size:clamp(1.9rem,3vw,2.6rem);text-transform:uppercase}
+.plan.hot{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.plan.hot .plan-para,.plan.hot .plan-lista li,.plan.hot .plan-precio small,.plan.hot .plan-luego,.plan.hot .plan-cada,.plan.hot .plan-kit ul{color:rgba(245,240,230,.78)}
+.plan.hot .plan-lista li::before{color:var(--cherry)}
+.plan.hot .plan-kit{background:transparent;border-color:rgba(245,240,230,.3)}
+.plan.hot .btn:not(.primary){border-color:var(--paper);color:var(--paper)}
+.plan.hot .btn:not(.primary):hover{background:var(--paper);color:var(--ink)}
+.plan-precio b{font:800 2.2rem/1 var(--display);letter-spacing:-.03em}
+.plan-lista li::before{color:var(--cherry)}
+.plan-cafeteria{border:1px solid var(--ink)}
+.ruta,.ruta li,.ruta li:not(:nth-child(3n+1)),.principios,.principio + .principio{border-color:var(--ink)}
+.ruta li::before{color:var(--cherry)}
+.ruta-comunidad li{background:transparent;border:1px solid var(--ink);box-shadow:none}
+.principio svg{color:var(--cherry)}
+.fincas{gap:0;border:1px solid var(--ink);grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.finca,.finca.propia{border:0;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);margin-bottom:-1px;background:var(--paper)}
+.finca.propia{background:repeating-linear-gradient(135deg,var(--paper-2) 0 10px,var(--paper) 10px 22px)}
+.finca-art{height:120px;background:var(--paper-2);border-bottom:1px solid var(--ink)}
+.finca-art::after{content:none}
+.finca-art svg path{fill:var(--ink)}
+.finca-art svg path:first-child{fill:var(--ink);opacity:.25}
+.finca-body h3{font-size:1.5rem;text-transform:uppercase}
+.finca-foot{border-top:1px solid var(--ink)}
+.excl{color:var(--cherry);border-color:var(--cherry)}
+.pronto{color:var(--cherry)}
+.entradas{gap:0;border:1px solid var(--ink)}
+.entrada{border:0;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);margin-bottom:-1px;background:var(--paper)}
+.entrada h3{font-size:1.6rem;text-transform:uppercase}
+.tag{color:var(--cherry);border-color:var(--cherry)}
+.faq-lista,.faq-lista .faq{border-color:var(--ink)}
+.faq-lista .faq h3{font-family:var(--display);font-weight:700;font-size:clamp(1.1rem,1.6vw,1.35rem);letter-spacing:-.01em}
+.faq-lista .faq summary::after{border-radius:0;border:1px solid var(--ink);background-color:transparent;color:var(--ink)}
+.faq-lista .faq[open] summary::after{background-color:var(--cherry);border-color:var(--cherry);color:#fff}
+.faq-lista .faq p{color:var(--ink-2)}
+.faqs .section-head{top:96px}
+.espera{border-radius:0;background:var(--cherry);color:#fff}
+.espera h3{color:#fff}
+.espera p{color:rgba(255,255,255,.85)}
+.espera .btn.primary{background:var(--ink);border-color:var(--ink)}
+.b2b-tabla th,.b2b-tabla td{border-bottom-color:var(--line)}
+.b2b-tabla tbody th{text-transform:uppercase;font-size:1.1rem}
+.level h3{color:var(--c)}
+
+/* ---- pie de página: el nombre a todo lo ancho ---- */
+.foot{border-top:1px solid var(--ink);margin-top:clamp(64px,10vw,130px);padding-top:28px;grid-template-columns:minmax(0,1fr) auto;gap:18px 40px}
+.foot-marca b{font:800 1.1rem/1 var(--display);text-transform:uppercase;letter-spacing:.02em}
+.foot-marca span,.foot-nota{color:var(--ink-3);font-size:13px}
+.foot-links a{font:600 11.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;text-decoration:none;border-bottom:1px solid transparent}
+.foot-links a:hover{color:var(--cherry);border-bottom-color:var(--cherry)}
+.g-wordmark{margin:0;user-select:none;pointer-events:none;width:100%}
+.g-wordmark img{display:block;width:100%;height:auto}
+body[data-view=subasta] .foot{border-top-color:rgba(245,240,230,.3)}
+body[data-view=subasta] .foot-marca b,body[data-view=subasta] .foot-links a{color:var(--crema)}
+
+/* ---- la barra del celular: negra, recta, el naranja marca dónde estás ---- */
+@media (max-width:760px){
+  .top-inner{padding:10px 16px}
+  .brand .logo{height:26px}
+  .dock{left:0;right:0;bottom:0;border-radius:0;padding:4px 4px calc(4px + env(safe-area-inset-bottom,0px));
+    background:var(--ink);backdrop-filter:none;-webkit-backdrop-filter:none;border-top:1px solid var(--ink)}
+  body[data-view=subasta] .dock{background:var(--ink);border-top-color:rgba(245,240,230,.3)}
+  .dock::before,.dock-hoja::before{content:none}
+  .dock-it,body[data-view=subasta] .dock-it{border-radius:0;color:rgba(245,240,230,.72);min-height:52px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase}
+  .dock-it[aria-current=page],.dock-it[aria-expanded=true],body[data-view=subasta] .dock-it[aria-current=page],body[data-view=subasta] .dock-it[aria-expanded=true]{background:var(--cherry);color:#fff}
+  .dock-n{border-radius:0;background:var(--paper);color:var(--ink)}
+  .dock-hoja:not([hidden]),body[data-view=subasta] .dock-hoja:not([hidden]){left:0;right:0;bottom:calc(61px + env(safe-area-inset-bottom,0px));border-radius:0;padding:6px;
+    background:var(--paper);border:1px solid var(--ink);border-bottom:0;backdrop-filter:none;-webkit-backdrop-filter:none}
+  .dock-hoja .tab{border-radius:0;font-size:14px}
+  .dock-hoja .tab[aria-current=page]{background:var(--ink);color:var(--paper);text-decoration:none}
+  .tray{bottom:calc(70px + env(safe-area-inset-bottom,0px))}
+  .wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+}
+
+/* ---- la sala de subasta sobre carbón en vez de marrón ---- */
+body[data-view=subasta]{background:var(--roast);color:var(--crema)}
+.au-panel{background:var(--roast-2);border:1px solid rgba(245,240,230,.16);border-radius:0}
+.au-title{font-family:var(--display);font-weight:800;text-transform:uppercase;letter-spacing:-.035em}
+.au-facts li{border-top-color:rgba(245,240,230,.2)}
+.au-facts b{font-family:var(--display);font-weight:800}
+.clock::before{background:var(--roast-2)}
+.qbtn{background:var(--roast-3);border-color:rgba(245,240,230,.16);border-radius:0}
+.rpill{border-radius:0}
+.rpill.me{background:var(--cherry);border-color:var(--cherry);color:#fff}
+
+/* ============================================================
+   EL INICIO. Portada, cinta de datos, los tres cafés, el manifiesto,
+   las fincas, la suscripción y el diario. Secciones numeradas,
+   separadas por una línea, como las páginas de una revista.
+   ============================================================ */
+.g-io{opacity:1;transform:none}
+html.js .g-io{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease-out),transform .9s var(--ease-out);transition-delay:calc(var(--i,0)*90ms)}
+html.js .g-io.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){html.js .g-io{opacity:1;transform:none;transition:none}}
+
+.g-kicker{margin:0;font:600 11px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink)}
+.g-kicker em{font-style:normal;color:var(--cherry)}
+.g-num{font:600 12px var(--mono);letter-spacing:.2em;color:var(--cherry)}
+
+/* la portada: el titular ocupa media página, la bolsa va sobre un bloque naranja */
+.g-hero{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:clamp(24px,5vw,72px);align-items:stretch;
+  min-height:calc(100svh - 120px);padding:clamp(20px,4vh,44px) 0 clamp(28px,5vh,56px);border-bottom:1px solid var(--ink)}
+.g-hero-txt{display:grid;align-content:center;gap:0;padding-block:16px}
+.g-hero h1{font-size:clamp(3.4rem,8.6vw,8.8rem);line-height:.88;letter-spacing:-.045em;text-transform:uppercase;margin:22px 0 26px;max-width:11ch}
+.g-hero h1 em{text-transform:none;font-size:.96em;display:block;margin-top:.04em}
+.g-hero .pal{display:inline-block;animation:palabra .8s var(--ease-out) backwards;animation-delay:calc(var(--w,0)*90ms + 120ms)}
+.calm .g-hero .pal{animation:none}
+.g-lede{margin:0 0 30px;font-size:clamp(1.05rem,1.45vw,1.3rem);line-height:1.5;color:var(--ink-2);max-width:46ch}
+.g-cta{display:flex;align-items:center;flex-wrap:wrap;gap:14px 26px}
+.g-link{font:600 12.5px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink);padding-bottom:3px;transition:color .2s,border-color .2s}
+.g-link:hover{color:var(--cherry);border-color:var(--cherry)}
+.g-hechos{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:44px 0 0;padding:18px 0 0;border-top:1px solid var(--ink)}
+.g-hechos b{display:block;font:800 clamp(1.1rem,1.7vw,1.45rem)/1.05 var(--display);letter-spacing:-.02em}
+.g-hechos small{display:block;margin-top:6px;font:600 10.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.g-hero-art{position:relative;min-height:420px;display:grid;place-items:end center;overflow:hidden;background:var(--cherry);border:1px solid var(--ink)}
+.g-hero-art::before{content:"";position:absolute;inset:auto 0 0;height:38%;background:linear-gradient(180deg,transparent,rgba(20,18,16,.22))}
+.g-hero-foto{position:relative;z-index:1;display:block;height:78%;width:auto;max-width:86%;object-fit:contain;margin-bottom:0;
+  animation:g-sube 1.4s var(--ease-out) both;animation-delay:.25s;transition:transform .6s var(--ease-out)}
+@keyframes g-sube{from{opacity:0;transform:translateY(40px)}}
+@media (hover:hover) and (pointer:fine){.g-hero-art:hover .g-hero-foto{transform:translateY(-10px) rotate(-1.5deg)}}
+.g-hero-tag{position:absolute;z-index:2;left:18px;top:16px;margin:0;color:var(--paper);font:600 11px var(--mono);letter-spacing:.16em;text-transform:uppercase}
+.g-hero-tag b{display:block;font:800 clamp(2.2rem,4vw,3.6rem)/.9 var(--display);letter-spacing:-.04em;text-transform:uppercase;margin-top:6px}
+.g-sello{position:absolute;z-index:2;right:14px;bottom:14px;width:clamp(110px,15vw,160px);height:auto;color:var(--paper);
+  animation:g-gira 24s linear infinite;font:700 13px var(--mono);letter-spacing:.22em;text-transform:uppercase;fill:currentColor}
+.g-sello circle{fill:none;stroke:currentColor;stroke-width:1}
+@keyframes g-gira{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.g-sello,.g-hero-foto{animation:none}}
+
+/* la cinta: el precio del día y lo que prometemos, en una sola línea que corre */
+.g-ticker{position:relative;width:100vw;margin-left:calc(50% - 50vw);background:var(--ink);color:var(--paper);overflow:hidden;
+  padding:11px 0;font:500 11.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;border-bottom:1px solid var(--ink)}
+.g-ticker-track{display:flex;width:max-content;animation:g-marquee 46s linear infinite}
+.g-ticker:hover .g-ticker-track{animation-play-state:paused}
+.g-ticker span{display:inline-flex;align-items:center;gap:14px;padding:0 30px;white-space:nowrap}
+.g-ticker span::after{content:"";width:6px;height:6px;background:var(--cherry);margin-left:16px}
+.g-ticker em{font-style:normal;color:var(--cherry)}
+@keyframes g-marquee{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.g-ticker-track{animation:none;flex-wrap:wrap;width:auto}.g-ticker span{padding:4px 16px}}
+
+/* cada sección: número, título y una línea */
+.g-sec{padding-top:clamp(60px,9vw,120px)}
+.g-head{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 34px;align-items:end;padding-bottom:20px;margin-bottom:0;border-bottom:1px solid var(--ink)}
+.g-head .g-num{padding-bottom:10px}
+.g-head h2{font-size:clamp(2.3rem,5.6vw,5rem);text-transform:uppercase;letter-spacing:-.04em;max-width:16ch}
+.g-head h2 em{text-transform:none;font-size:.92em}
+.g-head p{grid-column:2;margin:14px 0 0;max-width:56ch;color:var(--ink-2);font-size:1.05rem}
+.g-head .g-link{grid-column:2;justify-self:start;margin-top:14px}
+
+/* los tres cafés: una rejilla de tres, cada bolsa sobre su propia tinta */
+.g-prods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--ink);border-top:0}
+.g-prod{--pc:#2F5A3C;display:grid;grid-template-rows:auto 1fr;border-right:1px solid var(--ink);background:var(--paper);min-width:0}
+.g-prod:last-child{border-right:0}
+.g-prod-art{position:relative;aspect-ratio:1/1.02;background:var(--pc);display:grid;place-items:end center;overflow:hidden;cursor:pointer;border-bottom:1px solid var(--ink)}
+.g-prod-art::before{content:"";position:absolute;inset:auto 0 0;height:34%;background:linear-gradient(180deg,transparent,rgba(20,18,16,.22))}
+.g-prod-foto{position:relative;z-index:1;display:block;height:80%;width:auto;max-width:84%;object-fit:contain;transition:transform .55s var(--ease-out)}
+@media (hover:hover) and (pointer:fine){.g-prod:hover .g-prod-foto{transform:translateY(-10px) rotate(-2deg)}}
+.g-prod-art svg{position:absolute;inset:0;width:100%;height:100%;opacity:.35}
+.g-prod-art .alt-label{display:none}
+.g-prod-n{position:absolute;z-index:2;right:16px;top:14px;font:600 11px var(--mono);letter-spacing:.2em;color:var(--paper)}
+.g-prod-sca{position:absolute;z-index:2;left:18px;top:16px;margin:0;color:var(--paper)}
+.g-prod-sca b{display:block;font:800 clamp(2.4rem,3.6vw,3.2rem)/.9 var(--display);letter-spacing:-.04em}
+.g-prod-sca small{display:block;margin-top:6px;font:600 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.g-pronto{position:relative;z-index:1;align-self:center;justify-self:center;width:100%;font:800 clamp(1.5rem,2.9vw,2.6rem)/.92 var(--display);letter-spacing:-.03em;text-transform:uppercase;color:var(--paper);text-align:center;padding:0 16px}
+.g-pronto i{display:block;font:italic 400 .42em/1.2 var(--serif);text-transform:none;letter-spacing:0;margin-top:14px;opacity:.9}
+.g-prod.pronto .g-prod-art{background:var(--pc)}
+.g-prod-body{padding:22px 22px 24px;display:grid;gap:8px;align-content:start}
+.g-prod-body h3{font-size:clamp(1.7rem,2.7vw,2.5rem);text-transform:uppercase;line-height:.92;margin-top:2px}
+.g-notas{margin:0;font:italic 1.2rem/1.3 var(--serif);color:var(--ink-2)}
+.g-prod-foot{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;border-top:1px solid var(--ink);padding-top:16px;margin-top:12px}
+.g-prod-foot b{font:700 1.2rem var(--mono);letter-spacing:-.01em}
+.g-prod-foot small{font-size:12px;color:var(--ink-3)}
+.g-prod-foot .btn{margin-left:auto}
+.g-prod.pronto .g-prod-foot b{font:800 1rem var(--display);text-transform:uppercase;letter-spacing:.02em}
+.g-subasta{display:flex;align-items:center;justify-content:space-between;gap:16px 28px;flex-wrap:wrap;border:1px solid var(--ink);border-top:0;padding:18px 22px;background:var(--ink);color:var(--paper)}
+.g-subasta p{margin:0;font-size:1.02rem}
+.g-subasta p b{font-family:var(--display);font-weight:800;text-transform:uppercase;letter-spacing:.02em;margin-right:10px}
+.g-subasta .live-dot{margin-right:8px}
+.g-subasta .btn{border-color:var(--paper);color:var(--paper)}
+.g-subasta .btn:hover{background:var(--cherry);border-color:var(--cherry);color:#fff}
+
+/* el manifiesto: una página negra, el titular grande y tres principios numerados */
+.g-manifiesto{width:100vw;margin:clamp(60px,9vw,120px) 0 0 calc(50% - 50vw);background:var(--ink);color:var(--paper);padding:clamp(56px,8vw,112px) var(--borde)}
+.g-manifiesto-in{max-width:1240px;margin:auto;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:40px clamp(32px,6vw,90px);align-items:start}
+.g-manifiesto .g-kicker{color:var(--paper);grid-column:1/-1}
+.g-manifiesto h2{font-size:clamp(2.3rem,5.4vw,4.8rem);text-transform:uppercase;letter-spacing:-.04em;line-height:.92;color:var(--paper)}
+.g-manifiesto h2 em{text-transform:none;font-size:.92em}
+.g-principios{list-style:none;margin:0;padding:0;counter-reset:gp;display:grid;border-top:1px solid rgba(245,240,230,.3)}
+.g-principios li{counter-increment:gp;display:grid;grid-template-columns:44px minmax(0,1fr);gap:4px 14px;padding:20px 0 22px;border-bottom:1px solid rgba(245,240,230,.3)}
+.g-principios li::before{content:"0" counter(gp);font:600 11px var(--mono);letter-spacing:.2em;color:var(--cherry);padding-top:6px}
+.g-principios b{font:800 clamp(1.15rem,1.8vw,1.5rem)/1.05 var(--display);letter-spacing:-.02em}
+.g-principios span{grid-column:2;color:rgba(245,240,230,.75);font-size:15px;line-height:1.55;max-width:40ch}
+.g-pago{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid rgba(245,240,230,.3);margin-top:8px}
+.g-pago div{padding:24px 24px 24px 0}
+.g-pago div + div{padding-left:24px;border-left:1px solid rgba(245,240,230,.3)}
+.g-pago small{display:block;font:600 10.5px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:rgba(245,240,230,.7);margin-bottom:12px}
+.g-pago b{display:block;font:800 clamp(2rem,4.2vw,3.6rem)/.95 var(--display);letter-spacing:-.04em}
+.g-pago .mas b{color:var(--cherry)}
+.g-pago i{display:block;margin-top:8px;font:italic 15px var(--serif);color:rgba(245,240,230,.75)}
+
+/* la cereza: la sección ya existe; aquí solo toma la voz del resto */
+.por-dentro{padding-top:clamp(60px,9vw,120px)}
+.por-dentro .section-head{margin-bottom:22px}
+.cereza-capas li{border-top-color:var(--line)}
+.cereza-btn{border-bottom-color:var(--ink)}
+.cereza-halo{opacity:.7}
+
+/* la suscripción en el inicio: un bloque naranja con los tres planes en fila */
+.g-sub{margin-top:clamp(60px,9vw,120px);background:var(--cherry);color:#fff;border:1px solid var(--ink);padding:clamp(28px,4.5vw,56px);
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px clamp(28px,5vw,72px);align-items:start}
+.g-sub .g-kicker{color:#fff}
+.g-sub .g-num{color:#fff}
+.g-sub h2{font-size:clamp(2.2rem,5vw,4.4rem);text-transform:uppercase;letter-spacing:-.04em;color:#fff;margin:12px 0 18px}
+.g-sub h2 em{color:var(--paper);text-transform:none;font-size:.92em}
+.g-sub p{margin:0 0 26px;max-width:46ch;font-size:1.05rem;color:rgba(255,255,255,.9)}
+.g-sub .btn.claro{background:var(--paper);border-color:var(--paper);color:var(--ink)}
+.g-sub .btn.claro:hover{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.g-planes{list-style:none;margin:0;padding:0;border-top:1px solid rgba(255,255,255,.55)}
+.g-planes li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 16px;align-items:baseline;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.55)}
+.g-planes b{font:800 clamp(1.3rem,2.2vw,1.9rem)/1 var(--display);text-transform:uppercase;letter-spacing:-.02em}
+.g-planes span{grid-column:1;font-size:14px;color:rgba(255,255,255,.85)}
+.g-planes strong{grid-column:2;grid-row:1/3;font:700 1.1rem var(--mono);white-space:nowrap}
+.g-planes strong small{font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;margin-left:4px;opacity:.85}
+.g-planes li.hot{position:relative}
+.g-planes li.hot b::after{content:"★";font-size:.6em;vertical-align:super;margin-left:6px}
+
+/* el diario en el inicio: tres columnas, como un sumario */
+.g-diario{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--ink);border-top:0}
+.g-diario article{display:grid;align-content:start;gap:12px;padding:24px 22px 26px;border-right:1px solid var(--ink);background:var(--paper);transition:background .25s var(--ease-out)}
+.g-diario article:last-child{border-right:0}
+@media (hover:hover) and (pointer:fine){.g-diario article:hover{background:var(--paper-2)}}
+.g-diario .ent-meta{color:var(--ink-3)}
+.g-diario h3{font-size:clamp(1.3rem,2vw,1.7rem);line-height:1;text-transform:uppercase}
+.g-diario p{margin:0;color:var(--ink-2);font-size:14.5px;line-height:1.55}
+.g-diario .g-link{justify-self:start;margin-top:6px}
+
+/* las fincas en el inicio: la misma rejilla del catálogo, pegada a su cabecera */
+.g-sec .fincas{border-top:0;margin-top:0}
+.faqs.g-sec{padding-top:clamp(60px,9vw,120px)}
+
+/* ---- el celular: todo a una columna, las rejillas se vuelven listas ---- */
+@media (max-width:1000px){
+  .g-prods{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g-prod:nth-child(2n){border-right:0}
+  .g-prod:nth-child(-n+2){border-bottom:1px solid var(--ink)}
+  .g-prod:last-child:nth-child(odd){grid-column:1/-1}
+  .g-prod:last-child:nth-child(odd) .g-prod-art{aspect-ratio:2/1}
+  .g-manifiesto-in,.g-sub{grid-template-columns:1fr}
+  .g-pago{grid-template-columns:1fr}
+  .g-pago div + div{padding-left:0;border-left:0;border-top:1px solid rgba(245,240,230,.3)}
+  .g-diario{grid-template-columns:1fr}
+  .g-diario article{border-right:0;border-bottom:1px solid var(--ink)}
+  .g-diario article:last-child{border-bottom:0}
+}
+@media (max-width:760px){
+  .g-hero{grid-template-columns:1fr;min-height:0;gap:22px;padding-top:18px}
+  .g-hero h1{font-size:clamp(3rem,15vw,4.6rem);max-width:none}
+  .g-hero-art{min-height:0;aspect-ratio:4/5;order:2}
+  .g-hechos{grid-template-columns:1fr 1fr;gap:14px;margin-top:30px}
+  .g-head{grid-template-columns:1fr;gap:6px}
+  .g-head p,.g-head .g-link{grid-column:1}
+  .g-prods{grid-template-columns:1fr}
+  .g-prod,.g-prod:nth-child(2n){border-right:0;border-bottom:1px solid var(--ink)}
+  .g-prod:last-child{border-bottom:0}
+  .g-prod:last-child:nth-child(odd) .g-prod-art,.g-prod-art{aspect-ratio:1}
+  .g-manifiesto{padding-inline:16px}
+  .g-sub{padding:26px 20px}
+  .fincas{grid-template-columns:1fr}
+  .finca,.finca.propia{border-right:0}
+  .dos,.planes,.entradas{grid-template-columns:1fr}
+  .card-cafe,.plan,.entrada{border-right:0}
+}
+
+/* ============================================================
+   TIENDA, MÚSICA Y COMUNIDAD (octubre 2026)
+   El menú queda en Inicio · Tienda · Suscripción. "Tienda" abre sus
+   dos categorías; la subasta y el diario están apagados (CONFIG.ocultas).
+   ============================================================ */
+/* "Tienda" y su desplegable: aparece al pasar el cursor o al llegar con el teclado */
+.tab-grupo{position:relative;display:flex}
+.tab-sub{position:absolute;z-index:60;top:calc(100% + 10px);left:50%;min-width:250px;display:grid;padding:6px;
+  background:var(--paper);border:1px solid var(--ink);opacity:0;visibility:hidden;transform:translate(-50%,6px);
+  transition:opacity .2s var(--ease-out),transform .2s var(--ease-out),visibility 0s .2s}
+.tab-sub::before{content:"";position:absolute;left:0;right:0;top:-12px;height:12px}
+.tab-grupo:hover .tab-sub,.tab-grupo:focus-within .tab-sub{opacity:1;visibility:visible;transform:translate(-50%,0);transition-delay:0s}
+.tab-sub a{padding:12px 14px;font:600 12px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink);text-decoration:none;white-space:nowrap}
+.tab-sub a:hover,.tab-sub a:focus-visible{background:var(--ink);color:var(--paper);outline:0}
+@media (prefers-reduced-motion:reduce){.tab-sub{transition:none}}
+
+/* la fila que une las tres páginas de la tienda */
+.g-subnav{display:flex;flex-wrap:wrap;gap:0;margin:4px 0 26px;border:1px solid var(--ink);width:max-content;max-width:100%}
+.g-subnav a{padding:10px 16px;font:600 11.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink);text-decoration:none;border-right:1px solid var(--ink)}
+.g-subnav a:last-child{border-right:0}
+.g-subnav a[aria-current=page]{background:var(--ink);color:var(--paper)}
+@media (hover:hover) and (pointer:fine){.g-subnav a:not([aria-current=page]):hover{color:var(--cherry)}}
+
+/* la tienda: dos puertas grandes */
+.g-puertas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border:1px solid var(--ink)}
+.g-puerta{--pc:var(--cherry);display:grid;grid-template-rows:auto 1fr;text-decoration:none;color:var(--ink);background:var(--paper);border-right:1px solid var(--ink)}
+.g-puerta:last-child{border-right:0}
+.g-puerta-art{position:relative;aspect-ratio:5/4;display:grid;place-items:end center;overflow:hidden;background:var(--pc);border-bottom:1px solid var(--ink)}
+.g-puerta.oscura .g-puerta-art{background:var(--ink);place-items:center}
+.g-puerta .g-prod-foto{height:84%}
+.g-puerta-txt{display:grid;gap:8px;padding:24px 24px 28px}
+.g-puerta-txt small{font:600 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+.g-puerta-txt b{font:800 clamp(2rem,4vw,3.4rem)/.92 var(--display);letter-spacing:-.04em;text-transform:uppercase}
+.g-puerta-txt i{font:italic 1.25rem/1.3 var(--serif);color:var(--ink-2)}
+.g-puerta .g-prod-foto,.g-puerta-txt b{transition:transform .55s var(--ease-out),color .25s var(--ease-out)}
+@media (hover:hover) and (pointer:fine){.g-puerta:hover .g-prod-foto{transform:translateY(-10px) rotate(-2deg)}.g-puerta:hover .g-puerta-txt b{color:var(--cherry)}}
+
+/* accesorios y merch: un bloque de color con el nombre, como una etiqueta */
+.g-acc-grupo{margin-top:34px}
+.g-acc-grupo .g-kicker{padding-bottom:12px;border-bottom:1px solid var(--ink)}
+.g-accs{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));border-left:1px solid var(--ink)}
+.g-acc{display:grid;grid-template-rows:auto 1fr;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);background:var(--paper)}
+.g-acc-art{position:relative;aspect-ratio:1;display:grid;align-content:end;padding:18px;background:var(--pc);color:var(--paper);cursor:pointer;overflow:hidden}
+.g-acc-art b{font:800 clamp(1.5rem,2.4vw,2.1rem)/.92 var(--display);letter-spacing:-.03em;text-transform:uppercase;transition:transform .45s var(--ease-out)}
+.g-acc-n{position:absolute;top:14px;right:16px;font:600 11px var(--mono);letter-spacing:.2em}
+@media (hover:hover) and (pointer:fine){.g-acc:hover .g-acc-art b{transform:translateY(-6px)}}
+.g-acc-body{display:grid;gap:10px;align-content:space-between;padding:18px 18px 20px}
+.g-acc-body p{margin:0;color:var(--ink-2);font-size:14.5px;line-height:1.5}
+.g-acc .g-prod-foot{margin-top:0}
+.g-acc .g-prod-foot b{font:800 .95rem var(--display);text-transform:uppercase;letter-spacing:.02em;color:var(--cherry)}
+
+/* la música: el texto a la izquierda, el reproductor a la derecha, centrados entre sí.
+   Antes la cabecera llevaba su propia rejilla dentro de esta y el texto quedaba en una columna angosta. */
+.g-musica{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:32px clamp(32px,6vw,96px);align-items:center;
+  border-top:1px solid var(--ink);margin-top:clamp(60px,9vw,120px);padding-top:clamp(40px,6vw,72px)}
+.g-musica-txt{display:grid;gap:0;align-content:center;max-width:560px}
+.g-musica-txt .g-kicker{margin-bottom:22px}
+.g-musica-txt h2{font-size:clamp(2.4rem,5.2vw,4.8rem);text-transform:uppercase;letter-spacing:-.04em;line-height:.9}
+.g-musica-txt h2 em{display:block;text-transform:none;font-size:.95em;margin-top:.04em}
+.g-musica-txt > p:not(.g-kicker){margin:22px 0 0;max-width:42ch;font-size:clamp(1.02rem,1.3vw,1.15rem);line-height:1.55;color:var(--ink-2)}
+.g-musica-cta{display:flex;align-items:center;flex-wrap:wrap;gap:14px 26px;margin-top:30px}
+.g-musica-cta .g-link{margin-top:0}
+.g-musica-player{position:relative;margin:0;border:1px solid var(--ink);background:#121212;line-height:0}
+.g-musica-player::after{content:"";position:absolute;inset:auto -10px -10px auto;width:100%;height:100%;z-index:-1;background:var(--cherry);border:1px solid var(--ink)}
+.g-musica-player figcaption{display:flex;align-items:center;gap:10px;padding:11px 14px;line-height:1.2;
+  font:600 10.5px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--paper);background:var(--ink);border-bottom:1px solid rgba(245,240,230,.15)}
+.g-musica-player iframe{display:block;width:100%;height:352px;border:0;background:#121212}
+.g-eq{display:inline-flex;align-items:flex-end;gap:2px;height:12px}
+.g-eq i{display:block;width:3px;height:100%;background:var(--cherry);transform-origin:bottom;animation:g-eq 1.1s ease-in-out infinite alternate}
+.g-eq i:nth-child(2){animation-delay:-.4s;animation-duration:.9s}
+.g-eq i:nth-child(3){animation-delay:-.8s;animation-duration:1.3s}
+@keyframes g-eq{from{transform:scaleY(.25)}to{transform:scaleY(1)}}
+@media (prefers-reduced-motion:reduce){.g-eq i{animation:none;transform:scaleY(.6)}}
+
+/* los botones responden al apretar, no al soltar */
+.btn:active:not(:disabled){transform:scale(.97);transition:transform 100ms ease-out}
+
+/* la comunidad: una franja negra antes del pie, en todas las páginas */
+.g-comunidad{width:100vw;margin:clamp(64px,10vw,130px) 0 0 calc(50% - 50vw);padding:clamp(40px,6vw,72px) var(--borde);
+  background:var(--ink);color:var(--paper);display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:24px clamp(28px,5vw,72px);align-items:end}
+.g-comunidad > *{max-width:640px}
+.g-comunidad h2{font-size:clamp(2rem,4.6vw,3.8rem);text-transform:uppercase;letter-spacing:-.04em;color:var(--paper)}
+.g-comunidad h2 em{text-transform:none;font-size:.92em}
+.g-comunidad p{margin:14px 0 0;font-size:1.05rem;color:rgba(245,240,230,.78)}
+.g-comunidad-form{display:grid;gap:10px}
+.g-comunidad-form .lbl{color:rgba(245,240,230,.75)}
+.g-comunidad-form > div{display:flex;border:1px solid var(--paper)}
+.g-comunidad-form .input{flex:1;min-width:0;border:0;background:transparent;color:var(--paper);padding:14px 16px;font-size:16px}
+.g-comunidad-form .input::placeholder{color:rgba(245,240,230,.45)}
+.g-comunidad-form .input:focus{outline:2px solid var(--cherry);outline-offset:-2px}
+.g-comunidad-form .btn{border:0;border-left:1px solid var(--paper)}
+.g-comunidad-form small{color:rgba(245,240,230,.6);font-size:12.5px}
+.g-comunidad-form small a{color:var(--paper);text-decoration:underline;text-underline-offset:3px}
+.g-comunidad + .foot{margin-top:0;border-top:0}
+body[data-view=subasta] .g-comunidad{border-top:1px solid rgba(245,240,230,.2)}
+
+/* el pie: la marca y las redes a la izquierda, dos columnas con título a la derecha */
+.foot{grid-template-columns:minmax(0,1.5fr) minmax(0,.75fr) minmax(0,.75fr);gap:28px clamp(28px,5vw,64px);padding-top:40px}
+.foot-marca{gap:6px;align-content:start}
+.foot-links{align-content:start;gap:10px}
+.foot-tit{margin:0 0 6px;font:600 10.5px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3)}
+.foot-nota{padding-top:18px;border-top:1px solid var(--line)}
+.g-redes-fila{display:flex;align-items:center;flex-wrap:wrap;gap:10px 14px;margin-top:16px}
+.g-redes-fila small{font:600 10.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.g-redes{list-style:none;display:flex;gap:8px;margin:0;padding:0}
+.g-redes a,.g-redes span{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--ink);color:var(--ink);
+  transition:background .2s var(--ease-out),color .2s var(--ease-out),border-color .2s var(--ease-out)}
+.g-redes svg{width:20px;height:20px}
+.g-redes a:hover{background:var(--cherry);border-color:var(--cherry);color:#fff}
+.g-redes a:active{transform:scale(.94)}
+.g-redes span{border-color:var(--line);color:var(--ink-3);cursor:default}
+body[data-view=subasta] .g-redes a,body[data-view=subasta] .g-redes span{border-color:rgba(245,240,230,.4);color:var(--crema)}
+
+@media (max-width:900px){
+  .g-musica{grid-template-columns:1fr;gap:40px}
+  .g-musica-txt{max-width:none}
+  .g-musica-player{margin-right:10px}
+  .g-comunidad{grid-template-columns:1fr}
+  .foot{grid-template-columns:1fr 1fr}
+  .foot-marca{grid-column:1/-1}
+}
+@media (max-width:760px){
+  .g-puertas{grid-template-columns:1fr}
+  .g-puerta{border-right:0;border-bottom:1px solid var(--ink)}
+  .g-puerta:last-child{border-bottom:0}
+  .g-accs{grid-template-columns:1fr 1fr}
+  .g-acc-art b{font-size:1.3rem}
+  .g-subnav{width:100%}
+  .g-subnav a{flex:1;text-align:center;padding:10px 8px;font-size:10.5px}
+  .g-comunidad{padding-inline:16px}
+  .g-comunidad-form > div{flex-direction:column}
+  .g-comunidad-form .btn{border-left:0;border-top:1px solid var(--paper);justify-content:center}
+  .g-musica-txt h2{font-size:clamp(2.4rem,12vw,3.4rem)}
+}
+
+/* ============================================================
+   CONTRASTE (octubre 2026)
+   El naranja del logo (#EF4724) da 3,3:1 sobre crema y el blanco encima
+   3,75:1: alcanza para titulares grandes, no para texto pequeño ni botones.
+   --cherry pasa a #C9381A (4,55:1 sobre crema, 5,17:1 con blanco encima);
+   --marca guarda el naranja del logo para los bloques grandes, los
+   titulares y lo que va sobre negro (ahí da 4,98:1).
+   ============================================================ */
+:root{--cherry:#C9381A;--cherry-2:#A82E14;--marca:#EF4724}
+h1 em,h2 em{color:var(--marca)}
+.g-hero-art{background:var(--marca)}
+.g-hero-tag{color:var(--ink)}
+.g-hero-tag b{color:var(--paper)}
+.g-musica-player::after{background:var(--marca)}
+.g-eq i{background:var(--marca)}
+/* sobre negro va el naranja del logo, que ahí sí se lee */
+.g-ticker em,.g-manifiesto .g-num,.g-principios li::before,.g-comunidad .g-num,.plan.hot .plan-lista li::before{color:var(--marca)}
+.g-ticker span::after{background:var(--marca)}
+.g-comunidad h2 em,.g-manifiesto h2 em{color:var(--marca)}
+.g-comunidad .btn.primary,.g-comunidad-form .btn{background:var(--cherry)}
+/* la casilla de la comunidad */
+.g-consiente{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:14px;line-height:1.45;color:rgba(245,240,230,.88)}
+.g-consiente input{flex:0 0 auto;width:20px;height:20px;margin:1px 0 0;accent-color:var(--marca)}
+
+/* ============================================================
+   EL POP-UP DEL BONO DE BIENVENIDA
+   Aparece en el centro, con un velo detrás: en una esquina la gente lo
+   pasaba de largo y lo que más importa es recoger el correo. Se cierra
+   con la ✕, tocando el velo o con Escape.
+   Quién lo ve y cuándo se decide en popSobra() (js/main.js).
+   ============================================================ */
+/* En el centro de la pantalla, con un velo detrás: en una esquina se pasaba por alto. */
+.g-pop-velo{position:fixed;inset:0;z-index:79;background:rgba(20,18,16,.55);opacity:0;transition:opacity .3s var(--ease-out);cursor:pointer}
+.g-pop-velo.in{opacity:1}
+.g-pop{position:fixed;z-index:80;left:50%;top:50%;width:min(520px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;
+  display:flex;gap:20px;padding:28px 26px 24px;border:1px solid var(--line);border-radius:18px;background:var(--card);
+  box-shadow:0 30px 70px -20px rgba(29,20,15,.6);
+  opacity:0;transform:translate(-50%,calc(-50% + 14px)) scale(.97);
+  transition:opacity .3s var(--ease-out),transform .34s var(--ease-out)}
+.g-pop.in{opacity:1;transform:translate(-50%,-50%)}
+/* mientras el carrito o un modal estén abiertos, el pop-up se quita de en medio */
+body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
+.g-pop-x{position:absolute;top:7px;right:7px;width:30px;height:30px;display:grid;place-items:center;border:0;
+  border-radius:50%;background:none;color:var(--ink-3);font-size:13px;line-height:1;cursor:pointer;
+  transition:background .2s var(--ease-out),color .2s var(--ease-out)}
+.g-pop-x:hover{background:var(--paper-2);color:var(--ink)}
+/* el número es la marca de hallazgo: va en terracota, sin fondo de color */
+.g-pop-pct{flex:0 0 auto;width:96px;margin:0;padding-top:2px;text-align:center}
+.g-pop-pct b{display:block;font:italic 48px/1 var(--serif);color:var(--cherry)}
+.g-pop-pct span{display:block;margin-top:5px;font:600 10px/1.35 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+.g-pop-dice{min-width:0;flex:1}
+.g-pop-dice h2{margin:0 0 6px;padding-right:22px;font:italic 28px/1.1 var(--serif);color:var(--ink)}
+.g-pop-dice>p{margin:0 0 13px;font-size:13.5px;line-height:1.5;color:var(--ink-2)}
+.g-pop-dice .lbl{display:block;margin-bottom:5px}
+/* el correo y el botón van uno encima del otro: en una tarjeta de 412 px
+   el campo quedaba en 103 px y no cabía ni "tu@correo.com" */
+.g-pop-fila{display:flex;flex-direction:column;gap:8px}
+.g-pop-fila .btn{justify-content:center;white-space:nowrap}
+.g-pop-ok{display:flex;align-items:flex-start;gap:9px;margin-top:11px;cursor:pointer;font-size:12px;line-height:1.4;color:var(--ink-2)}
+.g-pop-ok input{flex:0 0 auto;width:17px;height:17px;margin:1px 0 0;accent-color:var(--cherry)}
+.g-pop-dice small{display:block;margin-top:9px;font-size:11.5px;color:var(--ink-3)}
+.g-pop-nuevo .g-pop-pct b{font-size:30px}
+.g-pop-nuevo .g-pop-fila{margin-top:2px}
+
+/* En el móvil el número va arriba y el formulario a todo el ancho */
+@media (max-width:560px){
+  .g-pop{flex-direction:column;gap:6px;padding:22px 18px 18px}
+  .g-pop-pct{width:auto;display:flex;align-items:baseline;gap:10px;text-align:left}
+  .g-pop-pct span br{display:none}
+  .g-pop-pct b{font-size:34px}
+  .g-pop-dice h2{font-size:21px}
+}
+@media (prefers-reduced-motion:reduce){.g-pop{transition:opacity .15s;transform:translate(-50%,-50%)}}
+
+/* El final del pie, en una sola banda: antes el © y el letrero se leían como
+   dos secciones distintas. */
+.foot-fin{grid-column:1/-1;display:grid;gap:10px;justify-items:start;margin-top:22px}
+.foot-fin .foot-nota{grid-column:auto}
+
+/* Los planes, separados. Pegados en una sola tabla no se veía dónde acababa
+   uno y empezaba el otro: Semilla y Barista se leían como un mismo bloque con
+   Cosecha encima. Cada tarjeta lleva su borde y su aire. */
+.planes{gap:16px;border:0}
+.plan{border:1px solid var(--ink);margin-bottom:0}
+
+/* El ahorro frente a comprar suelto: una línea, no otra píldora. La píldora
+   ya la usa el ahorro por pagar adelantado y dos compitiendo se anulan. */
+.plan-suelto{margin:2px 0 0;font-size:13.5px;color:var(--ink-2)}
+.plan-suelto b{color:var(--cherry)}
+.plan.hot .plan-suelto{color:rgba(245,240,230,.78)}
+.plan.hot .plan-suelto b{color:var(--marca)}
+
+/* "Próximamente" era el titular del marco vacío: letra grande en crema sobre
+   el fondo rayado. Ahora que esas bolsas tienen foto, encima de un fondo claro
+   no se leía y además empujaba la imagen fuera de la tarjeta. Con foto pasa a
+   sello pequeño en la esquina, como el de las unidades disponibles. */
+.cc-art.con-foto .g-pronto{position:absolute;top:12px;left:12px;z-index:2;width:auto;
+  align-self:start;justify-self:start;padding:5px 10px;border-radius:4px;
+  background:var(--ink);color:var(--paper);text-align:left;
+  font:600 10px/1 var(--mono);letter-spacing:.1em}
+.cc-art.con-foto .g-pronto i{display:none}
+
+/* Las fotos traen su propio fondo, así que llenan el marco en vez de flotar
+   dentro. Antes el marco pintaba su color y la foto quedaba encima como una
+   calcomanía, con el recuadro a la vista. El degradado y la sombra del suelo
+   también sobran: ya vienen en la foto. */
+.cc-art.con-foto{padding:0}
+.cc-art.con-foto::after{content:none}
+.cc-art.con-foto .prod-foto{width:100%;height:100%;max-width:none;margin:0;object-fit:cover}
+.g-prod-art .g-prod-foto{width:100%;height:100%;max-width:none;margin:0;object-fit:cover;display:block}
+.g-prod-art{padding:0}
+/* con foto detrás, el sello de "próximamente" se vuelve esquinero y legible */
+.g-prod-art .g-pronto{position:absolute;top:14px;left:14px;z-index:2;width:auto;align-self:start;justify-self:start;
+  padding:6px 11px;border-radius:4px;background:var(--ink);color:var(--paper);text-align:left;
+  font:600 11px/1 var(--mono);letter-spacing:.1em}
+.g-prod-art .g-pronto i{display:none}
+
+/* Las fotos de las bolsas son verticales (800 × 1120) y todas traen la bolsa
+   a la misma escala, que es lo que las hace verse parejas. El marco toma esa
+   misma proporción para no recortar ninguna. */
+.cc-art.con-foto{height:auto;aspect-ratio:800/1120}
+.g-prod-art{aspect-ratio:800/1120}
+
+/* La ficha de un café que viene: la foto de la bolsa con el sello de
+   "próximamente" en la esquina, como en la tienda, en vez del letrero grande. */
+.prod-escena.con-foto .g-pronto{position:absolute;top:14px;left:14px;z-index:2;width:auto;align-self:start;justify-self:start;
+  padding:6px 11px;border-radius:4px;background:var(--ink);color:var(--paper);text-align:left;
+  font:600 11px/1 var(--mono);letter-spacing:.1em}
+.prod-escena.con-foto .g-pronto i{display:none}
+
+/* ============================================================
+   LAS FOTOS LLENAN SU MARCO, EN TODAS PARTES
+   Cada foto trae su propio fondo y su propia sombra. Los marcos pintaban
+   además su color detrás y dejaban aire alrededor, así que la foto se veía
+   como una calcomanía pegada sobre un panel de otro color. Aquí se quita el
+   aire, el color y la sombra dibujada, y la imagen ocupa el marco entero.
+   ============================================================ */
+/* El color del marco se queda como respaldo: la foto lo tapa por completo,
+   pero si tarda en cargar es mejor ver la tinta de la marca que un hueco. */
+.g-hero-art,.prod-escena,.g-puerta-art{padding:0}
+.prod-escena::after,.g-hero-art::after{content:none}
+.g-hero-art .g-hero-foto,
+.prod-escena .prod-foto,
+.g-puerta-art .g-prod-foto{width:100%;height:100%;max-width:none;min-height:0;margin:0;object-fit:cover;display:block}
+/* el marco toma la proporción de la foto donde puede, y recorta lo mínimo donde no */
+.prod-escena{min-height:0;aspect-ratio:800/1120}
+.g-hero-art{min-height:0;aspect-ratio:800/1120}
+.g-puerta-art{aspect-ratio:4/3}
+/* el sello de la cosecha y el "próximamente" quedan por encima de la foto */
+.g-hero-art .g-sello,.g-hero-art .g-hero-tag{z-index:2}
+.prod-escena .g-pronto,.g-puerta-art .g-pronto{position:absolute;inset:auto auto 16px 16px;z-index:2;width:auto;
+  align-self:end;justify-self:start;padding:6px 11px;border-radius:4px;background:var(--ink);color:var(--paper);
+  text-align:left;font:600 11px/1 var(--mono);letter-spacing:.1em}
+.prod-escena .g-pronto i,.g-puerta-art .g-pronto i{display:none}
+
+/* ============================================================
+   LA FRANJA DEL LANZAMIENTO
+   Va arriba de todo, por encima de la cabecera pegajosa. Es una línea, no
+   un banner: el sitio ya tiene suficiente color y esto acompaña, no grita.
+   ============================================================ */
+.g-franja{background:var(--ink);color:var(--paper)}
+.g-franja a{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;gap:6px 14px;
+  max-width:1240px;margin:0 auto;padding:9px 20px;text-decoration:none;color:inherit;
+  font:600 11.5px var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.g-franja b{color:var(--marca)}
+.g-franja i{font-style:normal;opacity:.75}
+.g-franja em{font-style:normal;border-bottom:1px solid currentColor;padding-bottom:1px}
+.g-franja a:hover em{color:var(--marca);border-color:var(--marca)}
+/* separadores entre las piezas, sin escribirlos en el HTML */
+.g-franja span::before,.g-franja i::before,.g-franja em::before{content:"·";margin-right:14px;opacity:.45}
+@media (max-width:620px){
+  .g-franja a{gap:4px 10px;padding:8px 14px;font-size:10.5px;letter-spacing:.08em}
+  /* en pantalla angosta sobra la invitación: el resto de la página la repite */
+  .g-franja em{display:none}
+  .g-franja span::before,.g-franja i::before{margin-right:10px}
+}
+
+/* ============================================================
+   LAS TRES TARJETAS DEL INICIO, RENGLÓN CON RENGLÓN
+   Cada tarjeta acomodaba su texto por su cuenta: un nombre en dos líneas o
+   una finca larga corría el resto hacia abajo, y el precio y el botón
+   quedaban a tres alturas distintas. Con subgrid las tres comparten las
+   filas (foto, finca, nombre, notas, precio), así que cada renglón arranca
+   a la misma altura en las tres aunque una tenga más texto.
+   ============================================================ */
+@supports (grid-template-rows:subgrid){
+  .g-prod{grid-row:span 5;grid-template-rows:subgrid;row-gap:0}
+  .g-prod-body{grid-row:span 4;grid-template-rows:subgrid;align-content:stretch}
+  .g-prod-body > *{align-self:start}
+  .g-prod-body > .g-prod-foot{align-self:end}
+}
+/* Con el sello de preventa en la esquina, el puntaje SCA baja un renglón en
+   vez de quedar debajo del sello. */
+.g-prod-art:has(.g-pronto) .g-prod-sca{top:52px}
+
+/* ============================================================
+   EL AVISO DE COOKIES
+   Abajo, discreto y con las dos opciones del mismo tamaño: un "aceptar"
+   grande junto a un "no" escondido no es una autorización libre, y la
+   Ley 1581 pide que lo sea.
+   ============================================================ */
+.cookies{position:fixed;z-index:90;left:16px;right:16px;bottom:16px;max-width:620px;margin:0 auto;
+  display:grid;gap:12px;padding:18px 20px;background:var(--ink);color:var(--paper);
+  border-radius:14px;box-shadow:0 26px 54px -20px rgba(29,20,15,.55)}
+.cookies p{margin:0;font-size:13.5px;line-height:1.5;color:rgba(245,240,230,.9)}
+.cookies a{color:var(--marca)}
+.cookies-btn{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+.cookies-btn .btn{flex:1 1 auto;justify-content:center;min-width:150px}
+.cookies-btn .btn:not(.primary){border-color:rgba(245,240,230,.5);color:var(--paper)}
+.cookies-btn .btn:not(.primary):hover{background:var(--paper);color:var(--ink)}
+/* en el móvil va encima del dock, como el pop-up del bono */
+@media (max-width:860px){
+  .cookies{bottom:calc(86px + env(safe-area-inset-bottom,0px));left:10px;right:10px;padding:16px}
+  .cookies-btn .btn{min-width:0;flex:1 1 130px}
+}
+
+/* ---- auditoría 4-11-2026 ----
+   Las fotos tienen el fondo claro arriba: el crema de la marca sobre durazno,
+   celeste o arena no se leía. Puntajes, número de serie y titular del hero van en tinta. */
+.g-prod-sca,.g-prod-n,.cc-score,.cc-score b,.g-hero-tag,.g-hero-tag b{color:var(--ink)}
+.cc-score small,.card-cafe.dark .cc-score small{color:var(--ink-2)!important}
+.prod-sello,.prod-sello b,.prod-sello small{color:var(--ink)}
+
+/* La preventa en la ficha: la fecha de salida y el cupo, aparte del párrafo del envío. */
+.pre-aviso{display:grid;grid-template-columns:auto 1fr;align-items:baseline;gap:4px 12px;margin:14px 0 0;padding:12px 14px;border:1px solid var(--ink);background:var(--paper-2,#e9e2d4)}
+.pre-aviso b{font:800 1rem var(--display);text-transform:uppercase;letter-spacing:.01em;color:var(--cherry)}
+.pre-aviso span{justify-self:end;font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.pre-aviso i{grid-column:1/-1;height:4px;background:linear-gradient(90deg,var(--ink) var(--q),rgba(20,18,16,.15) var(--q))}
+
+/* En el celular la bolsa va primero: así se ve el producto antes que el precio. */
+@media (max-width:900px){
+  .prod-top > .prod-art{order:-1}
+  .prod-top .prod-escena{aspect-ratio:1}
+}
+
+/* Las fincas dentro de la ficha de un café: una o dos tarjetas, sin estirarse
+   a todo el ancho. */
+.prod-fincas{margin-top:clamp(48px,7vw,88px)}
+.prod-fincas .fincas{width:fit-content;max-width:100%}
+.prod-fincas .fincas.n1{grid-template-columns:minmax(0,420px)}
+.prod-fincas .fincas.n2{grid-template-columns:repeat(2,minmax(0,420px))}
+@media (max-width:760px){.prod-fincas .fincas.n1,.prod-fincas .fincas.n2{grid-template-columns:1fr}}
+
+/* La taza: una franja corta, la rueda a un lado y el puntaje con los datos al otro.
+   Cada forma va en la tinta de su café (--c); crece desde el centro al entrar. */
+.prod-taza{margin-top:clamp(40px,6vw,72px)}
+.prod-taza .section-head h2{font-size:clamp(1.5rem,3vw,2.3rem)}
+.tz{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);margin-top:18px;border:1px solid var(--ink)}
+.tz-graf{padding:12px 10px;border-right:1px solid var(--ink);min-width:0;align-self:stretch;display:flex;flex-direction:column;justify-content:center}
+.tz-rueda{display:block;width:100%;height:auto;overflow:visible}
+.tz-aro,.tz-eje{fill:none;stroke:var(--ink);stroke-opacity:.16;stroke-width:1;transition:stroke-opacity .2s var(--ease-out)}
+.tz-forma{fill:var(--c);fill-opacity:.16;stroke:var(--c);stroke-width:2;stroke-linejoin:round}
+.tz-punto{fill:var(--paper);stroke:var(--c);stroke-width:2}
+.tz-capa{pointer-events:none;transition:transform .9s cubic-bezier(.2,1.3,.4,1);transition-delay:calc(var(--m,0)*.16s + .1s)}
+.tz-at{cursor:pointer;outline:none;transition:opacity .4s var(--ease-out);transition-delay:calc(var(--i,0)*45ms + .25s)}
+.tz-toque{fill:transparent}
+.tz-k{font:600 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;fill:var(--ink);transition:fill .2s var(--ease-out)}
+.tz-v{font:800 14px var(--display);fill:var(--cherry)}
+.tz-at.on .tz-eje,.tz-at:focus-visible .tz-eje{stroke-opacity:.75}
+.tz-at.on .tz-k,.tz-at:focus-visible .tz-k{fill:var(--cherry)}
+html.js .tz:not(.in) .tz-capa{transform:scale(.04)}
+html.js .tz:not(.in) .tz-at{opacity:0}
+.tz-leyenda{display:flex;justify-content:center;gap:16px;margin:2px 0 0;padding:0;list-style:none;font:600 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.tz-leyenda li::before{content:"";display:inline-block;width:10px;height:10px;margin-right:6px;background:var(--c)}
+.tz-dato{display:flex;flex-direction:column;min-width:0}
+.tz-total{display:flex;align-items:center;gap:12px;margin:0;padding:12px clamp(14px,2.2vw,22px);border-bottom:1px solid var(--ink)}
+.tz-total b{font:800 clamp(3.2rem,6vw,4.4rem)/.9 var(--display);letter-spacing:-.05em;color:var(--pc)}
+.tz-total small{font:600 10.5px/1.5 var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.tz-lee{display:grid;align-content:center;gap:2px;min-height:68px;margin:0;padding:10px clamp(14px,2.2vw,22px);border-bottom:1px solid var(--ink);background:var(--paper-2)}
+.tz-lee b{font:800 .95rem var(--display);text-transform:uppercase;letter-spacing:.01em}
+.tz-lee span{font-size:.88rem;color:var(--ink-2)}
+.tz-dato dl{margin:0;flex:1;display:flex;flex-direction:column}
+.tz-dato dl div{flex:1;display:grid;grid-template-columns:72px minmax(0,1fr);gap:10px;align-items:center;padding:6px clamp(14px,2.2vw,22px);border-bottom:1px solid rgba(20,18,16,.16)}
+.tz-dato dl div:last-child{border-bottom:0}
+.tz-dato dt{font:600 10.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.tz-dato dd{margin:0;font-size:.92rem}
+@media (max-width:760px){
+  .tz{grid-template-columns:1fr}
+  .tz-graf{border-right:0;border-bottom:1px solid var(--ink);padding:8px 4px}
+  .tz-rueda{max-width:330px;margin-inline:auto}
+}
+@media (prefers-reduced-motion:reduce){
+  .tz-capa,.tz-at{transition:none}
+}
+
+/* El merch que viene: la foto borrosa llena el marco y "Próximamente" va encima. */
+.g-acc.con-foto .g-acc-art{padding:0;display:block}
+.g-acc-foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.04);transition:transform .6s var(--ease-out)}
+.g-acc.con-foto .g-acc-art::after{content:"";position:absolute;inset:0;background:rgba(20,18,16,.26)}
+.g-acc-pronto{position:absolute;z-index:1;inset:0;display:grid;place-items:center;padding:12px;text-align:center;color:var(--paper);font:800 clamp(1.5rem,2.7vw,2.3rem)/1 var(--display);letter-spacing:-.03em;text-transform:uppercase}
+@media (hover:hover) and (pointer:fine){.g-acc.con-foto:hover .g-acc-foto{transform:scale(1.1)}}
+.g-acc-body h3{margin:0;font-size:1.25rem;line-height:1.05;text-transform:uppercase}
+@media (max-width:760px){.g-acc-pronto{font-size:1.05rem}}
+
+/* La puerta del merch: la gorra borrosa con un velo para que se lea lo de encima.
+   Sin el giro del hover: la foto llena el marco y se le verían las esquinas. */
+.g-puerta.oscura .g-puerta-art::after{content:"";position:absolute;inset:0;z-index:1;background:rgba(20,18,16,.26)}
+.g-puerta.oscura .g-acc-pronto{z-index:2;font-size:clamp(1.7rem,3.6vw,3rem)}
+@media (hover:hover) and (pointer:fine){.g-puerta.oscura:hover .g-prod-foto{transform:scale(1.04)}}
+
 </style>
 </head>
 <body data-view="login">
 <header class="top"><div class="top-inner">
-  <span class="brand"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor"><ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(0 12 12)"/><ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(72 12 12)"/><ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(144 12 12)"/><ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(216 12 12)"/><ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(288 12 12)"/></g><circle cx="12" cy="12" r="1.3" fill="var(--paper)"/></svg>
-  <b>Nandez</b><small>panel interno</small></span>
+  <span class="brand"><img class="logo" src="data:image/png;base64,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" width="464" height="120" alt="Nandez Coffee"><small class="panel-rotulo">panel interno</small></span>
 </div></header>
 <main class="wrap" id="view"></main>
 <div class="toasts" id="toasts" aria-live="polite"></div>
@@ -1715,8 +2628,12 @@ const CONFIG = {
      Ver docs/06_pagos_y_suscripciones.md */
   /* Medición. Vacío = no se carga nada y no se pregunta nada. El del píxel
      sale de Meta Business (15 o 16 dígitos) y el de Google Analytics de GA4
-     (G-XXXXXXXXXX). Ver prototipo/js/medir.js. */
-  medicion: { metaPixel: "", ga4: "" },
+     (G-XXXXXXXXXX). Ver prototipo/js/medir.js.
+     propia: la bitácora de Nandez en la Hoja de Google (visitas, cafés vistos,
+     carritos), que se ve en el panel, pestaña Actividad. Solo anota a quien
+     acepta las cookies, y se prende sola cuando el script de la hoja ya la
+     recibe; con false no se anota nada. */
+  medicion: { metaPixel: "", ga4: "", propia: true },
   pagos: {
     /* La pasarela que cobra DENTRO de la página. Se prende sola apenas haya llave
        pública (pub_test_… para probar, pub_prod_… para vender). Los secretos NO van
@@ -2595,726 +3512,6 @@ function toast(msg, { label, act, type } = {}) {
 }
 function later(ms, fn) { setTimeout(() => { if (fn() !== false) { save(); softRefresh(); } }, ms); }
 
-/* ---- quote.js ---- */
-/* ============================================================
-   COTIZADOR (uso interno): cuánto podemos pagar en la finca
-   Cadena: cereza → pergamino seco → excelso (trilla) → tostado → bolsas
-   ============================================================ */
-function nuevaCot() {
-  return { estado: "Pergamino seco", kg: 125, factor: 94, humedad: 11, sca: 85,
-    precioCarga: CONFIG.fnc.precioCarga, ...COSTOS, presentacion: 250, precioVenta: 40000,
-    iva: CONFIG.iva, comision: CONFIG.pagos.comision.pct };
-}
-
-function calcCot(d) {
-  const CER = Math.max(1, d.cerezaAPergamino);
-  const kgPerg = d.estado === "Cereza" ? d.kg / CER : d.estado === "Verde" ? (d.kg * d.factor) / 70 : d.kg;
-  const kgPerg12 = pesoSeco12(kgPerg, d.humedad);
-  const kgVerde = d.estado === "Verde" ? d.kg : kgExcelso(kgPerg12, d.factor);
-  const comiteKg = (d.precioCarga * (CONFIG.fnc.factorBase / d.factor)) / 125;
-  const valorComite = comiteKg * kgPerg12;
-
-  const kgTostado = kgVerde * (1 - d.mermaTueste / 100);
-  const bolsas = Math.floor((kgTostado * 1000) / Math.max(1, d.presentacion));
-  const ingresos = bolsas * d.precioVenta;
-
-  const costoProceso = d.transporte * kgPerg + d.trilla * kgPerg + d.tueste * kgVerde + d.empaque * bolsas + (ingresos * d.indirectos) / 100;
-  /* De lo que entra por caja, dos partes nunca fueron nuestras: el IVA que va
-     dentro del precio y lo que se queda la pasarela. El margen se mide sobre lo
-     que de verdad queda, o el cotizador diría que podemos pagar más de lo que podemos. */
-  const iva = (ingresos * (d.iva || 0)) / (100 + (d.iva || 0));
-  const comision = comisionPasarela(ingresos, d.comision);
-  const ventaNeta = ingresos - iva - comision;
-  const maxTotal = ventaNeta * (1 - d.margenObjetivo / 100) - costoProceso;   // lo máximo que puede costar el café
-  const maxKg = kgPerg12 > 0 ? maxTotal / kgPerg12 : 0;
-  const sugeridoKg = Math.min(comiteKg * (1 + d.primaSugerida / 100), Math.max(maxKg, 0));
-  const sugeridoTope = comiteKg * (1 + d.primaSugerida / 100) > maxKg;
-
-  const compra = sugeridoKg * kgPerg12;
-  const costoTotal = compra + costoProceso;
-  const utilidad = ventaNeta - costoTotal;
-  const margen = ventaNeta > 0 ? (utilidad / ventaNeta) * 100 : 0;
-  const costoBolsa = bolsas ? costoTotal / bolsas : 0;
-  const extraProductor = (sugeridoKg - comiteKg) * kgPerg12;
-
-  return { kgPerg, kgPerg12, kgVerde, kgTostado, bolsas, comiteKg, valorComite, maxKg, sugeridoKg, sugeridoTope,
-    ingresos, iva, comision, ventaNeta, costoProceso, compra, costoTotal, utilidad, margen, costoBolsa, extraProductor,
-    equilibrioBolsa: bolsas ? costoTotal / bolsas : 0 };
-}
-
-const fIn = (id, label, val, { step = 1, suf = "", min = 0 } = {}) =>
-  `<div class="field"><label class="lbl" for="q-${id}">${label}${suf ? ` <span class="unit">${suf}</span>` : ""}</label>
-   <input id="q-${id}" class="input mono" type="number" step="${step}" min="${min}" value="${val}" data-q="${id}"></div>`;
-
-function viewCotizador() {
-  const d = (UI.q ||= nuevaCot());
-  return `<div class="view-head">
-      <div><p class="eyebrow reveal">Uso interno · no es parte de la tienda</p>
-        <h2 class="reveal" style="--i:1">Cotizador <em>de finca</em></h2>
-        <p class="reveal" style="--i:2">Antes de ofrecer un precio: qué le pagaría hoy el comité por ese café, cuánto podemos pagar nosotros como máximo y con cuánto margen quedamos.</p></div>
-      <div class="ref-chip reveal" style="--i:3">
-        <span class="lbl">Referencia FNC · ${fmtFecha(CONFIG.fnc.fecha)}</span>
-        <b class="mono">${cop(CONFIG.fnc.precioCarga)}</b><small>carga de 125 kg · factor 94</small>
-        <button class="btn sm" data-act="atab" data-tab="mercado">Actualizar</button></div>
-    </div>
-    <div class="cot">
-      <form class="cot-form" onsubmit="return false">
-        <section class="wpanel">
-          <h3>1 · El café que ofrecen</h3>
-          <div class="form-grid">
-            <div class="field"><label class="lbl" for="q-estado">Estado</label>
-              <select id="q-estado" class="input" data-q="estado">${["Cereza", "Pergamino seco", "Verde"].map((o) => `<option ${o === d.estado ? "selected" : ""}>${o}</option>`).join("")}</select></div>
-            ${fIn("kg", "Cantidad", d.kg, { suf: "kg" })}
-            ${fIn("factor", "Factor de rendimiento", d.factor, { step: 0.5, suf: "kg cps → 70 kg excelso" })}
-            ${fIn("humedad", "Humedad", d.humedad, { step: 0.5, suf: "%" })}
-            ${fIn("sca", "Puntaje SCA", d.sca, { step: 0.25, suf: "si ya está catado" })}
-            ${fIn("cerezaAPergamino", "Cereza → pergamino", d.cerezaAPergamino, { step: 0.1, suf: "kg : 1 kg" })}
-          </div>
-          <p class="hint">El factor es lo que más mueve el precio: a factor 94, 125 kg de pergamino rinden 93 kg de excelso; a factor 100 solo rinden 87,5 kg.</p>
-        </section>
-        <section class="wpanel">
-          <h3>2 · Costos hasta la bolsa</h3>
-          <div class="form-grid">
-            ${fIn("transporte", "Transporte", d.transporte, { step: 50, suf: "COP/kg pergamino" })}
-            ${fIn("trilla", "Trilla", d.trilla, { step: 50, suf: "COP/kg pergamino" })}
-            ${fIn("tueste", "Tueste (maquila)", d.tueste, { step: 100, suf: "COP/kg verde" })}
-            ${fIn("empaque", "Empaque y etiqueta", d.empaque, { step: 100, suf: "COP/bolsa" })}
-            ${fIn("mermaTueste", "Merma de tueste", d.mermaTueste, { step: 0.5, suf: "%" })}
-            ${fIn("indirectos", "Indirectos y ventas", d.indirectos, { step: 0.5, suf: "% de la venta" })}
-          </div>
-        </section>
-        <section class="wpanel">
-          <h3>3 · Cómo lo vendemos</h3>
-          <div class="form-grid">
-            ${fIn("presentacion", "Presentación", d.presentacion, { step: 10, suf: "gramos" })}
-            ${fIn("precioVenta", "Precio de venta", d.precioVenta, { step: 500, suf: "COP por bolsa" })}
-            ${fIn("iva", "IVA del café tostado", d.iva, { step: 1, suf: "% dentro del precio" })}
-            ${fIn("comision", "Comisión de la pasarela", d.comision, { step: 0.1, suf: `% + IVA del ${CONFIG.pagos.comision.iva} %` })}
-            ${fIn("margenObjetivo", "Margen objetivo", d.margenObjetivo, { step: 1, suf: "%" })}
-            ${fIn("primaSugerida", "Prima sobre el comité", d.primaSugerida, { step: 1, suf: "% que ofrecemos de entrada" })}
-            ${fIn("precioCarga", "Precio FNC por carga", d.precioCarga, { step: 5000, suf: "COP · factor 94" })}
-          </div>
-        </section>
-      </form>
-      <aside class="cot-res" id="cot-res"></aside>
-    </div>
-    ${comprasHTML()}`;
-}
-
-function cotResHTML() {
-  const d = UI.q, r = calcCot(d);
-  const max = Math.max(r.comiteKg, r.sugeridoKg, r.maxKg, 1);
-  const barra = (label, v, cls) => `<div class="cbar ${cls}"><span>${label}</span><i style="--w:${Math.max(0, v / max).toFixed(3)}"></i><b class="mono">${cop(v)}</b></div>`;
-  const alertas = [];
-  if (d.humedad > 12) alertas.push(["warn", `Humedad ${d.humedad} %: el peso se ajusta a base 12 % (${fmtNum(r.kgPerg12)} kg). Pide que lo sequen o descuenta el peso.`]);
-  if (d.humedad < 10) alertas.push(["warn", `Humedad ${d.humedad} %: café sobresecado, pierde calidad en taza.`]);
-  if (d.factor > 96) alertas.push(["warn", `Factor ${d.factor}: mucha pasilla y broca. Rinde poco; ofrece menos o no compres.`]);
-  if (r.sugeridoTope) alertas.push(["bad", `La prima de ${d.primaSugerida} % se pasa del máximo. Ofrece hasta ${cop(r.maxKg)}/kg o sube el precio de venta.`]);
-  if (r.margen < d.margenObjetivo - 0.5) alertas.push(["bad", `Margen ${r.margen.toFixed(1)} %, por debajo del objetivo.`]);
-  if (d.sca >= 86) alertas.push(["good", `${d.sca} SCA: candidato a subasta o a línea especial, no a la mezcla de casa.`]);
-  if (r.utilidad <= 0) alertas.push(["bad", "A este precio de venta el lote pierde plata."]);
-
-  return `<div class="res-card">
-      <span class="lbl">Máximo que podemos pagar</span>
-      <b class="big mono">${cop(r.maxKg)}<small>/kg pergamino</small></b>
-      <p class="hint">Con margen objetivo del ${d.margenObjetivo} %. Por encima de esto, el negocio no da.</p>
-      <div class="cbars">
-        ${barra("Comité hoy", r.comiteKg, "ref")}
-        ${barra("Nuestra oferta", r.sugeridoKg, "hot")}
-        ${barra("Nuestro tope", r.maxKg, "max")}
-      </div>
-      <div class="prow-au"><span>Oferta sugerida por el lote</span><b>${cop(r.sugeridoKg * r.kgPerg12)}</b></div>
-      <div class="prow-au"><span>Le pagarían en el comité</span><b>${cop(r.valorComite)}</b></div>
-      <div class="prow-au total"><span>El productor gana de más</span><b>${cop(r.extraProductor)}</b></div>
-    </div>
-    <div class="res-card">
-      <span class="lbl">De este lote salen</span>
-      <div class="chain">
-        <div><b class="mono">${fmtNum(r.kgPerg12)}</b><small>kg pergamino (12 %)</small></div>
-        <div><b class="mono">${fmtNum(r.kgVerde)}</b><small>kg verde tras trilla</small></div>
-        <div><b class="mono">${fmtNum(r.kgTostado)}</b><small>kg tostado</small></div>
-        <div class="end"><b class="mono">${fmtNum(r.bolsas)}</b><small>bolsas de ${d.presentacion} g</small></div>
-      </div>
-      <div class="prow-au"><span>Venta total</span><b>${cop(r.ingresos)}</b></div>
-      ${r.iva ? `<div class="prow-au"><span>IVA incluido (${d.iva} %)</span><b>−${cop(r.iva)}</b></div>` : ""}
-      ${r.comision ? `<div class="prow-au"><span>Comisión de la pasarela (${d.comision} % + IVA)</span><b>−${cop(r.comision)}</b></div>` : ""}
-      <div class="prow-au"><span>Compra del café</span><b>−${cop(r.compra)}</b></div>
-      <div class="prow-au"><span>Trilla, tueste, empaque, fletes</span><b>−${cop(r.costoProceso)}</b></div>
-      <div class="prow-au total"><span>Utilidad bruta</span><b>${cop(r.utilidad)} · ${r.margen.toFixed(1)} %</b></div>
-      <div class="prow-au"><span>Costo por bolsa</span><b>${cop(r.costoBolsa)}</b></div>
-      <div class="prow-au"><span>Precio mínimo por bolsa</span><b>${cop(r.equilibrioBolsa)}</b></div>
-      ${r.iva || r.comision ? `<p class="hint">El margen se mide sobre ${cop(r.ventaNeta)}, que es lo que queda después del IVA y de la pasarela, no sobre los ${cop(r.ingresos)} que entran por caja.</p>` : ""}
-    </div>
-    ${alertas.length ? `<ul class="alerts">${alertas.map(([k, t]) => `<li class="al-${k}">${t}</li>`).join("")}</ul>` : ""}
-    <div class="res-actions">
-      <button class="btn sm" data-act="cot-reset">Limpiar</button>
-      <button class="btn primary sm" data-act="cot-save">Registrar como compra</button>
-    </div>`;
-}
-
-function renderCot() { const el = $("#cot-res"); if (el) el.innerHTML = cotResHTML(); }
-
-function cotSave() {
-  const d = UI.q, r = calcCot(d);
-  modal("Registrar <em>compra</em>", `<div class="form-grid">
-      <div class="field"><label class="lbl" for="cs-prod">Productor</label><input id="cs-prod" class="input" placeholder="Nombre"></div>
-      <div class="field"><label class="lbl" for="cs-finca">Finca</label><input id="cs-finca" class="input" placeholder="Finca"></div>
-      <div class="field"><label class="lbl" for="cs-mun">Municipio</label><input id="cs-mun" class="input" value="Chinácota"></div>
-      <div class="field"><label class="lbl" for="cs-precio">Precio acordado (COP/kg)</label><input id="cs-precio" class="input mono" type="number" step="100" value="${Math.round(r.sugeridoKg)}"></div>
-      <div class="field"><label class="lbl" for="cs-destino">Destino</label><select id="cs-destino" class="input"><option>Tostado</option><option>Subasta</option><option>Venta en verde</option></select></div>
-    </div>
-    <p class="hint">Queda ${fmtNum(d.kg)} kg de ${d.estado.toLowerCase()}, factor ${d.factor}, humedad ${d.humedad} %.</p>
-    <div class="dlg-actions"><button class="btn" data-act="close">Cancelar</button><button class="btn primary" data-act="cot-save-ok">Guardar</button></div>`, "narrow");
-}
-function cotSaveOk() {
-  const d = UI.q;
-  const c = { id: nextId("C"), productor: $("#cs-prod").value.trim() || "Sin nombre", finca: $("#cs-finca").value.trim() || "—",
-    municipio: $("#cs-mun").value.trim(), fecha: isoToday(), estadoCafe: d.estado, kg: d.kg, factor: d.factor, humedad: d.humedad,
-    precioKg: +$("#cs-precio").value || 0, destino: $("#cs-destino").value, estado: "EN BODEGA" };
-  S.compras.unshift(c); save(); closeModal(); render();
-  toast(`Compra ${c.id} registrada: ${fmtNum(c.kg)} kg a ${cop(c.precioKg)}/kg.`);
-}
-
-function comprasHTML() {
-  if (!S.compras.length) return "";
-  const kg = S.compras.reduce((s, c) => s + c.kg, 0), inv = S.compras.reduce((s, c) => s + c.kg * c.precioKg, 0);
-  return `<section class="section">
-    <div class="view-head"><div><h2>Café <em>comprado</em></h2>
-      <p>${S.compras.length} compras · ${fmtNum(kg)} kg · ${copK(inv)} invertidos</p></div></div>
-    <div class="list">${S.compras.map((c, i) => `<div class="item" style="--i:${i}">
-      <span class="avatar">${esc(c.productor[0] || "?")}</span>
-      <div><p class="kicker">${esc(c.id)} · ${fmtFecha(c.fecha)} · ${esc(c.municipio)}</p>
-        <h4>${esc(c.productor)} <em class="muted">${esc(c.finca)}</em></h4>
-        <p class="mono">${fmtNum(c.kg)} kg ${esc(c.estadoCafe.toLowerCase())} · factor ${c.factor} · ${cop(c.precioKg)}/kg = ${cop(c.kg * c.precioKg)}</p>
-        <p class="hint" style="margin:6px 0 0">Rinde ~${fmtNum(kgExcelso(c.kg, c.factor))} kg verde · destino: ${esc(c.destino.toLowerCase())}</p></div>
-      <div class="item-actions"><span class="status">${esc(c.estado.toLowerCase())}</span></div></div>`).join("")}</div>
-  </section>`;
-}
-
-/* ---- inventory.js ---- */
-/* ============================================================
-   INVENTARIO (uso interno): de la compra a la bolsa vendida.
-   Responde: ¿cuánta plata hay quieta en bodega y cuánto llevamos recuperado?
-   ============================================================ */
-const ETAPAS = ["EN BODEGA", "TRILLADO", "TOSTADO", "EMPACADO", "VENDIDO"];
-
-/* ---------- las ventas de la página ----------
-   Lo que se compra en la página queda en la hoja de Google (pestaña Pedidos), no
-   en este navegador. Aquí se suma desde lo mismo que trae la pestaña Pedidos del
-   panel, y solo lo cobrado: pagado, despachado o entregado. Lo que se registra a
-   mano (venta directa, Clientes) sigue aparte, en bolsasVendidas e ingresos.
-   Se cuenta sin el IVA que va dentro del precio: esa plata no es del lote. */
-const COBRADOS = ["pagado", "despachado", "entregado"];
-function ventasWeb(c) {
-  const v = { bolsas: 0, ingresos: 0, pedidos: 0 };
-  (OP.datos?.pedidos || []).filter((p) => COBRADOS.includes(p.estado)).forEach((p) => {
-    /* con bono, cada bolsa se cobró más barata: igual que en la factura */
-    const sub = Number(p.subtotal) || 0, factor = sub ? (sub - (Number(p.descuento) || 0)) / sub : 1;
-    let delLote = false;
-    (p.items || []).forEach((i) => {
-      const prod = S.productos.find((x) => x.id === i.id);
-      if (!prod || prod.loteId !== c.id || !(i.n > 0)) return;
-      v.bolsas += (i.n * (i.g || prod.presentacion || 250)) / (prod.presentacion || 250);
-      if (i.p) v.ingresos += (i.p * i.n * factor) / (1 + (CONFIG.iva || 0) / 100);
-      delLote = true;
-    });
-    if (delLote) v.pedidos++;
-  });
-  return v;
-}
-const vendidas = (c) => (c.bolsasVendidas || 0) + ventasWeb(c).bolsas;
-const libres = (c) => Math.max(0, Math.round((c.bolsas || 0) - vendidas(c)));
-
-const costoTotal = (c) => Object.values(c.costos || {}).reduce((s, v) => s + v, 0);
-const costoBolsa = (c) => (c.bolsas ? costoTotal(c) / c.bolsas : 0);
-const recuperado = (c) => (c.ingresos || 0) + ventasWeb(c).ingresos;
-const enJuego = (c) => Math.max(0, costoTotal(c) - recuperado(c));      // plata todavía sin recuperar
-const factorReal = (c) => (c.kgVerde ? (c.kg * 70) / c.kgVerde : null);
-const mermaReal = (c) => (c.kgVerde && c.kgTostado ? (1 - c.kgTostado / c.kgVerde) * 100 : null);
-const dias = (iso) => Math.round((Date.now() - new Date(iso + "T00:00:00")) / 86400000);
-/* Valor de venta de lo que queda, al precio del producto ligado (o al último precio conocido) */
-function valorPendiente(c) {
-  const p = S.productos.find((x) => x.loteId === c.id);
-  const precio = p ? p.precio : c.precioVenta || 0;
-  return libres(c) * precio;
-}
-
-function viewInventario() {
-  /* las ventas de la página vienen de la hoja: se traen solas al abrir esta pestaña */
-  if (!OP.datos && !OP.cargando && !OP.error && CONFIG.registro && coClave()) setTimeout(opCargar);
-  const abiertas = S.compras.filter((c) => c.estado !== "VENDIDO");
-  const invertido = S.compras.reduce((s, c) => s + costoTotal(c), 0);
-  const quieto = S.compras.reduce((s, c) => s + enJuego(c), 0);
-  const recup = S.compras.reduce((s, c) => s + recuperado(c), 0);
-  const porVender = S.compras.reduce((s, c) => s + valorPendiente(c), 0);
-  const kgBodega = abiertas.reduce((s, c) => s + (c.kgTostado || c.kgVerde || c.kg), 0);
-  return `<div class="view-head">
-      <div><p class="eyebrow reveal">Uso interno</p>
-        <h2 class="reveal" style="--i:1">Inventario <em>y costos reales</em></h2>
-        <p class="reveal" style="--i:2">Cada lote desde que se compra hasta que se vende la última bolsa. Aquí se ve cuánta plata está quieta.</p></div>
-      <div class="ref-chip reveal" style="--i:3"><span class="lbl">Plata sin recuperar</span><b class="mono">${copK(quieto)}</b>
-        <small>${fmtNum(kgBodega)} kg en bodega</small></div>
-    </div>
-    <div class="kpis reveal" style="--i:3">
-      <div class="kpi"><b data-count="${invertido}" data-pre="$">${cop(invertido)}</b><small>invertido en total</small></div>
-      <div class="kpi ${quieto > recup ? "alert" : ""}"><b data-count="${quieto}" data-pre="$">${cop(quieto)}</b><small>sin recuperar</small></div>
-      <div class="kpi"><b data-count="${recup}" data-pre="$">${cop(recup)}</b><small>ya vendido</small></div>
-      <div class="kpi"><b data-count="${porVender}" data-pre="$">${cop(porVender)}</b><small>valor de lo que queda</small></div>
-      <div class="kpi"><b data-count="${recup + porVender - invertido}" data-pre="$">${cop(recup + porVender - invertido)}</b><small>utilidad si se vende todo</small></div>
-    </div>
-    <p class="hint">${OP.datos ? `Incluye ${fmtNum(S.compras.reduce((s, c) => s + ventasWeb(c).pedidos, 0))} pedidos cobrados de la página, leídos de la hoja de Google, sin el IVA que va dentro del precio.`
-      : OP.cargando ? "Trayendo las ventas de la página desde la hoja…"
-      : OP.error ? `Las ventas de la página no se pudieron traer: ${esc(OP.error)}`
-      : "Las ventas de la página no se ven todavía: pega la clave del panel en la pestaña Correos."}</p>
-    <div class="list">${S.compras.map(loteCard).join("")}</div>
-    <p class="hint">Los costos que no se han registrado todavía (trilla, tueste, empaque) no están sumados: el costo por bolsa sube cuando se registren.</p>`;
-}
-
-function loteCard(c, i) {
-  const idx = ETAPAS.indexOf(c.estado), total = costoTotal(c), rec = recuperado(c), pend = valorPendiente(c);
-  const util = rec + pend - total, margen = rec + pend > 0 ? (util / (rec + pend)) * 100 : 0;
-  const fr = factorReal(c), mm = mermaReal(c), d = dias(c.fecha), web = ventasWeb(c).bolsas;
-  const stepper = `<div class="stepper" aria-label="Etapa: ${esc(c.estado)}">${ETAPAS.map((s, k) =>
-    `${k ? `<i class="${k <= idx ? "on" : ""}"></i>` : ""}<b class="${k <= idx ? "on" : ""} ${k === idx ? "now" : ""}" title="${s.toLowerCase()}"></b>`).join("")}</div>
-    <div class="stepper-label">${esc(c.estado.toLowerCase())} · ${d} días en bodega</div>`;
-  const acciones = {
-    "EN BODEGA": `<button class="btn primary sm" data-act="inv-paso" data-id="${c.id}" data-p="trilla">Registrar trilla</button>`,
-    "TRILLADO": `<button class="btn primary sm" data-act="inv-paso" data-id="${c.id}" data-p="tueste">Registrar tueste</button>`,
-    "TOSTADO": `<button class="btn primary sm" data-act="inv-paso" data-id="${c.id}" data-p="empaque">Registrar empaque</button>`,
-    "EMPACADO": `<button class="btn primary sm" data-act="inv-paso" data-id="${c.id}" data-p="venta">Registrar venta directa</button>`,
-    "VENDIDO": `<span class="status">cerrado</span>`,
-  }[c.estado];
-  const detalle = [
-    [`${fmtNum(c.kg)} kg pergamino`, `factor declarado ${c.factor}${fr ? ` · real ${fr.toFixed(1)}` : ""}`],
-    c.kgVerde ? [`${fmtNum(c.kgVerde)} kg verde`, `tras trilla`] : null,
-    c.kgTostado ? [`${fmtNum(c.kgTostado)} kg tostado`, `merma ${mm.toFixed(1)} %`] : null,
-    c.bolsas ? [`${fmtNum(c.bolsas)} bolsas`, `${fmtNum(Math.round(vendidas(c)))} vendidas${web ? ` (${fmtNum(Math.round(web))} en la página)` : ""} · ${fmtNum(libres(c))} en stock`] : null,
-  ].filter(Boolean);
-  return `<div class="item lote" style="--i:${i}">
-    <div><p class="kicker">${esc(c.id)} · ${fmtFecha(c.fecha)} · ${esc(c.municipio)}</p>
-      <h4>${esc(c.productor)} <em class="muted">${esc(c.finca)}</em></h4>
-      <div class="chain small">${detalle.map(([a, b], k) => `<div class="${k === detalle.length - 1 ? "end" : ""}"><b class="mono">${a}</b><small>${b}</small></div>`).join("")}</div>
-      ${stepper}</div>
-    <div class="lote-num">
-      <div class="prow-au"><span>Compra a ${cop(c.precioKg)}/kg · <b class="sobre">+${Math.round((c.precioKg / precioComiteKg(c.factor) - 1) * 100)} %</b> sobre la referencia del día</span><b>${cop(c.costos.compra)}</b></div>
-      ${["trilla", "tueste", "empaque", "otros"].filter((k) => c.costos[k]).map((k) => `<div class="prow-au"><span>${k[0].toUpperCase() + k.slice(1)}</span><b>${cop(c.costos[k])}</b></div>`).join("")}
-      <div class="prow-au"><span>Costo total${c.bolsas ? ` · ${cop(costoBolsa(c))}/bolsa` : ""}</span><b>${cop(total)}</b></div>
-      <div class="prow-au"><span>Recuperado</span><b>${cop(rec)}</b></div>
-      <div class="prow-au"><span>Queda por vender</span><b>${cop(pend)}</b></div>
-      <div class="prow-au total"><span>Utilidad proyectada</span><b>${cop(util)} · ${margen.toFixed(0)} %</b></div>
-      ${d > 120 && enJuego(c) > 0 ? `<p class="al-warn mini">${d} días en bodega: la catación pierde vigencia y la plata sigue quieta.</p>` : ""}
-      ${fr && fr > c.factor + 1.5 ? `<p class="al-bad mini">El factor real (${fr.toFixed(1)}) salió peor que el declarado (${c.factor}): rindió menos de lo pagado.</p>` : ""}
-      <div class="item-actions">${acciones}</div>
-    </div></div>`;
-}
-
-/* ---------- registrar cada paso ---------- */
-const PASOS = {
-  trilla: { titulo: "Registrar trilla", campos: [["kgVerde", "Café verde obtenido (kg)", (c) => Math.round(kgExcelso(c.kg, c.factor) * 10) / 10], ["costo", "Costo de la trilla (COP)", (c) => Math.round(c.kg * COSTOS.trilla)]], estado: "TRILLADO" },
-  tueste: { titulo: "Registrar tueste", campos: [["kgTostado", "Café tostado obtenido (kg)", (c) => Math.round(c.kgVerde * (1 - COSTOS.mermaTueste / 100) * 10) / 10], ["costo", "Costo del tueste (COP)", (c) => Math.round(c.kgVerde * COSTOS.tueste)]], estado: "TOSTADO" },
-  empaque: { titulo: "Registrar empaque", campos: [["presentacion", "Presentación (gramos)", () => 250], ["precioVenta", "Precio de venta por bolsa (COP)", () => 40000], ["costo", "Costo de empaque y etiquetas (COP)", (c) => Math.round((c.kgTostado * 1000 / 250) * COSTOS.empaque)]], estado: "EMPACADO" },
-  venta: { titulo: "Registrar venta directa", campos: [["bolsas", "Bolsas vendidas", () => 10], ["precio", "Precio por bolsa (COP)", (c) => c.precioVenta || 40000]], estado: "EMPACADO" },
-};
-
-function invPaso(id, paso) {
-  const c = S.compras.find((x) => x.id === id), p = PASOS[paso];
-  UI.paso = { id, paso };
-  modal(`${p.titulo} · <em>${esc(c.id)}</em>`, `<div class="form-grid">
-      ${p.campos.map(([k, label, def]) => `<div class="field"><label class="lbl" for="ip-${k}">${label}</label>
-        <input id="ip-${k}" class="input mono" type="number" step="1" value="${def(c)}"></div>`).join("")}
-    </div>
-    <p class="hint">${paso === "trilla" ? "Con el peso real calculamos el factor verdadero del lote."
-      : paso === "tueste" ? "Con el peso tostado sale la merma real, que casi siempre es distinta a la estimada."
-      : paso === "empaque" ? "Al empacar creamos el café en la tienda y cada venta descuenta de este lote."
-      : "Para ventas de contado, ferias o cafeterías que no pasan por la tienda."}</p>
-    <div class="dlg-actions"><button class="btn" data-act="close">Cancelar</button><button class="btn primary" data-act="inv-paso-ok">Guardar</button></div>`, "narrow");
-}
-
-function invPasoOk() {
-  const { id, paso } = UI.paso, c = S.compras.find((x) => x.id === id);
-  const v = (k) => num("ip-" + k, 0);
-  if (paso === "trilla") { c.kgVerde = v("kgVerde"); c.costos.trilla = v("costo"); c.estado = "TRILLADO"; }
-  if (paso === "tueste") { c.kgTostado = v("kgTostado"); c.costos.tueste = v("costo"); c.estado = "TOSTADO"; }
-  if (paso === "empaque") {
-    const g = v("presentacion") || 250;
-    c.bolsas = Math.floor((c.kgTostado * 1000) / g); c.bolsasVendidas = c.bolsasVendidas || 0;
-    c.precioVenta = v("precioVenta"); c.costos.empaque = v("costo"); c.estado = "EMPACADO";
-    const p = { id: nextId("P"), loteId: c.id, nombre: c.municipio, sub: `Lote ${c.id}`, origen: `${c.finca} · ${c.municipio}`,
-      altitud: 1700, proceso: "Lavado", variedad: "Por definir", puntaje: c.sca || 84, tueste: "Medio", notas: ["Recién empacado"],
-      presentacion: g, precio: c.precioVenta, stock: c.bolsas, nivel: "DECLARADO", fuente: "Nuestra tostión", fecha: isoToday() };
-    S.productos.unshift(p);
-    toast(`${fmtNum(c.bolsas)} bolsas listas. Ya aparecen en la tienda.`, { label: "Ver tienda", act: () => go("tienda") });
-  }
-  if (paso === "venta") {
-    const n = Math.min(v("bolsas"), libres(c)), precio = v("precio");
-    c.bolsasVendidas = (c.bolsasVendidas || 0) + n; c.ingresos = (c.ingresos || 0) + n * precio;
-    const p = S.productos.find((x) => x.loteId === c.id); if (p) p.stock = Math.max(0, p.stock - n);
-    if (!libres(c)) c.estado = "VENDIDO";
-    toast(`Venta registrada: ${n} bolsas por ${cop(n * precio)}.`);
-  }
-  save(); closeModal(); render();
-}
-
-/* Las ventas de la tienda se descuentan del lote que las produjo */
-
-/* ---- clients.js ---- */
-/* ============================================================
-   CLIENTES (uso interno): quién compra, cada cuánto y a quién llamar
-   ============================================================ */
-const TIPOS = ["Cafetería", "Tostador", "Tienda", "Oficina", "Persona"];
-
-const pedidosDe = (id) => S.pedidos.filter((p) => p.clienteId === id).sort((a, b) => b.fecha.localeCompare(a.fecha));
-const totalCliente = (id) => pedidosDe(id).reduce((s, p) => s + p.total, 0);
-
-/* Días promedio entre pedidos: sirve para saber cuándo deberían volver a pedir */
-function frecuencia(id) {
-  const f = pedidosDe(id).map((p) => new Date(p.fecha + "T00:00:00")).sort((a, b) => a - b);
-  if (f.length < 2) return null;
-  let s = 0; for (let i = 1; i < f.length; i++) s += (f[i] - f[i - 1]) / 86400000;
-  return Math.round(s / (f.length - 1));
-}
-function estadoCliente(id) {
-  const ps = pedidosDe(id); if (!ps.length) return { k: "nuevo", label: "sin pedidos" };
-  const d = dias(ps[0].fecha), fr = frecuencia(id);
-  if (d > 120) return { k: "perdido", label: `perdido · ${d} días`, d };
-  if (fr && d > fr * 1.5) return { k: "riesgo", label: `se atrasó · ${d} días`, d, fr };
-  if (!fr && d > 60) return { k: "riesgo", label: `no repite · ${d} días`, d };
-  if (ps.length >= 2) return { k: "fiel", label: `cada ~${fr} días`, d, fr };
-  return { k: "nuevo", label: `nuevo · hace ${d} días`, d };
-}
-function cafePreferido(id) {
-  const c = {};
-  pedidosDe(id).forEach((p) => p.items.forEach((i) => (c[i.nombre] = (c[i.nombre] || 0) + i.n)));
-  const top = Object.entries(c).sort((a, b) => b[1] - a[1])[0];
-  return top ? { nombre: top[0], n: top[1] } : null;
-}
-
-function viewClientes() {
-  const cs = S.clientes.map((c) => ({ ...c, total: totalCliente(c.id), n: pedidosDe(c.id).length, est: estadoCliente(c.id) }))
-    .sort((a, b) => b.total - a.total);
-  const ventas = S.pedidos.reduce((s, p) => s + p.total, 0);
-  const ticket = S.pedidos.length ? ventas / S.pedidos.length : 0;
-  const repiten = cs.filter((c) => c.n >= 2).length;
-  const alerta = cs.filter((c) => ["riesgo", "perdido"].includes(c.est.k));
-  const mes = S.pedidos.filter((p) => dias(p.fecha) <= 30).reduce((s, p) => s + p.total, 0);
-
-  /* Ranking de cafés por unidades vendidas */
-  const porCafe = {};
-  S.pedidos.forEach((p) => p.items.forEach((i) => {
-    porCafe[i.nombre] ||= { n: 0, plata: 0 };
-    porCafe[i.nombre].n += i.n; porCafe[i.nombre].plata += i.n * i.precio;
-  }));
-  const ranking = Object.entries(porCafe).sort((a, b) => b[1].plata - a[1].plata);
-  const maxPlata = Math.max(...ranking.map(([, v]) => v.plata), 1);
-
-  return `<div class="view-head">
-      <div><p class="eyebrow reveal">Uso interno</p>
-        <h2 class="reveal" style="--i:1">Clientes <em>y recompra</em></h2>
-        <p class="reveal" style="--i:2">Conseguir un cliente nuevo cuesta; que el de siempre vuelva a pedir, no. Aquí está a quién llamar esta semana.</p></div>
-      <button class="btn primary reveal" style="--i:3" data-act="cl-nuevo">Registrar venta</button>
-    </div>
-    <div class="kpis reveal" style="--i:3">
-      <div class="kpi"><b data-count="${cs.length}">${cs.length}</b><small>clientes</small></div>
-      <div class="kpi"><b data-count="${ventas}" data-pre="$">${cop(ventas)}</b><small>vendido en total</small></div>
-      <div class="kpi"><b data-count="${mes}" data-pre="$">${cop(mes)}</b><small>últimos 30 días</small></div>
-      <div class="kpi"><b data-count="${ticket}" data-pre="$">${cop(ticket)}</b><small>pedido promedio</small></div>
-      <div class="kpi ${alerta.length ? "alert" : ""}"><b data-count="${alerta.length}">${alerta.length}</b><small>por reactivar</small></div>
-    </div>
-
-    ${alerta.length ? `<div class="llamar reveal"><h3>Para llamar hoy</h3>
-      <div class="chips">${alerta.slice(0, 6).map((c) => `<button class="chip" data-act="cl-wa" data-id="${c.id}">${esc(c.nombre)} · ${c.est.d} días</button>`).join("")}</div></div>` : ""}
-
-    <div class="list">${cs.length ? cs.map(clienteCard).join("") : `<div class="empty"><h3>Sin clientes todavía</h3><p>Los pedidos de la tienda crean el cliente solo.</p></div>`}</div>
-
-    <section class="section">
-      <div class="section-head"><p class="eyebrow">Qué se vende</p><h2>Cafés <em>más pedidos</em></h2></div>
-      <div class="rank">${ranking.map(([nombre, v]) => `<div class="rk">
-        <span class="rk-n">${esc(nombre)}</span>
-        <span class="rk-bar"><i style="--w:${(v.plata / maxPlata).toFixed(3)}"></i></span>
-        <span class="mono">${fmtNum(v.n)} u · ${cop(v.plata)}</span></div>`).join("")}</div>
-    </section>`;
-}
-
-function clienteCard(c, i) {
-  const pref = cafePreferido(c.id), ps = pedidosDe(c.id), ult = ps[0];
-  return `<div class="item cliente" style="--i:${i}">
-    <span class="avatar">${esc(c.nombre[0])}</span>
-    <div><p class="kicker">${esc(c.tipo)} · ${esc(c.ciudad)}${c.tel ? " · " + esc(c.tel) : ""}</p>
-      <h4>${esc(c.nombre)}</h4>
-      <p>${c.n} ${c.n === 1 ? "pedido" : "pedidos"} · ${cop(c.total)} en total${ult ? ` · último ${fmtFecha(ult.fecha)}` : ""}</p>
-      ${pref ? `<p class="hint" style="margin:6px 0 0">Su café: <b>${esc(pref.nombre)}</b> (${pref.n} unidades)</p>` : ""}
-    </div>
-    <div class="item-actions">
-      <span class="est ${c.est.k}">${c.est.label}</span>
-      <button class="btn sm" data-act="cl-ver" data-id="${c.id}">Historial</button>
-      <button class="btn primary sm" data-act="cl-wa" data-id="${c.id}">Escribirle</button>
-    </div></div>`;
-}
-
-function clienteVer(id) {
-  const c = S.clientes.find((x) => x.id === id), ps = pedidosDe(id), est = estadoCliente(id), fr = frecuencia(id);
-  modal(`${esc(c.nombre)} · <em>${esc(c.ciudad)}</em>`, `
-    <div class="offer-sum"><div><span class="lbl">Pedidos</span><b>${ps.length}</b></div>
-      <div><span class="lbl">Total</span><b class="mono">${cop(totalCliente(id))}</b></div>
-      <div><span class="lbl">Cada</span><b>${fr ? fr + " días" : "—"}</b></div></div>
-    <div class="table-scroll"><table class="cmp-table"><tbody>
-      ${ps.map((p) => `<tr><th>${fmtFecha(p.fecha)}<small class="src">${esc(p.id)}</small></th>
-        <td>${p.items.map((i) => `${i.n} × ${esc(i.nombre)}`).join("<br>")}</td>
-        <td class="mono">${cop(p.total)}</td></tr>`).join("")}
-    </tbody></table></div>
-    <p class="hint">${est.k === "fiel" ? `Pide cada ~${fr} días. Escribirle unos días antes evita que se quede sin café.`
-      : est.k === "riesgo" ? `Lleva ${est.d} días sin pedir y suele pedir cada ${fr || "—"}. Vale una llamada.`
-      : est.k === "perdido" ? `Lleva ${est.d} días sin comprar. Ofrécele algo nuevo o pregúntale qué pasó.`
-      : "Cliente nuevo: el segundo pedido es el que define si se queda."}</p>
-    <div class="dlg-actions"><button class="btn" data-act="cl-nuevo" data-id="${id}">Registrar venta</button>
-      <button class="btn primary" data-act="cl-wa" data-id="${id}">Escribirle por WhatsApp</button></div>`, "narrow");
-}
-
-/* Mensaje sugerido según su historia */
-function clienteWa(id) {
-  const c = S.clientes.find((x) => x.id === id), est = estadoCliente(id), pref = cafePreferido(id);
-  const nuevo = S.productos.find((p) => p.stock > 0 && (!pref || p.nombre !== pref.nombre));
-  const msg = est.k === "fiel"
-    ? `Hola ${c.nombre}, ¿cómo van? Ya casi cumplen ${est.fr} días del último pedido de ${pref?.nombre || "café"}. ¿Les preparo otro despacho esta semana?`
-    : est.k === "riesgo" || est.k === "perdido"
-    ? `Hola ${c.nombre}, hace ${est.d} días no hacen pedido. Tenemos ${nuevo ? nuevo.nombre + " " + nuevo.sub : "café fresco"} recién tostado. ¿Les mando una muestra?`
-    : `Hola ${c.nombre}, ¿cómo les fue con el ${pref?.nombre || "café"}? Si les gustó, les separo el siguiente lote.`;
-  if (CONFIG.whatsapp && c.tel) window.open(`https://wa.me/57${c.tel.replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
-  else modal(`Mensaje para <em>${esc(c.nombre)}</em>`, `<pre class="pre">${esc(msg)}</pre>
-    <p class="hint">${c.tel ? "Configura tu WhatsApp en CONFIG para abrirlo directo." : "Este cliente no tiene teléfono guardado."}</p>
-    <div class="dlg-actions"><button class="btn primary" data-act="close">Listo</button></div>`, "narrow");
-}
-
-/* Registrar una venta hecha por fuera de la tienda */
-function clienteNuevo(id) {
-  const c = id ? S.clientes.find((x) => x.id === id) : null;
-  const disp = S.productos.filter((p) => p.stock > 0);
-  modal("Registrar <em>venta</em>", `<div class="form-grid">
-      <div class="field"><label class="lbl" for="cn-nombre">Cliente</label>
-        <input id="cn-nombre" class="input" list="clientes-l" value="${esc(c?.nombre || "")}" placeholder="Nombre o negocio">
-        <datalist id="clientes-l">${S.clientes.map((x) => `<option value="${esc(x.nombre)}">`).join("")}</datalist></div>
-      <div class="field"><label class="lbl" for="cn-tipo">Tipo</label><select id="cn-tipo" class="input">${TIPOS.map((t) => `<option ${t === c?.tipo ? "selected" : ""}>${t}</option>`).join("")}</select></div>
-      <div class="field"><label class="lbl" for="cn-ciudad">Ciudad</label><input id="cn-ciudad" class="input" value="${esc(c?.ciudad || "Cúcuta")}"></div>
-      <div class="field"><label class="lbl" for="cn-tel">WhatsApp</label><input id="cn-tel" class="input" type="tel" value="${esc(c?.tel || "")}" placeholder="300 000 0000"></div>
-      <div class="field"><label class="lbl" for="cn-prod">Café</label><select id="cn-prod" class="input">${disp.map((p) => `<option value="${p.id}">${esc(p.nombre)} · ${esc(p.sub)} (${p.stock} disp.)</option>`).join("")}</select></div>
-      <div class="field"><label class="lbl" for="cn-n">Unidades</label><input id="cn-n" class="input mono" type="number" min="1" value="1"></div>
-    </div>
-    <p class="hint">La venta descuenta el stock y se suma al lote que produjo ese café.</p>
-    <div class="dlg-actions"><button class="btn" data-act="close">Cancelar</button><button class="btn primary" data-act="cl-guardar">Guardar venta</button></div>`, "narrow");
-}
-
-function clienteGuardar() {
-  const nombre = $("#cn-nombre").value.trim();
-  if (!nombre) return toast("Falta el nombre del cliente.", { type: "err" });
-  const prod = S.productos.find((p) => p.id === $("#cn-prod").value);
-  const n = Math.max(1, Math.min(prod?.stock || 0, num("cn-n", 1)));
-  if (!prod || !n) return toast("No hay stock de ese café.", { type: "err" });
-  let cl = S.clientes.find((x) => x.nombre.toLowerCase() === nombre.toLowerCase());
-  if (!cl) { cl = { id: nextId("CL"), nombre, tipo: $("#cn-tipo").value, ciudad: $("#cn-ciudad").value.trim(), tel: $("#cn-tel").value.trim() }; S.clientes.unshift(cl); }
-  else { cl.tel = $("#cn-tel").value.trim() || cl.tel; cl.ciudad = $("#cn-ciudad").value.trim() || cl.ciudad; }
-  S.pedidos.unshift({ id: nextId("PD"), clienteId: cl.id, nombre: cl.nombre, ciudad: cl.ciudad, fecha: isoToday(), canal: "directo",
-    items: [{ id: prod.id, nombre: prod.nombre, n, precio: prod.precio }], total: n * prod.precio });
-  prod.stock -= n; atribuirVenta(prod, n);
-  save(); closeModal(); render();
-  toast(`Venta a ${esc(cl.nombre)}: ${n} × ${esc(prod.nombre)} = ${cop(n * prod.precio)}.`);
-}
-
-
-/* ---- market.js ---- */
-/* ============================================================
-   MERCADO (uso interno): referencias del día, conversiones y
-   cuándo conviene sacar el café.
-   ============================================================ */
-/* ---------- referencias automáticas: FNC y Banco de la República ---------- */
-const MERCADO_API = CONFIG.sitio + "/api/mercado";
-/* historial que guarda la tarea diaria de GitHub (.github/workflows/precio-fnc.yml): el mismo en todos los equipos */
-const MERCADO_HISTORIAL = CONFIG.sitio + "/data/mercado.json";
-let consultando = false;
-const CADA_MS = 30 * 60 * 1000;                     // el panel vuelve a mirar cada 30 minutos
-const M = () => (S.mercado ||= { historial: [], leido: null, error: null });
-
-/* anota el día en el historial (una fila por fecha) y aplica los valores al cotizador */
-function aplicarReferencias({ precioCarga, fecha, ny, trm }, fuente) {
-  const h = M().historial, previo = h.find((x) => x.fecha < fecha) || null;
-  const fila = { fecha, precioCarga, ny, trm, fuente };
-  const i = h.findIndex((x) => x.fecha === fecha);
-  if (i >= 0) h[i] = fila; else h.push(fila);
-  h.sort((a, b) => (a.fecha < b.fecha ? 1 : -1));
-  if (h.length > 120) h.length = 120;
-  const antes = CONFIG.fnc.precioCarga;
-  Object.assign(CONFIG.fnc, { precioCarga, fecha });
-  Object.assign(CONFIG.mercado, { ny, trm });
-  if (UI.q) UI.q.precioCarga = precioCarga;
-  S.cfg = { fnc: { ...CONFIG.fnc }, mercado: { ...CONFIG.mercado } };
-  save();
-  return { antes, previo };
-}
-
-const cambio = (a, b) => (a && b ? { d: b - a, pct: ((b - a) / a) * 100 } : null);
-const flecha = (d) => (d > 0 ? "sube" : d < 0 ? "baja" : "igual");
-
-/* suma al historial local las fechas que registró la tarea diaria y no estén aquí */
-async function traerHistorialCompartido() {
-  try {
-    const r = await fetch(MERCADO_HISTORIAL, { cache: "no-store" });
-    if (!r.ok) return;
-    const { historial = [] } = await r.json(), h = M().historial;
-    historial.forEach((x) => { if (x.fecha && x.precioCarga && !h.some((y) => y.fecha === x.fecha)) h.push({ ...x, fuente: "FNC" }); });
-    h.sort((a, b) => (a.fecha < b.fecha ? 1 : -1));
-    save();
-  } catch {}
-}
-
-async function actualizarMercado({ avisar = true } = {}) {
-  const m = M();
-  if (consultando) return;                         // un clic a la vez: no apila avisos
-  consultando = true; if (sesionActiva()) { UI.animate = false; render(); }
-  try {
-    const r = await fetch(MERCADO_API, { cache: "no-store" });
-    const d = await r.json();
-    if (!d.precioCarga || !d.fecha) throw new Error(d.error || "La FNC no respondió");
-    const nuevo = d.fecha !== CONFIG.fnc.fecha || d.precioCarga !== CONFIG.fnc.precioCarga;
-    const { antes } = aplicarReferencias({ precioCarga: d.precioCarga, fecha: d.fecha, ny: d.ny ?? CONFIG.mercado.ny, trm: d.trm ?? d.tasaFnc ?? CONFIG.mercado.trm }, "FNC");
-    m.leido = d.leido; m.error = null; m.trmFecha = d.trmFecha; m.tasaFnc = d.tasaFnc; save();
-    const c = cambio(antes, d.precioCarga);
-    if (nuevo && avisar && c && c.d) toast(`La FNC ${c.d > 0 ? "subió" : "bajó"} el precio: ${cop(antes)} → ${cop(d.precioCarga)} (${c.d > 0 ? "+" : ""}${fmtNum(c.pct, 1)} %). El cotizador ya lo usa.`);
-    else if (avisar === "siempre") toast("Referencias al día.");
-  } catch (e) {
-    m.error = String(e.message || e); save();
-    if (avisar) toast("No se pudo leer el precio de la FNC. Puedes escribirlo a mano en Mercado.", { type: "err" });
-  }
-  consultando = false;
-  if (sesionActiva()) { UI.animate = false; render(); }
-}
-
-let relojMercado = null;
-function vigilarMercado() {
-  if (relojMercado) return;
-  traerHistorialCompartido().then(() => actualizarMercado());
-  relojMercado = setInterval(() => sesionActiva() && actualizarMercado(), CADA_MS);
-  /* al volver a la pestaña después de un rato, mira de una vez */
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible" && sesionActiva() && Date.now() - Date.parse(M().leido || 0) > CADA_MS) actualizarMercado();
-  });
-}
-
-/* franja del panel: el precio de hoy y cuánto se movió frente al día anterior publicado */
-function avisoMercado() {
-  const m = M(), h = m.historial, hoy = h[0], ayer = h[1], c = hoy && ayer ? cambio(ayer.precioCarga, hoy.precioCarga) : null;
-  const hora = m.leido ? new Date(m.leido).toLocaleTimeString("es-CO", { hour: "numeric", minute: "2-digit" }) : null;
-  return `<div class="mkt-aviso ${c ? flecha(c.d) : ""}">
-    <span><span class="lbl">Precio FNC · carga</span> <b class="mono">${cop(CONFIG.fnc.precioCarga)}</b></span>
-    ${c && c.d ? `<span class="mkt-delta">${c.d > 0 ? "▲" : "▼"} ${cop(Math.abs(c.d))} · ${c.d > 0 ? "+" : ""}${fmtNum(c.pct, 1)} % desde el ${fmtFecha(ayer.fecha)}</span>` : ""}
-    <span class="hint">Publicado el ${fmtFecha(CONFIG.fnc.fecha)} · ${m.error ? `<b class="neg">sin conexión con la FNC</b>` : hora ? `revisado a las ${hora}` : "sin revisar todavía"}</span>
-    <button class="btn sm" data-act="mkt-auto" ${consultando ? "disabled" : ""}>${consultando ? "Revisando…" : "Revisar ahora"}</button></div>`;
-}
-
-function guardarMercado() {
-  aplicarReferencias({ precioCarga: num("m-carga", CONFIG.fnc.precioCarga), fecha: $("#m-fecha").value || CONFIG.fnc.fecha,
-    ny: num("m-ny", CONFIG.mercado.ny), trm: num("m-trm", CONFIG.mercado.trm) }, "manual");
-  render();
-  toast("Referencias guardadas a mano. El cotizador ya usa estos valores.");
-}
-
-function historialMercado() {
-  const h = M().historial.slice(0, 30);
-  if (!h.length) return "";
-  const vals = [...h].reverse().map((x) => x.precioCarga), min = Math.min(...vals), max = Math.max(...vals), rango = max - min || 1;
-  const linea = vals.length > 1 ? `<svg class="mkt-linea" viewBox="0 0 300 60" preserveAspectRatio="none" aria-hidden="true">
-      <polyline fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke"
-        points="${vals.map((v, i) => `${((i / (vals.length - 1)) * 300).toFixed(1)},${(56 - ((v - min) / rango) * 52).toFixed(1)}`).join(" ")}"/></svg>` : "";
-  return `<section class="section">
-    <div class="section-head"><p class="eyebrow">Historial</p><h2>Cómo se ha movido <em>el precio</em></h2>
-      <p>Una fila por día en que la FNC publicó precio. Se llena sola: una tarea la revisa cada día hábil aunque nadie abra el panel.</p></div>
-    ${linea}
-    <div class="table-scroll"><table class="cmp-table mkt-table">
-      <thead><tr><th>Fecha</th><th>Carga FNC</th><th>Cambio</th><th>Por kg pergamino</th><th>Bolsa NY (US¢/lb)</th><th>TRM</th><th>Fuente</th></tr></thead>
-      <tbody>${h.map((x, i) => { const c = h[i + 1] ? cambio(h[i + 1].precioCarga, x.precioCarga) : null;
-        return `<tr><th>${fmtFecha(x.fecha)}</th><td class="mono">${cop(x.precioCarga)}</td>
-          <td class="mono ${c && c.d > 0 ? "pos" : c && c.d < 0 ? "neg" : ""}">${c && c.d ? `${c.d > 0 ? "+" : "−"}${cop(Math.abs(c.d))} (${c.d > 0 ? "+" : ""}${fmtNum(c.pct, 1)} %)` : "—"}</td>
-          <td class="mono">${cop(x.precioCarga / 125)}</td><td class="mono">${fmtNum(x.ny, 2)}</td><td class="mono">${cop(x.trm)}</td><td>${esc(x.fuente)}</td></tr>`; }).join("")}</tbody>
-    </table></div></section>`;
-}
-
-/* Precio internacional equivalente: US¢/lb → COP por kg de café verde */
-const nyCopKgVerde = () => (CONFIG.mercado.ny / 100) * CONFIG.mercado.trm / 0.4536;
-
-function viewMercado() {
-  const f = CONFIG.fnc, m = CONFIG.mercado;
-  const factores = [88, 90, 92, 94, 96, 98, 100];
-  const calendario = [
-    ["Norte de Santander", "Cosecha principal", "sep – dic", "Es cuando hay café para comprar y cuando más baja el precio en finca. Confirmar el calendario local del comité."],
-    ["Norte de Santander", "Traviesa o mitaca", "abr – jun", "Menos volumen; buen momento para microlotes y para vender lo guardado."],
-    ["Brasil", "Cosecha", "may – sep", "Marca el precio mundial: cosecha grande en Brasil empuja el contrato C hacia abajo."],
-    ["Mercado", "Trimestre de escasez", "mar – may", "Los inventarios del hemisferio norte están bajos antes de la cosecha brasileña; los cafés diferenciados se pagan mejor."],
-  ];
-  const señales = [
-    ["Vender ya", "El contrato C está alto y el peso débil (TRM alta): el precio interno sube con las dos cosas.", "hot"],
-    ["Guardar", "Café de 86+ puntos en plena cosecha: el mercado está lleno de café corriente y el especial se diluye.", "ref"],
-    ["Guardar con cuidado", "El pergamino bien seco aguanta meses, pero la catación pierde puntos: hay que catar de nuevo a los 6 meses.", "ref"],
-    ["No guardar", "Café con factor alto o humedad por encima de 12 %: se deteriora rápido. Sacarlo pronto.", "max"],
-  ];
-  return `<div class="view-head">
-      <div><p class="eyebrow reveal">Uso interno</p>
-        <h2 class="reveal" style="--i:1">Mercado <em>del día</em></h2>
-        <p class="reveal" style="--i:2">Se actualizan solos desde la FNC y el Banco de la República cada vez que abres el panel y cada 30 minutos. De ellos sale todo el cotizador. Si la FNC no responde, escríbelos a mano.</p></div>
-    </div>
-    <div class="mkt-grid reveal" style="--i:2">
-      <div class="mkt"><span class="lbl">Precio interno FNC · carga de 125 kg</span>
-        <input id="m-carga" class="mkt-in mono" type="number" step="5000" value="${f.precioCarga}">
-        <small>factor 94 · ${cop(f.precioCarga / 125)} por kg de pergamino</small></div>
-      <div class="mkt"><span class="lbl">Contrato C · Nueva York</span>
-        <input id="m-ny" class="mkt-in mono" type="number" step="1" value="${m.ny}">
-        <small>US¢ por libra · ${cop(nyCopKgVerde())} por kg verde</small></div>
-      <div class="mkt"><span class="lbl">TRM oficial</span>
-        <input id="m-trm" class="mkt-in mono" type="number" step="0.01" value="${m.trm}">
-        <small>COP por dólar${S.mercado?.trmFecha ? " · vigente el " + fmtFecha(S.mercado.trmFecha) : ""}${S.mercado?.tasaFnc ? " · la FNC usó " + fmtNum(S.mercado.tasaFnc) : ""}</small></div>
-      <div class="mkt"><span class="lbl">Fecha de la referencia</span>
-        <input id="m-fecha" class="mkt-in" type="date" value="${f.fecha}">
-        <small>Publicado por la FNC cada día hábil</small></div>
-      <div class="mkt act"><button class="btn primary" data-act="mkt-auto" ${consultando ? "disabled" : ""}>${consultando ? "Revisando…" : "Revisar ahora"}</button>
-        <button class="btn sm" data-act="mkt-save">Guardar a mano</button>
-        <small>Fuente: federaciondecafeteros.org · datos.gov.co (TRM)</small></div>
-    </div>
-    ${historialMercado()}
-
-    <section class="section">
-      <div class="section-head"><p class="eyebrow">Tabla rápida</p><h2>Precio según <em>el factor</em></h2>
-        <p>El precio se mueve con lo que rinde la carga: a factor 94 rinde 93,1 kg de excelso; a factor 100 solo 87,5 kg.</p></div>
-      <div class="table-scroll"><table class="cmp-table mkt-table">
-        <thead><tr><th>Factor</th>${factores.map((x) => `<th class="${x === 94 ? "best" : ""}">${x}</th>`).join("")}</tr></thead>
-        <tbody>
-          <tr><th>kg de excelso por carga</th>${factores.map((x) => `<td class="mono">${fmtNum((125 * 70) / x, 1)}</td>`).join("")}</tr>
-          <tr><th>COP por carga</th>${factores.map((x) => `<td class="mono">${cop(f.precioCarga * (94 / x))}</td>`).join("")}</tr>
-          <tr><th>COP por kg pergamino</th>${factores.map((x) => `<td class="mono">${cop(precioComiteKg(x))}</td>`).join("")}</tr>
-          <tr><th>COP por arroba (12,5 kg)</th>${factores.map((x) => `<td class="mono">${cop(precioComiteKg(x) * 12.5)}</td>`).join("")}</tr>
-        </tbody></table></div>
-      <p class="hint">Cálculo propio a partir del precio de referencia. Las cooperativas aplican además castigos por humedad y por taza, así que el pago real puede ser algo menor.</p>
-    </section>
-
-    <section class="section">
-      <div class="section-head"><p class="eyebrow">Equivalencias</p><h2>Las cuentas <em>de bolsillo</em></h2></div>
-      <div class="eqs">
-        ${[["1 carga", "125 kg de pergamino seco = 10 arrobas"], ["1 arroba", "12,5 kg"], ["Factor 94", "94 kg de pergamino → 70 kg de excelso"],
-           ["Trilla", "1 kg de pergamino → " + fmtNum(70 / 94, 3) + " kg de verde a factor 94"], ["Cereza", "~5 kg de cereza → 1 kg de pergamino seco"],
-           ["Tueste", "1 kg de verde → ~0,83 kg tostado (17 % de merma)"], ["Bolsa de 250 g", "~" + fmtNum(1000 / 250, 1) + " bolsas por kg tostado"],
-           ["Humedad", "Base de negociación: 12 %. Más húmedo, menos peso real"]].map(([k, v]) => `<div class="eq"><b>${k}</b><span>${v}</span></div>`).join("")}
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="section-head"><p class="eyebrow">Calendario</p><h2>Cuándo hay café <em>y cuándo falta</em></h2></div>
-      <div class="table-scroll"><table class="cmp-table"><thead><tr><th>Dónde</th><th>Qué</th><th>Cuándo</th><th>Qué significa para nosotros</th></tr></thead>
-        <tbody>${calendario.map(([a, b, c, d]) => `<tr><th>${a}</th><td>${b}</td><td class="mono">${c}</td><td>${d}</td></tr>`).join("")}</tbody></table></div>
-    </section>
-
-    <section class="section">
-      <div class="section-head"><p class="eyebrow">Señales</p><h2>Vender <em>o guardar</em></h2></div>
-      <div class="signals">${señales.map(([t, d, k]) => `<div class="sig ${k}"><b>${t}</b><span>${d}</span></div>`).join("")}</div>
-      <p class="hint">Contexto a septiembre de 2026: tras dos años de precios altos por escasez, el mercado espera una cosecha récord en Brasil y más oferta, aunque los inventarios siguen bajos. Revisar antes de decidir si guardamos café esperando mejor precio.</p>
-    </section>`;
-}
-
 /* ---- correos.js ---- */
 /* ============================================================
    PANEL · CORREOS
@@ -3730,9 +3927,355 @@ document.addEventListener("click", (e) => {
   }
 });
 
+/* ---- actividad.js ---- */
+/* ============================================================
+   PANEL · ACTIVIDAD
+   Qué hace la gente en la página y a quién vale la pena recordarle.
+   - El embudo: de quienes entraron, cuántos vieron un café, cuántos
+     lo echaron al carrito, cuántos fueron a pagar y cuántos compraron.
+   - Los carritos abandonados de quien ya dejó su correo, con el
+     botón que le manda el recordatorio (una vez, y solo si aceptó
+     recibir correos).
+   - Los que llegaron a la pasarela y no pagaron, con WhatsApp.
+   - Quién se registró y qué es lo más visto.
+   Todo sale de la bitácora propia (prototipo/js/medir.js) que guarda
+   la Hoja de Google: solo anota a quien aceptó las cookies, así que
+   son cifras de esas personas, no de todas las visitas.
+   El píxel de Meta es otra cosa: sus datos se quedan en Meta y sirven
+   para los anuncios; aquí solo se dice si está puesto.
+   ============================================================ */
+const AC = { datos: null, cargando: false, error: null, dias: 30 };
+const AC_EVENTOS = { visita: "Entró a la página", ver: "Vio", agregar: "Agregó al carrito", pagar: "Fue a pagar", compra: "Compró", registro: "Se registró" };
+const AC_PASOS = [["visita", "Entraron"], ["ver", "Vieron un café"], ["agregar", "Agregaron al carrito"], ["pagar", "Fueron a pagar"], ["compra", "Compraron"]];
+const AC_ERRORES = { "no-acepta": "Esa persona no aceptó recibir correos.", "sin-correo": "No dejó correo.", ya: "Ya se le había recordado.",
+  cuota: "Gmail no tiene cupo hoy: inténtalo mañana.", no: "Ese carrito ya no está abandonado.", "no-es-reserva": "Ese pedido ya no es una reserva sin pagar." };
+
+function acCargar() {
+  if (!CONFIG.registro || !coClave()) return;
+  AC.cargando = true; AC.error = null; render();
+  fetch(CONFIG.registro + "?accion=actividad&dias=" + AC.dias + "&clave=" + encodeURIComponent(coClave()))
+    .then((r) => r.json())
+    .then((j) => {
+      AC.cargando = false;
+      if (!j.ok) AC.error = j.error === "clave" ? "La clave no coincide. Cámbiala en la pestaña Correos." : "El script respondió con un error.";
+      /* el script de antes responde ok sin saber qué es "actividad" */
+      else if (!j.actividad) AC.error = "viejo";
+      else AC.datos = j;
+      render();
+    })
+    .catch(() => { AC.cargando = false; AC.error = "No se pudo conectar con la hoja. Si el script se actualizó, publica una versión nueva de la implementación."; render(); });
+}
+function acRecordar(cuerpo, quien) {
+  closeModal();
+  fetch(CONFIG.registro, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ accion: "recordar", clave: coClave(), ...cuerpo }) })
+    .then((r) => r.json())
+    .then((j) => {
+      if (!j.ok) return toast(AC_ERRORES[j.error] || "No se envió. Vuelve a intentar.", { type: "err" });
+      toast(`Recordatorio enviado a ${quien}.`); acCargar();
+    })
+    .catch(() => toast("No se envió. Revisa la conexión y vuelve a intentar.", { type: "err" }));
+}
+
+/* "hace 3 h", "hace 2 días": lo que importa de un carrito es cuánto lleva quieto */
+function acHace(v) {
+  const min = Math.max(0, Math.round((Date.now() - new Date(v).getTime()) / 60000));
+  if (min < 60) return `hace ${min} min`;
+  if (min < 48 * 60) return `hace ${Math.round(min / 60)} h`;
+  return `hace ${Math.round(min / 1440)} días`;
+}
+const acWa = (tel) => "https://wa.me/57" + String(tel).replace(/\D/g, "").replace(/^57(?=\d{10}$)/, "");
+const acPct = (n, de) => (de ? fmtNum((n / de) * 100) + " %" : "—");
+
+/* El embudo: una barra por paso, todas del mismo color porque es una sola
+   medida (personas). El número va escrito al lado, no hay que adivinarlo. */
+function acEmbudo(e) {
+  const tope = Math.max(1, ...AC_PASOS.map(([k]) => e[k] || 0));
+  return `<div class="ac-embudo" role="table" aria-label="Embudo de la tienda">
+    ${AC_PASOS.map(([k, txt], i) => {
+      const n = e[k] || 0, antes = i ? e[AC_PASOS[i - 1][0]] || 0 : 0;
+      return `<div class="ac-paso" role="row" title="${txt}: ${fmtNum(n)} personas${i ? ` · ${acPct(n, antes)} del paso anterior` : ""}">
+        <span class="ac-paso-t" role="cell">${txt}</span>
+        <span class="ac-barra" role="presentation"><i style="width:${n ? Math.max(1.5, (n / tope) * 100) : 0}%"></i></span>
+        <b class="mono" role="cell">${fmtNum(n)}</b>
+        <small role="cell">${i ? acPct(n, antes) + " del paso anterior" : "personas distintas"}</small></div>`;
+    }).join("")}</div>`;
+}
+/* Las visitas de los últimos 14 días, una columna por día */
+function acDias(serie) {
+  const tope = Math.max(1, ...serie.map((d) => d.visita));
+  return `<div class="ac-dias" role="img" aria-label="Personas que entraron cada día, últimos ${serie.length} días">
+    ${serie.map((d) => `<span class="ac-dia" title="${fmtFecha(d.dia)}: ${fmtNum(d.visita)} entraron · ${fmtNum(d.agregar)} agregaron al carrito · ${fmtNum(d.compra)} compraron">
+      <i style="height:${d.visita ? Math.max(4, (d.visita / tope) * 100) : 0}%"></i><small>${d.dia.slice(8)}</small></span>`).join("")}</div>`;
+}
+
+function viewActividad() {
+  if (!CONFIG.registro || !coClave()) return `<section class="co-vacio">
+      <p class="eyebrow">Actividad</p><h2>Primero, conecta la hoja</h2>
+      <p class="hint">La actividad de la página se guarda en la misma Hoja de Google que los correos. Conéctala en la pestaña <b>Correos</b> y vuelve aquí.</p>
+      <div class="co-fila"><button class="btn primary" data-act="atab" data-tab="correos">Ir a Correos</button></div></section>`;
+  if (!AC.datos && !AC.cargando && !AC.error) setTimeout(acCargar, 0);
+  if (AC.error === "viejo") return `<section class="co-vacio"><p class="eyebrow">Actividad</p>
+      <h2>Falta actualizar el script de la hoja</h2>
+      <p class="hint">La hoja todavía corre la versión anterior, que no sabe guardar la actividad. Es una sola vez:</p>
+      <ol class="co-pasos">
+        <li>Abre el proyecto <b>Nandez · correos</b> en <a href="https://script.google.com" target="_blank" rel="noopener">script.google.com</a>.</li>
+        <li>Reemplaza todo el código por el de <code>tools/correos/Codigo.gs</code> y guarda.</li>
+        <li>Ejecuta la función <b>configurar</b>: crea las hojas <b>Actividad</b> y <b>Carritos</b> sin tocar lo que hay.</li>
+        <li><b>Implementar → Administrar implementaciones → editar → Nueva versión.</b> La dirección no cambia.</li>
+      </ol>
+      <p class="hint">Mientras tanto la página no anota nada ni muestra el aviso de cookies.</p>
+      <div class="co-fila"><button class="btn primary" data-act="ac-cargar">Ya lo actualicé</button></div></section>`;
+  if (!AC.datos) return `<section class="co-vacio"><p class="eyebrow">Actividad</p>
+      <h2>${AC.error ? "No se pudo cargar" : "Cargando la actividad…"}</h2>
+      ${AC.error ? `<p class="err">${esc(AC.error)}</p><div class="co-fila"><button class="btn" data-act="ac-cargar">Intentar otra vez</button></div>` : ""}</section>`;
+
+  const d = AC.datos, e = d.embudo, porRecordar = d.carritos.filter((c) => c.acepta && !c.recordado);
+  const plataQuieta = d.carritos.reduce((s, c) => s + c.total, 0) + d.anonimos.total;
+  const kpi = (n, txt, alerta, esPlata) => `<div class="mkt${alerta && n ? " op-alerta" : ""}"><small>${txt}</small><b class="mono co-n">${esPlata ? cop(n) : fmtNum(n)}</b></div>`;
+  const pixel = CONFIG.medicion && CONFIG.medicion.metaPixel;
+
+  return `<section class="co op ac">
+    <div class="section-head co-head"><p class="eyebrow">Actividad de la página</p>
+      <h2>Quién entró, quién <em>se quedó en el carrito</em></h2>
+      <p class="hint">Son las personas que aceptaron las cookies en la página: sin ese permiso no se anota nada, así que el total real de visitas es mayor. Las ventas de verdad están en la pestaña <b>Pedidos</b>.</p>
+      <div class="co-fila"><button class="btn sm" data-act="ac-cargar">${AC.cargando ? "Actualizando…" : "Actualizar"}</button>
+        <span class="co-etiquetas" role="group" aria-label="Periodo">${[7, 30, 90].map((n) =>
+          `<button class="chip" aria-pressed="${AC.dias === n}" data-act="ac-dias" data-id="${n}">${n} días</button>`).join("")}</span>
+        <a class="btn sm" href="${esc(d.hoja)}" target="_blank" rel="noopener">Abrir la hoja</a></div></div>
+
+    <div class="mkt-grid">${kpi(porRecordar.length, "Carritos por recordar", true)}${kpi(d.sinPagar.filter((p) => !p.recordado).length, "Llegaron a pagar y no pagaron", true)}
+      ${kpi(plataQuieta, "En carritos sin cerrar", false, true)}${kpi(d.nuevos.d7, `Registros en 7 días · ${fmtNum(d.nuevos.total)} en total`)}</div>
+
+    <div class="ac-dos">
+      <section class="wpanel ac-caja">
+        <h3>El embudo · últimos ${d.dias} días</h3>
+        ${e.visita ? acEmbudo(e) : `<p class="hint">Todavía no hay actividad anotada en este periodo. Empieza a llegar cuando alguien acepta las cookies en la página.</p>`}
+      </section>
+      <section class="wpanel ac-caja">
+        <h3>Entraron cada día</h3>
+        ${acDias(d.porDia)}
+        <h3 class="ac-sub">Lo más visto</h3>
+        ${d.productos.length ? `<table class="b2b-tabla ac-mini"><thead><tr><th>Café</th><th>Lo vieron</th><th>Al carrito</th></tr></thead><tbody>
+          ${d.productos.map((p) => `<tr><th scope="row">${esc(p.nombre)}</th><td class="mono">${fmtNum(p.ver)}</td><td class="mono">${fmtNum(p.agregar)}</td></tr>`).join("")}</tbody></table>`
+          : `<p class="hint">Nadie ha abierto la ficha de un café en este periodo.</p>`}
+      </section>
+    </div>
+
+    <h3 class="op-tit">Carritos abandonados</h3>
+    <p class="hint">Gente que ya dejó su correo en la página y armó un carrito que lleva más de una hora quieto. El recordatorio sale una sola vez por carrito y solo a quien marcó la casilla de recibir correos; si tiene su bono de bienvenida sin usar, el correo se lo recuerda.${d.auto ? " <b>El envío automático está prendido</b>: cada mañana salen solos los que llevan un día." : ""}</p>
+    <div class="table-scroll"><table class="b2b-tabla co-tabla op-tabla">
+      <thead><tr><th>Quién</th><th>Qué dejó</th><th>Total</th><th>Quieto</th><th></th></tr></thead>
+      <tbody>${d.carritos.length ? d.carritos.map((c) => `<tr>
+        <th scope="row">${esc(c.correo)}<small>${c.acepta ? "Acepta correos" : "No aceptó correos"}</small></th>
+        <td class="op-prod">${c.items.map((i) => `${fmtNum(i.n)} × ${esc(i.nom)}`).join("<br>")}</td>
+        <td class="mono">${cop(c.total)}</td>
+        <td>${acHace(c.actualizado)}</td>
+        <td class="op-acc">${c.recordado ? `<span class="op-estado op-entregado">Recordado el ${coFecha(c.recordado)}</span>`
+          : c.acepta ? `<button class="btn sm primary" data-act="ac-recordar" data-id="${esc(c.v)}">Recordar por correo</button>`
+          : `<span class="op-estado op-cancelado" title="La ley pide su autorización para mandarle publicidad">Sin permiso de correo</span>`}</td></tr>`).join("")
+        : `<tr><td colspan="5" class="hint">Ningún carrito con correo está esperando.</td></tr>`}</tbody></table></div>
+    ${d.anonimos.n ? `<p class="hint">Además hay <b>${fmtNum(d.anonimos.n)}</b> ${d.anonimos.n === 1 ? "carrito" : "carritos"} de visitantes que no han dejado su correo (${cop(d.anonimos.total)}). A esos no se les puede escribir: los alcanza el anuncio de Meta cuando el píxel esté puesto, o el pop-up del bono, que es el que consigue el correo.</p>` : ""}
+
+    <h3 class="op-tit">Llegaron a pagar y no pagaron</h3>
+    <p class="hint">Abrieron la pasarela con sus datos y el pago no se completó; a las 2 horas la reserva se soltó sola. Es la gente más cerca de comprar: un mensaje corto suele bastar.</p>
+    <div class="table-scroll"><table class="b2b-tabla co-tabla op-tabla">
+      <thead><tr><th>Pedido</th><th>Cliente</th><th>Productos</th><th>Total</th><th></th></tr></thead>
+      <tbody>${d.sinPagar.length ? d.sinPagar.map((p) => `<tr>
+        <th scope="row"><span class="mono">${esc(p.id)}</span><small>${coFecha(p.fecha)}</small></th>
+        <td>${esc(p.nombre)}<small>${esc([p.ciudad, p.tel && "tel " + p.tel, p.correo].filter(Boolean).join(" · "))}</small></td>
+        <td class="op-prod">${esc(p.productos).replace(/\n/g, "<br>")}</td>
+        <td class="mono">${cop(p.total)}</td>
+        <td class="op-acc">${p.tel ? `<a class="btn sm primary" href="${esc(acWa(p.tel))}?text=${encodeURIComponent(`Hola ${String(p.nombre).split(" ")[0]}, te escribimos de ${CONFIG.marca}. Vimos que tu pedido ${p.id} no alcanzó a pagarse. ¿Te ayudamos a terminarlo?`)}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
+          ${p.recordado ? `<span class="op-estado op-entregado">Ya se le escribió</span>` : p.correo ? `<button class="btn sm" data-act="ac-recordar-pedido" data-id="${esc(p.id)}">Avisar por correo</button>` : ""}</td></tr>`).join("")
+        : `<tr><td colspan="5" class="hint">Nadie se ha quedado en la pasarela en los últimos 30 días.</td></tr>`}</tbody></table></div>
+
+    <h3 class="op-tit">Quién se registró</h3>
+    <p class="hint"><b>${fmtNum(d.nuevos.d7)}</b> en 7 días · <b>${fmtNum(d.nuevos.d30)}</b> en 30 días · <b>${fmtNum(d.nuevos.total)}</b> en total. La lista completa, los filtros y las campañas están en <b>Correos</b>.</p>
+    ${d.inscritos ? `<div class="mkt-grid">${[["pop", "Por el pop-up del bono"], ["pie", "Por el pie de página"], ["gang", "Por la página de la gang"], ["sin", "Comunidad, sin origen"]]
+      .map(([k, txt]) => `<div class="mkt" title="${k === "sin" ? "Se registraron antes del 10 de noviembre de 2026, cuando la página todavía no distinguía el pop-up del pie" : "Personas distintas que marcaron la casilla"}"><small>${txt}</small><b class="mono co-n">${fmtNum(d.inscritos[k].total)}</b><small>${fmtNum(d.inscritos[k].d7)} en los últimos 7 días</small></div>`).join("")}</div>
+    <p class="hint">Cuenta personas que aceptaron recibir correos. «Sin origen» son los de antes del 10 de noviembre de 2026: entonces el pop-up y el pie llegaban igual a la hoja y no se pueden separar.</p>` : ""}
+    <div class="table-scroll"><table class="b2b-tabla co-tabla">
+      <thead><tr><th>Correo</th><th>Por dónde entró</th><th>Acepta correos</th><th>Alta</th></tr></thead>
+      <tbody>${d.registros.length ? d.registros.map((c) => `<tr>
+        <th scope="row">${esc(c.correo)}${c.nombre || c.ciudad ? `<small>${esc([c.nombre, c.ciudad].filter(Boolean).join(" · "))}</small>` : ""}</th>
+        <td>${c.etiquetas.map((t) => `<span class="co-tag">${esc(t)}</span>`).join("")}</td>
+        <td>${c.acepta ? `<span class="co-si">Sí</span>` : `<span class="co-no">No</span>`}</td>
+        <td class="mono">${coFecha(c.alta)}</td></tr>`).join("")
+        : `<tr><td colspan="4" class="hint">Todavía nadie se ha registrado.</td></tr>`}</tbody></table></div>
+
+    <h3 class="op-tit">Últimos movimientos</h3>
+    <ul class="ac-feed">${d.recientes.length ? d.recientes.map((r) => `<li>
+      <time class="mono">${acHace(r.fecha)}</time>
+      <span><b>${esc(r.correo || "Visitante " + r.visitante)}</b> · ${esc(AC_EVENTOS[r.evento] || r.evento)}${r.detalle ? (r.evento === "registro" ? ` (${esc(r.detalle)})` : " " + esc(r.detalle)) : ""}${r.valor && r.evento !== "ver" ? ` · ${cop(r.valor)}` : ""}</span></li>`).join("")
+      : `<li class="hint">Sin movimientos todavía.</li>`}</ul>
+
+    <section class="wpanel op-bono">
+      <h3>El píxel de Meta</h3>
+      <p class="hint">${pixel
+        ? `Está puesto (${esc(pixel)}). Lo que recoge se ve en el Administrador de eventos de Meta, no aquí: sirve para que los anuncios les lleguen a quienes vieron un café o dejaron un carrito.`
+        : `Todavía no está puesto: falta el identificador en <code>CONFIG.medicion.metaPixel</code>. Cuando esté, los mismos eventos de esta pestaña (vio un café, agregó al carrito, fue a pagar, compró) le llegan a Meta para los anuncios. Lo que Meta recoge se ve en su Administrador de eventos, no aquí.`}</p>
+    </section>
+  </section>`;
+}
+
+document.addEventListener("click", (ev) => {
+  const el = ev.target.closest("[data-act^='ac-']"); if (!el || el.disabled) return;
+  const id = el.dataset.id;
+  switch (el.dataset.act) {
+    case "ac-cargar": AC.error = null; return acCargar();
+    case "ac-dias": AC.dias = +id; return acCargar();
+    case "ac-recordar": {
+      const c = AC.datos.carritos.find((x) => x.v === id); if (!c) return;
+      return modal("Recordar el carrito", `
+        <p class="hint">A <b>${esc(c.correo)}</b> le llega un correo con lo que dejó (${c.items.map((i) => `${fmtNum(i.n)} × ${esc(i.nom)}`).join(", ")}) y un botón para volver. Sale una sola vez.</p>
+        <p class="hint">Quedan ${fmtNum(AC.datos.cuota)} correos de Gmail por hoy.</p>
+        <div class="dlg-actions"><button class="btn" data-act="close">Cancelar</button><button class="btn primary" data-act="ac-recordar-ok" data-id="${esc(id)}">Enviar</button></div>`, "narrow");
+    }
+    case "ac-recordar-ok": { const c = AC.datos.carritos.find((x) => x.v === id); return acRecordar({ carrito: id }, c ? c.correo : "el cliente"); }
+    case "ac-recordar-pedido": {
+      const p = AC.datos.sinPagar.find((x) => x.id === id); if (!p) return;
+      return modal("Avisar del pedido sin pagar", `
+        <p class="hint">A <b>${esc(p.correo)}</b> le llega un correo: su pedido <b>${esc(p.id)}</b> no alcanzó a pagarse, las bolsas se soltaron y puede pedirlo otra vez o responder si el pago le dio problema. Sale una sola vez.</p>
+        <div class="dlg-actions"><button class="btn" data-act="close">Cancelar</button><button class="btn primary" data-act="ac-recordar-pedido-ok" data-id="${esc(id)}">Enviar</button></div>`, "narrow");
+    }
+    case "ac-recordar-pedido-ok": { const p = AC.datos.sinPagar.find((x) => x.id === id); return acRecordar({ pedido: id }, p ? p.correo : "el cliente"); }
+  }
+});
+
+/* ---- stock.js ---- */
+/* ============================================================
+   PANEL · STOCK
+   Lo que queda de cada presentación para vender en la página.
+   La cifra de verdad vive en la hoja Stock de Google: la tienda la
+   lee al cargar, cada pedido la descuenta y cada cancelación la
+   devuelve. Aquí se ve y se corrige a mano (llegó café, se dañó una
+   bolsa, el conteo no cuadra).
+   Esto es solo el stock de venta. El inventario por lote (bodega,
+   trilla, tueste) y los costos van en el otro panel.
+   ============================================================ */
+const ST = { datos: null, cargando: false, error: null };
+const ST_POCO = 5;   /* de aquí para abajo, la fila se marca */
+
+function stCargar() {
+  if (!CONFIG.registro || !coClave()) return;
+  ST.cargando = true; ST.error = null; render();
+  fetch(CONFIG.registro + "?accion=existencias&clave=" + encodeURIComponent(coClave()))
+    .then((r) => r.json())
+    .then((j) => {
+      ST.cargando = false;
+      if (!j.ok) ST.error = j.error === "clave" ? "La clave no coincide. Cámbiala en la pestaña Correos." : "El script respondió con un error.";
+      else if (!Array.isArray(j.existencias)) ST.error = "viejo";
+      else ST.datos = j;
+      render();
+    })
+    .catch(() => { ST.cargando = false; ST.error = "No se pudo conectar con la hoja. Si el script se actualizó, publica una versión nueva de la implementación."; render(); });
+}
+
+/* El catálogo dice qué presentaciones existen; la hoja, cuánto queda de cada una.
+   Una presentación sin fila en la hoja todavía no ha tenido pedidos: la tienda
+   usa el número del catálogo hasta que entre el primero o se fije aquí. */
+function stFilas() {
+  const hoja = {}, vistas = {}, filas = [];
+  ST.datos.existencias.forEach((x) => { hoja[x.id] = x; });
+  S.productos.forEach((p) => p.variantes.forEach((v) => {
+    const id = `${p.id}-${v.g}`, nombre = `${tx(p.nombre)} ${gramos(v.g)}`;
+    vistas[id] = vistas[id + "-pre"] = true;
+    /* en preventa todavía no hay bolsas: lo que se vende es el cupo de reservas */
+    const pre = enPreventa(p);
+    filas.push({ id, nombre, fila: hoja[id], catalogo: v.stock, pronto: !!p.proximamente, pre });
+    if (pre || hoja[id + "-pre"]) filas.push({ id: id + "-pre", nombre: nombre + " · reservas", fila: hoja[id + "-pre"], catalogo: (CONFIG.preventa && CONFIG.preventa.cupo) || 0, cupo: true });
+  }));
+  /* lo que está en la hoja y ya no en el catálogo: se muestra para que no se pierda de vista */
+  ST.datos.existencias.filter((x) => !vistas[x.id]).forEach((x) => filas.push({ id: x.id, nombre: x.nombre || x.id, fila: x, fuera: true }));
+  return filas;
+}
+
+function viewStock() {
+  if (!CONFIG.registro || !coClave()) return `<section class="co-vacio">
+      <p class="eyebrow">Stock</p><h2>Primero, conecta la hoja</h2>
+      <p class="hint">El stock vive en la misma Hoja de Google que los correos y los pedidos. Conéctala en la pestaña <b>Correos</b> y vuelve aquí.</p>
+      <div class="co-fila"><button class="btn primary" data-act="atab" data-tab="correos">Ir a Correos</button></div></section>`;
+  if (!ST.datos && !ST.cargando && !ST.error) setTimeout(stCargar, 0);
+  if (ST.error === "viejo") return `<section class="co-vacio"><p class="eyebrow">Stock</p>
+      <h2>Falta actualizar el script de la hoja</h2>
+      <p class="hint">La hoja todavía corre la versión anterior. Pega el <code>tools/correos/Codigo.gs</code> nuevo en el proyecto de Apps Script y publica una <b>nueva versión</b> de la misma implementación. Mientras tanto puedes corregir el stock directo en la hoja, columna <code>stock</code>.</p>
+      <div class="co-fila"><button class="btn primary" data-act="st-cargar">Ya lo actualicé</button></div></section>`;
+  if (!ST.datos) return `<section class="co-vacio"><p class="eyebrow">Stock</p>
+      <h2>${ST.error ? "No se pudo cargar" : "Cargando el stock…"}</h2>
+      ${ST.error ? `<p class="err">${esc(ST.error)}</p><div class="co-fila"><button class="btn" data-act="st-cargar">Intentar otra vez</button></div>` : ""}</section>`;
+
+  const filas = stFilas(), venta = filas.filter((f) => !f.cupo && !f.fuera && !f.pronto && !f.pre), cupos = filas.filter((f) => f.cupo);
+  const queda = (f) => (f.fila ? f.fila.stock : f.catalogo || 0);
+  const kpi = (n, txt, alerta) => `<div class="mkt${alerta && n ? " op-alerta" : ""}"><small>${txt}</small><b class="mono co-n">${fmtNum(n)}</b></div>`;
+
+  return `<section class="co op">
+    <div class="section-head co-head"><p class="eyebrow">Stock de la tienda</p>
+      <h2>Lo que queda <em>para vender</em></h2>
+      <p class="hint">Es la cifra que ve la página. Cada pedido la descuenta y cada cancelación la devuelve; si la corriges aquí, la tienda la toma en la siguiente carga.</p>
+      <div class="co-fila"><button class="btn sm" data-act="st-cargar">${ST.cargando ? "Actualizando…" : "Actualizar"}</button>
+        <a class="btn sm" href="${esc(ST.datos.hoja)}" target="_blank" rel="noopener">Abrir la hoja</a></div></div>
+
+    <div class="mkt-grid">${kpi(venta.reduce((s, f) => s + queda(f), 0), "Bolsas para vender")}
+      ${kpi(venta.filter((f) => queda(f) === 0).length, "Presentaciones agotadas", true)}
+      ${kpi(venta.filter((f) => queda(f) > 0 && queda(f) <= ST_POCO).length, `Con ${ST_POCO} o menos`, true)}
+      ${cupos.length ? kpi(cupos.reduce((s, f) => s + queda(f), 0), "Reservas de preventa que quedan") : kpi(venta.length, "Presentaciones a la venta")}</div>
+
+    <div class="table-scroll"><table class="b2b-tabla co-tabla op-tabla">
+      <thead><tr><th>Presentación</th><th>Quedan</th><th>Estado</th><th>Último cambio</th><th></th></tr></thead>
+      <tbody>${filas.map((f) => {
+        const n = queda(f);
+        const estado = f.fuera ? `<span class="op-estado op-cancelado">Ya no está en el catálogo</span>`
+          : f.cupo ? (n === 0 ? `<span class="op-estado op-pagado">Cupo lleno</span>` : `<span class="op-estado op-nuevo">Cupo de preventa</span>`)
+          : f.pre ? `<span class="op-estado op-cancelado">En preventa: aún sin bolsas</span>`
+          : f.pronto ? `<span class="op-estado op-cancelado">Próximamente</span>`
+          : n === 0 ? `<span class="op-estado op-pagado">Agotado</span>`
+          : n <= ST_POCO ? `<span class="op-estado op-nuevo">Queda poco</span>` : `<span class="op-estado op-despachado">Disponible</span>`;
+        return `<tr>
+        <th scope="row">${esc(f.nombre)}<small class="mono">${esc(f.id)}</small></th>
+        <td class="mono"><b>${fmtNum(n)}</b>${f.fila ? "" : `<small>${f.cupo ? "el cupo completo: aún sin reservas" : "del catálogo: aún sin pedidos"}</small>`}</td>
+        <td>${estado}</td>
+        <td class="mono">${f.fila ? coFecha(f.fila.actualizado) : "—"}</td>
+        <td class="op-acc"><button class="btn sm" data-act="st-editar" data-id="${esc(f.id)}">Corregir</button></td></tr>`;
+      }).join("")}</tbody></table></div>
+    <p class="hint">Un pedido que nunca se paga deja sus bolsas apartadas hasta que lo canceles en <b>Pedidos</b>; las reservas de la pasarela se sueltan solas a las 2 horas.</p>
+  </section>`;
+}
+
+document.addEventListener("click", (ev) => {
+  const el = ev.target.closest("[data-act^='st-']"); if (!el || el.disabled) return;
+  const id = el.dataset.id;
+  switch (el.dataset.act) {
+    case "st-cargar": ST.error = null; return stCargar();
+    case "st-editar": {
+      const f = stFilas().find((x) => x.id === id); if (!f) return;
+      return modal(`Corregir <em>${esc(f.nombre)}</em>`, `
+        <p class="hint">${f.cupo ? "Cuántas reservas de preventa quedan por tomar." : "Cuántas bolsas quedan de verdad para vender."} Reemplaza la cifra de la hoja.</p>
+        <div class="field"><label class="lbl" for="st-n">Quedan</label>
+          <input id="st-n" class="input mono" type="number" min="0" step="1" inputmode="numeric" value="${f.fila ? f.fila.stock : f.catalogo || 0}"></div>
+        <div class="dlg-actions"><button class="btn" data-act="close">Cancelar</button><button class="btn primary" data-act="st-guardar" data-id="${esc(id)}">Guardar</button></div>`, "narrow");
+    }
+    case "st-guardar": {
+      const f = stFilas().find((x) => x.id === id), n = parseInt($("#st-n")?.value, 10);
+      if (!f) return;
+      if (!(n >= 0)) return toast("Escribe un número de cero para arriba.", { type: "err" });
+      closeModal();
+      return fetch(CONFIG.registro, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ accion: "stock", clave: coClave(), id, stock: n, nombre: f.nombre }) })
+        .then((r) => r.json())
+        .then((j) => { if (!j.ok) throw new Error(j.error); toast(`${f.nombre}: quedan ${fmtNum(n)}.`); stCargar(); })
+        .catch(() => toast("No se guardó. Revisa la conexión y vuelve a intentar.", { type: "err" }));
+    }
+  }
+});
+
 /* ---- admin.js ---- */
 /* ============================================================
    PANEL INTERNO · aplicación aparte, no va en la página pública
+   Solo el seguimiento de la página: pedidos, actividad, stock y
+   correos. El inventario por lote, los costos, el cotizador y el
+   mercado van en otro panel (quote.js, inventory.js, clients.js y
+   market.js siguen en el repositorio para ese, pero aquí no se cargan).
    Entrada con correo y contraseña. No se guarda la contraseña:
    solo un verificador PBKDF2 (310.000 vueltas) con sal aleatoria.
    Para cambiarla:  node tools/clave.js "nueva contraseña"
@@ -3764,7 +4307,7 @@ function viewLogin() {
       <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor">${[0, 72, 144, 216, 288].map((r) => `<ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(${r} 12 12)"/>`).join("")}</g><circle cx="12" cy="12" r="1.3" fill="var(--paper)"/></svg>
       <p class="eyebrow">${esc(CONFIG.marca)} · panel interno</p>
       <h1>Entrar</h1>
-      <p class="hint">Pedidos, cotizador, inventario, clientes, correos y mercado. Esta parte no aparece en la página pública.</p>
+      <p class="hint">Pedidos, actividad de la página, stock y correos. Esta parte no aparece en la página pública.</p>
       <form class="login-form" onsubmit="return false">
         <div class="field"><label class="lbl" for="lg-mail">Correo</label>
           <input id="lg-mail" class="input" type="email" autocomplete="username" placeholder="correo@dominio.com"></div>
@@ -3783,30 +4326,27 @@ async function entrar() {
   const ok = await verificar($("#lg-mail").value, $("#lg-pass").value);
   if (!ok) { b.disabled = false; b.textContent = "Entrar"; err.hidden = false; $("#lg-pass").select(); return; }
   try { sessionStorage.setItem(AUTH.sesion, "1"); } catch {}
-  UI.animate = true; render(); vigilarMercado();
+  UI.animate = true; render();
 }
 function salir() { try { sessionStorage.removeItem(AUTH.sesion); } catch {} UI.animate = true; render(); }
 
 /* ---------- panel ---------- */
-const ATABS = [["pedidos", "Pedidos"], ["cotizador", "Cotizador"], ["inventario", "Inventario"], ["clientes", "Clientes"], ["correos", "Correos"], ["mercado", "Mercado"]];
-const APANELS = { pedidos: viewOperacion, cotizador: viewCotizador, inventario: viewInventario, clientes: viewClientes, correos: viewCorreos, mercado: viewMercado };
+const ATABS = [["pedidos", "Pedidos"], ["actividad", "Actividad"], ["stock", "Stock"], ["correos", "Correos"]];
+const APANELS = { pedidos: viewOperacion, actividad: viewActividad, stock: viewStock, correos: viewCorreos };
 
 function viewPanel() {
-  const quieto = S.compras.reduce((s, c) => s + enJuego(c), 0);
+  if (!APANELS[UI.atab]) UI.atab = "pedidos";
   return `<div class="admin-bar reveal">
       <div><span class="lbl">${esc(CONFIG.marca)} · interno</span><b>Panel de administración</b></div>
       <div class="seg" role="group" aria-label="Secciones">
         ${ATABS.map(([k, t]) => `<button data-act="atab" data-tab="${k}" aria-pressed="${UI.atab === k}">${t}</button>`).join("")}
       </div>
-      <div class="admin-side"><span class="mono" title="Plata sin recuperar">${copK(quieto)} en bodega</span>
-        <button class="btn sm" data-act="salir">Salir</button></div>
+      <div class="admin-side"><button class="btn sm" data-act="salir">Salir</button></div>
     </div>
-    ${avisoMercado()}
     <div class="admin-body">${APANELS[UI.atab]()}</div>`;
 }
 
-const FOOT = `<footer class="foot"><span>Panel interno de <b>${CONFIG.marca}</b>. Datos de ejemplo mientras no se carguen los reales.</span>
-  <button class="btn sm" data-act="reset-demo">Reiniciar datos de la demo</button></footer>`;
+const FOOT = `<footer class="foot"><span>Panel interno de <b>${CONFIG.marca}</b>. Todo lo que ves aquí sale de la Hoja de Google.</span></footer>`;
 
 function render() {
   const ae = document.activeElement, fid = ae && ae.id && !ae.closest("dialog") ? ae.id : null;
@@ -3816,7 +4356,6 @@ function render() {
   const v = $("#view");
   v.classList.toggle("calm", !UI.animate);
   v.innerHTML = dentro ? viewPanel() + FOOT : viewLogin();
-  if (dentro && UI.atab === "cotizador") renderCot();
   if (UI.animate) countUp();
   UI.animate = false;
   if (fid) { const n = document.getElementById(fid); if (n) { n.focus({ preventScroll: true }); if (sel) try { n.setSelectionRange(...sel); } catch {} } }
@@ -3839,34 +4378,14 @@ document.addEventListener("click", (e) => {
     case "salir": return salir();
     case "close": return closeModal();
     case "atab": UI.atab = el.dataset.tab; UI.animate = true; return render();
-    case "cot-reset": UI.q = nuevaCot(); UI.animate = false; return render();
-    case "cot-save": return cotSave();
-    case "cot-save-ok": return cotSaveOk();
-    case "mkt-save": return guardarMercado();
-    case "mkt-auto": return actualizarMercado({ avisar: "siempre" });
-    case "inv-paso": return invPaso(id, el.dataset.p);
-    case "inv-paso-ok": return invPasoOk();
-    case "cl-ver": return clienteVer(id);
-    case "cl-wa": return clienteWa(id);
-    case "cl-nuevo": return clienteNuevo(id);
-    case "cl-guardar": return clienteGuardar();
-    case "reset-demo":
-      try { localStorage.removeItem(CONFIG.storageKey); } catch {}
-      S = seed(); UI.q = null; UI.animate = true; return render();
   }
 });
 document.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && (e.target.id === "lg-mail" || e.target.id === "lg-pass")) { e.preventDefault(); entrar(); }
 });
-document.addEventListener("input", (e) => {
-  const t = e.target;
-  if (t.dataset.q && UI.q) { UI.q[t.dataset.q] = t.type === "number" ? (parseFloat(t.value) || 0) : t.value; renderCot(); }
-});
 $("#dlg").addEventListener("click", (e) => { if (e.target === $("#dlg")) closeModal(); });
 
-aplicarCfgGuardada();
 render();
-if (sesionActiva()) vigilarMercado();
 
 </script>
 </body>

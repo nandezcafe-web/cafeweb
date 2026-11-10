@@ -89,7 +89,7 @@ Si más adelante se cambia el script, hay que publicar una **nueva versión** de
 node tools/correos/prueba.js tools/correos/Codigo.gs
 ```
 
-Imita la hoja, Gmail y las propiedades en memoria y revisa 70 casos: etiquetas, autorización, clave, baja firmada, cuota diaria, bienvenida y bono, pedidos con sus datos de envío, despachos, suscripciones con sus tres correos, la gang y el aviso diario.
+Imita la hoja, Gmail y las propiedades en memoria y revisa 106 casos: etiquetas, autorización, clave, baja firmada, cuota diaria, bienvenida y bono, pedidos con sus datos de envío, despachos, suscripciones con sus tres correos, la gang y el aviso diario.
 
 ### La hoja Stock
 
@@ -120,6 +120,25 @@ Desde el 3 de noviembre de 2026 el script también lleva los pedidos que se paga
 ### Las columnas de envío
 
 Desde el 28 de octubre de 2026 el pedido trae lo que la transportadora pide para hacer la guía: **documento, direccion, detalle y departamento**. Van **al final** de la hoja Pedidos, después de `notas`, a propósito: una hoja que ya existe conserva el orden viejo y ninguna fila anterior se descuadra. Al publicar la versión nueva del script, los títulos de esas cuatro columnas aparecen solos la primera vez que algo toque la hoja; las filas de antes quedan con esas celdas vacías y el panel avisa, al despacharlas, que hay que pedir la dirección por WhatsApp.
+
+### La actividad de la página y los carritos abandonados
+
+Desde el 10 de noviembre de 2026 el panel tiene la pestaña **Actividad**: el embudo (entraron → vieron un café → agregaron al carrito → fueron a pagar → compraron), los carritos abandonados, los que llegaron a la pasarela y no pagaron, quién se registró y lo más visto.
+
+- **De dónde sale:** de una bitácora propia. La página ([prototipo/js/medir.js](../prototipo/js/medir.js)) manda cada evento y el carrito a dos hojas nuevas, **Actividad** y **Carritos**. No sale del píxel de Meta: lo que el píxel recoge se queda en Meta y solo sirve para los anuncios.
+- **Solo de quien acepta las cookies.** Sin el «Aceptar» no se anota nada, así que las cifras son de esas personas, no de todas las visitas. El visitante es un número al azar; se une a un correo solo si la persona ya lo dejó en la página (comunidad, o un pedido desde ese navegador).
+- **Se prende sola.** La página solo anota (y solo muestra el aviso de cookies) cuando el script responde `actividad: true` junto con el stock. Para activarla: pegar el [Codigo.gs](../tools/correos/Codigo.gs) nuevo, ejecutar **configurar** (crea las dos hojas) y publicar una **nueva versión** de la misma implementación. Para apagarla: `CONFIG.medicion.propia: false`.
+- **Carrito abandonado:** lleva más de 1 hora quieto y menos de 14 días. El botón **Recordar por correo** manda un correo con lo que dejó, una sola vez por carrito y solo a quien marcó la casilla de recibir correos (es publicidad: Ley 1581). Si tiene su bono de bienvenida sin usar, el correo se lo recuerda y el botón lo deja puesto. Los carritos sin correo solo se cuentan.
+- **Llegó a pagar y no pagó:** la reserva de la pasarela que se liberó a las 2 horas. Tiene botón de WhatsApp con el mensaje escrito y un aviso por correo (una vez; queda anotado en las notas del pedido).
+- **Automático, si se quiere:** `CARRITO.auto: true` en Codigo.gs hace que el aviso de las 7 mande solo el recordatorio a los carritos que llevan un día quietos. Viene apagado. Con o sin él, el resumen de la mañana dice cuántos carritos esperan.
+- **La bitácora se borra sola** a los 90 días (`CARRITO.guardarDias`).
+- **Cuántos se inscribieron y por dónde:** la sección «Quién se registró» cuenta, sin repetir correos y solo a quienes marcaron la casilla, cuántos entraron por el **pop-up del bono**, por el **pie de página** y por la **página de la gang**. Desde el 10 de noviembre de 2026 la página manda `origen: "pop"` o `"pie"` con cada registro. Los de antes llegaban iguales y quedan juntos como «comunidad, sin origen»: no hay forma de separarlos después.
+
+### La pestaña Stock
+
+Muestra la hoja **Stock** tal como la lee la tienda: cuántas bolsas quedan de cada presentación, cuáles están agotadas o con 5 o menos, y el cupo de reservas de cada café en preventa (`-pre`). El botón **Corregir** reemplaza la cifra (acción `stock` del script, con la clave); sirve cuando llega café, se daña una bolsa o el conteo no cuadra. Lo mismo se puede hacer a mano en la hoja. Las presentaciones que todavía no tienen fila muestran el número del catálogo hasta su primer pedido.
+
+Es solo el stock **de venta**. El inventario por lote (bodega, trilla, tueste) y los costos van en el otro panel.
 
 ## 5. Cuidados
 

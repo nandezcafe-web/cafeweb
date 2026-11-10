@@ -14,19 +14,18 @@ Le compramos café a fincas de Norte de Santander —cada una con su variedad—
 7. **Suscripción** — tres planes; mientras no haya cobro automático, recoge correos.
 8. **Diario** — blog, listo para los textos reales.
 
-**Interna — otra página, en `admin/`, con correo y contraseña. No se enlaza desde el sitio público.**
+**Interna — otra página, en `admin/`, con correo y contraseña. No se enlaza desde el sitio público.** Es solo el seguimiento de la página y del stock; el inventario por lote, los costos, el cotizador y el mercado van en otro panel (sus módulos, `quote.js`, `inventory.js`, `clients.js` y `market.js`, siguen en el repositorio pero este panel no los carga).
 9. **Pedidos** — lo que hay que confirmar y despachar, la guía de cada envío y cuándo toca cada suscripción.
-10. **Cotizador** — cuánto paga el comité hoy, cuánto podemos pagar y con qué margen.
-11. **Inventario** — cada lote de la compra a la bolsa vendida, con costos reales y plata quieta.
-12. **Clientes** — quién compra, cada cuánto, qué prefiere y a quién llamar.
-13. **Correos** — quién dejó su correo, con qué etiqueta, y campañas de remarketing desde Gmail.
-14. **Mercado** — precio FNC, bolsa de Nueva York, TRM, tabla por factor y cuándo vender.
+10. **Actividad** — el embudo de la página (entraron, vieron un café, agregaron al carrito, fueron a pagar, compraron), los carritos abandonados con su recordatorio, quién llegó a pagar y no pagó, y cuántos se inscribieron por el pop-up, el pie y la página de la gang.
+11. **Stock** — lo que queda de cada presentación y el cupo de la preventa, como lo ve la tienda, con el botón para corregirlo.
+12. **Correos** — quién dejó su correo, con qué etiqueta, y campañas de remarketing desde Gmail.
 
 ## Documentos
 
 | Archivo | Contenido |
 |---|---|
-| [docs/12_correos_y_remarketing.md](docs/12_correos_y_remarketing.md) | Correos, bono de bienvenida, pedidos y suscripciones gratis: Hoja de Google, Gmail y las pestañas Pedidos y Correos del panel |
+| [docs/16_pixel_meta.md](docs/16_pixel_meta.md) | Cómo crear e instalar el píxel de Meta, probarlo y armar los públicos de remarketing |
+| [docs/12_correos_y_remarketing.md](docs/12_correos_y_remarketing.md) | Correos, bono de bienvenida, pedidos y suscripciones gratis: Hoja de Google, Gmail y las pestañas Pedidos, Actividad, Stock y Correos del panel |
 | [docs/11_rediseno_editorial.md](docs/11_rediseno_editorial.md) | Rediseño Coffee Gang: crítica a coff.com.co, referentes, la línea gráfica y lo que falta decidir |
 | [docs/10_propuesta_suscripciones.md](docs/10_propuesta_suscripciones.md) | Suscripción con kit de bienvenida, dos formas de pagar y la Ruta Nandez |
 | [docs/09_prompt_auditoria.md](docs/09_prompt_auditoria.md) | Prompt listo para auditar la página con ojos frescos |
@@ -65,7 +64,7 @@ Eso genera **30 páginas HTML reales** (15 en español y 15 en inglés), la pág
 
 | Qué | Cuándo | Dónde |
 |---|---|---|
-| Precio FNC, bolsa de NY y TRM en el panel | Al abrir el panel y cada 30 min | `api/mercado.js` + `prototipo/js/market.js` |
+| Precio FNC, bolsa de NY y TRM (para el panel de inventario y costos) | Al abrirlo y cada 30 min | `api/mercado.js` + `prototipo/js/market.js` |
 | Historial del precio, igual en todos los equipos | Días hábiles, 10 a. m. y 3 p. m. | `.github/workflows/precio-fnc.yml` → `prototipo/data/mercado.json` |
 | Aviso por correo cuando la FNC cambia el precio | Con la tarea anterior: abre un *issue* en GitHub | Llega al correo de quien administra el repositorio |
 | Equivalente en pesos de la subasta en dólares | Al abrir la subasta en español | TRM de `api/mercado.js` |

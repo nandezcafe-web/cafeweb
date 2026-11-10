@@ -1478,3 +1478,27 @@ html[lang=en] .ruta li::before{content:"Month " counter(ruta)}
 
 /* El IVA incluido, debajo del total: dato, no cifra protagonista */
 .cart-iva{margin:2px 0 0;text-align:right;color:var(--ink-3);font-size:12px}
+
+/* ---- panel: actividad de la página ---- */
+.ac-dos{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:14px}
+.ac-caja{display:grid;gap:14px;padding:22px;align-content:start}
+.ac-caja h3{font-size:1.4rem}.ac-caja .ac-sub{margin-top:6px}
+.ac-embudo{display:grid;gap:12px}
+.ac-paso{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center}
+.ac-paso-t{font:600 14px var(--sans)}
+.ac-paso b{font-size:1.15rem;text-align:right}
+.ac-barra{grid-column:1/-1;height:10px;border-radius:4px;background:var(--paper-2);overflow:hidden}
+.ac-barra i{display:block;height:100%;border-radius:0 4px 4px 0;background:var(--leaf)}
+.ac-paso small{grid-column:1/-1;font-size:12.5px;color:var(--ink-3)}
+.ac-dias{display:flex;align-items:flex-end;gap:2px;height:110px}
+.ac-dia{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;min-width:0}
+.ac-dia i{display:block;width:100%;max-width:22px;border-radius:4px 4px 0 0;background:var(--leaf)}
+.ac-dia:hover i{background:var(--ink)}
+.ac-dia small{font:500 10.5px var(--mono);color:var(--ink-3)}
+.ac-mini{margin-top:0;min-width:0}
+.ac-feed{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:13.5px;color:var(--ink-2);max-height:420px;overflow:auto}
+.ac-feed li{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px}
+.ac-feed time{color:var(--ink-3);font-size:12.5px}
+.ac .co-head .co-etiquetas{display:inline-flex}
+.brand .panel-rotulo{display:inline-block;margin-left:12px;font:600 10.5px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+.ac-feed li.hint{display:block}

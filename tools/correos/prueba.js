@@ -7,7 +7,7 @@ const libros = {};
 function nuevaHoja(nombre) {
   const filas = [];
   return { nombre, filas,
-    appendRow: (r) => filas.push(r.slice()), setFrozenRows() {},
+    appendRow: (r) => filas.push(r.slice()), setFrozenRows() {}, deleteRows: (r, n) => filas.splice(r - 1, n),
     getLastColumn: () => filas.reduce((n, f) => Math.max(n, f.length), 0),
     getLastRow: () => filas.length,
     getRange: (r, c, nr, nc) => {
@@ -257,3 +257,90 @@ post({ accion: "pedido", clave: props.CLAVE, id: "NDZ-1022-ST01", estado: "cance
 ok(getJ({ accion: "stock" }).stock["P-CAS-250"] === 3, "cancelar un pedido devuelve sus bolsas");
 post({ accion: "pedido", clave: props.CLAVE, id: "NDZ-1022-ST01", estado: "cancelado" });
 ok(getJ({ accion: "stock" }).stock["P-CAS-250"] === 3, "cancelarlo dos veces no las devuelve dos veces");
+
+/* ---- la bitácora de la página, los carritos y el recordatorio ---- */
+cuota = 50;
+const V1 = "aaaa1111bbbb", V2 = "cccc2222dddd", V3 = "eeee3333ffff";
+const bolsa = (n) => [{ id: "P-CAS", g: 250, n, nombre: "Castillo 250 g", precio: 36000 }];
+ok(getJ({ accion: "stock" }).actividad === true, "el stock le avisa a la página que el script ya recibe la bitácora");
+const regAntes = ss.hojas["Registros"].filas.length, conAntes = ss.hojas["Contactos"].filas.length;
+post({ tipo: "evento", v: V1, evento: "visita" }); post({ tipo: "evento", v: V1, evento: "ver", detalle: "Castillo", valor: 36000 });
+post({ tipo: "evento", v: V1, evento: "ver", detalle: "Castillo", valor: 36000 }); post({ tipo: "evento", v: V1, evento: "agregar", detalle: "Castillo", valor: 36000 });
+post({ tipo: "evento", v: V2, evento: "visita" }); post({ tipo: "evento", v: V2, evento: "ver", detalle: "Blend" }); post({ tipo: "evento", v: V3, evento: "visita" });
+ok(post({ tipo: "evento", v: "x", evento: "visita" }).ok === false && post({ tipo: "evento", v: V1, evento: "inventado" }).ok === false,
+  "un evento sin visitante o con un nombre inventado se rechaza");
+ok(ss.hojas["Registros"].filas.length === regAntes && ss.hojas["Contactos"].filas.length === conAntes && ss.hojas["Actividad"].filas.length === 8,
+  "la bitácora va a su propia hoja: no ensucia Registros ni Contactos");
+post({ tipo: "comunidad", correo: "caro@correo.com", consentimiento: true });
+post({ tipo: "carrito", v: V1, correo: "Caro@Correo.com", items: bolsa(2) });
+post({ tipo: "carrito", v: V2, items: bolsa(1) });
+post({ tipo: "carrito", v: V3, correo: "sin-casilla@correo.com", items: bolsa(1) });
+post({ tipo: "carrito", v: "zzzz9999yyyy", items: [] });
+ok(ss.hojas["Carritos"].filas.length === 4, "cada visitante tiene una fila de carrito, y uno vacío no crea fila");
+ok(getJ({ accion: "actividad", clave: "mala" }).ok === false, "la actividad pide la clave");
+let acti = getJ({ accion: "actividad", clave: props.CLAVE });
+ok(acti.ok && acti.embudo.visita === 3 && acti.embudo.ver === 2 && acti.embudo.agregar === 1 && acti.embudo.compra === 0,
+  "el embudo cuenta personas distintas, no clics (Caro vio dos veces y cuenta una)");
+ok(acti.productos[0].nombre === "Castillo" && acti.productos[0].ver === 2 && acti.productos[0].agregar === 1 && acti.porDia.length === 14 && acti.porDia[13].visita === 3,
+  "trae lo más visto y la serie de los últimos 14 días");
+ok(acti.carritos.length === 0 && acti.anonimos.n === 0, "un carrito recién armado todavía no es un carrito abandonado");
+ss.hojas["Carritos"].filas.slice(1).forEach((f) => { f[6] = new Date(Date.now() - 3 * 36e5); });
+acti = getJ({ accion: "actividad", clave: props.CLAVE });
+const cCaro = acti.carritos.find((x) => x.correo === "caro@correo.com"), cSin = acti.carritos.find((x) => x.correo === "sin-casilla@correo.com");
+ok(acti.carritos.length === 2 && cCaro.total === 72000 && cCaro.acepta === true && cSin.acepta === false && acti.anonimos.n === 1 && acti.anonimos.total === 36000,
+  "pasada la hora quieta aparecen: con correo en la lista (y si acepta correos), sin correo solo contados");
+ok(acti.registros.some((x) => x.correo === "caro@correo.com") && acti.nuevos.total === ss.hojas["Contactos"].filas.length - 1, "trae los registros recientes");
+ok(post({ accion: "recordar", clave: "mala", carrito: V1 }).ok === false, "recordar pide la clave");
+ok(post({ accion: "recordar", clave: props.CLAVE, carrito: V3 }).error === "no-acepta", "a quien no marcó la casilla no se le manda el recordatorio del carrito");
+ok(post({ accion: "recordar", clave: props.CLAVE, carrito: V2 }).error === "sin-correo", "un carrito sin correo no se puede recordar");
+const nRec = enviados.length, recC = post({ accion: "recordar", clave: props.CLAVE, carrito: V1 });
+ok(recC.ok && enviados.length === nRec + 1 && ultimo().to === "caro@correo.com" && ultimo().subject === "Tu café sigue en el carrito"
+  && ultimo().htmlBody.includes("2 × Castillo 250 g") && /cafes\?bono=GANG-/.test(ultimo().htmlBody) && ultimo().htmlBody.includes("accion=baja"),
+  "a Caro le llega su carrito, su bono sin usar ya puesto en el botón y el enlace de baja");
+ok(post({ accion: "recordar", clave: props.CLAVE, carrito: V1 }).error === "ya" && enviados.length === nRec + 1, "el recordatorio sale una sola vez por carrito");
+post({ tipo: "carrito", v: V1, items: [], comprado: true });
+ok(!getJ({ accion: "actividad", clave: props.CLAVE }).carritos.some((x) => x.v === V1), "el carrito que se compró deja de estar abandonado");
+post({ tipo: "carrito", v: V1, items: bolsa(1) });
+const fV1 = ss.hojas["Carritos"].filas.find((f) => f[0] === V1);
+ok(fV1[7] === "abierto" && fV1[8] === "" && fV1[1] === "caro@correo.com", "si vuelve a armar otro, es un carrito nuevo: conserva el correo y se puede recordar otra vez");
+
+post({ tipo: "pedido", id: "NDZ-1110-RS01", canal: "wompi", nombre: "Rosa Reserva", correo: "rosa@correo.com", tel: "3001112233", ciudad: "Cúcuta",
+  items: [{ id: "P-CAS", g: 250, n: 1, nombre: "Castillo 250 g", stock: 90 }], total: 48000 });
+ss.hojas["Pedidos"].filas.find((f) => f[0] === "NDZ-1110-RS01")[1] = new Date(Date.now() - 3 * 36e5);
+ctx.liberarReservas();
+acti = getJ({ accion: "actividad", clave: props.CLAVE });
+ok(acti.sinPagar.length === 1 && acti.sinPagar[0].id === "NDZ-1110-RS01" && acti.sinPagar[0].tel === "3001112233" && acti.sinPagar[0].recordado === false,
+  "la reserva que nadie pagó aparece como «llegó a pagar y no pagó», con su teléfono");
+const nPed = enviados.length, recP = post({ accion: "recordar", clave: props.CLAVE, pedido: "NDZ-1110-RS01" });
+ok(recP.ok && enviados.length === nPed + 1 && ultimo().to === "rosa@correo.com" && ultimo().subject.startsWith("Tu pedido quedó sin pagar") && ultimo().body.includes("1 × Castillo 250 g"),
+  "a Rosa le llega el aviso de su pedido sin pagar");
+ok(post({ accion: "recordar", clave: props.CLAVE, pedido: "NDZ-1110-RS01" }).error === "ya" && getJ({ accion: "actividad", clave: props.CLAVE }).sinPagar[0].recordado === true,
+  "y solo una vez: queda anotado en el pedido");
+ok(post({ accion: "recordar", clave: props.CLAVE, pedido: "NDZ-1022-ST02" }).error === "no-es-reserva", "un pedido que no es una reserva liberada no recibe ese aviso");
+ss.hojas["Actividad"].filas.splice(1, 0, [haceDias(100), V2, "visita", "", 0, "", "/", "es"]);
+const nActiv = ss.hojas["Actividad"].filas.length, nDiario = enviados.length;
+ctx.diario();
+ok(ss.hojas["Actividad"].filas.length === nActiv - 1 && ss.hojas["Actividad"].filas[1][1] === V1, "cada mañana se borra la bitácora de más de 90 días, y solo esa");
+ok(!enviados.slice(nDiario).some((m) => m.subject === "Tu café sigue en el carrito"), "sin CARRITO.auto, el aviso diario no le escribe a nadie por su carrito");
+
+/* ---- el stock desde el panel ---- */
+ok(getJ({ accion: "existencias", clave: "mala" }).ok === false && post({ accion: "stock", clave: "mala", id: "P-CAS-250", stock: 9 }).ok === false,
+  "ver la hoja de stock y corregirla piden la clave");
+const exi = getJ({ accion: "existencias", clave: props.CLAVE });
+ok(exi.ok && exi.existencias.some((x) => x.id === "P-CAS-250" && typeof x.stock === "number" && x.actualizado), "el panel recibe cada presentación con lo que queda y su último cambio");
+ok(post({ accion: "stock", clave: props.CLAVE, id: "P-CAS-250", stock: 40 }).ok && getJ({ accion: "stock" }).stock["P-CAS-250"] === 40,
+  "corregir el stock en el panel cambia la cifra que lee la tienda");
+ok(post({ accion: "stock", clave: props.CLAVE, id: "P-NUE-250", stock: 12, nombre: "Nuevo 250 g" }).ok && getJ({ accion: "stock" }).stock["P-NUE-250"] === 12,
+  "una presentación que aún no tenía fila la estrena");
+ok(post({ accion: "stock", clave: props.CLAVE, id: "P-CAS-250", stock: -3 }).ok === false && post({ accion: "stock", clave: props.CLAVE, id: "x y", stock: 3 }).ok === false
+  && getJ({ accion: "stock" }).stock["P-CAS-250"] === 40, "un número negativo o un id raro se rechazan sin tocar nada");
+
+/* ---- por qué puerta entró cada quien ---- */
+post({ tipo: "comunidad", correo: "pop1@correo.com", consentimiento: true, origen: "pop" });
+post({ tipo: "comunidad", correo: "pop2@correo.com", consentimiento: true, origen: "pop" });
+post({ tipo: "comunidad", correo: "pop1@correo.com", consentimiento: true, origen: "pop" });
+post({ tipo: "comunidad", correo: "pie1@correo.com", consentimiento: true, origen: "pie" });
+post({ tipo: "comunidad", correo: "pop3@correo.com", origen: "pop" });
+const ins = getJ({ accion: "actividad", clave: props.CLAVE }).inscritos;
+ok(ins.pop.total === 2 && ins.pop.d7 === 2 && ins.pie.total === 1 && ins.gang.total >= 1 && ins.sin.total >= 3,
+  "cuenta inscritos por puerta: pop-up, pie y gang, sin repetir correos ni contar a quien no marcó la casilla; los de antes quedan sin origen");

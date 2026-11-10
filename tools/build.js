@@ -20,7 +20,7 @@ const css = cssBase + "\n" + read("gang.css");
 const mod = (f) => `/* ---- ${f}.js ---- */\n` + read(`js/${f}.js`);
 const MODS = ["core", "medir", "fases", "shop", "pages", "auction", "main"];
 /* huella de los archivos: obliga al navegador a bajar la versión nueva tras cada despliegue */
-const TODOS = ["core", "medir", "fases", "shop", "pages", "auction", "main", "quote", "inventory", "clients", "market", "correos", "operacion", "admin"];
+const TODOS = ["core", "medir", "fases", "shop", "pages", "auction", "main", "quote", "inventory", "clients", "market", "correos", "operacion", "actividad", "stock", "admin"];
 /* huella de las imágenes: si una foto cambia, cambia su dirección y ningún navegador sirve la vieja */
 const IMG_DIRS = ["grano", "portada", "productos", "marca"].map((d) => path.join(SRC, "img", d));
 const IMG_V = require("crypto").createHash("md5")
@@ -397,7 +397,8 @@ const unSolo = pagina(ctxEs, { view: "inicio" }, "es")
 escribir("nandez.html", unSolo);
 
 /* ---------- 5. panel interno ---------- */
-const panelJs = ["core", "quote", "inventory", "clients", "market", "correos", "operacion", "admin"].map(mod).join("\n");
+/* Solo el seguimiento de la página: quote, inventory, clients y market son del otro panel y aquí no se cargan. */
+const panelJs = ["core", "correos", "operacion", "actividad", "stock", "admin"].map(mod).join("\n");
 const panel = `<!doctype html>
 <html lang="es">
 <head>
@@ -405,15 +406,14 @@ const panel = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Panel · Nandez Coffee</title>
 <meta name="robots" content="noindex, nofollow">
-${FUENTES}
+${FUENTES_GANG}
 <style>
-${cssBase}
+${css}
 </style>
 </head>
 <body data-view="login">
 <header class="top"><div class="top-inner">
-  <span class="brand"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor">${[0, 72, 144, 216, 288].map((r) => `<ellipse cx="12" cy="6.6" rx="3.3" ry="5.4" transform="rotate(${r} 12 12)"/>`).join("")}</g><circle cx="12" cy="12" r="1.3" fill="var(--paper)"/></svg>
-  <b>Nandez</b><small>panel interno</small></span>
+  <span class="brand"><img class="logo" src="${LOGO_DENTRO}" width="464" height="120" alt="Nandez Coffee"><small class="panel-rotulo">panel interno</small></span>
 </div></header>
 <main class="wrap" id="view"></main>
 <div class="toasts" id="toasts" aria-live="polite"></div>

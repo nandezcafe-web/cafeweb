@@ -20,7 +20,7 @@ export function hojaSimulada(catalogo) {
   const libros = {};
   function nuevaHoja(nombre) {
     const filas = [];
-    return { nombre, filas, appendRow: (r) => filas.push(r.slice()), setFrozenRows() {},
+    return { nombre, filas, appendRow: (r) => filas.push(r.slice()), setFrozenRows() {}, deleteRows: (r, n) => filas.splice(r - 1, n),
       getLastColumn: () => filas.reduce((n, f) => Math.max(n, f.length), 0), getLastRow: () => filas.length,
       getRange: (r, c, nr, nc) => {
         const celda = (i, j, v) => { while (filas.length < i) filas.push([]); filas[i - 1][j - 1] = v; };

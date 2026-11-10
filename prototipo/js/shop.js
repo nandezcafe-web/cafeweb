@@ -490,7 +490,7 @@ function viewCafe() {
 
 /* ---------- pedido y pago ---------- */
 const CART_KEY = "nandez-carrito";
-function guardarCarrito() { try { localStorage.setItem(CART_KEY, JSON.stringify(UI.carrito)); } catch {} }
+function guardarCarrito() { try { localStorage.setItem(CART_KEY, JSON.stringify(UI.carrito)); } catch {} bitacoraCarrito(); }
 
 /* El stock de verdad vive en la hoja; el navegador solo lo copia. Sin hoja
    conectada, la tienda sigue con los números del catálogo, como siempre. */
@@ -498,6 +498,8 @@ function cargarStock() {
   if (!CONFIG.registro) return Promise.resolve(false);
   return fetch(`${CONFIG.registro}?accion=stock`).then((r) => r.json()).catch(() => ({ ok: false }))
     .then((j) => {
+      /* de paso, la hoja dice si ya recibe la bitácora de la página (medir.js) */
+      medicionPropia(!!(j && j.ok && j.actividad === true));
       if (!j || !j.ok || !j.stock) return false;
       let cambio = false;
       S.productos.forEach((p) => {
@@ -990,7 +992,9 @@ function registrarPedido(d, canal, srv) {
     `${d.direccion}${d.detalle ? " · " + d.detalle : ""}`,
     `${d.ciudad}, ${d.departamento} · tel ${d.tel}${d.correo ? " · " + d.correo : ""}`,
   ]);
-  UI.carrito = []; guardarCarrito(); if (UI.bono) quitarBono(false); save(); cerrarCarrito(); render();
+  /* el pedido salió: ese carrito ya no está abandonado, y el correo queda para el siguiente */
+  recordarCorreo(d.correo);
+  UI.carrito = []; guardarCarrito(); bitacoraCarrito(true); if (UI.bono) quitarBono(false); save(); cerrarCarrito(); render();
   const guardado = srv ? Promise.resolve(true) : enviarAviso("pedido", { ...pedido, texto });
   return { pedido, texto, guardado };
 }
@@ -1139,6 +1143,8 @@ function volverDeMercado() {
 /* Lo que ve la persona cuando el pago quedó aprobado o en proceso (Wompi y Mercado Pago) */
 function pagoMostrar(ok, j, correo) {
   const en = UI.lang === "en", pre = preventaAbierta();
+  /* la compra se cuenta cuando la pasarela dijo que sí, no al abrir la caja */
+  if (ok) medir("compra", { nombre: j.reference || "", valor: j.total || 0 });
   modal(ok ? (en ? "Payment received" : "Pago recibido") : (en ? "Payment in process" : "Pago en proceso"), `
     <ol class="pasos-pedido">
       <li><b>${j.reference ? (en ? `Order ${esc(j.reference)}` : `Pedido ${esc(j.reference)}`) + (j.total ? ` · ${cop(j.total)}` : "") : (en ? "Your order" : "Tu pedido")}</b>

@@ -86,8 +86,12 @@ const CONFIG = {
      Ver docs/06_pagos_y_suscripciones.md */
   /* Medición. Vacío = no se carga nada y no se pregunta nada. El del píxel
      sale de Meta Business (15 o 16 dígitos) y el de Google Analytics de GA4
-     (G-XXXXXXXXXX). Ver prototipo/js/medir.js. */
-  medicion: { metaPixel: "", ga4: "" },
+     (G-XXXXXXXXXX). Ver prototipo/js/medir.js.
+     propia: la bitácora de Nandez en la Hoja de Google (visitas, cafés vistos,
+     carritos), que se ve en el panel, pestaña Actividad. Solo anota a quien
+     acepta las cookies, y se prende sola cuando el script de la hoja ya la
+     recibe; con false no se anota nada. */
+  medicion: { metaPixel: "", ga4: "", propia: true },
   pagos: {
     /* La pasarela que cobra DENTRO de la página. Se prende sola apenas haya llave
        pública (pub_test_… para probar, pub_prod_… para vender). Los secretos NO van
