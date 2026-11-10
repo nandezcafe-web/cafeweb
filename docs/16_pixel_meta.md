@@ -42,24 +42,71 @@ A mano es exactamente eso mismo.
 
 ## 4. Probar que funciona
 
-1. Abre [Events Manager](https://business.facebook.com/events_manager) → el píxel → **Probar eventos**, escribe `https://www.nandezcoffee.com` y ábrela desde ahí.
-2. En la página, oprime **Aceptar** en el aviso de cookies. Sin ese «Aceptar» no se manda nada: es a propósito (Ley 1581). Mientras no lo oprimas, `fbq` ni siquiera existe.
-3. Recorre la compra: abre un café, agrégalo al carrito, ve a pagar. En *Probar eventos* deben aparecer, en este orden:
+Son dos recorridos distintos y conviene no mezclarlos: los tres primeros eventos se prueban en la página publicada, y `Purchase` en la tienda de prueba. Ninguno de los dos necesita una compra real.
 
-| Lo que haces en la página | Evento que llega a Meta |
+### Antes de empezar, lo que más confunde
+
+**Oprime `Aceptar` en el aviso de cookies.** Hasta ese clic el píxel no se carga: no existe `fbq`, no se descarga `fbevents.js` y no sale nada hacia `connect.facebook.net`. Es a propósito (Ley 1581, autorización previa y expresa para publicidad). Si abres la página, no aceptas y revisas si el píxel está, vas a concluir que no está puesto. Ya pasó una vez.
+
+El número tampoco está suelto en el HTML: vive en `CONFIG.medicion.metaPixel`, dentro de `/js/core.js`.
+
+### A. Los tres primeros, en nandezcoffee.com
+
+Instala antes la extensión de Chrome **Meta Pixel Helper**: muestra en cada página qué eventos salieron y con qué datos, y sirve de segunda opinión cuando Events Manager tarde.
+
+1. [Events Manager](https://business.facebook.com/events_manager) → el conjunto de datos **Nandez Coffee Gang** → **Probar eventos**. Escribe `https://www.nandezcoffee.com` y ábrela desde ahí.
+2. **Aceptar** en el aviso de cookies → debe aparecer `PageView`.
+3. Abre la ficha del Castillo → `ViewContent`.
+4. Oprime *Reservar la mía* → `AddToCart`.
+5. Llena los datos del pedido y oprime *Pagar ahora* → `InitiateCheckout`. **Ahí párate**: no hace falta pagar.
+6. Aparte, únete a la comunidad desde el pie o el pop-up → `Lead`.
+
+Lo que hagas aquí entra al conjunto de datos de verdad, así que recorre y sal; no te quedes dando vueltas.
+
+### B. `Purchase`, en la tienda de prueba
+
+`Purchase` solo sale cuando la pasarela confirma el pago, y **no hay que hacer una compra real para verlo**. La tienda de prueba corre el código de verdad —`api/pago.js`, `api/wompi.js`, la factura— contra una pasarela y una hoja simuladas: no se mueve un peso y la Hoja de Google real no se entera.
+
+```bash
+node tools/pruebas/servidor.mjs
+```
+
+Queda en `http://localhost:5190`. Ahí: aceptar cookies, abrir un café, reservar, llenar los datos y pagar. Los campos de tarjeta son simulados y el **titular decide el resultado**: `APRO` aprueba, `FUND` simula que no hay fondos.
+
+Con el Pixel Helper abierto, al aprobarse el pago debe salir `Purchase` así (probado el 10 de noviembre de 2026):
+
+```
+Purchase
+  content_ids  ["P-CAS"]
+  content_type "product"
+  value        52000          ← los $40.000 del café más los $12.000 de envío
+  currency     "COP"
+  num_items    1
+  order_id     "NDZ-1110-YJ6JF3"
+```
+
+El `order_id` tiene que ser **el mismo número del pedido** que muestra la página al terminar, y el mismo que aparece en `http://localhost:5190/estado-prueba`. Si coinciden, el día que entre la API de conversiones Meta va a poder juntar las dos señales de la misma compra en vez de contarla dos veces.
+
+> Lo que no puedo prometerte: si los eventos de `localhost` llegan o no al panel *Probar eventos* de Meta. Por eso este recorrido se revisa con el Pixel Helper, que lee lo que el navegador manda sin depender de eso. Lo que comprueba es que el evento sale completo y correcto; que el dataset lo reciba desde la página publicada ya lo comprobó el recorrido A.
+
+### Qué revisar en cada evento
+
+| Qué | Por qué importa |
 |---|---|
-| Entras y aceptas | `PageView` |
-| Abres la ficha de un café | `ViewContent` |
-| Lo agregas al carrito | `AddToCart` |
-| Vas a pagar (Wompi o Mercado Pago) | `InitiateCheckout` |
-| Te unes a la comunidad (pie o pop-up) | `Lead` |
-| El pago queda aprobado | `Purchase` |
+| `value` y `currency: "COP"` en todos | Sin eso Meta cuenta compras pero no calcula cuánto devolvió cada peso de pauta |
+| `content_ids` en `ViewContent`, `AddToCart`, `InitiateCheckout` y `Purchase` | Es lo que arma los públicos de remarketing por café |
+| `order_id` en `Purchase` | Evita contar dos veces la misma compra cuando entre la API de conversiones |
+| `ViewContent` una sola vez por café | La ficha se repinta con cada clic; si sale repetido, se rompió la protección de `medir.js` |
 
-Cada evento lleva `value` y `currency: "COP"`: sin eso Meta cuenta compras pero no calcula cuánto devolvió cada peso de pauta. `ViewContent`, `AddToCart`, `InitiateCheckout` y `Purchase` llevan además los cafés (`content_ids`) y `Purchase` lleva el número del pedido como `order_id`, que es lo que le deja a Meta contar una sola compra el día que el mismo pago llegue también desde el servidor.
+### Si algo no aparece
 
-**No hagas una compra real para probar `Purchase`:** usa la tienda de prueba (`node tools/pruebas/servidor.mjs`) o déjala para la primera venta de verdad.
-
-También sirve la extensión de Chrome **Meta Pixel Helper**: muestra en cada página qué eventos salieron.
+| Síntoma | Qué mirar primero |
+|---|---|
+| No sale ningún evento | ¿Oprimiste *Aceptar*? Sin eso no existe `fbq` |
+| Salen todos menos `Purchase` | La pasarela no aprobó: míralo en `/estado-prueba` |
+| `Purchase` sin `content_ids` | El carrito se vació antes de tiempo: revisa `UI.comprado` en `shop.js` |
+| `ViewContent` repetido | La protección de `M.visto` en `medir.js` |
+| Los eventos salen pero no llegan a Meta | Un bloqueador de rastreo en el navegador; prueba en una ventana limpia |
 
 ## 5. Después de instalarlo
 
