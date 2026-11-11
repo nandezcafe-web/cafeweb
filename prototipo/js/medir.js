@@ -234,5 +234,7 @@ function medicionAviso() {
 function cookiesResponder(si) {
   medicionGuardar(si ? "si" : "no");
   $("#cookies")?.remove();
+  /* el pie de la pantalla se liberó: si el pop-up estaba subido, vuelve al centro */
+  if (typeof popPiso === "function") popPiso();
   if (si) medicionCargar();
 }

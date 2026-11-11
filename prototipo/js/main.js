@@ -217,8 +217,18 @@ function popSobra() {
   return !!UI.bono;                                              /* ya tiene uno puesto en el carrito */
 }
 /* Las de aquí son del momento: se espera y se vuelve a mirar. */
+/* Si alguien ignora el aviso de cookies, a los POP_COOKIES segundos el pop-up
+   sale igual: más vale pedir el correo con la franja abajo que no pedirlo. */
+const POP_COOKIES = 25;
+const popLlegada = Date.now();
 const popEstorba = () => UI.view === "gang"                      /* esa página ES este registro */
-  || !!document.querySelector("dialog[open]");                   /* el carrito o un modal manda */
+  || !!document.querySelector("dialog[open]")                    /* el carrito o un modal manda */
+  /* Dos cajas a la vez es una de más, y en el móvil la franja de cookies le
+     come el pie al pop-up: la casilla de aceptar correos queda contra el borde
+     y el texto legal, tapado. Quien llega de un anuncio ve eso al segundo de
+     entrar y se va. Así que el aviso de cookies pasa primero y el pop-up espera
+     su turno. */
+  || (!!$("#cookies") && Date.now() - popLlegada < POP_COOKIES * 1000);
 
 function popVigilar() {
   if (popSobra() || $("#g-pop")) return;
@@ -316,10 +326,13 @@ function popAvisame(id) {
 /* La bandeja del carrito también vive abajo y crece cuando el texto se parte
    en dos líneas: el pop-up se acomoda encima midiéndola, no a una altura fija
    que un día deja de alcanzar. La llama renderTray() cada vez que cambia. */
+/* Lo que ocupa el pie de la pantalla —la bandeja del carrito o el aviso de
+   cookies, si alguien no lo respondió— para que el pop-up suba y no se pisen.
+   El estilo lo usa en gang.css (--g-pop-piso). */
 function popPiso() {
-  const el = $("#g-pop"), tr = $("#tray");
+  const el = $("#g-pop"), tr = $("#tray"), ck = $("#cookies");
   if (!el) return;
-  const alto = tr && !tr.hidden ? tr.getBoundingClientRect().height : 0;
+  const alto = (tr && !tr.hidden ? tr.getBoundingClientRect().height : 0) + (ck ? ck.getBoundingClientRect().height : 0);
   el.style.setProperty("--g-pop-piso", (alto ? alto + 12 : 0) + "px");
 }
 

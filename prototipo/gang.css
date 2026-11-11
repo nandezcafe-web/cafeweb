@@ -625,9 +625,12 @@ h1 em,h2 em{color:var(--marca)}
 .g-pop{position:fixed;z-index:80;left:50%;top:50%;width:min(520px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;
   display:flex;gap:20px;padding:28px 26px 24px;border:1px solid var(--line);border-radius:18px;background:var(--card);
   box-shadow:0 30px 70px -20px rgba(29,20,15,.6);
-  opacity:0;transform:translate(-50%,calc(-50% + 14px)) scale(.97);
+  opacity:0;transform:translate(-50%,calc(-50% - var(--g-pop-piso,0px)/2 + 14px)) scale(.97);
   transition:opacity .3s var(--ease-out),transform .34s var(--ease-out)}
-.g-pop.in{opacity:1;transform:translate(-50%,-50%)}
+/* --g-pop-piso es lo que ocupe abajo la bandeja del carrito o el aviso de
+   cookies (lo mide popPiso en main.js): el pop-up sube la mitad de eso y así
+   los dos caben sin pisarse. Sin nada abajo vale 0 y queda centrado. */
+.g-pop.in{opacity:1;transform:translate(-50%,calc(-50% - var(--g-pop-piso,0px)/2))}
 /* mientras el carrito o un modal estén abiertos, el pop-up se quita de en medio */
 body:has(dialog[open]) :is(.g-pop,.g-pop-velo){opacity:0;pointer-events:none}
 .g-pop-x{position:absolute;top:7px;right:7px;width:30px;height:30px;display:grid;place-items:center;border:0;
