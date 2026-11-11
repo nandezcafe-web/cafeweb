@@ -17,7 +17,12 @@
 const c = require("crypto"), fs = require("fs"), path = require("path"), { execFileSync } = require("child_process");
 const VUELTAS = 310000, MIN = 10;
 const ARCHIVO = path.join(__dirname, "..", "prototipo", "js", "admin.js");
-const BLOQUE = /(\n  cuentas: \[\n)([\s\S]*?)(  \],\n)/;
+/* El archivo puede venir con saltos de Windows (CRLF) o de Unix (LF): git cambia
+   unos por otros al clonar, y con el patrón atado a \n esta herramienta dejaba
+   de encontrar las cuentas y no se podía agregar a nadie. Se aceptan los dos, y
+   al escribir se conserva el que ya tenga, para no marcar todo como cambiado. */
+const BLOQUE = /(\r?\n  cuentas: \[\r?\n)([\s\S]*?)(  \],\r?\n)/;
+const saltoDe = (txt) => (txt.indexOf("\r\n") >= 0 ? "\r\n" : "\n");
 
 const salir = (msg) => { console.error(msg); process.exit(1); };
 const leer = () => {
@@ -28,7 +33,8 @@ const leer = () => {
   return { js, cuentas };
 };
 const guardar = (js, cuentas) => {
-  const filas = cuentas.map((x) => `    { etiqueta: "${x.etiqueta}", correo: "${x.correo}", sal: "${x.sal}", clave: "${x.clave}" },\n`).join("");
+  const nl = saltoDe(js);
+  const filas = cuentas.map((x) => `    { etiqueta: "${x.etiqueta}", correo: "${x.correo}", sal: "${x.sal}", clave: "${x.clave}" },${nl}`).join("");
   fs.writeFileSync(ARCHIVO, js.replace(BLOQUE, `$1${filas}$3`));
   execFileSync(process.execPath, [path.join(__dirname, "build.js")], { stdio: "inherit" });
 };
