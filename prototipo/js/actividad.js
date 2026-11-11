@@ -186,6 +186,15 @@ function viewActividad() {
         ? `Está puesto (${esc(pixel)}). Lo que recoge se ve en el Administrador de eventos de Meta, no aquí: sirve para que los anuncios les lleguen a quienes vieron un café o dejaron un carrito.`
         : `Todavía no está puesto: falta el identificador en <code>CONFIG.medicion.metaPixel</code>. Cuando esté, los mismos eventos de esta pestaña (vio un café, agregó al carrito, fue a pagar, compró) le llegan a Meta para los anuncios. Lo que Meta recoge se ve en su Administrador de eventos, no aquí.`}</p>
     </section>
+
+    <section class="wpanel op-bono">
+      <h3>Que tus propias visitas no cuenten</h3>
+      <p class="hint">Probar la página desde casa infla estas cifras: diez vueltas al carrito se ven igual que diez clientes interesados. Abre
+        <code>${esc(CONFIG.sitio)}/?nocontar</code> una vez en cada navegador que uses para probar —el tuyo y el de quien te ayude— y desde ahí no se anota nada,
+        ni aquí ni en Meta. Se deshace con <code>?nocontar=no</code>. La marca vive en ese navegador, así que se pierde al borrar los datos del sitio.</p>
+      <p class="hint">En Meta se excluye aparte, por dirección IP: <b>Administrador de eventos → Configuración → Tráfico interno</b>.</p>
+      <div class="co-fila"><button class="btn" data-act="ac-limpiar">Borrar lo medido hasta ahora</button></div>
+    </section>
   </section>`;
 }
 
@@ -194,6 +203,20 @@ document.addEventListener("click", (ev) => {
   const id = el.dataset.id;
   switch (el.dataset.act) {
     case "ac-cargar": AC.error = null; return acCargar();
+    case "ac-limpiar":
+      return modal("Borrar lo medido hasta ahora", `
+        <p class="hint">Se borra la bitácora de la página y los carritos que están sin cerrar: el embudo, lo más visto, los últimos movimientos y la lista de carritos abandonados quedan en cero.</p>
+        <p class="hint"><b>No se toca nada de lo que vendiste:</b> pedidos, contactos, bonos, suscripciones y stock siguen igual.</p>
+        <p class="hint err">Desde aquí no tiene vuelta atrás. Si te arrepientes, la Hoja de Google guarda el historial de versiones (<i>Archivo → Historial de versiones</i>).</p>
+        <div class="dlg-actions"><button class="btn" data-act="close">Cancelar</button>
+          <button class="btn primary" data-act="ac-limpiar-ok">Sí, borrar</button></div>`, "narrow");
+    case "ac-limpiar-ok":
+      closeModal();
+      return fetch(CONFIG.registro, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ accion: "limpiar", clave: coClave() }) })
+        .then((r) => r.json())
+        .then((j) => { if (!j.ok) throw new Error(j.error); toast(j.borradas ? `Listo: ${fmtNum(j.borradas)} ${j.borradas === 1 ? "fila borrada" : "filas borradas"}.` : "No había nada que borrar."); acCargar(); })
+        .catch(() => toast("No se pudo borrar. Revisa la conexión y vuelve a intentar.", { type: "err" }));
     case "ac-dias": AC.dias = +id; return acCargar();
     case "ac-recordar": {
       const c = AC.datos.carritos.find((x) => x.v === id); if (!c) return;

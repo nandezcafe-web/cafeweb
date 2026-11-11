@@ -344,3 +344,24 @@ post({ tipo: "comunidad", correo: "pop3@correo.com", origen: "pop" });
 const ins = getJ({ accion: "actividad", clave: props.CLAVE }).inscritos;
 ok(ins.pop.total === 2 && ins.pop.d7 === 2 && ins.pie.total === 1 && ins.gang.total >= 1 && ins.sin.total >= 3,
   "cuenta inscritos por puerta: pop-up, pie y gang, sin repetir correos ni contar a quien no marcó la casilla; los de antes quedan sin origen");
+
+/* ---- borrar las pruebas y dejar solo lo real ---- */
+cuota = 50;
+post({ tipo: "evento", v: "limpio11112222", evento: "visita" });
+post({ tipo: "carrito", v: "limpio11112222", items: bolsa(1) });
+const antesAct = ss.hojas["Actividad"].filas.length, antesCar = ss.hojas["Carritos"].filas.length;
+const antesPed = ss.hojas["Pedidos"].filas.length, antesCon = ss.hojas["Contactos"].filas.length, antesBon = ss.hojas["Bonos"].filas.length;
+ok(antesAct > 1 && antesCar > 1, "antes de limpiar hay actividad y carritos anotados");
+ok(post({ accion: "limpiar", clave: "mala" }).ok === false, "limpiar pide la clave");
+const limpio = post({ accion: "limpiar", clave: props.CLAVE });
+ok(limpio.ok && limpio.borradas === (antesAct - 1) + (antesCar - 1), "limpiar dice cuántas filas borró");
+ok(ss.hojas["Actividad"].filas.length === 1 && ss.hojas["Carritos"].filas.length === 1,
+  "la bitácora y los carritos quedan vacíos, con sus títulos");
+ok(ss.hojas["Pedidos"].filas.length === antesPed && ss.hojas["Contactos"].filas.length === antesCon && ss.hojas["Bonos"].filas.length === antesBon,
+  "los pedidos, los contactos y los bonos no se tocan");
+const tras = getJ({ accion: "actividad", clave: props.CLAVE });
+ok(tras.ok && tras.embudo.visita === 0 && tras.carritos.length === 0 && tras.registros.length > 0,
+  "el panel queda en cero, pero los registros de correo siguen ahí");
+ok(post({ accion: "limpiar", clave: props.CLAVE }).borradas === 0, "limpiar dos veces seguidas no falla");
+post({ tipo: "evento", v: "despues11112222", evento: "visita" });
+ok(getJ({ accion: "actividad", clave: props.CLAVE }).embudo.visita === 1, "después de limpiar se sigue anotando lo nuevo");

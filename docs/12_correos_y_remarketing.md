@@ -132,6 +132,15 @@ Desde el 10 de noviembre de 2026 el panel tiene la pestaña **Actividad**: el em
 - **Llegó a pagar y no pagó:** la reserva de la pasarela que se liberó a las 2 horas. Tiene botón de WhatsApp con el mensaje escrito y un aviso por correo (una vez; queda anotado en las notas del pedido).
 - **Automático, si se quiere:** `CARRITO.auto: true` en Codigo.gs hace que el aviso de las 7 mande solo el recordatorio a los carritos que llevan un día quietos. Viene apagado. Con o sin él, el resumen de la mañana dice cuántos carritos esperan.
 - **La bitácora se borra sola** a los 90 días (`CARRITO.guardarDias`).
+
+#### Que las visitas de la casa no cuenten
+
+Probar la página desde casa infla las cifras: diez vueltas al carrito se ven igual que diez clientes interesados, y además alimentan a Meta con un público que no compra.
+
+- **Por navegador:** abrir una vez `https://www.nandezcoffee.com/?nocontar`. Ese navegador queda marcado como interno y desde ahí no se anota nada, ni en la hoja ni en Meta; tampoco sale el aviso de cookies. Se deshace con `?nocontar=no`. Hay que hacerlo en cada equipo y en cada navegador que se use para probar, y se pierde al borrar los datos del sitio. La marca es `nandez-interno` en `localStorage` (`prototipo/js/medir.js`).
+- **En Meta, por dirección IP:** Administrador de eventos → Configuración → Tráfico interno. El píxel no distingue navegadores, así que esto va aparte.
+- **Lo ya medido:** en el panel, pestaña **Actividad**, al final, el botón **Borrar lo medido hasta ahora** vacía las hojas Actividad y Carritos (acción `limpiar` del script, con la clave). No toca pedidos, contactos, bonos, suscripciones ni stock. Desde el panel no tiene vuelta atrás, pero la Hoja de Google guarda el historial de versiones (*Archivo → Historial de versiones*).
+- **Lo que ya se le mandó a Meta no se puede borrar.** Los eventos quedan en el píxel; lo que se hace es dejar de mandarlos y esperar a que los públicos se renueven solos (se arman con ventanas de 7, 14 o 30 días).
 - **Cuántos se inscribieron y por dónde:** la sección «Quién se registró» cuenta, sin repetir correos y solo a quienes marcaron la casilla, cuántos entraron por el **pop-up del bono**, por el **pie de página** y por la **página de la gang**. Desde el 10 de noviembre de 2026 la página manda `origen: "pop"` o `"pie"` con cada registro. Los de antes llegaban iguales y quedan juntos como «comunidad, sin origen»: no hay forma de separarlos después.
 
 ### La pestaña Stock

@@ -28,14 +28,25 @@
    ============================================================ */
 
 const MED_KEY = "nandez-medicion";
+/* ---------- no medirnos a nosotros mismos ----------
+   Las visitas de quien hace la página ensucian las cifras: diez vueltas
+   probando el carrito se ven igual que diez clientes interesados. Abrir la
+   página una vez con ?nocontar marca ESE navegador como interno y desde ahí no
+   se anota nada, ni en la hoja ni en Meta; con ?nocontar=no vuelve a contar.
+   La marca vive en el navegador, así que hay que hacerlo en cada equipo y en
+   cada navegador que se use para probar (y se pierde al borrar los datos del
+   sitio). En Meta, además, conviene excluir la IP de la casa: Administrador de
+   eventos → Configuración → Tráfico interno. */
+const INTERNO_KEY = "nandez-interno";
+const esInterno = () => { try { return localStorage.getItem(INTERNO_KEY) === "1"; } catch { return false; } };
 /* propia: null mientras no se sabe si la hoja recibe la bitácora; después, sí o no */
 const M = { listo: false, cola: [], propia: null };
 
 const medicionAjena = () => !!(CONFIG.medicion && (CONFIG.medicion.metaPixel || CONFIG.medicion.ga4));
 const propiaPosible = () => !!CONFIG.registro && !!CONFIG.medicion && CONFIG.medicion.propia !== false;
-const medicionHayQuePedir = () => medicionAjena() || M.propia === true;
+const medicionHayQuePedir = () => !esInterno() && (medicionAjena() || M.propia === true);
 /* mientras la hoja no ha respondido, lo que pase se guarda en la cola por si acaso */
-const medicionPuede = () => medicionHayQuePedir() || (M.propia === null && propiaPosible());
+const medicionPuede = () => !esInterno() && (medicionHayQuePedir() || (M.propia === null && propiaPosible()));
 function medicionPermiso() {
   try { return localStorage.getItem(MED_KEY); } catch { return null; }
 }
@@ -92,7 +103,7 @@ function correoConocido() {
   try { return (typeof popMiembro === "function" && popMiembro()) || localStorage.getItem(CORREO_KEY) || ""; } catch { return ""; }
 }
 function recordarCorreo(correo) { try { if (correo) localStorage.setItem(CORREO_KEY, correo); } catch {} }
-const bitacoraActiva = () => M.propia === true && M.listo && medicionPermiso() === "si";
+const bitacoraActiva = () => !esInterno() && M.propia === true && M.listo && medicionPermiso() === "si";
 function bitacoraEnviar(cuerpo) {
   const v = visitante(); if (!v) return;
   /* texto plano, como los demás registros: sin permiso previo de CORS */
@@ -168,6 +179,26 @@ function medir(evento, datos = {}) {
     ...(datos.pedido ? { transaction_id: datos.pedido } : {}),
     ...(datos.ids ? { items: datos.ids.map((id) => ({ item_id: id })) } : {}),
   });
+}
+
+/* Lee ?nocontar y deja el navegador marcado (o lo desmarca). Se llama antes que
+   todo lo demás, para que ni siquiera la visita de esa carga se anote. Avisa en
+   pantalla: sin confirmación no se sabría si quedó puesto. */
+function internoVigilar() {
+  let q;
+  try { q = new URLSearchParams(location.search); } catch { return; }
+  if (!q.has("nocontar")) return;
+  const apagar = q.get("nocontar") === "no";
+  try {
+    if (apagar) localStorage.removeItem(INTERNO_KEY);
+    else localStorage.setItem(INTERNO_KEY, "1");
+  } catch {}
+  /* la dirección vuelve a quedar limpia: el parámetro no tiene que verse ni compartirse */
+  try { history.replaceState(history.state, "", location.pathname + location.hash); } catch {}
+  const en = UI.lang === "en";
+  setTimeout(() => toast(apagar
+    ? (en ? "This browser counts again in the stats." : "Este navegador vuelve a contar en las cifras.")
+    : (en ? "Done: nothing from this browser will be measured." : "Listo: nada de lo que hagas en este navegador se va a medir.")), 400);
 }
 
 /* ---------- el aviso de cookies ----------

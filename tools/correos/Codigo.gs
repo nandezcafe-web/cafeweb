@@ -132,6 +132,7 @@ function doPost(e) {
   if (d.accion === "sub-envio") return envioSub_(d);
   if (d.accion === "recordar") return recordar_(d);
   if (d.accion === "stock") return fijarStock_(d);
+  if (d.accion === "limpiar") return limpiar_(d);
   /* la bitácora no pasa por Registros ni toca Contactos: es otra cosa */
   if (d.tipo === "evento") return evento_(d);
   if (d.tipo === "carrito") return carrito_(d);
@@ -695,6 +696,28 @@ function inscritos_(ss) {
   const r = {};
   Object.keys(puertas).forEach((k) => { r[k] = { total: Object.keys(puertas[k].todos).length, d7: Object.keys(puertas[k].d7).length }; });
   return r;
+}
+
+/* Borra la bitácora y los carritos y deja las cifras en cero. Es para arrancar
+   limpio después de las pruebas de la casa: lo que se midió mientras se armaba
+   la página no dice nada de los clientes.
+   Toca SOLO las hojas de medir. Pedidos, contactos, bonos, suscripciones y
+   stock se quedan como están: ahí hay ventas y correos de verdad.
+   No tiene vuelta atrás desde aquí; si te arrepientes, la papelera de la Hoja
+   de Google guarda el historial de versiones. */
+function limpiar_(d) {
+  if (!d.clave || d.clave !== clave_()) return json_({ ok: false, error: "clave" });
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const ss = libro_();
+    let borradas = 0;
+    [H_ACTIVIDAD, H_CARRITOS].forEach((nombre) => {
+      const h = hojaDe_(ss, nombre), ultima = h.getLastRow();
+      if (ultima > 1) { h.deleteRows(2, ultima - 1); borradas += ultima - 1; }
+    });
+    return json_({ ok: true, borradas: borradas });
+  } finally { lock.releaseLock(); }
 }
 
 /* ---------- el recordatorio ----------

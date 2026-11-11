@@ -711,6 +711,7 @@ aplicarCfgGuardada();
 cargarCarrito();
 cargarBono();
 volverDeMercado();
+internoVigilar();   /* ?nocontar: antes que nada, para que ni esta visita se anote */
 medicionAviso();
 /* La franja viene con los días que había el día del build: se recuentan aquí */
 (() => {
