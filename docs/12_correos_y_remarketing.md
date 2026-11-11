@@ -89,7 +89,7 @@ Si más adelante se cambia el script, hay que publicar una **nueva versión** de
 node tools/correos/prueba.js tools/correos/Codigo.gs
 ```
 
-Imita la hoja, Gmail y las propiedades en memoria y revisa 106 casos: etiquetas, autorización, clave, baja firmada, cuota diaria, bienvenida y bono, pedidos con sus datos de envío, despachos, suscripciones con sus tres correos, la gang y el aviso diario.
+Imita la hoja, Gmail y las propiedades en memoria y revisa 121 casos: etiquetas, autorización, clave, baja firmada, cuota diaria, bienvenida y bono, pedidos con sus datos de envío, despachos, suscripciones con sus tres correos, la gang y el aviso diario.
 
 ### La hoja Stock
 
@@ -132,6 +132,17 @@ Desde el 10 de noviembre de 2026 el panel tiene la pestaña **Actividad**: el em
 - **Llegó a pagar y no pagó:** la reserva de la pasarela que se liberó a las 2 horas. Tiene botón de WhatsApp con el mensaje escrito y un aviso por correo (una vez; queda anotado en las notas del pedido).
 - **Automático, si se quiere:** `CARRITO.auto: true` en Codigo.gs hace que el aviso de las 7 mande solo el recordatorio a los carritos que llevan un día quietos. Viene apagado. Con o sin él, el resumen de la mañana dice cuántos carritos esperan.
 - **La bitácora se borra sola** a los 90 días (`CARRITO.guardarDias`).
+
+#### Las visitas, que sí son todas
+
+Hay dos cifras distintas y conviene no confundirlas:
+
+- **Cuántos abrieron la página.** Una «llegada»: la página suma uno al día de hoy en la hoja **Visitas** y nada más — sin visitante, sin correo, sin qué miró. Como no identifica a nadie, no es dato personal y se cuenta aunque digan que no a las cookies. Es la única cifra comparable con **Visitas a la página de destino** del Administrador de anuncios de Meta.
+- **El embudo** (vieron un café, agregaron al carrito, compraron). Eso sí necesita el permiso de cookies, así que solo cuenta a una parte. Siempre será menor.
+
+Una llegada por pestaña, no por recarga: la marca va en `sessionStorage`, que se borra al cerrarla. El modo `?nocontar` la salta y el botón de limpiar también se la lleva.
+
+**Y no las compares con los clics.** Meta cuenta el clic en el anuncio, no la llegada: el 11 de noviembre de 2026, de 225 clics solo 88 cargaron la página. Lo normal es perder una parte (gente que se arrepiente, toques accidentales, el navegador de Instagram). La columna que hay que mirar es *Visitas a la página de destino*.
 
 #### Que las visitas de la casa no cuenten
 

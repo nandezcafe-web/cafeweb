@@ -3946,7 +3946,12 @@ function medicionPropia(si, cuentaVisitas) {
   contarLlegada();   /* no depende del permiso: no lleva nada de nadie */
   if (M.propia !== null) return;
   M.propia = !!si && propiaPosible();
-  if (!medicionHayQuePedir()) { M.cola.length = 0; return; }
+  if (!medicionHayQuePedir()) { M.cola.length = 0; $("#cookies")?.remove(); return; }
+  /* Con el píxel puesto el aviso ya salió al cargar, cuando todavía no se sabía
+     si la hoja recibe la bitácora: entonces decía solo «analizar el tráfico» y
+     se callaba lo del carrito, que es lo que de verdad le importa a quien lee.
+     Si nadie lo ha respondido aún, se rehace con el texto completo. */
+  if (M.propia && !medicionPermiso()) $("#cookies")?.remove();
   medicionAviso();
   bitacoraArranque();   /* por si el píxel ya había arrancado antes de que la hoja respondiera */
 }
