@@ -176,7 +176,7 @@ function unirseComunidad() {
 }
 
 /* ---------- el pop-up: el bono para quien llega, la novedad para quien ya es miembro ----------
-   Lo más importante es recoger el correo, así que sale pronto (a los POP_ESPERA
+   Lo más importante es recoger el correo, así que sale enseguida (a los POP_ESPERA
    de la primera visita) y en el centro de la pantalla, con un velo detrás:
    en una esquina se pasaba por alto. Nunca va encima del carrito.
    - Quien no se ha registrado ve el bono. Lo crea la hoja y llega por correo:
@@ -187,9 +187,9 @@ function unirseComunidad() {
      de un toque con el correo que ya dejó. Si no hay nada nuevo, no sale.
    No va en el HTML armado: lo pinta el navegador, así que los buscadores no lo ven. */
 const POP_KEY = "nandez-bono-pop";
-/* A los 3 s tapaba la portada antes de que se leyera la preventa. Ahora sale
-   cuando la persona ya bajó a ver los cafés, o a los POP_ESPERA si se queda quieta. */
-const POP_ESPERA = 12000;
+/* Maick lo pidió al segundo de entrar (10-11-2026): lo primero es recoger el correo,
+   aunque tape la portada un momento. Si baja antes, sale igual (POP_SCROLL). */
+const POP_ESPERA = 1000;
 const POP_SCROLL = 700;     /* px bajados: ya pasó la portada */
 const POP_CERRADO = 7;      /* lo cerró sin registrarse: vuelve en una semana */
 const POP_MIEMBRO = 30;     /* ya es miembro: una novedad al mes */
