@@ -340,43 +340,55 @@ const ATRIBUTOS_TAZA = [
   ["boca", "Boca", "Mouthfeel", "El cuerpo y la textura sobre la lengua.", "The body and texture on the tongue."],
   ["global", "Global", "Overall", "La impresión general del catador.", "The cupper's overall impression."],
 ];
-const seriesTaza = (p) => (p.taza.de ? p.taza.de.map(prodById) : [p]).map((q) => ({ n: tx(q.nombre), c: q.color, T: q.taza }));
+/* Un café, una forma. El blend no se cató aparte: su taza sale de las catas de
+   sus dos cafés (`de`), pesadas por la proporción de la mezcla (`pesos`). Antes
+   se dibujaban las dos encima y no se entendía cuál era la del blend. */
+function tazaDe(p) {
+  const T = p.taza;
+  if (!T.de) return T;
+  const partes = T.de.map(prodById).filter(Boolean), pesos = T.pesos || partes.map(() => 1);
+  const total = pesos.reduce((a, b) => a + b, 0), prom = {};
+  ATRIBUTOS_TAZA.forEach(([k]) => {
+    prom[k] = Math.round((partes.reduce((a, q, i) => a + q.taza[k] * pesos[i], 0) / total) * 10) / 10;
+  });
+  return prom;
+}
+/* 6 se escribe 6; 6,5 lleva coma en español y punto en inglés */
+const numTaza = (v, en) => (Number.isInteger(v) ? String(v) : en ? v.toFixed(1) : v.toFixed(1).replace(".", ","));
 function ruedaTaza(p, en) {
-  const cx = 180, cy = 140, R = 92, n = ATRIBUTOS_TAZA.length, S2 = seriesTaza(p);
+  const cx = 180, cy = 140, R = 92, n = ATRIBUTOS_TAZA.length, T = tazaDe(p);
   const punto = (i, r) => { const a = (-90 + (i * 360) / n) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; };
   const radio = (v) => (R * (v - 1)) / 8;
   const linea = (f) => ATRIBUTOS_TAZA.map((_, i) => punto(i, f(i)).map((x) => x.toFixed(1)).join(",")).join(" ");
   const atributos = ATRIBUTOS_TAZA.map(([k, es, ing, de, dn], i) => {
     const [ex, ey] = punto(i, R), [x, y] = punto(i, R + 14), lado = Math.abs(x - cx) < 4 ? "middle" : x > cx ? "start" : "end";
     const alto = i === 0 ? y - 15 : i === 4 ? y + 7 : y - 2;
-    const vals = S2.map((s) => s.T[k]), lo = Math.min(...vals), hi = Math.max(...vals), nombre = en ? ing : es;
-    const dicho = S2.length > 1 ? S2.map((s) => `${s.n} ${s.T[k]}`).join(" · ") : (en ? `${lo} of 9` : `${lo} de 9`);
+    const nombre = en ? ing : es, v = numTaza(T[k], en);
+    const dicho = en ? `${v} of 9` : `${v} de 9`;
     return `<g class="tz-at" style="--i:${i}" tabindex="0" role="button" aria-label="${esc(`${nombre}: ${dicho}`)}" data-l="${esc(nombre)}" data-v="${esc(dicho)}" data-d="${esc(en ? dn : de)}">
       <line class="tz-eje" x1="${cx}" y1="${cy}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}"/>
       <circle class="tz-toque" cx="${x.toFixed(1)}" cy="${alto.toFixed(1)}" r="24"/>
       <text class="tz-k" x="${x.toFixed(1)}" y="${alto.toFixed(1)}" text-anchor="${lado}">${nombre}</text>
-      <text class="tz-v" x="${x.toFixed(1)}" y="${(alto + 15).toFixed(1)}" text-anchor="${lado}">${lo === hi ? lo : `${lo}–${hi}`}</text></g>`;
+      <text class="tz-v" x="${x.toFixed(1)}" y="${(alto + 15).toFixed(1)}" text-anchor="${lado}">${v}</text></g>`;
   }).join("");
   return `<svg class="tz-rueda" viewBox="0 0 360 282" role="group" aria-label="${en ? "Cupping wheel" : "Rueda de la catación"}">
     ${[3, 5, 7, 9].map((v) => `<polygon class="tz-aro" points="${linea(() => radio(v))}"/>`).join("")}
     ${atributos}
-    ${S2.map((s, m) => `<g class="tz-capa" style="--c:${s.c};--m:${m};transform-origin:${cx}px ${cy}px">
-      <polygon class="tz-forma" points="${linea((i) => radio(s.T[ATRIBUTOS_TAZA[i][0]]))}"/>
-      ${ATRIBUTOS_TAZA.map(([k], i) => { const [x, y] = punto(i, radio(s.T[k])); return `<circle class="tz-punto" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5"/>`; }).join("")}</g>`).join("")}
+    <g class="tz-capa" style="--c:${p.color};transform-origin:${cx}px ${cy}px">
+      <polygon class="tz-forma" points="${linea((i) => radio(T[ATRIBUTOS_TAZA[i][0]]))}"/>
+      ${ATRIBUTOS_TAZA.map(([k], i) => { const [x, y] = punto(i, radio(T[k])); return `<circle class="tz-punto" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5"/>`; }).join("")}</g>
   </svg>`;
 }
 function bloqueTaza(p, en) {
   const T = p.taza;
   if (!T) return "";
-  const S2 = seriesTaza(p);
   return `<section class="prod-taza">
       <div class="section-head"><p class="eyebrow">${en ? "The cup" : "La taza"}</p>
         <h2>${en ? "What the <em>cupper found</em>" : "Lo que encontró <em>el catador</em>"}</h2></div>
       <div class="tz g-io">
-        <div class="tz-graf">${ruedaTaza(p, en)}
-          ${S2.length > 1 ? `<ul class="tz-leyenda">${S2.map((s) => `<li style="--c:${s.c}">${esc(s.n)}</li>`).join("")}</ul>` : ""}</div>
+        <div class="tz-graf">${ruedaTaza(p, en)}</div>
         <div class="tz-dato">
-          <p class="tz-total"><b>${esc(p.puntaje)}</b><small>${en ? "SCA points" : "Puntos SCA"}${T.de ? `<br>${en ? "both cuppings combined" : "unión de las dos catas"}` : ""}</small></p>
+          <p class="tz-total"><b>${esc(p.puntaje)}</b><small>${en ? "SCA points" : "Puntos SCA"}${T.de ? `<br>${en ? "average of both cuppings" : "promedio de las dos catas"}` : ""}</small></p>
           <p class="tz-lee" aria-live="polite"><b>${en ? "Tap an attribute" : "Toca un atributo"}</b><span>${en ? "Each one is scored from 1 to 9; the total comes out of the SCA formula, it is not the sum." : "Cada uno va de 1 a 9; el total sale de la fórmula de la SCA, no es la suma."}</span></p>
           <dl>
             <div><dt>${en ? "Notes" : "Notas"}</dt><dd>${esc(tx(p.notas).join(", "))}</dd></div>

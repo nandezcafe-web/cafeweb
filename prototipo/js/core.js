@@ -233,7 +233,7 @@ const ES_EN = {
   "Finca El Paraíso": "El Paraíso farm",
   Lavado: "Washed", Natural: "Natural", Honey: "Honey", "Anaeróbico": "Anaerobic",
   Productor: "Grower", "GPS en visita de campo": "GPS on a farm visit", "Bitácora con fotos": "Photo log",
-  "Q-grader independiente": "Independent Q-grader", "Catación SCA": "SCA cupping", "Unión de las dos catas": "Both cuppings combined", "Castillo y Cenicafé 1": "Castillo and Cenicafé 1", "Informe de trilla": "Milling report", "Catación propia": "Our own cupping",
+  "Q-grader independiente": "Independent Q-grader", "Catación SCA": "SCA cupping", "Promedio de las dos catas": "Average of both cuppings", "Mitad y mitad": "Half and half", "Castillo y Cenicafé 1": "Castillo and Cenicafé 1", "Informe de trilla": "Milling report", "Catación propia": "Our own cupping",
   "Fermentación 36 h · Marquesina 18 días": "36 h fermentation · 18 days in a drying tent",
   "Fermentación 18 h": "18 h fermentation",
   "Anaeróbico 96 h · Camas africanas 28 días": "96 h anaerobic · 28 days on raised beds",
@@ -349,25 +349,25 @@ function seed() {
         nombre: { es: "Blend", en: "Blend" }, sub: { es: "Castillo y Cenicafé 1 · molido", en: "Castillo and Cenicafé 1 · ground" },
         variedad: "Castillo y Cenicafé 1", proceso: "Lavado", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026",
         sale: { es: "Molido", en: "Ground" }, saleNota: { es: "Molienda fina: lista para el gotero o la cafetera de goteo.", en: "Fine grind: ready for a pour-over cone or a drip machine." },
-        altitud: null, puntaje: 87, nivel: "DECLARADO", fuente: "Unión de las dos catas", fecha: "2026-11-03",
+        altitud: null, puntaje: 87, nivel: "DECLARADO", fuente: "Promedio de las dos catas", fecha: "2026-11-03",
         notas: { es: ["Durazno", "Almendra", "Avellana", "Panela", "Chocolate", "Manzanilla"], en: ["Peach", "Almond", "Hazelnut", "Brown sugar", "Chocolate", "Chamomile"] },
         descripcion: {
           es: ["Los dos cafés mezclados: dulce, suave y parejo. Sabe a durazno, avellana y chocolate, con la panela del Castillo detrás. Viene molido, listo para la cafetera o el gotero, así que no necesitas molino.",
-               "Lleva café de las dos fincas: El Roble, en Ragonvalia, y El Paraíso, en Chinácota. Es el fácil de regalar: le sirve a cualquiera."],
+               "Mitad y mitad: la finca El Roble, en Ragonvalia, y la finca El Paraíso, en Chinácota. Es el fácil de regalar: le sirve a cualquiera."],
           en: ["The two coffees mixed: sweet, smooth and even. Peach, hazelnut and chocolate, with the Castillo's brown sugar behind. It comes ground, ready for a drip machine or a pour-over cone, so you need no grinder.",
-               "It carries coffee from both farms: El Roble, in Ragonvalia, and El Paraíso, in Chinácota. It is the easy one to give away: it suits anybody."] },
-        /* El blend no tiene formato propio: su taza es la unión de las dos catas, así
-           que la rueda dibuja los dos cafés (`de`) en vez de un promedio inventado. */
-        taza: { de: ["P-CAS", "P-PAR"], fecha: "2026-11-03",
+               "Half and half: El Roble farm, in Ragonvalia, and El Paraíso farm, in Chinácota. It is the easy one to give away: it suits anybody."] },
+        /* El blend no tiene formato propio: su taza sale de las catas de sus dos
+           cafés (`de`), en la proporción de la mezcla (`pesos`, mitad y mitad). */
+        taza: { de: ["P-CAS", "P-PAR"], pesos: [50, 50], fecha: "2026-11-03",
           datos: [[{ es: "Boca", en: "Mouthfeel" }, { es: "Suave", en: "Smooth" }],
                   [{ es: "Gustos", en: "Main tastes" }, { es: "Ácido y dulce", en: "Acidic and sweet" }]] },
         ficha: {
-          variedad: A("Castillo y Cenicafé 1", "DECLARADO", "Nandez Coffee", "2026-10-28"),
+          variedad: A("Castillo y Cenicafé 1", "DECLARADO", "Nandez Coffee", "2026-10-28", { detalle: "Mitad y mitad" }),
           /* el blend viene de las dos fincas: 1.300 de El Paraíso y 1.870 de El Roble */
           altitud: A("1.300 – 1.870", "DECLARADO", "Productor", "2026-11-03"),
           proceso: A("Lavado", "DECLARADO", "Productor", "2026-11-07"),
           tostion: A("2026-11-02", "DECLARADO", "Nandez Coffee", "2026-11-07"),
-          puntaje: A(87, "DECLARADO", "Unión de las dos catas", "2026-11-03", { vig: 6 }),
+          puntaje: A(87, "DECLARADO", "Promedio de las dos catas", "2026-11-03", { vig: 6 }),
           factor: A("—", "DECLARADO", "Productor", "2026-10-28"),
         },
         pago: null,
