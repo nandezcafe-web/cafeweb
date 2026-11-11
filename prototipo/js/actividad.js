@@ -108,7 +108,7 @@ function viewActividad() {
   return `<section class="co op ac">
     <div class="section-head co-head"><p class="eyebrow">Actividad de la página</p>
       <h2>Quién entró, quién <em>se quedó en el carrito</em></h2>
-      <p class="hint">Son las personas que aceptaron las cookies en la página: sin ese permiso no se anota nada, así que el total real de visitas es mayor. Las ventas de verdad están en la pestaña <b>Pedidos</b>.</p>
+      <p class="hint">Cuántos abrieron la página son todos. El resto del embudo son solo quienes aceptaron las cookies: sin ese permiso no se puede anotar qué hicieron. Las ventas de verdad están en la pestaña <b>Pedidos</b>.</p>
       <div class="co-fila"><button class="btn sm" data-act="ac-cargar">${AC.cargando ? "Actualizando…" : "Actualizar"}</button>
         <span class="co-etiquetas" role="group" aria-label="Periodo">${[7, 30, 90].map((n) =>
           `<button class="chip" aria-pressed="${AC.dias === n}" data-act="ac-dias" data-id="${n}">${n} días</button>`).join("")}</span>
@@ -120,6 +120,9 @@ function viewActividad() {
     <div class="ac-dos">
       <section class="wpanel ac-caja">
         <h3>El embudo · últimos ${d.dias} días</h3>
+        ${d.visitas != null ? `<p class="hint ac-visitas"><b class="mono">${fmtNum(d.visitas)}</b> abrieron la página en estos ${d.dias} días.
+          Esa cifra sí son todas, porque contar una visita no necesita permiso. De ahí para abajo solo aparecen quienes aceptaron las cookies:
+          compárala con <b>Visitas a la página de destino</b> en el Administrador de anuncios, no con los clics.</p>` : ""}
         ${e.visita ? acEmbudo(e) : `<p class="hint">Todavía no hay actividad anotada en este periodo. Empieza a llegar cuando alguien acepta las cookies en la página.</p>`}
       </section>
       <section class="wpanel ac-caja">

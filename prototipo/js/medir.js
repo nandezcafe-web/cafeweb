@@ -40,7 +40,7 @@ const MED_KEY = "nandez-medicion";
 const INTERNO_KEY = "nandez-interno";
 const esInterno = () => { try { return localStorage.getItem(INTERNO_KEY) === "1"; } catch { return false; } };
 /* propia: null mientras no se sabe si la hoja recibe la bitácora; después, sí o no */
-const M = { listo: false, cola: [], propia: null };
+const M = { listo: false, cola: [], propia: null, cuentaVisitas: false };
 
 const medicionAjena = () => !!(CONFIG.medicion && (CONFIG.medicion.metaPixel || CONFIG.medicion.ga4));
 const propiaPosible = () => !!CONFIG.registro && !!CONFIG.medicion && CONFIG.medicion.propia !== false;
@@ -130,6 +130,29 @@ function bitacoraCarrito(comprado) {
 }
 /* Lo primero que se anota: la visita (una vez por pestaña, no en cada recarga)
    y el carrito que ya venía armado de otro día. */
+/* ---------- la cuenta de visitas ----------
+   Una línea a la hoja que dice «hoy entró alguien más». Sin visitante, sin
+   correo, sin qué miró: no identifica a nadie, así que no necesita el permiso
+   de cookies y se manda también a quien dice que no. Es la única cifra que se
+   puede comparar con «Visitas a la página de destino» de Meta; el embudo de al
+   lado cuenta solo a quien aceptó, y siempre serán menos.
+   Una vez por pestaña, no por recarga: la marca va en sessionStorage, que se
+   borra al cerrarla y no sirve para reconocer a nadie después. */
+const LLEGADA_KEY = "nandez-llegada";
+function contarLlegada() {
+  /* M.cuentaVisitas lo enciende la hoja al responder el stock: un script viejo
+     no sabría qué es una "llegada" y la anotaría como un registro cualquiera. */
+  if (!M.cuentaVisitas || esInterno() || !CONFIG.registro || !propiaPosible()) return;
+  try {
+    if (sessionStorage.getItem(LLEGADA_KEY)) return;
+    sessionStorage.setItem(LLEGADA_KEY, "1");
+  } catch { return; }   /* sin sessionStorage no se cuenta, antes que contar de más */
+  try {
+    fetch(CONFIG.registro, { method: "POST", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ tipo: "llegada" }) }).catch(() => {});
+  } catch {}
+}
+
 function bitacoraArranque() {
   if (!bitacoraActiva()) return;
   try { if (!sessionStorage.getItem(VIS_KEY)) { sessionStorage.setItem(VIS_KEY, "1"); bitacora("visita", {}); } } catch {}
@@ -137,7 +160,9 @@ function bitacoraArranque() {
 }
 /* La hoja respondió: ya se sabe si recibe la bitácora. Si la recibe, es el
    momento de preguntar (o de arrancar, si la persona ya había dicho que sí). */
-function medicionPropia(si) {
+function medicionPropia(si, cuentaVisitas) {
+  M.cuentaVisitas = !!cuentaVisitas;
+  contarLlegada();   /* no depende del permiso: no lleva nada de nadie */
   if (M.propia !== null) return;
   M.propia = !!si && propiaPosible();
   if (!medicionHayQuePedir()) { M.cola.length = 0; return; }
@@ -212,19 +237,26 @@ function medicionAviso() {
   if ($("#cookies")) return;
   const en = UI.lang === "en";
   /* el aviso dice lo que de verdad se va a usar: lo propio, lo de Meta y Google, o las dos cosas */
+  /* El aviso, en la fórmula corta que usa casi toda la web: qué se usa, para
+     qué, y el enlace. Dice «de terceros» en vez de nombrar a Meta y Google —
+     ahí están, con nombre y apellido, en la política que enlaza— y no promete
+     nada que la página no haga: aquí no hay contenidos personalizados.
+     Lo que no se toca: los dos botones pesan igual y «Aceptar» no se adelanta
+     con ningún truco. Una autorización arrancada no vale, ni ante la ley ni
+     ante quien después recibe un correo que no pidió. */
   const ajena = medicionAjena(), propia = M.propia === true;
   const que = en
-    ? (propia ? "We would like to measure how this page is used and remember the cart you put together, " + (ajena ? "with our own cookies and Meta and Google ones, to know which of our ads are worth it" : "with a cookie of our own")
-              : "We would like to measure how this page is used, with Meta and Google cookies, to know which of our ads are worth it")
-    : (propia ? "Queremos medir cómo se usa esta página y recordar el carrito que armes, " + (ajena ? "con cookies propias y de Meta y Google, para saber cuáles de nuestros anuncios valen la pena" : "con una cookie propia")
-              : "Queremos medir cómo se usa esta página, con cookies de Meta y Google, para saber cuáles de nuestros anuncios valen la pena");
+    ? (ajena ? "We use our own and third-party cookies to " : "We use a cookie of our own to ")
+      + (propia ? "remember your cart, improve your experience and analyse traffic on the shop." : "analyse traffic on the shop.")
+    : (ajena ? "Usamos cookies propias y de terceros para " : "Usamos una cookie propia para ")
+      + (propia ? "recordar tu carrito, mejorar tu experiencia y analizar el tráfico de la tienda." : "analizar el tráfico de la tienda.");
   const el = document.createElement("aside");
   el.className = "cookies"; el.id = "cookies";
   el.setAttribute("role", "dialog");
   el.setAttribute("aria-label", en ? "Cookies" : "Cookies");
   el.innerHTML = `<p>${en
-    ? `${que}. Nothing is measured until you say yes. <a href="${ruta("privacidad")}" data-act="go" data-to="privacidad">Privacy policy</a>.`
-    : `${que}. No se mide nada hasta que digas que sí. <a href="${ruta("privacidad")}" data-act="go" data-to="privacidad">Política de privacidad</a>.`}</p>
+    ? `${que} <a href="${ruta("privacidad")}" data-act="go" data-to="privacidad">See the cookie policy</a>.`
+    : `${que} <a href="${ruta("privacidad")}" data-act="go" data-to="privacidad">Ver la política de cookies</a>.`}</p>
     <div class="cookies-btn">
       <button class="btn" data-act="cookies-no">${en ? "Only what's essential" : "Solo lo necesario"}</button>
       <button class="btn primary" data-act="cookies-si">${en ? "Accept" : "Aceptar"}</button>

@@ -45,7 +45,7 @@ export function hojaSimulada(catalogo) {
     PropertiesService: { getScriptProperties: () => ({ getProperty: (k) => props[k] || null, setProperty: (k, v) => { props[k] = v; } }) },
     Utilities: { getUuid: () => crypto.randomUUID(), computeHmacSha256Signature: (v, k) => [...crypto.createHmac("sha256", k).update(v).digest()],
       base64EncodeWebSafe: (b) => Buffer.from(b).toString("base64").replace(/\+/g, "-").replace(/\//g, "_") },
-    LockService: { getScriptLock: () => ({ waitLock() {}, releaseLock() {} }) },
+    LockService: { getScriptLock: () => ({ waitLock() {}, tryLock: () => true, releaseLock() {} }) },
     ContentService: { MimeType: { JSON: "json" }, createTextOutput: (t) => ({ setMimeType: () => ({ texto: t }) }) },
     HtmlService: { createHtmlOutput: (h) => ({ setTitle: () => ({ html: h }) }) },
     MailApp: { getRemainingDailyQuota: () => 1000, sendEmail: (o) => correos.push(o) },

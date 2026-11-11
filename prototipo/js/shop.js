@@ -29,7 +29,10 @@ const precioRotulo = (p, v, en) => (v.precio
 /* Qué productos tienen foto y en qué formato. Las tres bolsas de la marca
    nueva están en JPG; si algún día se recomprimen a WebP, basta cambiar la
    extensión aquí. */
-const CON_FOTO = new Map([["P-CAS", "jpg"], ["P-PAR", "jpg"], ["P-BLE", "jpg"]]);
+/* En WebP pesan un 59 % menos que en JPG con la misma calidad a la vista (355
+   KB los seis archivos, contra 147). Lo entienden todos los navegadores desde
+   2020. Para agregar un café: la foto a 800×1120 y su @0.5x, las dos en .webp. */
+const CON_FOTO = new Map([["P-CAS", "webp"], ["P-PAR", "webp"], ["P-BLE", "webp"]]);
 function fotoProducto(p, { sizes = "(min-width:900px) 360px, 70vw", clase = "prod-foto", prioridad = false } = {}) {
   const ext = CON_FOTO.get(p.id);
   if (!ext) return ridge(p, { w: 420, h: 200 });
@@ -535,7 +538,7 @@ function cargarStock() {
   return fetch(`${CONFIG.registro}?accion=stock`).then((r) => r.json()).catch(() => ({ ok: false }))
     .then((j) => {
       /* de paso, la hoja dice si ya recibe la bitácora de la página (medir.js) */
-      medicionPropia(!!(j && j.ok && j.actividad === true));
+      medicionPropia(!!(j && j.ok && j.actividad === true), !!(j && j.visitas === true));
       if (!j || !j.ok || !j.stock) return false;
       let cambio = false;
       S.productos.forEach((p) => {

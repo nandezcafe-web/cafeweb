@@ -34,7 +34,7 @@ const ctx = {
   PropertiesService: { getScriptProperties: () => ({ getProperty: (k) => props[k] || null, setProperty: (k, v) => { props[k] = v; } }) },
   Utilities: { getUuid: () => crypto.randomUUID(), computeHmacSha256Signature: (v, k) => [...crypto.createHmac("sha256", k).update(v).digest()],
     base64EncodeWebSafe: (b) => Buffer.from(b).toString("base64").replace(/\+/g, "-").replace(/\//g, "_") },
-  LockService: { getScriptLock: () => ({ waitLock() {}, releaseLock() {} }) },
+  LockService: { getScriptLock: () => ({ waitLock() {}, tryLock: () => true, releaseLock() {} }) },
   ContentService: { MimeType: { JSON: "json" }, createTextOutput: (t) => ({ setMimeType: () => ({ texto: t }) }) },
   HtmlService: { createHtmlOutput: (h) => ({ setTitle: () => ({ html: h }) }) },
   MailApp: { getRemainingDailyQuota: () => cuota, sendEmail: (o) => { if (cuota < 1) throw new Error("sin cuota"); enviados.push(o); cuota--; } },
@@ -365,3 +365,21 @@ ok(tras.ok && tras.embudo.visita === 0 && tras.carritos.length === 0 && tras.reg
 ok(post({ accion: "limpiar", clave: props.CLAVE }).borradas === 0, "limpiar dos veces seguidas no falla");
 post({ tipo: "evento", v: "despues11112222", evento: "visita" });
 ok(getJ({ accion: "actividad", clave: props.CLAVE }).embudo.visita === 1, "después de limpiar se sigue anotando lo nuevo");
+
+/* ---- la cuenta de visitas, sin cookies ---- */
+cuota = 50;
+ok(getJ({ accion: "stock" }).visitas === true, "el stock le avisa a la página que el script ya sabe contar visitas");
+const regAntesV = ss.hojas["Registros"].filas.length, actAntesV = ss.hojas["Actividad"].filas.length;
+post({ tipo: "llegada" }); post({ tipo: "llegada" }); post({ tipo: "llegada" });
+ok(ss.hojas["Visitas"].filas.length === 2 && Number(ss.hojas["Visitas"].filas[1][1]) === 3,
+  "tres llegadas suman en una sola fila, la de hoy");
+ok(ss.hojas["Registros"].filas.length === regAntesV && ss.hojas["Actividad"].filas.length === actAntesV,
+  "una llegada no deja rastro en Registros ni en la bitácora: no lleva nada de nadie");
+ok(JSON.stringify(ss.hojas["Visitas"].filas[1]).indexOf("@") < 0 && String(ss.hojas["Visitas"].filas[1][0]).length === 10,
+  "la fila es solo la fecha y un número, sin correo ni visitante");
+const actV = getJ({ accion: "actividad", clave: props.CLAVE });
+ok(actV.visitas === 3 && actV.porDia[actV.porDia.length - 1].visitas === 3, "el panel recibe el total y el detalle por día");
+ok(actV.visitas >= actV.embudo.visita, "las visitas nunca son menos que los del embudo: ese es el punto");
+post({ accion: "limpiar", clave: props.CLAVE });
+ok(ss.hojas["Visitas"].filas.length === 1 && getJ({ accion: "actividad", clave: props.CLAVE }).visitas === 0,
+  "al borrar lo medido, las visitas también vuelven a cero");

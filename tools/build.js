@@ -374,11 +374,11 @@ escribir("llms.txt", llms);
 /* en el archivo suelto cada foto va dentro, en su tamaño chico */
 const EMBEBER = { "cereza": "grano/cereza@0.5x.webp", "capa-corte": "grano/capa-corte@0.5x.webp",
                   "portada-ancho@0.5x": "portada/portada-ancho@0.5x.webp", "portada-alto@0.5x": "portada/portada-alto@0.5x.webp",
-                  "p-cas@0.5x": "productos/p-cas@0.5x.jpg",
-                  "p-par@0.5x": "productos/p-par@0.5x.jpg",
-                  "p-ble@0.5x": "productos/p-ble@0.5x.jpg",
+                  "p-cas@0.5x": "productos/p-cas@0.5x.webp",
+                  "p-par@0.5x": "productos/p-par@0.5x.webp",
+                  "p-ble@0.5x": "productos/p-ble@0.5x.webp",
                   "cierre@0.5x": "portada/cierre@0.5x.webp" };
-/* Cada pieza con su formato: las bolsas están en JPG y el resto en WebP */
+/* Cada pieza con su formato; hoy todas en WebP, pero el mapa admite JPG */
 const pieza64 = (k) => {
   const rel = EMBEBER[k], ext = rel.replace(/^.*\./, "");
   return `data:image/${ext === "jpg" ? "jpeg" : ext};base64,` + fs.readFileSync(path.join(SRC, "img", rel)).toString("base64");

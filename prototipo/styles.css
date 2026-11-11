@@ -1502,3 +1502,5 @@ html[lang=en] .ruta li::before{content:"Month " counter(ruta)}
 .ac .co-head .co-etiquetas{display:inline-flex}
 .brand .panel-rotulo{display:inline-block;margin-left:12px;font:600 10.5px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
 .ac-feed li.hint{display:block}
+.ac-visitas{margin:0;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--paper-2)}
+.ac-visitas b{font-size:1.5rem;display:block;margin-bottom:2px;color:var(--ink)}
