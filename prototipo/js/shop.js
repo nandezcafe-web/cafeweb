@@ -575,9 +575,10 @@ function cargarCarrito() {
     if (!Array.isArray(v)) return;
     /* El precio se vuelve a leer del producto: un carrito guardado antes de un
        cambio de precio cobraría el viejo. La presentación que ya no existe se cae.
-       El nombre no se toca: esto corre antes de que la URL fije el idioma. */
+       El nombre no se toca: esto corre antes de que la URL fije el idioma.
+       En preventa las bolsas están en 0 y lo que cuenta es el cupo: topeDe sabe de las dos. */
     UI.carrito = v.flatMap((i) => {
-      const p = prodById(i.id), x = p && p.variantes.find((y) => y.g === i.g && y.stock > 0);
+      const p = prodById(i.id), x = p && p.variantes.find((y) => y.g === i.g && topeDe(p, y) > 0);
       return x ? [{ ...i, precio: x.precio }] : [];
     });
   } catch {}

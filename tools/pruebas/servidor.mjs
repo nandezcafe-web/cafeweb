@@ -129,6 +129,8 @@ http.createServer(async (req, res) => {
          llaves de prueba y el widget y los campos de tarjeta simulados */
       const txt = cuerpo.toString("utf8")
         .replace(/registro: "[^"]*"/, 'registro: "/hoja-prueba"')
+        /* el píxel de Meta es el real: una compra de prueba no se le cuenta a Meta */
+        .replace(/metaPixel: "[^"]*"/, 'metaPixel: ""').replace(/ga4: "[^"]*"/, 'ga4: ""')
         .replace('wompi: { llavePublica: "", widget: "https://checkout.wompi.co/widget.js" }', 'wompi: { llavePublica: "pub_test_PRUEBA", widget: "/widget-prueba.js" }')
         .replace('mp: { llavePublica: "", sdk: "https://sdk.mercadopago.com/js/v2" }', 'mp: { llavePublica: "TEST-PRUEBA", sdk: "/mp-sdk-prueba.js" }');
       if (!txt.includes('"/hoja-prueba"') || !txt.includes("pub_test_PRUEBA") || !txt.includes('"/mp-sdk-prueba.js"'))
