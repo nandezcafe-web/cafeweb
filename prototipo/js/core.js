@@ -275,6 +275,14 @@ function seed() {
         sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que lo muelas el día que lo preparas: así guarda el aroma.", en: "We ship it whole so you grind it the day you brew it, which keeps the aroma." },
         altitud: 1870, puntaje: 87, nivel: "DOCUMENTADO", fuente: "Catación SCA", fecha: "2026-11-03",
         notas: { es: ["Durazno", "Almendra", "Panela", "Manzanilla"], en: ["Peach", "Almond", "Brown sugar", "Chamomile"] },
+        /* Lo que se cuenta del café, en palabras. Todo sale de datos que ya están
+           en esta ficha: la finca, quién la cultiva, la altura, el proceso y lo que
+           anotó el catador. Nada de adornos que no se puedan comprobar. */
+        descripcion: {
+          es: ["Un café para quien toma café todos los días y quiere saber de dónde sale. Es un Castillo lavado de la finca El Roble, en Ragonvalia, sembrado a 1.870 metros, y lo cultiva Domingo Torres.",
+               "En la mesa de catación sacó 87 puntos SCA. Arriba aparecen el durazno y la manzanilla; debajo se asientan la panela y la almendra. Queda suave en boca, entre lo ácido y lo dulce."],
+          en: ["A coffee for someone who drinks coffee every day and wants to know where it comes from. A washed Castillo from El Roble farm in Ragonvalia, grown at 1,870 metres by Domingo Torres.",
+               "On the cupping table it scored 87 SCA points. Peach and chamomile come first; brown sugar and almond settle underneath. It stays smooth in the mouth, between sweet and acidic."] },
         /* La taza, copiada del formato combinado SCA (v2, 2024) de la catación. Cada
            atributo va de 1 a 9; el total no es la suma, lo calcula la fórmula de la SCA. */
         taza: { fecha: "2026-11-03",
@@ -310,6 +318,11 @@ function seed() {
         sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que no pierda aroma.", en: "We ship it whole so it keeps its aroma." },
         altitud: 1300, puntaje: 87, nivel: "DOCUMENTADO", fuente: "Catación SCA", fecha: "2026-11-03",
         notas: { es: ["Durazno", "Avellana", "Chocolate"], en: ["Peach", "Hazelnut", "Chocolate"] },
+        descripcion: {
+          es: ["El más dulce de los tres en la mesa de catación, para quien le huye a lo amargo. Es un Cenicafé 1 lavado de la finca El Paraíso, en la vereda Palocolorado de Chinácota, a 1.300 metros, y lo cultiva Bernardo Becerra.",
+               "También sacó 87 puntos SCA. El catador anotó acidez cítrica y dulzor a panela, con durazno al principio y avellana y chocolate al final. Cuerpo suave."],
+          en: ["The sweetest of the three on the cupping table, for anyone who runs from bitterness. A washed Cenicafé 1 from El Paraíso farm, in the Palocolorado district of Chinácota, grown at 1,300 metres by Bernardo Becerra.",
+               "It also scored 87 SCA points. The cupper wrote down citric acidity and brown-sugar sweetness, with peach up front and hazelnut and chocolate at the end. Smooth body."] },
         taza: { fecha: "2026-11-03",
           fragancia: 7, aroma: 7, sabor: 6, residual: 6, acidez: 7, dulzor: 7, boca: 6, global: 6,
           datos: [[{ es: "Acidez", en: "Acidity" }, { es: "Cítrica", en: "Citric" }],
@@ -338,6 +351,11 @@ function seed() {
         sale: { es: "Molido", en: "Ground" }, saleNota: { es: "Molienda fina: lista para el gotero o la cafetera de goteo.", en: "Fine grind: ready for a pour-over cone or a drip machine." },
         altitud: null, puntaje: 87, nivel: "DECLARADO", fuente: "Unión de las dos catas", fecha: "2026-11-03",
         notas: { es: ["Durazno", "Almendra", "Avellana", "Panela", "Chocolate", "Manzanilla"], en: ["Peach", "Almond", "Hazelnut", "Brown sugar", "Chocolate", "Chamomile"] },
+        descripcion: {
+          es: ["Los dos cafés en una misma bolsa, molidos finos para el gotero o la cafetera de goteo. Es para quien no tiene molino y no piensa comprar uno.",
+               "No se cató aparte: su taza es la de los dos, y cada uno sacó 87 puntos SCA. Del Castillo llegan la panela y la manzanilla; del Cenicafé 1, la avellana y el chocolate. El durazno lo ponen los dos."],
+          en: ["The two coffees in one bag, ground fine for a pour-over cone or a drip machine. It is for someone with no grinder who does not plan to buy one.",
+               "It was not cupped on its own: its cup is both of them, and each scored 87 SCA points. Brown sugar and chamomile come from the Castillo; hazelnut and chocolate from the Cenicafé 1. Both bring the peach."] },
         /* El blend no tiene formato propio: su taza es la unión de las dos catas, así
            que la rueda dibuja los dos cafés (`de`) en vez de un promedio inventado. */
         taza: { de: ["P-CAS", "P-PAR"], fecha: "2026-11-03",
@@ -515,7 +533,7 @@ function franjaLanzamiento(en) {
 const fincaDe = (p) => {
   if (!p.mezcla) return S.fincas.find((f) => f.id === p.fincaId) || {};
   const fs = p.mezcla.map((id) => S.fincas.find((f) => f.id === id)).filter(Boolean);
-  return { finca: fs.map((f) => tr(f.finca)).join(" + "), municipio: [...new Set(fs.map((f) => f.municipio))].join(" y "), mezcla: true };
+  return { finca: fs.map((f) => tr(f.finca)).join(" + "), municipio: [...new Set(fs.map((f) => f.municipio))].join(UI.lang === "en" ? " and " : " y "), mezcla: true };
 };
 const esMolido = (p) => p.sale && p.sale.es === "Molido";
 

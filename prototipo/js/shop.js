@@ -303,6 +303,28 @@ function viewCafes() {
     ${CONFIG.cafeterias ? bloqueCafeterias() : ""}`;
 }
 
+/* ---------- este café, en palabras ----------
+   Lo que la ficha dice en tablas, dicho corrido: de dónde viene, quién lo cultiva
+   y qué encontró el catador. Sale de `descripcion`; sin ella, no hay bloque. */
+function bloqueDescripcion(p, en) {
+  const d = p.descripcion && tx(p.descripcion);
+  if (!d || !d.length) return "";
+  return `<section class="prod-dice reveal" style="--i:2">
+      <div class="section-head"><p class="eyebrow">${en ? "This coffee" : "Este café"}</p>
+        <h2>${en ? "What you are <em>taking home</em>" : "Lo que te <em>estás llevando</em>"}</h2></div>
+      <div class="dice">${d.map((x) => `<p>${esc(x)}</p>`).join("")}</div>
+    </section>`;
+}
+
+/* La proporción de la receta, en la medida con que se cuenta: gramos por cada
+   100 ml. Se saca de la receta misma para que no haya dos cifras que cuadrar. */
+function proporcion(R, en) {
+  const g = parseFloat(R.dosis), ml = parseFloat(R.agua);
+  if (!(g > 0) || !(ml > 0)) return "";
+  const n = Math.round((g / ml) * 1000) / 10;
+  return en ? `${n} g of coffee per 100 ml of water` : `${n} g de café por cada 100 ml de agua`;
+}
+
 /* ---------- la taza ----------
    La catación en una rueda chica: los ocho atributos del formato SCA, de 1 a 9, con
    la escala completa, sin acercarla para exagerar. Entra creciendo desde el centro
@@ -443,6 +465,8 @@ function viewCafe() {
     </div>
     </div>
 
+    ${bloqueDescripcion(p, en)}
+
     ${bloqueTaza(p, en)}
 
     <section class="prod-ficha reveal" style="--i:2">
@@ -476,7 +500,7 @@ function viewCafe() {
         [en ? "Water" : "Agua", R.agua], [en ? "Temp." : "Temperatura", R.temp],
         [en ? "Time" : "Tiempo", R.tiempo], [en ? "Grind" : "Molienda", tx(R.molienda)]]
         .map(([k, val]) => `<div><span class="lbl">${k}</span><b>${esc(val)}</b></div>`).join("")}</div>
-      <p class="hint">${en ? "Too bitter: grind coarser. Too weak: grind finer." : "Si queda amargo, muele más grueso. Si queda aguado, muele más fino."}</p>
+      <p class="hint">${proporcion(R, en)}. ${en ? "Too bitter: grind coarser. Too weak: grind finer." : "Si queda amargo, muele más grueso. Si queda aguado, muele más fino."}</p>
     </section>
 
     <section class="cierre reveal" style="--i:4">

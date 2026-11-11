@@ -2548,6 +2548,14 @@ html.js .tz:not(.in) .tz-at{opacity:0}
 .g-puerta.oscura .g-acc-pronto{z-index:2;font-size:clamp(1.7rem,3.6vw,3rem)}
 @media (hover:hover) and (pointer:fine){.g-puerta.oscura:hover .g-prod-foto{transform:scale(1.04)}}
 
+/* Este café, en palabras: dos párrafos lado a lado para que no alarguen la página. */
+.prod-dice{margin-top:clamp(40px,6vw,72px)}
+.prod-dice .section-head h2{font-size:clamp(1.5rem,3vw,2.3rem)}
+.dice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 40px;margin-top:18px;padding-top:18px;border-top:1px solid var(--ink)}
+.dice p{margin:0;font-size:1.02rem;line-height:1.6;color:var(--ink-2)}
+.dice p:first-child{font-size:1.12rem;color:var(--ink)}
+@media (max-width:760px){.dice{grid-template-columns:1fr;gap:14px}}
+
 </style>
 <script type="application/ld+json" id="ld-json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.nandezcoffee.com/#organizacion","name":"Nandez Coffee","url":"https://www.nandezcoffee.com","logo":"https://www.nandezcoffee.com/img/marca/icono-512.png","image":"https://www.nandezcoffee.com/img/marca/compartir.jpg","sameAs":["https://www.instagram.com/nandezcoffee/","https://www.facebook.com/profile.php?id=61594868961438","https://www.youtube.com/@N%C3%A1ndezCaf%C3%A9"],"email":"nandezcafe@gmail.com","address":{"@type":"PostalAddress","addressRegion":"Norte de Santander","addressCountry":"CO"},"description":"Familia cafetera de Chinácota. Compramos lotes pequeños en fincas de Norte de Santander y los tostamos con nuestro nombre: dos cafés de una sola finca, en grano, y un blend molido de los dos."},{"@type":"WebSite","@id":"https://www.nandezcoffee.com/#sitio","url":"https://www.nandezcoffee.com","name":"Nandez Coffee","publisher":{"@id":"https://www.nandezcoffee.com/#organizacion"},"inLanguage":"es"},{"@type":"FAQPage","inLanguage":"es","mainEntity":[{"@type":"Question","name":"¿Qué es el café de origen y en qué se diferencia del café común?","acceptedAnswer":{"@type":"Answer","text":"El café de origen viene de una sola finca y una sola cosecha, no de la mezcla de muchos productores. Por eso se puede saber quién lo cultivó, a qué altura y con qué proceso, y por eso una taza sabe distinta de otra."}},{"@type":"Question","name":"¿Cuánto cuesta un café especial colombiano?","acceptedAnswer":{"@type":"Answer","text":"En 2026 una bolsa de 250 g de café especial en Colombia va entre $35.000 y $70.000, según la variedad y el puntaje de catación. Un Geisha o un lote de subasta cuesta más porque se produce en cantidades muy pequeñas."}},{"@type":"Question","name":"¿Qué significa el puntaje SCA de un café?","acceptedAnswer":{"@type":"Answer","text":"Es la calificación de un catador certificado sobre 100 puntos. Desde 80 se considera café especial y desde 86 es excepcional. Publicamos la fecha de la catación, porque el puntaje envejece junto con el café."}},{"@type":"Question","name":"¿Por qué se cultiva buen café en Norte de Santander?","acceptedAnswer":{"@type":"Answer","text":"Son montañas con noches frías, que maduran el grano despacio. Es una región menos conocida que Huila o Nariño, y por eso todavía se consiguen microlotes excepcionales a precios sensatos. La altura y la vereda de cada finca van en la ficha de su café."}},{"@type":"Question","name":"¿Le compran directo al productor?","acceptedAnswer":{"@type":"Answer","text":"Sí. Vamos a la finca y medimos el factor de rendimiento y la humedad delante del productor. No hay intermediarios entre la finca y la bolsa."}}]}]}</script>
 </head>
@@ -2556,7 +2564,7 @@ html.js .tz:not(.in) .tz-at{opacity:0}
     <a href="/cafes" data-act="go" data-to="cafes">
       <b>Lanzamiento</b>
       <span>20 de nov de 2026</span>
-      <i data-cuenta>faltan 10 días</i>
+      <i data-cuenta>faltan 9 días</i>
       <em>Reserva la tuya</em>
     </a></aside>
 <header class="top">
@@ -3050,6 +3058,14 @@ function seed() {
         sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que lo muelas el día que lo preparas: así guarda el aroma.", en: "We ship it whole so you grind it the day you brew it, which keeps the aroma." },
         altitud: 1870, puntaje: 87, nivel: "DOCUMENTADO", fuente: "Catación SCA", fecha: "2026-11-03",
         notas: { es: ["Durazno", "Almendra", "Panela", "Manzanilla"], en: ["Peach", "Almond", "Brown sugar", "Chamomile"] },
+        /* Lo que se cuenta del café, en palabras. Todo sale de datos que ya están
+           en esta ficha: la finca, quién la cultiva, la altura, el proceso y lo que
+           anotó el catador. Nada de adornos que no se puedan comprobar. */
+        descripcion: {
+          es: ["Un café para quien toma café todos los días y quiere saber de dónde sale. Es un Castillo lavado de la finca El Roble, en Ragonvalia, sembrado a 1.870 metros, y lo cultiva Domingo Torres.",
+               "En la mesa de catación sacó 87 puntos SCA. Arriba aparecen el durazno y la manzanilla; debajo se asientan la panela y la almendra. Queda suave en boca, entre lo ácido y lo dulce."],
+          en: ["A coffee for someone who drinks coffee every day and wants to know where it comes from. A washed Castillo from El Roble farm in Ragonvalia, grown at 1,870 metres by Domingo Torres.",
+               "On the cupping table it scored 87 SCA points. Peach and chamomile come first; brown sugar and almond settle underneath. It stays smooth in the mouth, between sweet and acidic."] },
         /* La taza, copiada del formato combinado SCA (v2, 2024) de la catación. Cada
            atributo va de 1 a 9; el total no es la suma, lo calcula la fórmula de la SCA. */
         taza: { fecha: "2026-11-03",
@@ -3085,6 +3101,11 @@ function seed() {
         sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que no pierda aroma.", en: "We ship it whole so it keeps its aroma." },
         altitud: 1300, puntaje: 87, nivel: "DOCUMENTADO", fuente: "Catación SCA", fecha: "2026-11-03",
         notas: { es: ["Durazno", "Avellana", "Chocolate"], en: ["Peach", "Hazelnut", "Chocolate"] },
+        descripcion: {
+          es: ["El más dulce de los tres en la mesa de catación, para quien le huye a lo amargo. Es un Cenicafé 1 lavado de la finca El Paraíso, en la vereda Palocolorado de Chinácota, a 1.300 metros, y lo cultiva Bernardo Becerra.",
+               "También sacó 87 puntos SCA. El catador anotó acidez cítrica y dulzor a panela, con durazno al principio y avellana y chocolate al final. Cuerpo suave."],
+          en: ["The sweetest of the three on the cupping table, for anyone who runs from bitterness. A washed Cenicafé 1 from El Paraíso farm, in the Palocolorado district of Chinácota, grown at 1,300 metres by Bernardo Becerra.",
+               "It also scored 87 SCA points. The cupper wrote down citric acidity and brown-sugar sweetness, with peach up front and hazelnut and chocolate at the end. Smooth body."] },
         taza: { fecha: "2026-11-03",
           fragancia: 7, aroma: 7, sabor: 6, residual: 6, acidez: 7, dulzor: 7, boca: 6, global: 6,
           datos: [[{ es: "Acidez", en: "Acidity" }, { es: "Cítrica", en: "Citric" }],
@@ -3113,6 +3134,11 @@ function seed() {
         sale: { es: "Molido", en: "Ground" }, saleNota: { es: "Molienda fina: lista para el gotero o la cafetera de goteo.", en: "Fine grind: ready for a pour-over cone or a drip machine." },
         altitud: null, puntaje: 87, nivel: "DECLARADO", fuente: "Unión de las dos catas", fecha: "2026-11-03",
         notas: { es: ["Durazno", "Almendra", "Avellana", "Panela", "Chocolate", "Manzanilla"], en: ["Peach", "Almond", "Hazelnut", "Brown sugar", "Chocolate", "Chamomile"] },
+        descripcion: {
+          es: ["Los dos cafés en una misma bolsa, molidos finos para el gotero o la cafetera de goteo. Es para quien no tiene molino y no piensa comprar uno.",
+               "No se cató aparte: su taza es la de los dos, y cada uno sacó 87 puntos SCA. Del Castillo llegan la panela y la manzanilla; del Cenicafé 1, la avellana y el chocolate. El durazno lo ponen los dos."],
+          en: ["The two coffees in one bag, ground fine for a pour-over cone or a drip machine. It is for someone with no grinder who does not plan to buy one.",
+               "It was not cupped on its own: its cup is both of them, and each scored 87 SCA points. Brown sugar and chamomile come from the Castillo; hazelnut and chocolate from the Cenicafé 1. Both bring the peach."] },
         /* El blend no tiene formato propio: su taza es la unión de las dos catas, así
            que la rueda dibuja los dos cafés (`de`) en vez de un promedio inventado. */
         taza: { de: ["P-CAS", "P-PAR"], fecha: "2026-11-03",
@@ -3290,7 +3316,7 @@ function franjaLanzamiento(en) {
 const fincaDe = (p) => {
   if (!p.mezcla) return S.fincas.find((f) => f.id === p.fincaId) || {};
   const fs = p.mezcla.map((id) => S.fincas.find((f) => f.id === id)).filter(Boolean);
-  return { finca: fs.map((f) => tr(f.finca)).join(" + "), municipio: [...new Set(fs.map((f) => f.municipio))].join(" y "), mezcla: true };
+  return { finca: fs.map((f) => tr(f.finca)).join(" + "), municipio: [...new Set(fs.map((f) => f.municipio))].join(UI.lang === "en" ? " and " : " y "), mezcla: true };
 };
 const esMolido = (p) => p.sale && p.sale.es === "Molido";
 
@@ -4444,6 +4470,28 @@ function viewCafes() {
     ${CONFIG.cafeterias ? bloqueCafeterias() : ""}`;
 }
 
+/* ---------- este café, en palabras ----------
+   Lo que la ficha dice en tablas, dicho corrido: de dónde viene, quién lo cultiva
+   y qué encontró el catador. Sale de `descripcion`; sin ella, no hay bloque. */
+function bloqueDescripcion(p, en) {
+  const d = p.descripcion && tx(p.descripcion);
+  if (!d || !d.length) return "";
+  return `<section class="prod-dice reveal" style="--i:2">
+      <div class="section-head"><p class="eyebrow">${en ? "This coffee" : "Este café"}</p>
+        <h2>${en ? "What you are <em>taking home</em>" : "Lo que te <em>estás llevando</em>"}</h2></div>
+      <div class="dice">${d.map((x) => `<p>${esc(x)}</p>`).join("")}</div>
+    </section>`;
+}
+
+/* La proporción de la receta, en la medida con que se cuenta: gramos por cada
+   100 ml. Se saca de la receta misma para que no haya dos cifras que cuadrar. */
+function proporcion(R, en) {
+  const g = parseFloat(R.dosis), ml = parseFloat(R.agua);
+  if (!(g > 0) || !(ml > 0)) return "";
+  const n = Math.round((g / ml) * 1000) / 10;
+  return en ? `${n} g of coffee per 100 ml of water` : `${n} g de café por cada 100 ml de agua`;
+}
+
 /* ---------- la taza ----------
    La catación en una rueda chica: los ocho atributos del formato SCA, de 1 a 9, con
    la escala completa, sin acercarla para exagerar. Entra creciendo desde el centro
@@ -4584,6 +4632,8 @@ function viewCafe() {
     </div>
     </div>
 
+    ${bloqueDescripcion(p, en)}
+
     ${bloqueTaza(p, en)}
 
     <section class="prod-ficha reveal" style="--i:2">
@@ -4617,7 +4667,7 @@ function viewCafe() {
         [en ? "Water" : "Agua", R.agua], [en ? "Temp." : "Temperatura", R.temp],
         [en ? "Time" : "Tiempo", R.tiempo], [en ? "Grind" : "Molienda", tx(R.molienda)]]
         .map(([k, val]) => `<div><span class="lbl">${k}</span><b>${esc(val)}</b></div>`).join("")}</div>
-      <p class="hint">${en ? "Too bitter: grind coarser. Too weak: grind finer." : "Si queda amargo, muele más grueso. Si queda aguado, muele más fino."}</p>
+      <p class="hint">${proporcion(R, en)}. ${en ? "Too bitter: grind coarser. Too weak: grind finer." : "Si queda amargo, muele más grueso. Si queda aguado, muele más fino."}</p>
     </section>
 
     <section class="cierre reveal" style="--i:4">
@@ -6545,7 +6595,7 @@ function unirseComunidad() {
 }
 
 /* ---------- el pop-up: el bono para quien llega, la novedad para quien ya es miembro ----------
-   Lo más importante es recoger el correo, así que sale pronto (a los POP_ESPERA
+   Lo más importante es recoger el correo, así que sale enseguida (a los POP_ESPERA
    de la primera visita) y en el centro de la pantalla, con un velo detrás:
    en una esquina se pasaba por alto. Nunca va encima del carrito.
    - Quien no se ha registrado ve el bono. Lo crea la hoja y llega por correo:
@@ -6556,9 +6606,9 @@ function unirseComunidad() {
      de un toque con el correo que ya dejó. Si no hay nada nuevo, no sale.
    No va en el HTML armado: lo pinta el navegador, así que los buscadores no lo ven. */
 const POP_KEY = "nandez-bono-pop";
-/* A los 3 s tapaba la portada antes de que se leyera la preventa. Ahora sale
-   cuando la persona ya bajó a ver los cafés, o a los POP_ESPERA si se queda quieta. */
-const POP_ESPERA = 12000;
+/* Maick lo pidió al segundo de entrar (10-11-2026): lo primero es recoger el correo,
+   aunque tape la portada un momento. Si baja antes, sale igual (POP_SCROLL). */
+const POP_ESPERA = 1000;
 const POP_SCROLL = 700;     /* px bajados: ya pasó la portada */
 const POP_CERRADO = 7;      /* lo cerró sin registrarse: vuelve en una semana */
 const POP_MIEMBRO = 30;     /* ya es miembro: una novedad al mes */
