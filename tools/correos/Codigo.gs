@@ -56,7 +56,7 @@ const H_ACTIVIDAD = "Actividad", H_CARRITOS = "Carritos", H_VISITAS = "Visitas";
    contar sin pedir permiso. Es la única cifra comparable con «Visitas a la
    página de destino» de Meta; el embudo de al lado solo ve a quien aceptó las
    cookies, que siempre son menos. */
-const COLS_VISITAS = ["dia", "visitas"];
+const COLS_VISITAS = ["dia", "visitas", "pop"];   // "pop": cuántos vieron el pop-up del bono
 const COLS_ACTIVIDAD = ["fecha", "visitante", "evento", "detalle", "valor", "correo", "pagina", "idioma"];
 const COLS_CARRITOS = ["visitante", "correo", "items", "total", "unidades", "creado", "actualizado", "estado", "recordado", "idioma"];
 const EVENTOS = ["visita", "ver", "agregar", "pagar", "compra", "registro"];
@@ -83,6 +83,9 @@ function configurar() {
   hoja_(ss, H_ACTIVIDAD, COLS_ACTIVIDAD);
   hoja_(ss, H_CARRITOS, COLS_CARRITOS);
   hoja_(ss, H_VISITAS, COLS_VISITAS);
+  /* la columna "pop" entró después: una hoja de antes se quedaría sin su título */
+  const hv = hojaDe_(ss, H_VISITAS);
+  if (hv.getLastColumn() < 3) hv.getRange(1, 3).setValue("pop").setFontWeight("bold");
   const primera = ss.getSheetByName("Hoja 1") || ss.getSheetByName("Sheet1");
   if (primera && ss.getSheets().length > 1) ss.deleteSheet(primera);
   if (!p.getProperty("CLAVE")) p.setProperty("CLAVE", Utilities.getUuid().replace(/-/g, ""));
@@ -141,7 +144,7 @@ function doPost(e) {
   if (d.accion === "stock") return fijarStock_(d);
   if (d.accion === "limpiar") return limpiar_(d);
   /* la bitácora no pasa por Registros ni toca Contactos: es otra cosa */
-  if (d.tipo === "llegada") return llegada_();
+  if (d.tipo === "llegada") return llegada_(d);
   if (d.tipo === "evento") return evento_(d);
   if (d.tipo === "carrito") return carrito_(d);
   const lock = LockService.getScriptLock();
@@ -598,15 +601,17 @@ const diaClave_ = (v) => { const d = new Date(v); return d.getFullYear() + "-" +
    Se llama antes del aviso de cookies y también cuando dicen que no: por eso
    no puede llevar nada que identifique. Si la hoja está ocupada no se espera,
    que una cuenta de menos importa menos que una página lenta. */
-function llegada_() {
+function llegada_(d) {
   const lock = LockService.getScriptLock();
   if (!lock.tryLock(5000)) return json_({ ok: true });
   try {
     const h = hojaDe_(libro_(), H_VISITAS), hoy = diaClave_(new Date()), filas = h.getDataRange().getValues();
+    /* la misma fila del día: columna 2 quien entró, columna 3 quien vio el pop-up */
+    const col = d && d.pop === true ? 3 : 2;
     for (let i = 1; i < filas.length; i++) {
-      if (String(filas[i][0]) === hoy) { h.getRange(i + 1, 2).setValue(num_(filas[i][1]) + 1); return json_({ ok: true }); }
+      if (String(filas[i][0]) === hoy) { h.getRange(i + 1, col).setValue(num_(filas[i][col - 1]) + 1); return json_({ ok: true }); }
     }
-    h.appendRow([hoy, 1]);
+    h.appendRow(col === 3 ? [hoy, 0, 1] : [hoy, 1, 0]);
     return json_({ ok: true });
   } finally { lock.releaseLock(); }
 }
@@ -686,13 +691,13 @@ function actividad_(q) {
     .reverse().slice(0, 50).map((f) => ({ id: f[0], fecha: f[1], nombre: f[3], correo: f[4], tel: f[5], ciudad: f[6], productos: f[7], total: f[11],
       recordado: /Recordado el /.test(String(f[18])) }));
   /* las visitas anónimas del periodo, que son todas, no solo las que aceptaron */
-  const vis = {};
-  hojaDe_(ss, H_VISITAS).getDataRange().getValues().slice(1).forEach((f) => { if (f[0]) vis[String(f[0])] = num_(f[1]); });
-  let visitas = 0;
+  const vis = {}, pops = {};
+  hojaDe_(ss, H_VISITAS).getDataRange().getValues().slice(1).forEach((f) => { if (f[0]) { vis[String(f[0])] = num_(f[1]); pops[String(f[0])] = num_(f[2]); } });
+  let visitas = 0, pop = 0;
   serie.forEach((d) => { d.visitas = vis[d.dia] || 0; });
-  for (let i = 0; i < dias; i++) visitas += vis[diaClave_(masDias_(new Date(), -i))] || 0;
+  for (let i = 0; i < dias; i++) { const k = diaClave_(masDias_(new Date(), -i)); visitas += vis[k] || 0; pop += pops[k] || 0; }
   const hoy = dia_(new Date()), alta = (f) => new Date(f[4]).getTime() || 0;
-  return { ok: true, actividad: true, inscritos: inscritos_(ss), visitas: visitas, dias: dias, embudo: embudo, porDia: serie,
+  return { ok: true, actividad: true, inscritos: inscritos_(ss), visitas: visitas, pop: pop, dias: dias, embudo: embudo, porDia: serie,
     productos: Object.keys(prod).map((k) => prod[k]).sort((a, b) => b.agregar - a.agregar || b.ver - a.ver).slice(0, 8),
     recientes: filas.slice(-40).reverse().map((f) => ({ fecha: f[0], visitante: String(f[1]).slice(0, 4), evento: f[2], detalle: f[3], valor: f[4], correo: f[5], pagina: f[6] })),
     carritos: quietos.filter((c) => c.correo).slice(0, 100).map((c) => ({ v: c.v, correo: c.correo, items: c.items, total: c.total, unidades: c.unidades,
@@ -832,7 +837,7 @@ function doGet(e) {
   if (q.accion === "baja") return baja_(q);
   /* El stock no es secreto: la tienda lo pide al cargar, sin clave */
   /* "actividad: true" le dice a la página que este script ya recibe la bitácora */
-  if (q.accion === "stock") return json_({ ok: true, stock: stockMapa_(libro_()), actividad: true, visitas: true });
+  if (q.accion === "stock") return json_({ ok: true, stock: stockMapa_(libro_()), actividad: true, visitas: true, pop: true });
   /* la hoja Stock completa, con fechas, para la pestaña Stock del panel */
   if (q.accion === "existencias") {
     if (!q.clave || q.clave !== clave_()) return json_({ ok: false, error: "clave" });

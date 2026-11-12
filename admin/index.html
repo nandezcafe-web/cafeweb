@@ -4042,6 +4042,24 @@ function acDias(serie) {
       <i style="height:${d.visita ? Math.max(4, (d.visita / tope) * 100) : 0}%"></i><small>${d.dia.slice(8)}</small></span>`).join("")}</div>`;
 }
 
+/* El pop-up del bono, en dos cifras: cuántos lo vieron y cuántos dejaron el
+   correo. Separa las dos razones por las que nadie se registra —que no se vea
+   o que no convenza— y dice cuál hay que arreglar. Un pop-up normal convierte
+   entre 2 % y 5 %: por encima de eso el problema es el tráfico, no la caja. */
+function acPopUp(d) {
+  if (d.pop == null) return "";
+  if (!d.pop) return `<p class="hint ac-visitas">Todavía nadie ha visto el pop-up del bono en estos ${d.dias} días.
+    Si entró gente, es que no alcanza a salir antes de que se vayan.</p>`;
+  const nuevos = Number(d.nuevos?.d7) || 0;
+  const pct = (nuevos / d.pop) * 100;
+  return `<p class="hint ac-visitas"><b class="mono">${fmtNum(d.pop)}</b> vieron el pop-up del bono
+    ${d.visitas ? `(${fmtNum((d.pop / d.visitas) * 100)} % de quienes entraron)` : ""}.
+    ${d.dias === 7 ? `De ahí salieron <b class="mono">${fmtNum(nuevos)}</b> registros: <b class="mono">${fmtNum(pct)} %</b>.
+      ${pct >= 5 ? "Eso está por encima de lo normal en un pop-up (2 % a 5 %): para tener más registros hace falta más gente, no otro pop-up."
+        : "Por debajo del 2 % al 5 % que suele dar un pop-up: ahí sí vale la pena cambiarle el texto o la oferta."}`
+      : `Los registros del embudo son de 7 días, así que el porcentaje solo cuadra en el periodo de 7 días.`}</p>`;
+}
+
 function viewActividad() {
   if (!CONFIG.registro || !coClave()) return `<section class="co-vacio">
       <p class="eyebrow">Actividad</p><h2>Primero, conecta la hoja</h2>
@@ -4086,6 +4104,7 @@ function viewActividad() {
         ${d.visitas != null ? `<p class="hint ac-visitas"><b class="mono">${fmtNum(d.visitas)}</b> abrieron la página en estos ${d.dias} días.
           Esa cifra sí son todas, porque contar una visita no necesita permiso. De ahí para abajo solo aparecen quienes aceptaron las cookies:
           compárala con <b>Visitas a la página de destino</b> en el Administrador de anuncios, no con los clics.</p>` : ""}
+        ${acPopUp(d)}
         ${e.visita ? acEmbudo(e) : `<p class="hint">Todavía no hay actividad anotada en este periodo. Empieza a llegar cuando alguien acepta las cookies en la página.</p>`}
       </section>
       <section class="wpanel ac-caja">

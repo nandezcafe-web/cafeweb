@@ -369,6 +369,7 @@ ok(getJ({ accion: "actividad", clave: props.CLAVE }).embudo.visita === 1, "despu
 /* ---- la cuenta de visitas, sin cookies ---- */
 cuota = 50;
 ok(getJ({ accion: "stock" }).visitas === true, "el stock le avisa a la página que el script ya sabe contar visitas");
+ok(getJ({ accion: "stock" }).pop === true, "y que sabe contar aparte quién vio el pop-up: sin eso la página no manda esa raya");
 const regAntesV = ss.hojas["Registros"].filas.length, actAntesV = ss.hojas["Actividad"].filas.length;
 post({ tipo: "llegada" }); post({ tipo: "llegada" }); post({ tipo: "llegada" });
 ok(ss.hojas["Visitas"].filas.length === 2 && Number(ss.hojas["Visitas"].filas[1][1]) === 3,
@@ -377,6 +378,11 @@ ok(ss.hojas["Registros"].filas.length === regAntesV && ss.hojas["Actividad"].fil
   "una llegada no deja rastro en Registros ni en la bitácora: no lleva nada de nadie");
 ok(JSON.stringify(ss.hojas["Visitas"].filas[1]).indexOf("@") < 0 && String(ss.hojas["Visitas"].filas[1][0]).length === 10,
   "la fila es solo la fecha y un número, sin correo ni visitante");
+post({ tipo: "llegada", pop: true }); post({ tipo: "llegada", pop: true });
+ok(ss.hojas["Visitas"].filas.length === 2 && Number(ss.hojas["Visitas"].filas[1][1]) === 3 && Number(ss.hojas["Visitas"].filas[1][2]) === 2,
+  "ver el pop-up suma en su propia columna, sin tocar la cuenta de quienes entraron");
+ok(JSON.stringify(ss.hojas["Visitas"].filas[1]).indexOf("@") < 0,
+  "la raya del pop-up tampoco lleva correo: se cuenta sin permiso de cookies");
 const actV = getJ({ accion: "actividad", clave: props.CLAVE });
 ok(actV.visitas === 3 && actV.porDia[actV.porDia.length - 1].visitas === 3, "el panel recibe el total y el detalle por día");
 ok(actV.visitas >= actV.embudo.visita, "las visitas nunca son menos que los del embudo: ese es el punto");

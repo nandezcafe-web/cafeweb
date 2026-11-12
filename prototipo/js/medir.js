@@ -40,7 +40,7 @@ const MED_KEY = "nandez-medicion";
 const INTERNO_KEY = "nandez-interno";
 const esInterno = () => { try { return localStorage.getItem(INTERNO_KEY) === "1"; } catch { return false; } };
 /* propia: null mientras no se sabe si la hoja recibe la bitácora; después, sí o no */
-const M = { listo: false, cola: [], propia: null, cuentaVisitas: false };
+const M = { listo: false, cola: [], propia: null, cuentaVisitas: false, cuentaPop: false, popPendiente: false };
 
 const medicionAjena = () => !!(CONFIG.medicion && (CONFIG.medicion.metaPixel || CONFIG.medicion.ga4));
 const propiaPosible = () => !!CONFIG.registro && !!CONFIG.medicion && CONFIG.medicion.propia !== false;
@@ -153,6 +153,30 @@ function contarLlegada() {
   } catch {}
 }
 
+/* ---------- cuántos ven el pop-up del bono ----------
+   La misma raya al día que la llegada, en su propia columna: sin visitante,
+   sin correo y sin qué miró, así que tampoco pide permiso de cookies y se
+   cuenta también a quien dijo que no. Es la única forma de separar las dos
+   razones por las que nadie se registra: que el 10 % no convenza, o que el
+   pop-up no alcance a salir antes de que la persona se vaya.
+   Si lo ve antes de que la hoja conteste, queda pendiente y se manda después. */
+const POP_VISTO_KEY = "nandez-pop-visto";
+function contarPopVisto() {
+  if (esInterno() || !CONFIG.registro || !propiaPosible()) return;
+  /* Un script sin la columna "pop" sumaría esta raya a la cuenta de visitas y
+     la inflaría: hasta que la hoja diga que sabe, no se manda nada. */
+  if (!M.cuentaPop) { M.popPendiente = true; return; }
+  M.popPendiente = false;
+  try {
+    if (sessionStorage.getItem(POP_VISTO_KEY)) return;
+    sessionStorage.setItem(POP_VISTO_KEY, "1");
+  } catch { return; }   /* sin sessionStorage no se cuenta, antes que contar de más */
+  try {
+    fetch(CONFIG.registro, { method: "POST", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ tipo: "llegada", pop: true }) }).catch(() => {});
+  } catch {}
+}
+
 function bitacoraArranque() {
   if (!bitacoraActiva()) return;
   try { if (!sessionStorage.getItem(VIS_KEY)) { sessionStorage.setItem(VIS_KEY, "1"); bitacora("visita", {}); } } catch {}
@@ -160,9 +184,11 @@ function bitacoraArranque() {
 }
 /* La hoja respondió: ya se sabe si recibe la bitácora. Si la recibe, es el
    momento de preguntar (o de arrancar, si la persona ya había dicho que sí). */
-function medicionPropia(si, cuentaVisitas) {
+function medicionPropia(si, cuentaVisitas, cuentaPop) {
   M.cuentaVisitas = !!cuentaVisitas;
+  M.cuentaPop = !!cuentaPop;
   contarLlegada();   /* no depende del permiso: no lleva nada de nadie */
+  if (M.popPendiente) contarPopVisto();   /* lo vio antes de que la hoja contestara */
   if (M.propia !== null) return;
   M.propia = !!si && propiaPosible();
   if (!medicionHayQuePedir()) { M.cola.length = 0; $("#cookies")?.remove(); return; }

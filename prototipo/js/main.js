@@ -218,8 +218,11 @@ function popSobra() {
 }
 /* Las de aquí son del momento: se espera y se vuelve a mirar. */
 /* Si alguien ignora el aviso de cookies, a los POP_COOKIES segundos el pop-up
-   sale igual: más vale pedir el correo con la franja abajo que no pedirlo. */
-const POP_COOKIES = 25;
+   sale igual: más vale pedir el correo con la franja abajo que no pedirlo.
+   Eran 25 s y en el móvil media visita dura menos que eso: quien no respondía
+   las cookies se iba sin ver el bono. Con popPiso conectado los dos caben a la
+   vez, así que esperar mucho ya no compra nada. */
+const POP_COOKIES = 6;
 const popLlegada = Date.now();
 const popEstorba = () => UI.view === "gang"                      /* esa página ES este registro */
   || !!document.querySelector("dialog[open]")                    /* el carrito o un modal manda */
@@ -252,6 +255,9 @@ function popMontar(el) {
   document.body.append(velo, el);
   requestAnimationFrame(() => velo.classList.add("in"));
   popPiso();
+  /* queda la raya de que alguien lo vio: sin eso no se sabe si el bono no
+     convence o si simplemente no alcanza a salir (js/medir.js) */
+  if (typeof contarPopVisto === "function") contarPopVisto();
   /* el foco no se roba: la visita estaba leyendo. Entra solo al tabular */
   requestAnimationFrame(() => el.classList.add("in"));
 }
@@ -332,7 +338,13 @@ function popAvisame(id) {
 function popPiso() {
   const el = $("#g-pop"), tr = $("#tray"), ck = $("#cookies");
   if (!el) return;
-  const alto = (tr && !tr.hidden ? tr.getBoundingClientRect().height : 0) + (ck ? ck.getBoundingClientRect().height : 0);
+  /* Lo que estorba no es el alto de la caja sino todo lo que queda del borde
+     de arriba de ella hacia abajo: en el móvil debajo de la franja de cookies
+     todavía va el dock, y midiendo solo la franja el pop-up subía de menos y
+     el aviso le tapaba el renglón de la política de privacidad.
+     Van por el mayor, no sumados: las dos viven pegadas al mismo borde. */
+  const ocupa = (n) => (n ? Math.max(0, innerHeight - n.getBoundingClientRect().top) : 0);
+  const alto = Math.max(ocupa(tr && !tr.hidden ? tr : null), ocupa(ck));
   el.style.setProperty("--g-pop-piso", (alto ? alto + 12 : 0) + "px");
 }
 

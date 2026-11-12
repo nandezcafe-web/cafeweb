@@ -538,7 +538,7 @@ function cargarStock() {
   return fetch(`${CONFIG.registro}?accion=stock`).then((r) => r.json()).catch(() => ({ ok: false }))
     .then((j) => {
       /* de paso, la hoja dice si ya recibe la bitácora de la página (medir.js) */
-      medicionPropia(!!(j && j.ok && j.actividad === true), !!(j && j.visitas === true));
+      medicionPropia(!!(j && j.ok && j.actividad === true), !!(j && j.visitas === true), !!(j && j.pop === true));
       if (!j || !j.ok || !j.stock) return false;
       let cambio = false;
       S.productos.forEach((p) => {

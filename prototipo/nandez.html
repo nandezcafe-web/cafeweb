@@ -2567,7 +2567,7 @@ html.js .tz:not(.in) .tz-at{opacity:0}
     <a href="/cafes" data-act="go" data-to="cafes">
       <b>Lanzamiento</b>
       <span>20 de nov de 2026</span>
-      <i data-cuenta>faltan 9 días</i>
+      <i data-cuenta>faltan 8 días</i>
       <em>Reserva la tuya</em>
     </a></aside>
 <header class="top">
@@ -3821,7 +3821,7 @@ const MED_KEY = "nandez-medicion";
 const INTERNO_KEY = "nandez-interno";
 const esInterno = () => { try { return localStorage.getItem(INTERNO_KEY) === "1"; } catch { return false; } };
 /* propia: null mientras no se sabe si la hoja recibe la bitácora; después, sí o no */
-const M = { listo: false, cola: [], propia: null, cuentaVisitas: false };
+const M = { listo: false, cola: [], propia: null, cuentaVisitas: false, cuentaPop: false, popPendiente: false };
 
 const medicionAjena = () => !!(CONFIG.medicion && (CONFIG.medicion.metaPixel || CONFIG.medicion.ga4));
 const propiaPosible = () => !!CONFIG.registro && !!CONFIG.medicion && CONFIG.medicion.propia !== false;
@@ -3934,6 +3934,30 @@ function contarLlegada() {
   } catch {}
 }
 
+/* ---------- cuántos ven el pop-up del bono ----------
+   La misma raya al día que la llegada, en su propia columna: sin visitante,
+   sin correo y sin qué miró, así que tampoco pide permiso de cookies y se
+   cuenta también a quien dijo que no. Es la única forma de separar las dos
+   razones por las que nadie se registra: que el 10 % no convenza, o que el
+   pop-up no alcance a salir antes de que la persona se vaya.
+   Si lo ve antes de que la hoja conteste, queda pendiente y se manda después. */
+const POP_VISTO_KEY = "nandez-pop-visto";
+function contarPopVisto() {
+  if (esInterno() || !CONFIG.registro || !propiaPosible()) return;
+  /* Un script sin la columna "pop" sumaría esta raya a la cuenta de visitas y
+     la inflaría: hasta que la hoja diga que sabe, no se manda nada. */
+  if (!M.cuentaPop) { M.popPendiente = true; return; }
+  M.popPendiente = false;
+  try {
+    if (sessionStorage.getItem(POP_VISTO_KEY)) return;
+    sessionStorage.setItem(POP_VISTO_KEY, "1");
+  } catch { return; }   /* sin sessionStorage no se cuenta, antes que contar de más */
+  try {
+    fetch(CONFIG.registro, { method: "POST", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ tipo: "llegada", pop: true }) }).catch(() => {});
+  } catch {}
+}
+
 function bitacoraArranque() {
   if (!bitacoraActiva()) return;
   try { if (!sessionStorage.getItem(VIS_KEY)) { sessionStorage.setItem(VIS_KEY, "1"); bitacora("visita", {}); } } catch {}
@@ -3941,9 +3965,11 @@ function bitacoraArranque() {
 }
 /* La hoja respondió: ya se sabe si recibe la bitácora. Si la recibe, es el
    momento de preguntar (o de arrancar, si la persona ya había dicho que sí). */
-function medicionPropia(si, cuentaVisitas) {
+function medicionPropia(si, cuentaVisitas, cuentaPop) {
   M.cuentaVisitas = !!cuentaVisitas;
+  M.cuentaPop = !!cuentaPop;
   contarLlegada();   /* no depende del permiso: no lleva nada de nadie */
+  if (M.popPendiente) contarPopVisto();   /* lo vio antes de que la hoja contestara */
   if (M.propia !== null) return;
   M.propia = !!si && propiaPosible();
   if (!medicionHayQuePedir()) { M.cola.length = 0; $("#cookies")?.remove(); return; }
@@ -4778,7 +4804,7 @@ function cargarStock() {
   return fetch(`${CONFIG.registro}?accion=stock`).then((r) => r.json()).catch(() => ({ ok: false }))
     .then((j) => {
       /* de paso, la hoja dice si ya recibe la bitácora de la página (medir.js) */
-      medicionPropia(!!(j && j.ok && j.actividad === true), !!(j && j.visitas === true));
+      medicionPropia(!!(j && j.ok && j.actividad === true), !!(j && j.visitas === true), !!(j && j.pop === true));
       if (!j || !j.ok || !j.stock) return false;
       let cambio = false;
       S.productos.forEach((p) => {
@@ -6726,8 +6752,11 @@ function popSobra() {
 }
 /* Las de aquí son del momento: se espera y se vuelve a mirar. */
 /* Si alguien ignora el aviso de cookies, a los POP_COOKIES segundos el pop-up
-   sale igual: más vale pedir el correo con la franja abajo que no pedirlo. */
-const POP_COOKIES = 25;
+   sale igual: más vale pedir el correo con la franja abajo que no pedirlo.
+   Eran 25 s y en el móvil media visita dura menos que eso: quien no respondía
+   las cookies se iba sin ver el bono. Con popPiso conectado los dos caben a la
+   vez, así que esperar mucho ya no compra nada. */
+const POP_COOKIES = 6;
 const popLlegada = Date.now();
 const popEstorba = () => UI.view === "gang"                      /* esa página ES este registro */
   || !!document.querySelector("dialog[open]")                    /* el carrito o un modal manda */
@@ -6760,6 +6789,9 @@ function popMontar(el) {
   document.body.append(velo, el);
   requestAnimationFrame(() => velo.classList.add("in"));
   popPiso();
+  /* queda la raya de que alguien lo vio: sin eso no se sabe si el bono no
+     convence o si simplemente no alcanza a salir (js/medir.js) */
+  if (typeof contarPopVisto === "function") contarPopVisto();
   /* el foco no se roba: la visita estaba leyendo. Entra solo al tabular */
   requestAnimationFrame(() => el.classList.add("in"));
 }
@@ -6840,7 +6872,13 @@ function popAvisame(id) {
 function popPiso() {
   const el = $("#g-pop"), tr = $("#tray"), ck = $("#cookies");
   if (!el) return;
-  const alto = (tr && !tr.hidden ? tr.getBoundingClientRect().height : 0) + (ck ? ck.getBoundingClientRect().height : 0);
+  /* Lo que estorba no es el alto de la caja sino todo lo que queda del borde
+     de arriba de ella hacia abajo: en el móvil debajo de la franja de cookies
+     todavía va el dock, y midiendo solo la franja el pop-up subía de menos y
+     el aviso le tapaba el renglón de la política de privacidad.
+     Van por el mayor, no sumados: las dos viven pegadas al mismo borde. */
+  const ocupa = (n) => (n ? Math.max(0, innerHeight - n.getBoundingClientRect().top) : 0);
+  const alto = Math.max(ocupa(tr && !tr.hidden ? tr : null), ocupa(ck));
   el.style.setProperty("--g-pop-piso", (alto ? alto + 12 : 0) + "px");
 }
 
