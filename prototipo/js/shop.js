@@ -709,7 +709,10 @@ function metodosPago() {
       : (en ? "You finish the payment on Mercado Pago and come back here."
             : "Terminas el pago en Mercado Pago y vuelves acá."),
   });
-  ops.push({
+  /* Con pago en línea, la transferencia manual sale del menú: sin captura, el pago
+     llega solo y el pedido se confirma. Si el servidor de pagos falla, errorPago
+     ofrece la transferencia como respaldo. Sin pago en línea, es la única forma. */
+  if (!pagoEnLinea() || UI.pago === "manual") ops.push({
     id: "manual", nom: mayus(tx(CONFIG.pagos.manual)),
     sub: en ? "You pay once we confirm the order." : "Pagas cuando te confirmamos el pedido.",
     marcas: en ? ["Transfer", "Nequi"] : ["Transferencia", "Nequi"],
