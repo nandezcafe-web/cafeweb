@@ -92,6 +92,8 @@ function configurar() {
   /* el aviso de cada mañana: una sola vez, aunque se ejecute configurar de nuevo */
   if (!ScriptApp.getProjectTriggers().some((t) => t.getHandlerFunction() === "diario"))
     ScriptApp.newTrigger("diario").timeBased().everyDays(1).atHour(7).create();
+  if (!ScriptApp.getProjectTriggers().some((t) => t.getHandlerFunction() === "semanal_"))
+    ScriptApp.newTrigger("semanal_").timeBased().onWeekDay(ScriptApp.WeekDay.MONDAY).atHour(9).create();
   if (!ScriptApp.getProjectTriggers().some((t) => t.getHandlerFunction() === "liberarReservas"))
     ScriptApp.newTrigger("liberarReservas").timeBased().everyHours(1).create();
   Logger.log("Hoja de contactos: " + ss.getUrl());
@@ -136,6 +138,7 @@ function doPost(e) {
   let d;
   try { d = JSON.parse(e.postData.contents); } catch (err) { return json_({ ok: false, error: "json" }); }
   if (d.accion === "enviar") return enviar_(d);
+  if (d.accion === "uno") return uno_(d);
   if (d.accion === "pedido") return cambiarPedido_(d);
   if (d.accion === "pago") return pago_(d);
   if (d.accion === "suscripcion") return cambiarSub_(d);
@@ -979,6 +982,32 @@ function enviar_(d) {
   });
   ss.getSheetByName(H_ENVIOS).appendRow([new Date(), asunto, d.prueba ? "(prueba)" : (d.etiqueta || "todos"), lote.length, destino.length - lote.length]);
   return json_({ ok: true, enviados: lote.length, pendientes: destino.length - lote.length, cuota: MailApp.getRemainingDailyQuota() });
+}
+
+/* ---------- un correo a una persona, con la plantilla de Nandez ----------
+   Sale desde la cuenta de Nandez (la que tiene este script), con el mismo marco de
+   todos los pedidos. Sirve para cualquier aviso a un cliente: pago, guía, recordatorio. */
+function uno_(d) {
+  if (!d.clave || d.clave !== clave_()) return json_({ ok: false, error: "clave" });
+  const para = corto_(d.para, 120).trim(), asunto = corto_(d.asunto, 150).trim(), texto = corto_(d.mensaje, 8000).trim();
+  if (!para || !asunto || !texto) return json_({ ok: false, error: "vacio" });
+  if (MailApp.getRemainingDailyQuota() < 1) return json_({ ok: false, error: "cuota" });
+  MailApp.sendEmail({ to: para, name: MARCA, subject: asunto, htmlBody: marco_(cuerpo_(texto), pieServicio_(corto_(d.referencia, 40) || "tu pedido", false)),
+    body: texto + "\n\n—\n" + MARCA });
+  return json_({ ok: true, cuota: MailApp.getRemainingDailyQuota() });
+}
+
+/* ---------- el recordatorio semanal ----------
+   Cada lunes a las 9 a. m. (el disparador lo crea "configurar"): los cafés que se
+   venden esta semana, a quien acepta correos. Usa el mismo envío de las campañas, así
+   que cada semana tiene su asunto y nadie recibe dos veces el mismo. */
+function semanal_() {
+  const ps = (catalogo_().productos || []).filter((p) => !p.proximamente).slice(0, 4);
+  if (!ps.length) return;
+  const semana = Utilities.formatDate(new Date(), "America/Bogota", "yyyy-'S'ww");
+  const lista = ps.map((p) => "• " + p.nombre.es + " · " + pesos_(p.precio)).join("\n");
+  enviar_({ clave: clave_(), asunto: "Nandez · semana " + semana,
+    mensaje: "Hola:\n\nEsta semana en Nandez:\n\n" + lista + "\n\nPara pedir, entra a https://www.nandezcoffee.com/tienda" });
 }
 
 /* ---------- la plantilla de los correos ---------- */

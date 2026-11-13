@@ -709,10 +709,9 @@ function metodosPago() {
       : (en ? "You finish the payment on Mercado Pago and come back here."
             : "Terminas el pago en Mercado Pago y vuelves acá."),
   });
-  /* Con pago en línea, la transferencia manual sale del menú: sin captura, el pago
-     llega solo y el pedido se confirma. Si el servidor de pagos falla, errorPago
-     ofrece la transferencia como respaldo. Sin pago en línea, es la única forma. */
-  if (!pagoEnLinea() || UI.pago === "manual") ops.push({
+  /* Con pago en línea, la transferencia manual no se ofrece: solo PSE y tarjeta, y el
+     pedido se confirma solo al aprobarse el pago. Sin pago en línea, es la única forma. */
+  if (!pagoEnLinea()) ops.push({
     id: "manual", nom: mayus(tx(CONFIG.pagos.manual)),
     sub: en ? "You pay once we confirm the order." : "Pagas cuando te confirmamos el pedido.",
     marcas: en ? ["Transfer", "Nequi"] : ["Transferencia", "Nequi"],
@@ -1351,10 +1350,10 @@ function errorPago(j) {
     cargarStock();
     return toast(en ? "Something in your order changed. Check it and try again." : "Algo de tu pedido cambió. Revísalo e intenta otra vez.", { type: "err" });
   }
-  /* la pasarela no respondió: se ofrece la otra forma de pago, sin perder lo escrito */
-  UI.pago = "manual"; renderCarrito();
-  toast(en ? `Online payment is not available right now. You can still order and pay by ${tx(CONFIG.pagos.manual)}.`
-    : `El pago en línea no está disponible ahora. Igual puedes pedir y pagar por ${tx(CONFIG.pagos.manual)}.`, { type: "err" });
+  /* la pasarela no respondió: no se crea ningún pedido; el carrito queda guardado para reintentar */
+  renderCarrito();
+  toast(en ? "Payment is not available right now. Your cart is saved; try again in a moment."
+    : "El pago no está disponible ahora. Tu carrito queda guardado; intenta de nuevo en un momento.", { type: "err" });
 }
 
 document.addEventListener("click", (e) => {
