@@ -230,7 +230,7 @@ function mandarBienvenida_(h, fila) {
     centrado_(vale, 13) + boton_(enlace, en ? "Order my first bag" : "Pedir mi primera bolsa") +
     lista_(en ? "Why " + MARCA + "?" : "¿Por qué " + MARCA + "?", porQue) +
     productos_(en ? "To start with…" : "Para empezar…", codigo, pct, en) + centrado_(cierre, 15);
-  MailApp.sendEmail({ to: correo, name: MARCA, subject: en ? "Welcome to " + COMUNIDAD + ": " + pct + " % off your first bag" : "Bienvenido a " + COMUNIDAD + ": tu primera bolsa con " + pct + " %",
+  enviarCorreo_({ to: correo, name: MARCA, subject: en ? "Welcome to " + COMUNIDAD + ": " + pct + " % off your first bag" : "Bienvenido a " + COMUNIDAD + ": tu primera bolsa con " + pct + " %",
     htmlBody: marco_(html, pieComunidad_(correo, en)),
     body: (en ? "Welcome to " : "Bienvenido a ") + COMUNIDAD + ".\n\n" + intro + "\n\n" + codigo + "\n" + vale + "\n" + enlace + "\n\n" +
       porQue.map((x) => "· " + x).join("\n") + "\n\n" + cierre + "\n\n—\n" + MARCA + "\n" + (en ? "Unsubscribe: " : "Para no recibir más correos: ") + enlaceBaja_(correo) });
@@ -287,7 +287,7 @@ function pedido_(ss, d, correo) {
   if (esPasarela_(d.canal)) return { id: id, falta: falta };
   /* a Nandez, enseguida; al cliente, la constancia de que llegó */
   if (MailApp.getRemainingDailyQuota() > 0)
-    MailApp.sendEmail({ to: Session.getEffectiveUser().getEmail(), name: MARCA, subject: "Pedido nuevo " + id + " · " + pesos_(d.total),
+    enviarCorreo_({ to: Session.getEffectiveUser().getEmail(), name: MARCA, subject: "Pedido nuevo " + id + " · " + pesos_(d.total),
       body: corto_(d.nombre, 120) + (d.documento ? " · CC/NIT " + corto_(d.documento, 30) : "") +
         (d.tel ? " · tel " + corto_(d.tel, 40) : "") + (correo ? " · " + correo : "") +
         "\n\n" + envio + "\n\n" + lineas + (notas ? "\n\n" + notas : "") +
@@ -299,7 +299,7 @@ function pedido_(ss, d, correo) {
         "\n\nIs anything wrong there? Just reply. We will write to you shortly with how to pay; once it is paid, we ship it and send you the tracking number."
       : "Recibimos tu pedido " + id + ".\n\n" + lineas + "\n\nVa a:\n" + envio +
         "\n\n¿Algo quedó mal escrito? Responde este correo. En un rato te escribimos con cómo pagar; apenas esté pago lo despachamos y te mandamos la guía.";
-    MailApp.sendEmail({ to: correo, name: MARCA, subject: (en ? "We got your order " : "Recibimos tu pedido ") + id,
+    enviarCorreo_({ to: correo, name: MARCA, subject: (en ? "We got your order " : "Recibimos tu pedido ") + id,
       htmlBody: marco_(cuerpo_(texto), pieServicio_(id, en)), body: texto + "\n\n—\n" + MARCA });
   }
   return { id: id, falta: falta };
@@ -446,7 +446,7 @@ function pago_(d) {
 }
 function avisoNandez_(asunto, texto) {
   if (MailApp.getRemainingDailyQuota() < 1) return false;
-  MailApp.sendEmail({ to: Session.getEffectiveUser().getEmail(), name: MARCA, subject: asunto, body: texto });
+  enviarCorreo_({ to: Session.getEffectiveUser().getEmail(), name: MARCA, subject: asunto, body: texto });
   return true;
 }
 /* Los dos correos del pago confirmado, armados desde la fila del pedido */
@@ -465,7 +465,7 @@ function correosPago_(f, monto, ref) {
       "\n\nIs anything wrong there? Just reply. We ship it in the next business days and send you the tracking number."
     : "Recibimos el pago de tu pedido " + id + ".\n\n" + lineas + "\n\nVa a:\n" + envio +
       "\n\n¿Algo quedó mal escrito? Responde este correo. Lo despachamos en los próximos días hábiles y te mandamos la guía.";
-  MailApp.sendEmail({ to: correo, name: MARCA, subject: (en ? "Payment received · " : "Pago recibido · ") + id,
+  enviarCorreo_({ to: correo, name: MARCA, subject: (en ? "Payment received · " : "Pago recibido · ") + id,
     htmlBody: marco_(cuerpo_(texto), pieServicio_(id, en)), body: texto + "\n\n—\n" + MARCA });
 }
 /* Cada hora: la reserva de la pasarela que nadie pagó devuelve sus bolsas. El
@@ -521,7 +521,7 @@ function avisoGuia_(correo, ref, transportadora, guia, en) {
   const texto = en
     ? "Your coffee is on its way.\n\nCarrier: " + transportadora + "\nTracking number: " + guia + "\n\nIt usually takes 2 to 5 business days. If something looks off, reply to this email."
     : "Tu café ya va en camino.\n\nTransportadora: " + transportadora + "\nNúmero de guía: " + guia + "\n\nSuele tardar de 2 a 5 días hábiles. Si algo no cuadra, responde este correo.";
-  MailApp.sendEmail({ to: correo, name: MARCA, subject: (en ? "Your coffee is on its way · " : "Tu café va en camino · ") + ref,
+  enviarCorreo_({ to: correo, name: MARCA, subject: (en ? "Your coffee is on its way · " : "Tu café va en camino · ") + ref,
     htmlBody: marco_(cuerpo_(texto), pieServicio_(ref, en)), body: texto + "\n\n—\n" + MARCA });
   return true;
 }
@@ -543,7 +543,7 @@ function nuevaSub_(ss, correo, d) {
 }
 function correoSub_(correo, en, asunto, texto) {
   if (MailApp.getRemainingDailyQuota() < 1) return false;
-  MailApp.sendEmail({ to: correo, name: MARCA, subject: asunto,
+  enviarCorreo_({ to: correo, name: MARCA, subject: asunto,
     htmlBody: marco_(cuerpo_(texto), pieServicio_(en ? "subscription" : "suscripción", en)), body: texto + "\n\n—\n" + MARCA });
   return true;
 }
@@ -779,7 +779,7 @@ function recordarCarrito_(ss, c) {
       : "Y tu bono " + bono[0] + " del " + bono[2] + " % sigue vigente hasta el " + fecha_(bono[4]) + ". El botón lo deja puesto.") : "");
   const cierre = en ? "Not sure which one to pick, or how to brew it? Reply and we help you. A real person reads it."
     : "¿Dudas de cuál escoger o cómo prepararlo? Respóndenos y te ayudamos. Del otro lado te lee una persona.";
-  MailApp.sendEmail({ to: c.correo, name: MARCA, subject: en ? "Your coffee is still in the cart" : "Tu café sigue en el carrito",
+  enviarCorreo_({ to: c.correo, name: MARCA, subject: en ? "Your coffee is still in the cart" : "Tu café sigue en el carrito",
     htmlBody: marco_(titulo_(en ? "Your coffee is " : "Tu café sigue ", en ? "still in the cart" : "en el carrito") + centrado_(texto) +
       boton_(enlace, en ? "Back to my cart" : "Volver a mi carrito") + centrado_(cierre, 15), pieComunidad_(c.correo, en)),
     body: texto + "\n" + enlace + "\n\n" + cierre + "\n\n—\n" + MARCA + "\n" + (en ? "Unsubscribe: " : "Para no recibir más correos: ") + enlaceBaja_(c.correo) });
@@ -801,7 +801,7 @@ function recordarPedido_(ss, id) {
     : "Tu pedido " + f[0] + " no alcanzó a pagarse, así que soltamos las bolsas que te teníamos apartadas.\n\n" + f[7] +
       "\n\n¿Todavía lo quieres? Puedes armarlo otra vez en la página. Si el pago te dio problema, responde este correo y te ayudamos.";
   const enlace = SITIO + (en ? "/en/coffees" : "/cafes");
-  MailApp.sendEmail({ to: correo, name: MARCA, subject: (en ? "Your order was not paid · " : "Tu pedido quedó sin pagar · ") + f[0],
+  enviarCorreo_({ to: correo, name: MARCA, subject: (en ? "Your order was not paid · " : "Tu pedido quedó sin pagar · ") + f[0],
     htmlBody: marco_(cuerpo_(texto) + boton_(enlace, en ? "Order again" : "Pedirlo otra vez"), pieServicio_(String(f[0]), en)),
     body: texto + "\n" + enlace + "\n\n—\n" + MARCA });
   h.getRange(i + 1, 19).setValue((f[18] ? f[18] + " " : "") + "Recordado el " + fecha_(new Date()) + ".");
@@ -919,7 +919,7 @@ function diario() {
     const texto = en
       ? "Your first bag of " + MARCA + " is still waiting for you. The " + f[2] + " % you got when you joined " + COMUNIDAD + " ends in " + quedan + " days."
       : "Tu primera bolsa de " + MARCA + " sigue esperándote. El " + f[2] + " % que te dimos al entrar a " + COMUNIDAD + " vence en " + quedan + " días.";
-    MailApp.sendEmail({ to: correo, name: MARCA, subject: en ? COMUNIDAD + ": your " + f[2] + " % ends in " + quedan + " days" : COMUNIDAD + ": tu " + f[2] + " % vence en " + quedan + " días",
+    enviarCorreo_({ to: correo, name: MARCA, subject: en ? COMUNIDAD + ": your " + f[2] + " % ends in " + quedan + " days" : COMUNIDAD + ": tu " + f[2] + " % vence en " + quedan + " días",
       htmlBody: marco_(titulo_(en ? "Your " + f[2] + " % ends in " : "Tu " + f[2] + " % vence en ", quedan + (en ? " days" : " días")) + centrado_(texto) +
         codigoHtml_(String(f[0])) + boton_(enlace, en ? "Order my coffee" : "Pedir mi café") +
         productos_(en ? "Pick yours" : "Escoge el tuyo", String(f[0]), Number(f[2]) || BONO.pct, en), pieComunidad_(correo, en)),
@@ -956,7 +956,7 @@ function diario() {
   if (MailApp.getRemainingDailyQuota() < 1) return;
   const asunto = [porDespachar.length && porDespachar.length + " por despachar", subs.length && subs.length + " suscripciones",
     porConfirmar.length && porConfirmar.length + " por confirmar"].filter(Boolean).join(" · ");
-  MailApp.sendEmail({ to: Session.getEffectiveUser().getEmail(), name: MARCA, subject: "Hoy en Nandez: " + asunto,
+  enviarCorreo_({ to: Session.getEffectiveUser().getEmail(), name: MARCA, subject: "Hoy en Nandez: " + asunto,
     body: partes.join("\n\n") + "\n\nTodo se marca en el panel interno, pestaña Pedidos.\nLa hoja: " + ss.getUrl() });
 }
 
@@ -976,7 +976,7 @@ function enviar_(d) {
         && (!d.etiqueta || etiquetas_(f[2]).indexOf(d.etiqueta) >= 0)).map((f) => String(f[0]));
   const lote = destino.slice(0, MailApp.getRemainingDailyQuota());
   lote.forEach((c) => {
-    MailApp.sendEmail({ to: c, subject: asunto, name: MARCA, htmlBody: plantilla_(texto, c),
+    enviarCorreo_({ to: c, subject: asunto, name: MARCA, htmlBody: plantilla_(texto, c),
       body: texto + "\n\n—\n" + MARCA + "\nPara no recibir más correos: " + enlaceBaja_(c) });
     if (!d.prueba) entregas.appendRow([new Date(), asunto, c]);
   });
@@ -992,7 +992,7 @@ function uno_(d) {
   const para = corto_(d.para, 120).trim(), asunto = corto_(d.asunto, 150).trim(), texto = corto_(d.mensaje, 8000).trim();
   if (!para || !asunto || !texto) return json_({ ok: false, error: "vacio" });
   if (MailApp.getRemainingDailyQuota() < 1) return json_({ ok: false, error: "cuota" });
-  MailApp.sendEmail({ to: para, name: MARCA, subject: asunto, htmlBody: marco_(cuerpo_(texto), pieServicio_(corto_(d.referencia, 40) || "tu pedido", false)),
+  enviarCorreo_({ to: para, name: MARCA, subject: asunto, htmlBody: marco_(cuerpo_(texto), pieServicio_(corto_(d.referencia, 40) || "tu pedido", false)),
     body: texto + "\n\n—\n" + MARCA });
   return json_({ ok: true, cuota: MailApp.getRemainingDailyQuota() });
 }
@@ -1008,6 +1008,17 @@ function semanal_() {
   const lista = ps.map((p) => "• " + p.nombre.es + " · " + pesos_(p.precio)).join("\n");
   enviar_({ clave: clave_(), asunto: "Nandez · semana " + semana,
     mensaje: "Hola:\n\nEsta semana en Nandez:\n\n" + lista + "\n\nPara pedir, entra a https://www.nandezcoffee.com/tienda" });
+}
+
+/* ---------- el remitente ----------
+   Todo sale de thegang@ (alias "Enviar como" en la cuenta del script, con SMTP de Hostinger).
+   Si el alias falla, sale por la cuenta del script para no dejar de avisar pedidos. */
+const REMITENTE = "thegang@nandezcoffee.com";
+function enviarCorreo_(m) {
+  const opciones = { name: m.name || MARCA, from: REMITENTE, replyTo: REMITENTE };
+  if (m.htmlBody) opciones.htmlBody = m.htmlBody;
+  try { GmailApp.sendEmail(m.to, m.subject, m.body || "", opciones); }
+  catch (e) { Logger.log("Alias sin usar: " + e); return MailApp.sendEmail(m); }
 }
 
 /* ---------- la plantilla de los correos ---------- */

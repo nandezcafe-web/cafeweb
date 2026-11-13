@@ -63,7 +63,7 @@ const CONFIG = {
   mercado: { ny: 278.6, trm: 3306.86 },
   storageKey: "nandez-v12",
   whatsapp: "573008923390",     // con indicativo, sin + ni espacios · si se vacía, pedidos y avisos salen por correo
-  correo: "nandezcafe@gmail.com",
+  correo: "thegang@nandezcoffee.com",
   /* Formulario externo (Formspree, Getform…): si hay URL, pedidos, suscriptores y postores
      llegan ahí además de abrir WhatsApp o el correo. Sin base de datos, es lo que evita
      que un registro se quede solo en el navegador del cliente. */
