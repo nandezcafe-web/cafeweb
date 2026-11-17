@@ -434,8 +434,10 @@ function viewCafe() {
   const sinMolino = enGrano
     ? ` <a class="enlace" href="${esc(contactoURL(en ? `Hi, I want the ${tx(p.nombre)} but I have no grinder.` : `Hola, quiero el ${tx(p.nombre)} pero no tengo molino.`, tx(p.nombre)))}" target="_blank" rel="noopener">${en ? "No grinder? Write to us." : "¿No tienes molino? Escríbenos."}</a>`
     : "";
-  /* Si la molienda de la receta no le sirve, que nos escriba antes de que salga */
-  const otraMolienda = ` <a class="enlace" href="${esc(contactoURL(en ? `Hi, I want the ${tx(p.nombre)} ground for another method.` : `Hola, quiero el ${tx(p.nombre)} molido para otro método.`, tx(p.nombre)))}" target="_blank" rel="noopener">${en ? "Need another grind? Write to us." : "¿Necesitas otra molienda? Escríbenos."}</a>`;
+  /* Una molienda que sirva para los métodos de siempre. No se promete cuál: todavía
+     no hay molino para hacerla a la medida, y prometerlo sería prometer de más.
+     Quien necesite otra, que escriba antes del despacho. */
+  const otraMolienda = ` <a class="enlace" href="${esc(contactoURL(en ? `Hi, I want the ${tx(p.nombre)} ground for another method.` : `Hola, quiero el ${tx(p.nombre)} molido para otro método.`, tx(p.nombre)))}" target="_blank" rel="noopener">${en ? "Want a special grind? Write to us." : "¿Quieres una molienda especial? Escríbenos."}</a>`;
   const pronto = !!p.proximamente, pre = enPreventa(p);
   const compra = pronto ? `
       <div class="pronto-aviso">
@@ -458,7 +460,7 @@ function viewCafe() {
       </div>` : ""}
 
       <p class="sale">${p.muele ? "" : `<span class="sale-tag">${esc(tx(formaItem(p, v, mol)))}</span> `}<span>${mol
-        ? `${en ? `We grind it the day we ship it, ${tx(R.molienda).toLowerCase()} grind, the one its recipe asks for.` : `Lo molemos el día que lo despachamos, en molienda ${tx(R.molienda).toLowerCase()}, la que pide su receta.`}${otraMolienda}`
+        ? `${en ? "A grind that works for the usual methods." : "Molienda que sirve para los métodos de siempre."}${otraMolienda}`
         : `${esc(tx(saleNotaDe(p, v)))}${sinMolino}`}</span></p>
 
       <div class="buy-row">
