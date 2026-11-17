@@ -48,7 +48,13 @@ const ctx = {
   /* el catálogo que publica tools/build.js, leído del disco como si viniera de la página */
   CacheService: { getScriptCache: () => ({ get: (k) => cacheMem[k] || null, put: (k, v) => { cacheMem[k] = v; } }) },
   UrlFetchApp: { fetch: () => ({ getResponseCode: () => 200,
-    getContentText: () => fs.readFileSync(require("path").join(__dirname, "../../prototipo/data/catalogo.json"), "utf8") }) },
+    getContentText: () => {
+      /* sin fecha de lanzamiento: si no, las pruebas dependerían del día en que se corran
+         (faltando 3 días, cualquier diario() mandaría el aviso). Cada prueba pone la suya. */
+      const j = JSON.parse(fs.readFileSync(require("path").join(__dirname, "../../prototipo/data/catalogo.json"), "utf8"));
+      j.lanzamiento = "";
+      return JSON.stringify(j);
+    } }) },
 };
 vm.createContext(ctx); vm.runInContext(codigo, ctx);
 const post = (d) => JSON.parse(ctx.doPost({ postData: { contents: JSON.stringify(d) } }).texto);
@@ -402,6 +408,7 @@ ok(getJ({ accion: "actividad", clave: props.CLAVE }).embudo.visita === 1, "despu
 /* ---- la cuenta de visitas, sin cookies ---- */
 cuota = 50;
 ok(getJ({ accion: "stock" }).visitas === true, "el stock le avisa a la página que el script ya sabe contar visitas");
+ok(getJ({ accion: "stock" }).lanzamiento === true, "el stock avisa que el script trae los avisos del lanzamiento: así se sabe si ya se pegó la versión nueva");
 ok(getJ({ accion: "stock" }).pop === true, "y que sabe contar aparte quién vio el pop-up: sin eso la página no manda esa raya");
 const regAntesV = ss.hojas["Registros"].filas.length, actAntesV = ss.hojas["Actividad"].filas.length;
 post({ tipo: "llegada" }); post({ tipo: "llegada" }); post({ tipo: "llegada" });
@@ -455,3 +462,45 @@ ctx.diario();
 ok(enviados.filter((m) => m.subject === asuntoSem).length === 1 + aceptan.length - 0 || enviados.filter((m) => m.subject === asuntoSem).length >= aceptan.length,
   "al día siguiente el aviso diario sigue con los que faltaban de esa misma semana");
 ok(!props.SEMANAL_PENDIENTE, "y cuando ya no falta nadie, deja de seguir");
+
+/* ---- los avisos del lanzamiento ---- */
+cuota = 200;
+const catL = JSON.parse(cacheMem["catalogo"]);
+const hacia = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+const ponerLanz = (v) => { catL.lanzamiento = v; cacheMem["catalogo"] = JSON.stringify(catL); };
+const deLanz = (ini) => enviados.slice(ini).filter((m) => /lanzamiento|sale Nandez Coffee/.test(m.subject + m.htmlBody) && !/^Esta semana/.test(m.subject));
+const aceptanL = ss.hojas["Contactos"].filas.slice(1).filter((f) => f[3] === true && !f[6]).map((f) => f[0]);
+
+ponerLanz(hacia(5)); let nL = enviados.length; ctx.lanzamiento_();
+ok(enviados.length === nL, "con 5 días de antelación todavía no se avisa nada");
+ponerLanz(""); nL = enviados.length; ctx.lanzamiento_();
+ok(enviados.length === nL, "sin fecha de lanzamiento en el catálogo, tampoco");
+ponerLanz(hacia(3)); nL = enviados.length; ctx.lanzamiento_();
+const pre = enviados.slice(nL);
+ok(pre.length === aceptanL.length && pre.every((m) => /sale Nandez Coffee: reserva el tuyo$/.test(m.subject)),
+  "a 3 días, el aviso «se acerca el lanzamiento» le llega a todos los que aceptan correos, y a nadie más");
+ok(pre[0].htmlBody.includes("Faltan 3 días") && pre[0].htmlBody.includes("Reservar mi bolsa") && pre[0].htmlBody.includes("accion=baja") && pre[0].htmlBody.includes("/img/correo/logo.png"),
+  "dice cuántos días faltan, trae el botón para reservar, el logo y el enlace de baja");
+ok(!pre.some((m) => m.to === "sin-casilla@correo.com"), "a quien no marcó la casilla de correos no le llega");
+const conBonoL = pre.find((m) => /GANG-/.test(m.htmlBody));
+ok(conBonoL && /sigue vigente hasta el/.test(conBonoL.htmlBody) && /\?bono=GANG-/.test(conBonoL.htmlBody),
+  "a quien tiene su bono sin usar se lo recuerda y el botón lo deja puesto");
+ok(pre.some((m) => !/GANG-/.test(m.htmlBody)), "y a quien no tiene bono vigente le llega sin esa parte");
+nL = enviados.length; ctx.lanzamiento_();
+ok(enviados.length === nL, "si el aviso diario pasa otra vez por la misma etapa, nadie recibe dos");
+/* (la prueba mueve la fecha del lanzamiento en vez de la de hoy, así que el asunto, que lleva la fecha, cambia) */
+ponerLanz(hacia(2)); nL = enviados.length; ctx.lanzamiento_();
+ok(enviados.length - nL === aceptanL.length && enviados[nL].htmlBody.includes("Faltan 2 días"), "a 2 días todavía es la etapa «se acerca», y dice cuántos días faltan");
+ponerLanz(hacia(1)); nL = enviados.length; ctx.lanzamiento_();
+ok(enviados.length - nL === aceptanL.length && enviados.slice(nL).every((m) => m.subject === "Mañana sale Nandez Coffee"),
+  "el día de antes sale «mañana», a todos otra vez");
+ponerLanz(hacia(0)); nL = enviados.length; ctx.lanzamiento_();
+ok(enviados.length - nL === aceptanL.length && enviados.slice(nL).every((m) => m.subject === "Hoy sale Nandez Coffee"),
+  "el mismo día sale «hoy»");
+ponerLanz(hacia(-1)); nL = enviados.length; ctx.lanzamiento_();
+ok(enviados.length === nL, "pasado el lanzamiento, no sale nada más");
+/* el aviso diario lo manda solo, sin que nadie lo llame */
+ponerLanz(hacia(1));
+const entL = ss.hojas["Entregas"].filas; for (let k = entL.length - 1; k > 0; k--) if (entL[k][1] === "Mañana sale Nandez Coffee") entL.splice(k, 1);
+nL = enviados.length; ctx.diario();
+ok(enviados.slice(nL).filter((m) => m.subject === "Mañana sale Nandez Coffee").length === aceptanL.length, "el aviso de las 7 a. m. manda el aviso del lanzamiento que toque, solo");

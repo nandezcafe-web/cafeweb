@@ -45,6 +45,9 @@ Cuando la lista pase de unos cientos de personas activas, o se quieran automatiz
 | En el panel, *Registrar envío* de una suscripción | Al suscriptor le llega la guía y la próxima fecha se corre 1 o 2 meses |
 | Cada mañana a las 7 | A `nandezcafe@gmail.com`: qué hay por despachar, qué suscripciones tocan en 3 días (o están atrasadas) y qué pedidos falta confirmar. Si no hay nada, no escribe |
 | Día 23 del bono sin usar | Recordatorio: «te quedan 7 días» (una sola vez) |
+| Un carrito armado lleva 1, 3 y 7 días quieto | A quien aceptó correos, hasta **tres** recordatorios (nunca dos el mismo día, con tres textos; el último dice que es el último). Si arma otro carrito, la cuenta empieza de cero. El panel, en Actividad, muestra «Recordado 2 de 3» |
+| Cada lunes a las 9 a. m. | A todos los que aceptan correos: los cafés de la semana con foto y precio y, cuando tenga precio, el merch. Si no alcanza el cupo de Gmail, sigue martes y miércoles |
+| 2 a 3 días, 1 día y 0 días antes del lanzamiento | A todos los que aceptan correos: «se acerca», «mañana» y «hoy». Cada uno una sola vez por persona. A quien tiene el bono sin usar se lo recuerda. La fecha sale de `CONFIG.lanzamiento` (core.js) |
 
 ### La estrategia del bono
 

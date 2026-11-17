@@ -876,7 +876,7 @@ function doGet(e) {
   if (q.accion === "baja") return baja_(q);
   /* El stock no es secreto: la tienda lo pide al cargar, sin clave */
   /* "actividad: true" le dice a la página que este script ya recibe la bitácora */
-  if (q.accion === "stock") return json_({ ok: true, stock: stockMapa_(libro_()), actividad: true, visitas: true, pop: true });
+  if (q.accion === "stock") return json_({ ok: true, stock: stockMapa_(libro_()), actividad: true, visitas: true, pop: true, lanzamiento: true });
   /* la hoja Stock completa, con fechas, para la pestaña Stock del panel */
   if (q.accion === "existencias") {
     if (!q.clave || q.clave !== clave_()) return json_({ ok: false, error: "clave" });
@@ -974,6 +974,7 @@ function diario() {
     if (avisoCaja_(f)) hs.getRange(i + 1, 15).setValue(clave);
   }
 
+  lanzamiento_();
   const pedidos = hojaDe_(ss, H_PEDIDOS).getDataRange().getValues().slice(1).filter((f) => f[0]);
   const porConfirmar = pedidos.filter((f) => f[2] === "nuevo"), porDespachar = pedidos.filter((f) => f[2] === "pagado");
   const limite = masDias_(hoy, AVISO_DIAS);
@@ -1069,6 +1070,51 @@ function semanal_() {
   PropertiesService.getScriptProperties().setProperty("SEMANAL_PENDIENTE", r.pendientes > 0 ? diaClave_(lunes) : "");
 }
 function semanal() { semanal_(); }   // el que llama el disparador del lunes
+/* ---------- los avisos del lanzamiento ----------
+   Tres correos a quien acepta correos, en los días que faltan para el lanzamiento
+   (la fecha la publica la página en catalogo.json, así que cambiarla allá los mueve):
+     · con 2 o 3 días de antelación: «se acerca el lanzamiento», con la preventa abierta;
+     · el día de antes: «mañana»;
+     · el mismo día: «hoy».
+   Cada uno lleva un asunto fijo, y como el envío no repite un asunto a la misma persona,
+   cada quien recibe cada aviso una sola vez aunque el aviso diario pase dos mañanas por
+   la misma etapa. Quien se registra entre una etapa y otra recibe la que toque.
+   Si esa persona tiene su bono de bienvenida sin usar, el correo se lo recuerda y los
+   precios de la vitrina salen ya con el descuento. Nada promete lo que la página no diga:
+   el cupo sale solo si la preventa tiene cupo. */
+function lanzamiento_() {
+  const cat = catalogo_(), lanz = String(cat.lanzamiento || "");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(lanz)) return;
+  const dia = new Date(lanz + "T12:00:00-05:00"), d = Math.round((dia_(dia) - dia_(new Date())) / 864e5);
+  const etapa = d >= 2 && d <= 3 ? "pre" : d === 1 ? "manana" : d === 0 ? "hoy" : "";
+  if (!etapa) return;
+  const cafes = (cat.productos || []).slice(0, 4);
+  if (!cafes.length) return;
+  const cupo = Math.max(0, ...cafes.map((p) => Number(p.cupo) || 0)), fechaTxt = fecha_(dia);
+  const E = {
+    pre: { asunto: "El " + fechaTxt + " sale " + MARCA + ": reserva el tuyo", a: "Se acerca el ", b: "lanzamiento", boton: "Reservar mi bolsa",
+      intro: "Faltan " + d + " días para el " + fechaTxt + ", el día en que sale " + MARCA + ". Hasta entonces puedes reservar tu bolsa en preventa: la pagas ahora y te la despachamos el día del lanzamiento." +
+        (cupo ? "\n\nHay cupo para " + cupo + " bolsas de cada café." : "") },
+    manana: { asunto: "Mañana sale " + MARCA, a: "Mañana es el ", b: "lanzamiento", boton: "Reservar mi bolsa",
+      intro: "Mañana, " + fechaTxt + ", sale " + MARCA + ". Todavía estás a tiempo de reservar tu bolsa en preventa: la pagas ahora y mañana empezamos a despacharla." },
+    hoy: { asunto: "Hoy sale " + MARCA, a: "Hoy es el ", b: "lanzamiento", boton: "Pedir mi café",
+      intro: "Hoy es el día: sale " + MARCA + ". Las reservas se despachan desde hoy, y puedes pedir tu café en la tienda." },
+  }[etapa];
+  const ss = libro_(), hoy = dia_(new Date()), bonos = {};
+  hojaDe_(ss, H_BONOS).getDataRange().getValues().slice(1).forEach((f) => { if (f[0] && !f[6] && dia_(f[4]) >= hoy) bonos[String(f[1])] = f; });
+  const cierre = "¿Dudas de cuál escoger o cómo prepararlo? Respóndenos y te ayudamos. Del otro lado te lee una persona.";
+  campana_({ asunto: E.asunto, silencioso: true, armar: (c) => {
+    const b = bonos[c];
+    const conBono = b ? "Y tu bono " + b[0] + " del " + b[2] + " % sigue vigente hasta el " + fecha_(b[4]) + ": sirve también para reservar." : "";
+    const texto = E.intro + (conBono ? "\n\n" + conBono : "");
+    return { texto: texto + "\n\n" + cafes.map((p) => "· " + p.nombre.es).join("\n") + "\n\n" + SITIO + "/cafes" + (b ? "?bono=" + b[0] : ""),
+      html: marco_(titulo_(E.a, E.b) + centrado_(E.intro) + (b ? centrado_(conBono) + codigoHtml_(String(b[0])) : "") +
+        productos_("Escoge el tuyo", b ? String(b[0]) : "", b ? Number(b[2]) || BONO.pct : 0, false, cafes) +
+        boton_(SITIO + "/cafes" + (b ? "?bono=" + b[0] : ""), E.boton) + centrado_(cierre, 15), pieComunidad_(c, false)) };
+  } });
+}
+function avisoLanzamiento() { lanzamiento_(); }   // para ejecutarlo a mano desde el editor, si hace falta hoy mismo
+
 /* Los que no alcanzaron el lunes: el martes y el miércoles se sigue con la misma semana */
 function semanalSeguir_() {
   if (PropertiesService.getScriptProperties().getProperty("SEMANAL_PENDIENTE") === diaClave_(lunesDe_(new Date()))) semanal_();

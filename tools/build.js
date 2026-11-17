@@ -306,6 +306,9 @@ escribir("data/catalogo.json", JSON.stringify({
     id: a.id, nombre: a.nombre, color: a.color || "#C9381A", precio: a.precio || 0,
     proximamente: !!a.proximamente || !a.precio, foto: a.foto ? CONFIG.sitio + a.foto : "",
     url: { es: CONFIG.sitio + ruta("accesorios", null, "es"), en: CONFIG.sitio + ruta("accesorios", null, "en") } }))`),
+  /* El día del lanzamiento: los avisos de los correos (lanzamiento_ en Codigo.gs) cuentan
+     los días desde aquí, así que mover la fecha en core.js los mueve también. */
+  lanzamiento: ev(mundo("es"), "CONFIG.lanzamiento || ''"),
   redes: ev(mundo("es"), "CONFIG.redes"),
   /* Lo que api/pago.js necesita para cobrar sin creerle al navegador: los precios
      de arriba, el envío, el IVA y a qué hoja va el pedido. */
