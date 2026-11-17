@@ -9,7 +9,9 @@
 
 > **Actualización, 10 de noviembre de 2026:** el píxel ya existe y está puesto en la página. Se llama **Nandez Coffee Gang**, su número es `1805850087187226` y está conectado a la cuenta **NandezCoffeeGang**. Quedó a nombre del portafolio **Bushido Agencia**, no de Nandez Café: funciona igual, pero si algún día la marca se separa de la agencia conviene compartirlo o moverlo al portafolio de Nandez Café (paso 2.7).
 >
-> Los pasos 2 y 3 están hechos y el 4 se probó en local: los cinco eventos salen con su valor y su moneda. Lo que falta no es código, es panel de Meta: verificar el dominio, poner `Purchase` de primero y armar los públicos (paso 5).
+> Los pasos 2 y 3 están hechos y el 4 se probó en local y en la página publicada: los cinco eventos salen con su valor y su moneda, y el conjunto de datos los está recibiendo. Lo que falta no es código, es panel de Meta: armar los públicos de remarketing, y el cambio a `LANDING_PAGE_VIEWS` cuando haya volumen (paso 5).
+>
+> **Corregido el 17 de noviembre de 2026:** este documento pedía antes dos cosas que **Meta ya eliminó**: priorizar `Purchase` en la medición agregada de eventos, y verificar el dominio para que iOS no recortara las compras. Las dos salieron de una versión vieja de las reglas de iOS. El paso 5 explica qué quedó en su lugar.
 >
 > **Cuidado al revisar si el píxel está puesto.** Abrir la página y mirar si existe `fbq` **no** sirve: hasta que alguien oprima *Aceptar* en el aviso de cookies, el píxel no se carga, no aparece `fbevents.js` y no hay nada de `connect.facebook.net`. Eso es a propósito (Ley 1581), no un píxel faltante. Y si ese navegador quedó marcado con `?nocontar`, el píxel no se carga **ni siquiera después de aceptar**, y el aviso tampoco sale. Las dos trampas, con cómo descartarlas, están en el paso 4.
 
@@ -139,13 +141,16 @@ El `order_id` tiene que ser **el mismo número del pedido** que muestra la pági
 
 ## 5. Después de instalarlo
 
-- **Verificar el dominio** (*Configuración del portafolio → Seguridad de la marca → Dominios*): agrega `nandezcoffee.com`. Meta ofrece tres formas y con una basta:
-  - **Etiqueta en el `<head>`** — copia la cadena que Meta da (solo la de `content="…"`) y ponla en `CONFIG.medicion.metaDominio` ([prototipo/js/core.js](../prototipo/js/core.js)); `node tools/build.js`, commit y push. Sale en el `<head>` de las 30 páginas. Vacía, no sale nada.
-  - **Registro TXT en el DNS** — donde esté el DNS de `nandezcoffee.com`.
-  - Archivo HTML en la raíz.
+- **~~Poner `Purchase` de primero~~ — ese paso ya no existe.** Meta lo eliminó: ya no hay que priorizar ocho eventos por dominio, **la pestaña de Medición agregada de eventos se quitó** del Administrador de eventos, y tampoco hay que escoger un dominio de conversión al crear la campaña. Queda escrito aquí porque medio internet todavía lo pide. Para confirmarlo en tu cuenta: abre el conjunto de datos y mira si existe esa pestaña; si no está, no hay nada que hacer. Fuente: [Información sobre la medición agregada de eventos de Meta](https://www.facebook.com/business/help/721422165168355).
+- **Verificar el dominio — ya no es por iOS, pero conviene.** Meta dice expresamente que **no se requiere verificar el dominio para la configuración de eventos**. Las razones que sí le aplican a Nandez ([cuándo usar la verificación de dominio](https://www.facebook.com/business/help/245311299870862)):
+  - **Controlar quién edita los anuncios que apuntan a nandezcoffee.com.** Con el píxel y los anuncios en el portafolio de Bushido Agencia y no en el de Nandez, esto importa.
+  - **Vender en las superficies de comercio de Facebook e Instagram**, si algún día se conecta catálogo o tienda.
 
-  Sin verificar, iOS recorta las conversiones y Meta puede limitar los eventos de compra.
-- **Poner `Purchase` de primero** (*Administrador de eventos → el conjunto de datos → Medición agregada de eventos*): de los ocho puestos que deja iOS, el primero manda. Es lo que deja optimizar una campaña a ventas.
+  Los pasos ([verificar el dominio desde el portafolio](https://www.facebook.com/business/help/321167023127050)): Business Suite → *Configuración* → *Seguridad de la marca* → **Dominios** → **+ Agregar** → *Crear un dominio* → escribir el **dominio raíz sin prefijos**, `nandezcoffee.com` (no `www.`, no `https://`) → escoger método → **Verificar dominio**. Hace falta control total del portafolio y acceso de administrador al dominio.
+
+  Tres métodos, con uno basta: el **registro TXT en el DNS** (en Hostinger, que es donde está), un **archivo HTML** en la raíz, o la **etiqueta en el `<head>`** — para esta última, pásame la cadena y va en `CONFIG.medicion.metaDominio` ([prototipo/js/core.js](../prototipo/js/core.js)); luego `node tools/build.js`, commit y push. Vacía, no sale nada.
+
+  Dato útil: **una vez verificado se puede quitar** el TXT, el archivo o la etiqueta, y la verificación se mantiene.
 - **Públicos para remarketing** (en el Administrador de anuncios → Públicos → Crear público personalizado → Sitio web):
   - *Vieron un café y no compraron, 30 días:* `ViewContent` sin `Purchase`.
   - *Dejaron el carrito, 14 días:* `AddToCart` sin `Purchase`.
