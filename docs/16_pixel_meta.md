@@ -11,7 +11,7 @@
 >
 > Los pasos 2 y 3 están hechos y el 4 se probó en local: los cinco eventos salen con su valor y su moneda. Lo que falta no es código, es panel de Meta: verificar el dominio, poner `Purchase` de primero y armar los públicos (paso 5).
 >
-> **Cuidado al revisar si el píxel está puesto.** Abrir la página y mirar si existe `fbq` **no** sirve: hasta que alguien oprima *Aceptar* en el aviso de cookies, el píxel no se carga, no aparece `fbevents.js` y no hay nada de `connect.facebook.net`. Eso es a propósito (Ley 1581), no un píxel faltante. Para comprobarlo de verdad: aceptar primero, o mirar `CONFIG.medicion.metaPixel` en `/js/core.js` —el número no va suelto en el HTML, va ahí.
+> **Cuidado al revisar si el píxel está puesto.** Abrir la página y mirar si existe `fbq` **no** sirve: hasta que alguien oprima *Aceptar* en el aviso de cookies, el píxel no se carga, no aparece `fbevents.js` y no hay nada de `connect.facebook.net`. Eso es a propósito (Ley 1581), no un píxel faltante. Y si ese navegador quedó marcado con `?nocontar`, el píxel no se carga **ni siquiera después de aceptar**, y el aviso tampoco sale. Las dos trampas, con cómo descartarlas, están en el paso 4.
 
 Antes de esa fecha:
 
@@ -46,9 +46,37 @@ Son dos recorridos distintos y conviene no mezclarlos: los tres primeros eventos
 
 ### Antes de empezar, lo que más confunde
 
-**Oprime `Aceptar` en el aviso de cookies.** Hasta ese clic el píxel no se carga: no existe `fbq`, no se descarga `fbevents.js` y no sale nada hacia `connect.facebook.net`. Es a propósito (Ley 1581, autorización previa y expresa para publicidad). Si abres la página, no aceptas y revisas si el píxel está, vas a concluir que no está puesto. Ya pasó una vez.
+Hay **dos cosas que apagan el píxel sin que nada se vea roto**, y las dos ya hicieron concluir que «se cayó» cuando estaba perfecto. Descártalas antes de tocar una línea de código.
+
+**1. No oprimiste `Aceptar`.** Hasta ese clic el píxel no se carga: no existe `fbq`, no se descarga `fbevents.js` y no sale nada hacia `connect.facebook.net`. Es a propósito (Ley 1581, autorización previa y expresa para publicidad).
+
+**2. Ese navegador está marcado como interno.** Entrar una vez con `?nocontar` deja la marca `nandez-interno` guardada, y desde ahí el píxel **no se carga nunca más en ese navegador** — y el aviso de cookies **tampoco sale**, aunque la persona ya hubiera aceptado antes. Sirve para que tus propias vueltas probando el carrito no ensucien las cifras, pero deja la página idéntica a una sin píxel y sin ninguna pista de por qué. Se deshace entrando a `https://www.nandezcoffee.com/?nocontar=no`.
 
 El número tampoco está suelto en el HTML: vive en `CONFIG.medicion.metaPixel`, dentro de `/js/core.js`.
+
+#### Comprobar en 30 segundos si está vivo
+
+Entra a la página, oprime **Aceptar**, abre la consola del navegador y pega esto:
+
+```js
+({ fbq: typeof window.fbq,
+   cargado: window.fbq && window.fbq.loaded === true,
+   interno: localStorage.getItem("nandez-interno"),
+   permiso: localStorage.getItem("nandez-medicion"),
+   scriptsDeMeta: [...document.querySelectorAll("script[src]")].filter(s => s.src.includes("facebook")).length })
+```
+
+Sano se ve así (comprobado en nandezcoffee.com el 17 de noviembre de 2026):
+
+```
+fbq           "function"
+cargado       true          ← el script de Meta se ejecutó, no solo se pidió
+interno       null          ← si dice "1", es la trampa 2
+permiso       "si"          ← si es null, es la trampa 1
+scriptsDeMeta 2
+```
+
+La prueba más fuerte está en la pestaña de red: si Meta contesta `connect.facebook.net/signals/config/1805850087187226`, el conjunto de datos existe y está configurado. Si esa petición no vuelve, ahí sí hay algo que mirar.
 
 ### A. Los tres primeros, en nandezcoffee.com
 
@@ -102,7 +130,8 @@ El `order_id` tiene que ser **el mismo número del pedido** que muestra la pági
 
 | Síntoma | Qué mirar primero |
 |---|---|
-| No sale ningún evento | ¿Oprimiste *Aceptar*? Sin eso no existe `fbq` |
+| No sale ningún evento, y **tampoco el aviso de cookies** | Ese navegador quedó marcado con `?nocontar`. Entra a `/?nocontar=no` |
+| No sale ningún evento, pero el aviso sí sale | No oprimiste *Aceptar*. Sin eso no existe `fbq` |
 | Salen todos menos `Purchase` | La pasarela no aprobó: míralo en `/estado-prueba` |
 | `Purchase` sin `content_ids` | El carrito se vació antes de tiempo: revisa `UI.comprado` en `shop.js` |
 | `ViewContent` repetido | La protección de `M.visto` en `medir.js` |
