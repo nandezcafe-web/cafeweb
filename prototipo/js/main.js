@@ -187,9 +187,9 @@ function unirseComunidad() {
      de un toque con el correo que ya dejó. Si no hay nada nuevo, no sale.
    No va en el HTML armado: lo pinta el navegador, así que los buscadores no lo ven. */
 const POP_KEY = "nandez-bono-pop";
-/* Maick lo pidió al segundo de entrar (10-11-2026): lo primero es recoger el correo,
-   aunque tape la portada un momento. Si baja antes, sale igual (POP_SCROLL). */
-const POP_ESPERA = 1000;
+/* Maick lo pidió a los 2 segundos de entrar (17-11-2026): lo primero es recoger el
+   correo, aunque tape la portada un momento. Si baja antes, sale igual (POP_SCROLL). */
+const POP_ESPERA = 2000;
 const POP_SCROLL = 700;     /* px bajados: ya pasó la portada */
 const POP_CERRADO = 7;      /* lo cerró sin registrarse: vuelve en una semana */
 const POP_MIEMBRO = 30;     /* ya es miembro: una novedad al mes */
@@ -221,8 +221,9 @@ function popSobra() {
    sale igual: más vale pedir el correo con la franja abajo que no pedirlo.
    Eran 25 s y en el móvil media visita dura menos que eso: quien no respondía
    las cookies se iba sin ver el bono. Con popPiso conectado los dos caben a la
-   vez, así que esperar mucho ya no compra nada. */
-const POP_COOKIES = 6;
+   vez (44 px de aire en un celular de 667 px de alto), así que esperar ya no
+   compra nada: en 0 el pop-up sale a los POP_ESPERA aunque el aviso siga abierto. */
+const POP_COOKIES = 0;
 const popLlegada = Date.now();
 const popEstorba = () => UI.view === "gang"                      /* esa página ES este registro */
   || !!document.querySelector("dialog[open]")                    /* el carrito o un modal manda */

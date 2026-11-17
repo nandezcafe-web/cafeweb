@@ -109,6 +109,68 @@
       "foto": "https://www.nandezcoffee.com/img/correo/p-ble.jpg"
     }
   ],
+  "merch": [
+    {
+      "id": "M-CAM",
+      "nombre": {
+        "es": "Camiseta Nandez Coffee Gang",
+        "en": "Nandez Coffee Gang T-shirt"
+      },
+      "color": "#C9381A",
+      "precio": 0,
+      "proximamente": true,
+      "foto": "https://www.nandezcoffee.com/img/productos/m-cam.jpg",
+      "url": {
+        "es": "https://www.nandezcoffee.com/accesorios",
+        "en": "https://www.nandezcoffee.com/en/accessories"
+      }
+    },
+    {
+      "id": "M-GOR",
+      "nombre": {
+        "es": "Gorra Nandez",
+        "en": "Nandez cap"
+      },
+      "color": "#141210",
+      "precio": 0,
+      "proximamente": true,
+      "foto": "https://www.nandezcoffee.com/img/productos/m-gor.jpg",
+      "url": {
+        "es": "https://www.nandezcoffee.com/accesorios",
+        "en": "https://www.nandezcoffee.com/en/accessories"
+      }
+    },
+    {
+      "id": "M-TAZ",
+      "nombre": {
+        "es": "Taza de cerámica",
+        "en": "Ceramic mug"
+      },
+      "color": "#2F5A3C",
+      "precio": 0,
+      "proximamente": true,
+      "foto": "https://www.nandezcoffee.com/img/productos/m-taz.jpg",
+      "url": {
+        "es": "https://www.nandezcoffee.com/accesorios",
+        "en": "https://www.nandezcoffee.com/en/accessories"
+      }
+    },
+    {
+      "id": "M-TOT",
+      "nombre": {
+        "es": "Bolsa de tela",
+        "en": "Tote bag"
+      },
+      "color": "#9A6610",
+      "precio": 0,
+      "proximamente": true,
+      "foto": "https://www.nandezcoffee.com/img/productos/m-tot.jpg",
+      "url": {
+        "es": "https://www.nandezcoffee.com/accesorios",
+        "en": "https://www.nandezcoffee.com/en/accessories"
+      }
+    }
+  ],
   "redes": {
     "instagram": "https://www.instagram.com/nandezcoffee/",
     "facebook": "https://www.facebook.com/profile.php?id=61594868961438",

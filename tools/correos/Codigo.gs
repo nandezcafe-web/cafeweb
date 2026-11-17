@@ -58,13 +58,16 @@ const H_ACTIVIDAD = "Actividad", H_CARRITOS = "Carritos", H_VISITAS = "Visitas";
    cookies, que siempre son menos. */
 const COLS_VISITAS = ["dia", "visitas", "pop"];   // "pop": cuántos vieron el pop-up del bono
 const COLS_ACTIVIDAD = ["fecha", "visitante", "evento", "detalle", "valor", "correo", "pagina", "idioma"];
-const COLS_CARRITOS = ["visitante", "correo", "items", "total", "unidades", "creado", "actualizado", "estado", "recordado", "idioma"];
+const COLS_CARRITOS = ["visitante", "correo", "items", "total", "unidades", "creado", "actualizado", "estado", "recordado", "idioma", "veces"];
 const EVENTOS = ["visita", "ver", "agregar", "pagar", "compra", "registro"];
 /* Un carrito cuenta como abandonado si lleva esperaH horas quieto, y se deja de
    mostrar a los hastaDias. La bitácora se borra sola a los guardarDias.
    auto: true hace que el aviso de cada mañana mande el recordatorio sin que
    nadie oprima el botón (una vez por carrito, solo a quien acepta correos). */
-const CARRITO = { esperaH: 1, hastaDias: 14, guardarDias: 90, auto: false };
+/* El recordatorio del carrito: como mucho `max` por carrito, el n-ésimo cuando lleva
+   `pasosDias[n]` días quieto (al día, a los 3 y a los 7) y nunca dos el mismo día.
+   `auto` los manda solo cada mañana; apagado, solo salen desde el panel. */
+const CARRITO = { esperaH: 1, hastaDias: 14, guardarDias: 90, auto: true, max: 3, pasosDias: [1, 3, 7] };
 
 /* ---------- puesta en marcha ---------- */
 function configurar() {
@@ -82,6 +85,9 @@ function configurar() {
   hoja_(ss, H_STOCK, COLS_STOCK);
   hoja_(ss, H_ACTIVIDAD, COLS_ACTIVIDAD);
   hoja_(ss, H_CARRITOS, COLS_CARRITOS);
+  /* la columna "veces" entró después: una hoja de antes se quedaría sin su título */
+  const hc = hojaDe_(ss, H_CARRITOS);
+  if (hc.getLastColumn() < 11) hc.getRange(1, 11).setValue("veces").setFontWeight("bold");
   hoja_(ss, H_VISITAS, COLS_VISITAS);
   /* la columna "pop" entró después: una hoja de antes se quedaría sin su título */
   const hv = hojaDe_(ss, H_VISITAS);
@@ -92,8 +98,11 @@ function configurar() {
   /* el aviso de cada mañana: una sola vez, aunque se ejecute configurar de nuevo */
   if (!ScriptApp.getProjectTriggers().some((t) => t.getHandlerFunction() === "diario"))
     ScriptApp.newTrigger("diario").timeBased().everyDays(1).atHour(7).create();
-  if (!ScriptApp.getProjectTriggers().some((t) => t.getHandlerFunction() === "semanal_"))
-    ScriptApp.newTrigger("semanal_").timeBased().onWeekDay(ScriptApp.WeekDay.MONDAY).atHour(9).create();
+  /* el disparador va por semanal(), sin guion bajo: así no depende de cómo trate Google
+     los nombres "privados". Si quedó uno viejo con semanal_, se quita para no mandarlo doble. */
+  ScriptApp.getProjectTriggers().filter((t) => t.getHandlerFunction() === "semanal_").forEach((t) => ScriptApp.deleteTrigger(t));
+  if (!ScriptApp.getProjectTriggers().some((t) => t.getHandlerFunction() === "semanal"))
+    ScriptApp.newTrigger("semanal").timeBased().onWeekDay(ScriptApp.WeekDay.MONDAY).atHour(9).create();
   if (!ScriptApp.getProjectTriggers().some((t) => t.getHandlerFunction() === "liberarReservas"))
     ScriptApp.newTrigger("liberarReservas").timeBased().everyHours(1).create();
   Logger.log("Hoja de contactos: " + ss.getUrl());
@@ -649,6 +658,7 @@ function carrito_(d) {
     const recordado = estado === "abierto" && f[7] !== "abierto" ? "" : f[8];
     h.getRange(k + 1, 1, 1, 10).setValues([[v, correo || f[1], items.length ? JSON.stringify(items) : f[2], items.length ? total : f[3],
       items.length ? unidades : f[4], f[5] || ahora, ahora, estado, recordado, corto_(d.idioma, 5) || f[9]]]);
+    if (estado === "abierto" && f[7] !== "abierto") h.getRange(k + 1, 11).setValue(0);
     return json_({ ok: true });
   } finally { lock.releaseLock(); }
 }
@@ -656,7 +666,9 @@ function carrito_(d) {
 function carritosQuietos_(ss) {
   const ahora = Date.now(), desde = ahora - CARRITO.hastaDias * 864e5, hasta = ahora - CARRITO.esperaH * 36e5;
   return hojaDe_(ss, H_CARRITOS).getDataRange().getValues().map((f, i) => ({ fila: i + 1, v: String(f[0]), correo: String(f[1] || ""),
-    items: itemsDe_(f[2]), total: num_(f[3]), unidades: num_(f[4]), actualizado: f[6], estado: f[7], recordado: f[8], idioma: f[9] }))
+    items: itemsDe_(f[2]), total: num_(f[3]), unidades: num_(f[4]), actualizado: f[6], estado: f[7], recordado: f[8], idioma: f[9],
+    /* los carritos de antes de la columna "veces" que ya tenían un recordatorio cuentan como uno */
+    veces: num_(f[10]) || (f[8] ? 1 : 0) }))
     .slice(1).filter((c) => c.v && c.estado === "abierto" && c.items.length && new Date(c.actualizado).getTime() >= desde && new Date(c.actualizado).getTime() <= hasta);
 }
 /* Todo lo que pinta la pestaña Actividad del panel, de una sola vez */
@@ -704,7 +716,7 @@ function actividad_(q) {
     productos: Object.keys(prod).map((k) => prod[k]).sort((a, b) => b.agregar - a.agregar || b.ver - a.ver).slice(0, 8),
     recientes: filas.slice(-40).reverse().map((f) => ({ fecha: f[0], visitante: String(f[1]).slice(0, 4), evento: f[2], detalle: f[3], valor: f[4], correo: f[5], pagina: f[6] })),
     carritos: quietos.filter((c) => c.correo).slice(0, 100).map((c) => ({ v: c.v, correo: c.correo, items: c.items, total: c.total, unidades: c.unidades,
-      actualizado: c.actualizado, recordado: c.recordado, acepta: acepta[c.correo] === true })),
+      actualizado: c.actualizado, recordado: c.recordado, veces: c.veces, acepta: acepta[c.correo] === true })),
     anonimos: { n: sinCorreo.length, total: sinCorreo.reduce((s, c) => s + c.total, 0) },
     sinPagar: sinPagar,
     registros: contactos.slice().sort((a, b) => alta(b) - alta(a)).slice(0, 25)
@@ -766,24 +778,42 @@ function limpiar_(d) {
    Del pedido sin pagar: es un aviso sobre su propio pedido, también una sola vez. */
 function recordarCarrito_(ss, c) {
   if (!correoValido_(c.correo)) return "sin-correo";
-  if (c.recordado) return "ya";
+  if (c.veces >= CARRITO.max) return "ya";
   if (!aceptaCorreos_(ss, c.correo)) return "no-acepta";
+  /* nunca dos el mismo día: el botón del panel se puede pulsar dos veces */
+  if (c.recordado && Date.now() - new Date(c.recordado).getTime() < 864e5) return "pronto";
   if (MailApp.getRemainingDailyQuota() < 1) return "cuota";
-  const en = c.idioma === "en", hoy = dia_(new Date());
+  const en = c.idioma === "en", hoy = dia_(new Date()), n = Math.min(c.veces, CARRITO.max - 1);
   const bono = hojaDe_(ss, H_BONOS).getDataRange().getValues().slice(1).find((f) => String(f[1]) === c.correo && !f[6] && dia_(f[4]) >= hoy);
   const lineas = c.items.map((i) => num_(i.n) + " × " + i.nom).join("\n");
   const enlace = SITIO + (en ? "/en/coffees" : "/cafes") + (bono ? "?bono=" + bono[0] : "");
-  const texto = (en ? "You left this in your " + MARCA + " cart:" : "Dejaste esto en tu carrito de " + MARCA + ":") + "\n\n" + lineas + "\n\n" +
-    (en ? "It is still there, in the same browser where you put it together." : "Sigue ahí, en el mismo navegador donde lo armaste.") +
-    (bono ? "\n\n" + (en ? "And your " + bono[2] + " % welcome code " + bono[0] + " is still good until " + fecha_(bono[4], true) + ". The button applies it for you."
-      : "Y tu bono " + bono[0] + " del " + bono[2] + " % sigue vigente hasta el " + fecha_(bono[4]) + ". El botón lo deja puesto.") : "");
-  const cierre = en ? "Not sure which one to pick, or how to brew it? Reply and we help you. A real person reads it."
-    : "¿Dudas de cuál escoger o cómo prepararlo? Respóndenos y te ayudamos. Del otro lado te lee una persona.";
-  enviarCorreo_({ to: c.correo, name: MARCA, subject: en ? "Your coffee is still in the cart" : "Tu café sigue en el carrito",
-    htmlBody: marco_(titulo_(en ? "Your coffee is " : "Tu café sigue ", en ? "still in the cart" : "en el carrito") + centrado_(texto) +
-      boton_(enlace, en ? "Back to my cart" : "Volver a mi carrito") + centrado_(cierre, 15), pieComunidad_(c.correo, en)),
-    body: texto + "\n" + enlace + "\n\n" + cierre + "\n\n—\n" + MARCA + "\n" + (en ? "Unsubscribe: " : "Para no recibir más correos: ") + enlaceBaja_(c.correo) });
-  hojaDe_(ss, H_CARRITOS).getRange(c.fila, 9).setValue(new Date());
+  /* Tres textos distintos, de menos a más directo. Ninguno promete lo que no es
+     cierto: ni "quedan pocas" ni descuentos nuevos. El último dice que es el último. */
+  const T = en ? [
+    { asunto: "Your coffee is still in the cart", a: "Your coffee is ", b: "still in the cart", intro: "You left this in your " + MARCA + " cart:",
+      nota: "It is still there, in the same browser where you put it together.", cierre: "Not sure which one to pick, or how to brew it? Reply and we help you. A real person reads it.", boton: "Back to my cart" },
+    { asunto: "Still want it? Your cart is waiting", a: "Still ", b: "want it?", intro: "Your " + MARCA + " cart is just as you left it:",
+      nota: "If something held you back —shipping, the grind, how to pay— reply and we sort it out.", cierre: "A real person reads your reply.", boton: "Back to my cart" },
+    { asunto: "Last note about your cart", a: "Last note ", b: "about your cart", intro: "This is the last email we send you about this cart:",
+      nota: "We will not write about it again. It is still there whenever you want to come back.", cierre: "Not sure which one to pick, or how to brew it? Reply and we help you.", boton: "Back to my cart" },
+  ] : [
+    { asunto: "Tu café sigue en el carrito", a: "Tu café sigue ", b: "en el carrito", intro: "Dejaste esto en tu carrito de " + MARCA + ":",
+      nota: "Sigue ahí, en el mismo navegador donde lo armaste.", cierre: "¿Dudas de cuál escoger o cómo prepararlo? Respóndenos y te ayudamos. Del otro lado te lee una persona.", boton: "Volver a mi carrito" },
+    { asunto: "¿Todavía lo quieres? Tu carrito te espera", a: "¿Todavía ", b: "lo quieres?", intro: "Tu carrito de " + MARCA + " sigue como lo dejaste:",
+      nota: "Si algo te frenó —el envío, la molienda, cómo pagar—, respóndenos y lo resolvemos.", cierre: "Lo que respondas lo lee una persona.", boton: "Volver a mi carrito" },
+    { asunto: "Último aviso sobre tu carrito", a: "Último aviso ", b: "sobre tu carrito", intro: "Este es el último correo que te mandamos sobre este carrito:",
+      nota: "No te escribimos más por esto. Sigue ahí cuando quieras volver.", cierre: "¿Dudas de cuál escoger o cómo prepararlo? Respóndenos y te ayudamos.", boton: "Volver a mi carrito" },
+  ];
+  const t = T[n];
+  const aviso = bono ? "\n\n" + (en ? "And your " + bono[2] + " % welcome code " + bono[0] + " is still good until " + fecha_(bono[4], true) + ". The button applies it for you."
+    : "Y tu bono " + bono[0] + " del " + bono[2] + " % sigue vigente hasta el " + fecha_(bono[4]) + ". El botón lo deja puesto.") : "";
+  const texto = t.intro + "\n\n" + lineas + "\n\n" + t.nota + aviso;
+  enviarCorreo_({ to: c.correo, name: MARCA, subject: t.asunto,
+    htmlBody: marco_(titulo_(t.a, t.b) + centrado_(texto) + boton_(enlace, t.boton) + centrado_(t.cierre, 15), pieComunidad_(c.correo, en)),
+    body: texto + "\n" + enlace + "\n\n" + t.cierre + "\n\n—\n" + MARCA + "\n" + (en ? "Unsubscribe: " : "Para no recibir más correos: ") + enlaceBaja_(c.correo) });
+  const h = hojaDe_(ss, H_CARRITOS);
+  h.getRange(c.fila, 9).setValue(new Date());
+  h.getRange(c.fila, 11).setValue(c.veces + 1);
   return "enviado";
 }
 function recordarPedido_(ss, id) {
@@ -819,18 +849,24 @@ function recordar_(d) {
     return json_(r === "enviado" ? { ok: true, cuota: MailApp.getRemainingDailyQuota() } : { ok: false, error: r });
   } finally { lock.releaseLock(); }
 }
-/* Cada mañana: borra la bitácora vieja y, si CARRITO.auto está prendido, recuerda
-   los carritos que llevan un día quietos. Devuelve cuántos esperan recordatorio. */
+/* ¿Le toca ya el siguiente recordatorio? El n-ésimo cuando lleva pasosDias[n] días
+   quieto, y como mínimo un día después del anterior. */
+const tocaCarrito_ = (c, ahora) => c.veces < CARRITO.max
+  && ahora - new Date(c.actualizado).getTime() >= CARRITO.pasosDias[c.veces] * 864e5
+  && (!c.recordado || ahora - new Date(c.recordado).getTime() >= 864e5);
+/* Cada mañana: borra la bitácora vieja y, si CARRITO.auto está prendido, manda los
+   recordatorios que ya tocan (hasta CARRITO.max por carrito). Devuelve cuántos
+   carritos todavía esperan alguno. */
 function carritosDiario_(ss) {
   const h = hojaDe_(ss, H_ACTIVIDAD), filas = h.getDataRange().getValues(), limite = masDias_(new Date(), -CARRITO.guardarDias);
   let viejas = 0;
   while (viejas + 1 < filas.length && filas[viejas + 1][0] && new Date(filas[viejas + 1][0]) < limite) viejas++;
   if (viejas) h.deleteRows(2, viejas);
-  const porRecordar = carritosQuietos_(ss).filter((c) => c.correo && !c.recordado && aceptaCorreos_(ss, c.correo));
+  const porRecordar = carritosQuietos_(ss).filter((c) => c.correo && c.veces < CARRITO.max && aceptaCorreos_(ss, c.correo));
   if (!CARRITO.auto) return porRecordar.length;
-  const ayer = Date.now() - 864e5;
+  const ahora = Date.now();
   let quedan = 0;
-  porRecordar.forEach((c) => { if (new Date(c.actualizado).getTime() > ayer || recordarCarrito_(ss, c) !== "enviado") quedan++; });
+  porRecordar.forEach((c) => { if (!tocaCarrito_(c, ahora) || recordarCarrito_(ss, c) !== "enviado") quedan++; });
   return quedan;
 }
 
@@ -909,6 +945,7 @@ function baja_(q) {
    recuerda el bono a quien no lo ha usado, avisa a cada suscriptor que su caja
    sale en SUB_AVISO días y le escribe a Nandez qué toca hoy. */
 function diario() {
+  semanalSeguir_();
   const ss = libro_(), hoy = dia_(new Date()), hb = hojaDe_(ss, H_BONOS), bonos = hb.getDataRange().getValues();
   for (let i = 1; i < bonos.length; i++) {
     const f = bonos[i], correo = String(f[1]);
@@ -964,24 +1001,33 @@ function diario() {
    Gmail gratis permite unos 100 destinatarios al día (Workspace, 1.500).
    Cada entrega queda anotada: si una campaña no alcanza hoy, mañana se envía
    la misma (mismo asunto) y solo les llega a quienes faltan. */
+/* El envío a la lista. Lo usan las campañas que se escriben en el panel (enviar_) y el
+   correo semanal (semanal_): cada quien arma el correo de cada destinatario con `armar`.
+   `silencioso`: si no hay a quién mandarle, no anota nada en la hoja de envíos. */
+function campana_(o) {
+  const ss = libro_(), filas = ss.getSheetByName(H_CONTACTOS).getDataRange().getValues().slice(1);
+  const entregas = hoja_(ss, H_ENTREGAS, ["fecha", "asunto", "correo"]), yaLaTienen = {};
+  entregas.getDataRange().getValues().slice(1).forEach((f) => { if (f[1] === o.asunto) yaLaTienen[String(f[2])] = true; });
+  const destino = o.prueba ? [Session.getEffectiveUser().getEmail()]
+    : filas.filter((f) => f[0] && f[3] === true && !f[6] && !yaLaTienen[String(f[0])]
+        && (!o.etiqueta || etiquetas_(f[2]).indexOf(o.etiqueta) >= 0)).map((f) => String(f[0]));
+  if (o.silencioso && !destino.length) return { enviados: 0, pendientes: 0, cuota: MailApp.getRemainingDailyQuota() };
+  const lote = destino.slice(0, MailApp.getRemainingDailyQuota());
+  lote.forEach((c) => {
+    const m = o.armar(c);
+    enviarCorreo_({ to: c, subject: o.asunto, name: MARCA, htmlBody: m.html,
+      body: m.texto + "\n\n—\n" + MARCA + "\nPara no recibir más correos: " + enlaceBaja_(c) });
+    if (!o.prueba) entregas.appendRow([new Date(), o.asunto, c]);
+  });
+  ss.getSheetByName(H_ENVIOS).appendRow([new Date(), o.asunto, o.prueba ? "(prueba)" : (o.etiqueta || "todos"), lote.length, destino.length - lote.length]);
+  return { enviados: lote.length, pendientes: destino.length - lote.length, cuota: MailApp.getRemainingDailyQuota() };
+}
 function enviar_(d) {
   if (!d.clave || d.clave !== clave_()) return json_({ ok: false, error: "clave" });
   const asunto = corto_(d.asunto, 150).trim(), texto = corto_(d.mensaje, 20000).trim();
   if (!asunto || !texto) return json_({ ok: false, error: "vacio" });
-  const ss = libro_(), filas = ss.getSheetByName(H_CONTACTOS).getDataRange().getValues().slice(1);
-  const entregas = hoja_(ss, H_ENTREGAS, ["fecha", "asunto", "correo"]), yaLaTienen = {};
-  entregas.getDataRange().getValues().slice(1).forEach((f) => { if (f[1] === asunto) yaLaTienen[String(f[2])] = true; });
-  const destino = d.prueba ? [Session.getEffectiveUser().getEmail()]
-    : filas.filter((f) => f[0] && f[3] === true && !f[6] && !yaLaTienen[String(f[0])]
-        && (!d.etiqueta || etiquetas_(f[2]).indexOf(d.etiqueta) >= 0)).map((f) => String(f[0]));
-  const lote = destino.slice(0, MailApp.getRemainingDailyQuota());
-  lote.forEach((c) => {
-    enviarCorreo_({ to: c, subject: asunto, name: MARCA, htmlBody: plantilla_(texto, c),
-      body: texto + "\n\n—\n" + MARCA + "\nPara no recibir más correos: " + enlaceBaja_(c) });
-    if (!d.prueba) entregas.appendRow([new Date(), asunto, c]);
-  });
-  ss.getSheetByName(H_ENVIOS).appendRow([new Date(), asunto, d.prueba ? "(prueba)" : (d.etiqueta || "todos"), lote.length, destino.length - lote.length]);
-  return json_({ ok: true, enviados: lote.length, pendientes: destino.length - lote.length, cuota: MailApp.getRemainingDailyQuota() });
+  const r = campana_({ asunto: asunto, etiqueta: d.etiqueta, prueba: d.prueba, armar: (c) => ({ html: plantilla_(texto, c), texto: texto }) });
+  return json_({ ok: true, enviados: r.enviados, pendientes: r.pendientes, cuota: r.cuota });
 }
 
 /* ---------- un correo a una persona, con la plantilla de Nandez ----------
@@ -997,17 +1043,35 @@ function uno_(d) {
   return json_({ ok: true, cuota: MailApp.getRemainingDailyQuota() });
 }
 
-/* ---------- el recordatorio semanal ----------
-   Cada lunes a las 9 a. m. (el disparador lo crea "configurar"): los cafés que se
-   venden esta semana, a quien acepta correos. Usa el mismo envío de las campañas, así
-   que cada semana tiene su asunto y nadie recibe dos veces el mismo. */
+/* ---------- el correo semanal ----------
+   Cada lunes a las 9 a. m. (el disparador lo crea "configurar"), a quien acepta correos:
+   los cafés con su foto y su precio (leídos de la página, como en la bienvenida) y, cuando
+   haya merch a la venta, el merch. El que viene en camino sale como "Próximamente" y el que
+   está en preventa, como "En preventa": nada se promete que la página no diga.
+   El asunto lleva el lunes de la semana, así que es el mismo toda la semana: nadie recibe
+   dos, y si un lunes no alcanza el cupo de Gmail, diario() sigue con los que faltan. */
+const lunesDe_ = (v) => { const d = dia_(v); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d; };
 function semanal_() {
-  const ps = (catalogo_().productos || []).filter((p) => !p.proximamente).slice(0, 4);
-  if (!ps.length) return;
-  const semana = Utilities.formatDate(new Date(), "America/Bogota", "yyyy-'S'ww");
-  const lista = ps.map((p) => "• " + p.nombre.es + " · " + pesos_(p.precio)).join("\n");
-  enviar_({ clave: clave_(), asunto: "Nandez · semana " + semana,
-    mensaje: "Hola:\n\nEsta semana en Nandez:\n\n" + lista + "\n\nPara pedir, entra a https://www.nandezcoffee.com/tienda" });
+  const cat = catalogo_(), cafes = (cat.productos || []).slice(0, 4), merch = (cat.merch || []).filter((m) => !m.proximamente && m.precio > 0);
+  if (!cafes.length) return;
+  const lunes = lunesDe_(new Date());
+  const asunto = "Esta semana en " + MARCA + " · " + fecha_(lunes);
+  const intro = "Esto es lo que hay esta semana en " + MARCA + ". Escoge el tuyo:";
+  const linea = (p) => "· " + p.nombre.es + (p.proximamente ? " · próximamente" : p.precio ? " · " + pesos_(p.precio) : "");
+  const texto = intro + "\n\n" + cafes.map(linea).join("\n") + (merch.length ? "\n\nMerch " + COMUNIDAD + ":\n" + merch.map(linea).join("\n") : "") +
+    "\n\n" + SITIO + "/cafes";
+  const cierre = "¿Dudas de cuál escoger o cómo prepararlo? Respóndenos y te ayudamos. Del otro lado te lee una persona.";
+  const r = campana_({ asunto: asunto, silencioso: true, armar: (c) => ({ texto: texto,
+    html: marco_(titulo_("Esta semana en ", MARCA) + centrado_(intro) + productos_("Los cafés", "", 0, false, cafes) +
+      (merch.length ? productos_("Merch " + COMUNIDAD, "", 0, false, merch) : "") +
+      boton_(SITIO + "/cafes", "Ver los cafés") + centrado_(cierre, 15), pieComunidad_(c, false)) }) });
+  /* si no alcanzó el cupo, queda anotado para que diario() siga con los que faltan esta semana */
+  PropertiesService.getScriptProperties().setProperty("SEMANAL_PENDIENTE", r.pendientes > 0 ? diaClave_(lunes) : "");
+}
+function semanal() { semanal_(); }   // el que llama el disparador del lunes
+/* Los que no alcanzaron el lunes: el martes y el miércoles se sigue con la misma semana */
+function semanalSeguir_() {
+  if (PropertiesService.getScriptProperties().getProperty("SEMANAL_PENDIENTE") === diaClave_(lunesDe_(new Date()))) semanal_();
 }
 
 /* ---------- el remitente ----------
@@ -1052,18 +1116,22 @@ function catalogo_() {
 /* La vitrina: dos por fila. El que está a la venta lleva su precio con el bono ya
    restado y un "Lo quiero" que abre la ficha con el bono puesto; el que viene en
    camino, "Próximamente" y un "Avísame". Nada de precios inventados. */
-function productos_(titulo, codigo, pct, en) {
-  const ps = (catalogo_().productos || []).slice(0, 4);
+function productos_(titulo, codigo, pct, en, lista) {
+  const ps = (lista || catalogo_().productos || []).slice(0, 4);
+  /* sin código ni porcentaje (el correo semanal) el precio sale solo y el enlace, sin bono */
+  const conCodigo = pct > 0 && !!codigo;
   if (!ps.length) return "";
   const L = en ? "en" : "es";
   const celda = (p) => {
     /* el bono sirve también para reservar: solo lo pierde quien ni siquiera puede pedir */
-    const url = p.url[L] + (p.proximamente ? "" : "?bono=" + encodeURIComponent(codigo));
+    const url = p.url[L] + (p.proximamente || !conCodigo ? "" : "?bono=" + encodeURIComponent(codigo));
     const foto = p.foto
       ? '<img src="' + esc_(p.foto) + '" width="240" alt="' + esc_(p.nombre[L]) + '" style="display:block;width:100%;max-width:240px;height:auto;border-radius:8px;margin:0 auto">'
       : '<div style="padding:52px 12px;border-radius:8px;background:' + esc_(p.color) + ';color:#ffffff;font:italic 22px/1.2 Georgia,serif;text-align:center">' + esc_(p.nombre[L]) + "</div>";
     const rotulo = (txt) => '<p style="margin:0 0 12px;font:600 11px Arial,sans-serif;letter-spacing:0.14em;text-transform:uppercase;color:#C9381A">' + txt + "</p>";
-    const conBono = '<p style="margin:0 0 12px;font-size:14px"><s style="color:#6B645C">' + pesos_(p.precio) + '</s>&nbsp; <b style="color:#141210">' + pesos_(p.precio * (1 - pct / 100)) + "</b></p>";
+    const conBono = conCodigo
+      ? '<p style="margin:0 0 12px;font-size:14px"><s style="color:#6B645C">' + pesos_(p.precio) + '</s>&nbsp; <b style="color:#141210">' + pesos_(p.precio * (1 - pct / 100)) + "</b></p>"
+      : '<p style="margin:0 0 12px;font-size:14px"><b style="color:#141210">' + pesos_(p.precio) + "</b></p>";
     /* Tres estados: el que ni se puede pedir, el que se reserva y se despacha
        el día del lanzamiento, y el que sale hoy mismo. */
     const precio = p.proximamente ? rotulo(en ? "Coming soon" : "Próximamente")
@@ -1071,7 +1139,7 @@ function productos_(titulo, codigo, pct, en) {
       : conBono;
     return '<td width="50%" valign="top" style="padding:0 8px 26px;text-align:center">' + foto +
       '<p style="margin:12px 0 2px;font:700 15px Arial,sans-serif;color:#141210">' + esc_(p.nombre[L]) + "</p>" +
-      '<p style="margin:0 0 6px;font-size:12.5px;color:#6B645C">' + esc_(p.sale[L]) + " · " + p.gramos + " g</p>" + precio +
+      (p.sale ? '<p style="margin:0 0 6px;font-size:12.5px;color:#6B645C">' + esc_(p.sale[L]) + " · " + p.gramos + " g</p>" : "") + precio +
       '<a href="' + esc_(url) + '" style="display:inline-block;background:' + (p.proximamente ? "#ffffff;color:#141210;border:1px solid #141210" : "#141210;color:#ffffff") +
       ';text-decoration:none;font:700 12px Arial,sans-serif;letter-spacing:0.08em;text-transform:uppercase;padding:11px 20px;border-radius:6px">' +
       (p.proximamente ? (en ? "Notify me" : "Avísame") : p.preventa ? (en ? "Pre-order" : "Reservar") : (en ? "I want it" : "Lo quiero")) + "</a></td>";

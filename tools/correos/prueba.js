@@ -41,7 +41,9 @@ const ctx = {
   Session: { getEffectiveUser: () => ({ getEmail: () => "nandezcafe@gmail.com" }) },
   ScriptApp: { getService: () => ({ getUrl: () => "https://script.google.com/macros/s/X/exec" }),
     getProjectTriggers: () => disparadores.map((f) => ({ getHandlerFunction: () => f })),
-    newTrigger: (f) => { const t = { timeBased: () => t, everyDays: () => t, everyHours: () => t, atHour: () => t, create: () => disparadores.push(f) }; return t; } },
+    deleteTrigger: (t) => { const i = disparadores.indexOf(t.getHandlerFunction()); if (i >= 0) disparadores.splice(i, 1); },
+    WeekDay: { MONDAY: "MONDAY" },
+    newTrigger: (f) => { const t = { timeBased: () => t, everyDays: () => t, everyHours: () => t, onWeekDay: () => t, atHour: () => t, create: () => disparadores.push(f) }; return t; } },
   Logger: { log: (m) => console.log("  log:", m) },
   /* el catálogo que publica tools/build.js, leído del disco como si viniera de la página */
   CacheService: { getScriptCache: () => ({ get: (k) => cacheMem[k] || null, put: (k, v) => { cacheMem[k] = v; } }) },
@@ -61,8 +63,11 @@ ctx.configurar();
 const ss = Object.values(libros)[0];
 ok(!ss.hojas["Hoja 1"] && ["Contactos", "Registros", "Envíos", "Entregas", "Pedidos", "Suscripciones", "Bonos"].every((h) => ss.hojas[h]), "configurar crea las hojas y quita la vacía");
 ok(/^[0-9a-f]{32}$/.test(props.CLAVE), "configurar genera una clave de 32 caracteres");
-ok(disparadores.length === 2 && disparadores.includes("diario") && disparadores.includes("liberarReservas"),
-  "configurar programa el aviso diario y la liberación de reservas una sola vez, aunque se ejecute dos veces");
+ok(disparadores.length === 3 && ["diario", "semanal", "liberarReservas"].every((f) => disparadores.includes(f)),
+  "configurar programa el aviso diario, el correo semanal y la liberación de reservas, una sola vez cada uno aunque se ejecute dos veces");
+disparadores.push("semanal_"); ctx.configurar();
+ok(!disparadores.includes("semanal_") && disparadores.filter((f) => f === "semanal").length === 1,
+  "si quedó un disparador viejo (semanal_), se quita y no se manda el correo semanal doble");
 
 /* ---- registros y bienvenida ---- */
 cuota = 50;
@@ -297,12 +302,12 @@ const nRec = enviados.length, recC = post({ accion: "recordar", clave: props.CLA
 ok(recC.ok && enviados.length === nRec + 1 && ultimo().to === "caro@correo.com" && ultimo().subject === "Tu café sigue en el carrito"
   && ultimo().htmlBody.includes("2 × Castillo 250 g") && /cafes\?bono=GANG-/.test(ultimo().htmlBody) && ultimo().htmlBody.includes("accion=baja"),
   "a Caro le llega su carrito, su bono sin usar ya puesto en el botón y el enlace de baja");
-ok(post({ accion: "recordar", clave: props.CLAVE, carrito: V1 }).error === "ya" && enviados.length === nRec + 1, "el recordatorio sale una sola vez por carrito");
+ok(post({ accion: "recordar", clave: props.CLAVE, carrito: V1 }).error === "pronto" && enviados.length === nRec + 1, "nunca dos recordatorios el mismo día, aunque el panel se pulse dos veces");
 post({ tipo: "carrito", v: V1, items: [], comprado: true });
 ok(!getJ({ accion: "actividad", clave: props.CLAVE }).carritos.some((x) => x.v === V1), "el carrito que se compró deja de estar abandonado");
 post({ tipo: "carrito", v: V1, items: bolsa(1) });
 const fV1 = ss.hojas["Carritos"].filas.find((f) => f[0] === V1);
-ok(fV1[7] === "abierto" && fV1[8] === "" && fV1[1] === "caro@correo.com", "si vuelve a armar otro, es un carrito nuevo: conserva el correo y se puede recordar otra vez");
+ok(fV1[7] === "abierto" && fV1[8] === "" && fV1[10] === 0 && fV1[1] === "caro@correo.com", "si vuelve a armar otro, es un carrito nuevo: conserva el correo y la cuenta de recordatorios vuelve a cero");
 
 post({ tipo: "pedido", id: "NDZ-1110-RS01", canal: "wompi", nombre: "Rosa Reserva", correo: "rosa@correo.com", tel: "3001112233", ciudad: "Cúcuta",
   items: [{ id: "P-CAS", g: 250, n: 1, nombre: "Castillo 250 g", stock: 90 }], total: 48000 });
@@ -321,7 +326,35 @@ ss.hojas["Actividad"].filas.splice(1, 0, [haceDias(100), V2, "visita", "", 0, ""
 const nActiv = ss.hojas["Actividad"].filas.length, nDiario = enviados.length;
 ctx.diario();
 ok(ss.hojas["Actividad"].filas.length === nActiv - 1 && ss.hojas["Actividad"].filas[1][1] === V1, "cada mañana se borra la bitácora de más de 90 días, y solo esa");
-ok(!enviados.slice(nDiario).some((m) => m.subject === "Tu café sigue en el carrito"), "sin CARRITO.auto, el aviso diario no le escribe a nadie por su carrito");
+ok(!enviados.slice(nDiario).some((m) => /carrito/i.test(m.subject)), "un carrito recién armado todavía no recibe nada: espera su día");
+
+/* ---- los tres recordatorios del carrito, solos ---- */
+const filaV1 = () => ss.hojas["Carritos"].filas.find((f) => f[0] === V1);
+const delCarrito = () => enviados.filter((m) => m.to === "caro@correo.com" && /carrito/i.test(m.subject));
+/* antes ya había uno, el del botón del panel: se cuenta desde ahí */
+const base = delCarrito().length;
+cuota = 100;
+filaV1()[6] = haceDias(2);
+ctx.diario();
+ok(delCarrito().length === base + 1 && delCarrito()[base].subject === "Tu café sigue en el carrito" && filaV1()[10] === 1,
+  "con el carrito quieto un día, el aviso diario manda el primero solo");
+ctx.diario();
+ok(delCarrito().length === base + 1, "y no lo repite al día siguiente: el segundo espera a los 3 días");
+filaV1()[6] = haceDias(4); filaV1()[8] = haceDias(2);
+ctx.diario();
+ok(delCarrito().length === base + 2 && delCarrito()[base + 1].subject === "¿Todavía lo quieres? Tu carrito te espera" && filaV1()[10] === 2,
+  "a los 3 días sale el segundo, con otro texto");
+filaV1()[6] = haceDias(8); filaV1()[8] = haceDias(3);
+ctx.diario();
+const ultimoC = delCarrito()[base + 2];
+ok(delCarrito().length === base + 3 && ultimoC.subject === "Último aviso sobre tu carrito" && ultimoC.body.includes("último correo") && filaV1()[10] === 3,
+  "a los 7 días sale el tercero, y dice que es el último");
+filaV1()[6] = haceDias(12); filaV1()[8] = haceDias(5);
+ctx.diario();
+ok(delCarrito().length === base + 3 && post({ accion: "recordar", clave: props.CLAVE, carrito: V1 }).error === "ya",
+  "nunca hay un cuarto: ni el aviso diario ni el botón del panel lo mandan");
+ok(!enviados.some((m) => m.to === "sin-casilla@correo.com" && /carrito/i.test(m.subject)), "y a quien no marcó la casilla de correos no le llega ninguno");
+ok(delCarrito().every((m) => m.htmlBody.includes("accion=baja")), "todos traen el enlace para darse de baja");
 
 /* ---- el stock desde el panel ---- */
 ok(getJ({ accion: "existencias", clave: "mala" }).ok === false && post({ accion: "stock", clave: "mala", id: "P-CAS-250", stock: 9 }).ok === false,
@@ -389,3 +422,36 @@ ok(actV.visitas >= actV.embudo.visita, "las visitas nunca son menos que los del 
 post({ accion: "limpiar", clave: props.CLAVE });
 ok(ss.hojas["Visitas"].filas.length === 1 && getJ({ accion: "actividad", clave: props.CLAVE }).visitas === 0,
   "al borrar lo medido, las visitas también vuelven a cero");
+
+/* ---- el correo semanal ---- */
+cuota = 100;
+const aceptan = ss.hojas["Contactos"].filas.slice(1).filter((f) => f[3] === true && !f[6]).map((f) => f[0]);
+const nSem = enviados.length;
+ctx.semanal_();
+const sem = enviados.slice(nSem);
+ok(sem.length === aceptan.length && sem.length > 0 && sem.every((m) => m.subject.startsWith("Esta semana en Nandez Coffee · ")),
+  "el lunes le llega a todos los que aceptan correos, con el lunes de la semana en el asunto");
+ok(sem[0].htmlBody.includes("Castillo") && sem[0].htmlBody.includes("/img/correo/logo.png") && sem[0].htmlBody.includes("accion=baja") && !sem[0].htmlBody.includes("?bono="),
+  "trae el logo, la vitrina de cafés con su foto y precio, el enlace de baja y ningún bono");
+ok(!sem.some((m) => m.to === "sin-casilla@correo.com") && !sem[0].htmlBody.includes("Merch"),
+  "no le llega a quien no aceptó correos, y mientras no haya merch a la venta no se menciona");
+const nSem2 = enviados.length;
+ctx.semanal_();
+ok(enviados.length === nSem2, "si se ejecuta otra vez la misma semana, nadie recibe dos");
+
+/* sin cupo suficiente el lunes: los que faltan reciben el correo los días siguientes, con el merch si ya sale */
+const cat = JSON.parse(cacheMem["catalogo"]);
+cat.merch[0].precio = 60000; cat.merch[0].proximamente = false; cacheMem["catalogo"] = JSON.stringify(cat);
+const asuntoSem = sem[0].subject;
+const entregasSem = ss.hojas["Entregas"].filas;
+for (let k = entregasSem.length - 1; k > 0; k--) if (entregasSem[k][1] === asuntoSem) entregasSem.splice(k, 1);
+cuota = 1;
+const nSem3 = enviados.length;
+ctx.semanal_();
+ok(enviados.length === nSem3 + 1 && props.SEMANAL_PENDIENTE && enviados[nSem3].htmlBody.includes("Merch Nandez Coffee Gang") && enviados[nSem3].htmlBody.includes("$60.000"),
+  "con cupo para uno solo, sale a uno (con el merch ya a la venta) y queda anotado que faltan");
+cuota = 100;
+ctx.diario();
+ok(enviados.filter((m) => m.subject === asuntoSem).length === 1 + aceptan.length - 0 || enviados.filter((m) => m.subject === asuntoSem).length >= aceptan.length,
+  "al día siguiente el aviso diario sigue con los que faltaban de esa misma semana");
+ok(!props.SEMANAL_PENDIENTE, "y cuando ya no falta nadie, deja de seguir");

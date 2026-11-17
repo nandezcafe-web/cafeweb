@@ -300,6 +300,12 @@ escribir("data/catalogo.json", JSON.stringify({
     variantes: p.variantes.map((v) => ({ g: v.g, precio: p.proximamente ? 0 : v.precio, stock: v.stock || 0 })),
     url: { es: CONFIG.sitio + ruta("cafe", p.id, "es"), en: CONFIG.sitio + ruta("cafe", p.id, "en") } }))`)
     .map((p) => ({ ...p, foto: FOTO_CORREO[p.id] ? sitio + FOTO_CORREO[p.id] : "" })),
+  /* El merch, para el correo semanal: solo se menciona cuando tiene precio y ya no es
+     "próximamente". Las fotos del merch ya son JPG, así que sirven tal cual en el correo. */
+  merch: ev(mundo("es"), `ACCESORIOS.filter((a) => a.grupo === "merch").map((a) => ({
+    id: a.id, nombre: a.nombre, color: a.color || "#C9381A", precio: a.precio || 0,
+    proximamente: !!a.proximamente || !a.precio, foto: a.foto ? CONFIG.sitio + a.foto : "",
+    url: { es: CONFIG.sitio + ruta("accesorios", null, "es"), en: CONFIG.sitio + ruta("accesorios", null, "en") } }))`),
   redes: ev(mundo("es"), "CONFIG.redes"),
   /* Lo que api/pago.js necesita para cobrar sin creerle al navegador: los precios
      de arriba, el envío, el IVA y a qué hoja va el pedido. */

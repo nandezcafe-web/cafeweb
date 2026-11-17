@@ -17,7 +17,7 @@
 const AC = { datos: null, cargando: false, error: null, dias: 30 };
 const AC_EVENTOS = { visita: "Entró a la página", ver: "Vio", agregar: "Agregó al carrito", pagar: "Fue a pagar", compra: "Compró", registro: "Se registró" };
 const AC_PASOS = [["visita", "Entraron"], ["ver", "Vieron un café"], ["agregar", "Agregaron al carrito"], ["pagar", "Fueron a pagar"], ["compra", "Compraron"]];
-const AC_ERRORES = { "no-acepta": "Esa persona no aceptó recibir correos.", "sin-correo": "No dejó correo.", ya: "Ya se le había recordado.",
+const AC_ERRORES = { "no-acepta": "Esa persona no aceptó recibir correos.", "sin-correo": "No dejó correo.", ya: "Ya se le recordó las 3 veces que se manda.", pronto: "Ya se le escribió hoy: espera a mañana.",
   cuota: "Gmail no tiene cupo hoy: inténtalo mañana.", no: "Ese carrito ya no está abandonado.", "no-es-reserva": "Ese pedido ya no es una reserva sin pagar." };
 
 function acCargar() {
@@ -163,7 +163,7 @@ function viewActividad() {
         <td class="op-prod">${c.items.map((i) => `${fmtNum(i.n)} × ${esc(i.nom)}`).join("<br>")}</td>
         <td class="mono">${cop(c.total)}</td>
         <td>${acHace(c.actualizado)}</td>
-        <td class="op-acc">${c.recordado ? `<span class="op-estado op-entregado">Recordado el ${coFecha(c.recordado)}</span>`
+        <td class="op-acc">${c.recordado ? `<span class="op-estado op-entregado">Recordado ${fmtNum(c.veces || 1)} de 3 · el ${coFecha(c.recordado)}</span>`
           : c.acepta ? `<button class="btn sm primary" data-act="ac-recordar" data-id="${esc(c.v)}">Recordar por correo</button>`
           : `<span class="op-estado op-cancelado" title="La ley pide su autorización para mandarle publicidad">Sin permiso de correo</span>`}</td></tr>`).join("")
         : `<tr><td colspan="5" class="hint">Ningún carrito con correo está esperando.</td></tr>`}</tbody></table></div>
