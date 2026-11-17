@@ -27,7 +27,7 @@ function nuevoLibro(nombre) {
     insertSheet: (n) => (hojas[n] = nuevaHoja(n)), getSheets: () => Object.values(hojas), deleteSheet: (h) => delete hojas[h.nombre], hojas };
   return (libros[id] = ss);
 }
-const props = {}, enviados = [], disparadores = [], cacheMem = {}; let cuota = 3;
+const props = {}, enviados = [], disparadores = [], cacheMem = {}; let cuota = 3, urlServicio = "https://script.google.com/macros/s/X/exec";
 const ctx = {
   console, JSON, Date, String, Math, Object, Number, Array,
   SpreadsheetApp: { create: nuevoLibro, openById: (id) => libros[id] },
@@ -39,7 +39,7 @@ const ctx = {
   HtmlService: { createHtmlOutput: (h) => ({ setTitle: () => ({ html: h }) }) },
   MailApp: { getRemainingDailyQuota: () => cuota, sendEmail: (o) => { if (cuota < 1) throw new Error("sin cuota"); enviados.push(o); cuota--; } },
   Session: { getEffectiveUser: () => ({ getEmail: () => "nandezcafe@gmail.com" }) },
-  ScriptApp: { getService: () => ({ getUrl: () => "https://script.google.com/macros/s/X/exec" }),
+  ScriptApp: { getService: () => ({ getUrl: () => urlServicio }),
     getProjectTriggers: () => disparadores.map((f) => ({ getHandlerFunction: () => f })),
     deleteTrigger: (t) => { const i = disparadores.indexOf(t.getHandlerFunction()); if (i >= 0) disparadores.splice(i, 1); },
     WeekDay: { MONDAY: "MONDAY" },
@@ -504,3 +504,15 @@ ponerLanz(hacia(1));
 const entL = ss.hojas["Entregas"].filas; for (let k = entL.length - 1; k > 0; k--) if (entL[k][1] === "Mañana sale Nandez Coffee") entL.splice(k, 1);
 nL = enviados.length; ctx.diario();
 ok(enviados.slice(nL).filter((m) => m.subject === "Mañana sale Nandez Coffee").length === aceptanL.length, "el aviso de las 7 a. m. manda el aviso del lanzamiento que toque, solo");
+
+/* ---- el enlace de baja, también cuando la función corre a mano ---- */
+get({ accion: "stock" });   // una visita web: guarda la dirección de /exec
+const exec = urlServicio;
+urlServicio = "https://script.google.com/macros/s/DEV/dev";   // así responde Google si se ejecuta a mano desde el editor
+const bajaMano = vm.runInContext('enlaceBaja_("alguien@correo.com")', ctx);
+ok(bajaMano.startsWith(exec + "?accion=baja") && !bajaMano.includes("/dev"),
+  "un correo que sale de una ejecución a mano lleva el enlace de baja de /exec, el que abre para cualquiera, no el de /dev");
+const nBaja = enviados.length; cuota = 50;
+ctx.lanzamiento_ && post({ tipo: "comunidad", correo: "manual@correo.com", consentimiento: true });
+ok(!enviados.slice(nBaja).some((m) => /\/dev\?|\/dev"/.test(m.htmlBody + m.body)), "ninguno de los correos de esa ejecución trae un enlace /dev");
+urlServicio = exec;

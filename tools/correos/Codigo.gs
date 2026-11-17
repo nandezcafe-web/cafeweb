@@ -144,6 +144,7 @@ const hojaDe_ = (ss, nombre) => hoja_(ss, nombre, { [H_BONOS]: COLS_BONOS, [H_PE
    "acepta_correos" sin la casilla de la comunidad: la Ley 1581 pide
    autorización previa y expresa para enviar publicidad. */
 function doPost(e) {
+  recordarUrl_();
   let d;
   try { d = JSON.parse(e.postData.contents); } catch (err) { return json_({ ok: false, error: "json" }); }
   if (d.accion === "enviar") return enviar_(d);
@@ -872,6 +873,7 @@ function carritosDiario_(ss) {
 
 /* ---------- lo que pide el panel, el bono y la baja ---------- */
 function doGet(e) {
+  recordarUrl_();
   const q = (e && e.parameter) || {};
   if (q.accion === "baja") return baja_(q);
   /* El stock no es secreto: la tienda lo pide al cargar, sin clave */
@@ -923,7 +925,19 @@ function doGet(e) {
 function firma_(correo) {
   return Utilities.base64EncodeWebSafe(Utilities.computeHmacSha256Signature(correo, clave_())).slice(0, 22);
 }
-const enlaceBaja_ = (correo) => ScriptApp.getService().getUrl() + "?accion=baja&correo=" + encodeURIComponent(correo) + "&f=" + firma_(correo);
+/* La dirección de la aplicación web. ScriptApp.getService().getUrl() da la de /exec cuando la
+   pide un visitante, pero la de /dev —que solo abre el dueño del script— cuando la función
+   corre a mano desde el editor (ejecutar avisoLanzamiento, por ejemplo), y la de la última
+   implementación si hay varias. El enlace de baja va en cada correo y tiene que abrir para
+   cualquiera, así que cada visita web guarda la suya y los correos usan esa. */
+function recordarUrl_() {
+  try {
+    const u = ScriptApp.getService().getUrl(), p = PropertiesService.getScriptProperties();
+    if (/\/exec$/.test(u) && p.getProperty("URL_WEB") !== u) p.setProperty("URL_WEB", u);
+  } catch (err) {}
+}
+const urlWeb_ = () => PropertiesService.getScriptProperties().getProperty("URL_WEB") || ScriptApp.getService().getUrl();
+const enlaceBaja_ = (correo) => urlWeb_() + "?accion=baja&correo=" + encodeURIComponent(correo) + "&f=" + firma_(correo);
 
 function baja_(q) {
   const correo = String(q.correo || "").toLowerCase();
