@@ -675,11 +675,12 @@ document.addEventListener("click", (e) => {
     case "cafe": return go("cafe", id);
     case "entrada": return go("entrada", id);
     case "var": (UI.variante ||= {})[el.dataset.p] = +el.dataset.g; UI.animate = false; return render();
+    case "muele": (UI.molienda ||= {})[el.dataset.p] = el.dataset.m === "1"; UI.animate = false; return render();
     case "add": return addCarrito(el.dataset.p, el.dataset.g);
-    case "qty": return cambiarCantidad(el.dataset.p, el.dataset.g, +el.dataset.d);
+    case "qty": return cambiarCantidad(el.dataset.p, el.dataset.g, +el.dataset.d, el.dataset.m === "1");
     case "carrito-clear": UI.carrito = []; guardarCarrito(); renderCarrito(); return render();
     case "carrito": return abrirCarrito();
-    case "quitar": return quitarDelCarrito(el.dataset.p, el.dataset.g);
+    case "quitar": return quitarDelCarrito(el.dataset.p, el.dataset.g, el.dataset.m === "1");
     case "cart-close": return cerrarCarrito();
     case "pop-no": return popCerrar();
     case "cookies-si": return cookiesResponder(true);

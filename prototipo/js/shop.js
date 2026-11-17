@@ -2,7 +2,12 @@
    CAFÉS: catálogo por finca, ficha del café, pedido y pago
    ============================================================ */
 const varSel = (p) => p.variantes.find((v) => v.g === (UI.variante?.[p.id] || p.variantes.find((x) => x.principal).g)) || p.variantes[0];
-const enCarrito = (id, g) => UI.carrito.find((i) => i.id === id && i.g === g);
+const enCarrito = (id, g, mol = false) => UI.carrito.find((i) => i.id === id && i.g === g && !!i.molido === !!mol);
+/* Si lo quiere molido. Solo para los cafés que se venden en grano (`muele`):
+   el blend ya viene molido y no pregunta nada. */
+const muelePide = (p) => !!(p.muele && UI.molienda?.[p.id]);
+/* Cómo sale ese café en el carrito, el pedido y el correo */
+const formaItem = (p, v, mol) => (mol ? { es: "Molido", en: "Ground" } : saleDe(p, v));
 const totalCarrito = () => UI.carrito.reduce((s, i) => s + i.n * i.precio, 0);
 const unidadesCarrito = () => UI.carrito.reduce((s, i) => s + i.n, 0);
 const principal = (p) => p.variantes.find((x) => x.principal) || p.variantes[0];
@@ -424,10 +429,13 @@ function viewCafe() {
       <td class="fn"><span class="lvtag">${lvl(a.nivel)}</span></td>
       <td class="ff">${esc(tr(a.fuente))}<small>${fmtFecha(a.fecha)}</small></td></tr>`;
   const R = p.receta;
-  const enGrano = tx(saleDe(p, v)) === tx({ es: "En grano", en: "Whole bean" });
+  const mol = muelePide(p);
+  const enGrano = !mol && tx(saleDe(p, v)) === tx({ es: "En grano", en: "Whole bean" });
   const sinMolino = enGrano
     ? ` <a class="enlace" href="${esc(contactoURL(en ? `Hi, I want the ${tx(p.nombre)} but I have no grinder.` : `Hola, quiero el ${tx(p.nombre)} pero no tengo molino.`, tx(p.nombre)))}" target="_blank" rel="noopener">${en ? "No grinder? Write to us." : "¿No tienes molino? Escríbenos."}</a>`
     : "";
+  /* Si la molienda de la receta no le sirve, que nos escriba antes de que salga */
+  const otraMolienda = ` <a class="enlace" href="${esc(contactoURL(en ? `Hi, I want the ${tx(p.nombre)} ground for another method.` : `Hola, quiero el ${tx(p.nombre)} molido para otro método.`, tx(p.nombre)))}" target="_blank" rel="noopener">${en ? "Need another grind? Write to us." : "¿Necesitas otra molienda? Escríbenos."}</a>`;
   const pronto = !!p.proximamente, pre = enPreventa(p);
   const compra = pronto ? `
       <div class="pronto-aviso">
@@ -444,7 +452,14 @@ function viewCafe() {
           <span class="mono precio">${cop(x.precio)}</span></button>`).join("")}
       </div>
 
-      <p class="sale"><span class="sale-tag">${esc(tx(saleDe(p, v)))}</span> <span>${esc(tx(saleNotaDe(p, v)))}${sinMolino}</span></p>
+      ${p.muele ? `<div class="muele" role="radiogroup" aria-label="${en ? "Grind" : "Molienda"}">
+        ${[[0, en ? "Whole bean" : "En grano"], [1, en ? "Ground" : "Molido"]].map(([m, rot]) => `<button class="mu${(mol ? 1 : 0) === m ? " on" : ""}" role="radio" aria-checked="${(mol ? 1 : 0) === m}"
+          data-act="muele" data-p="${p.id}" data-m="${m}">${rot}</button>`).join("")}
+      </div>` : ""}
+
+      <p class="sale">${p.muele ? "" : `<span class="sale-tag">${esc(tx(formaItem(p, v, mol)))}</span> `}<span>${mol
+        ? `${en ? `We grind it the day we ship it, ${tx(R.molienda).toLowerCase()} grind, the one its recipe asks for.` : `Lo molemos el día que lo despachamos, en molienda ${tx(R.molienda).toLowerCase()}, la que pide su receta.`}${otraMolienda}`
+        : `${esc(tx(saleNotaDe(p, v)))}${sinMolino}`}</span></p>
 
       <div class="buy-row">
         <div><b class="precio-grande mono">${cop(precioHoy(p, v))}</b><small>${gramos(v.g)} · ${cop((precioHoy(p, v) / v.g) * 1000)} ${t("por_kg")}</small></div>
@@ -621,10 +636,10 @@ function validarBono(codigo, desdeEnlace) {
 function quitarBono(pintar = true) { UI.bono = null; try { localStorage.removeItem(BONO_KEY); } catch {} if (pintar) renderCarrito(); }
 
 function addCarrito(pid, g) {
-  const p = prodById(pid), v = p.variantes.find((x) => x.g === +g), c = enCarrito(p.id, v.g);
+  const p = prodById(pid), v = p.variantes.find((x) => x.g === +g), mol = muelePide(p), c = enCarrito(p.id, v.g, mol);
   const tope = topeDe(p, v);
   if (c) { if (c.n < tope) c.n++; else return toast(UI.lang === "en" ? "No more of that size." : "No queda más de esa presentación.", { type: "err" }); }
-  else UI.carrito.push({ id: p.id, g: v.g, n: 1, precio: precioHoy(p, v), nombre: `${tx(p.nombre)} ${gramos(v.g)}` });
+  else UI.carrito.push({ id: p.id, g: v.g, n: 1, precio: precioHoy(p, v), nombre: `${tx(p.nombre)} ${gramos(v.g)}`, ...(mol ? { molido: true } : {}) });
   medir("agregar", { nombre: tx(p.nombre), ids: [p.id], valor: precioHoy(p, v), n: 1 });
   guardarCarrito(); render(); abrirCarrito(); irAlPago();
 }
@@ -775,12 +790,12 @@ function renderCarrito() {
       const p = prodById(i.id), v = p.variantes.find((x) => x.g === i.g);
       return `<li class="cart-item">
         <div class="cart-art">${CON_FOTO.has(p.id) ? fotoProducto(p, { sizes: "72px", clase: "" }) : ridge(p, { w: 120, h: 90, label: false })}</div>
-        <div class="cart-txt"><b>${esc(tx(p.nombre))}</b><small>${gramos(i.g)} · ${esc(tx(saleDe(p, v))).toLowerCase()}${enPreventa(p) ? " · " + esc(rotuloPreventa(en)) : ""}</small>
+        <div class="cart-txt"><b>${esc(tx(p.nombre))}</b><small>${gramos(i.g)} · ${esc(tx(formaItem(p, v, i.molido))).toLowerCase()}${enPreventa(p) ? " · " + esc(rotuloPreventa(en)) : ""}</small>
           <div class="cart-qty">
-            <button class="btn sm" data-act="qty" data-p="${i.id}" data-g="${i.g}" data-d="-1" aria-label="${en ? "Remove one" : "Quitar uno"}">−</button>
+            <button class="btn sm" data-act="qty" data-p="${i.id}" data-g="${i.g}" data-m="${i.molido ? 1 : 0}" data-d="-1" aria-label="${en ? "Remove one" : "Quitar uno"}">−</button>
             <span class="mono">${i.n}</span>
-            <button class="btn sm" data-act="qty" data-p="${i.id}" data-g="${i.g}" data-d="1" aria-label="${en ? "Add one" : "Agregar uno"}" ${i.n >= topeDe(p, v) ? "disabled" : ""}>+</button>
-            <button class="cart-del" data-act="quitar" data-p="${i.id}" data-g="${i.g}">${en ? "Remove" : "Quitar"}</button>
+            <button class="btn sm" data-act="qty" data-p="${i.id}" data-g="${i.g}" data-m="${i.molido ? 1 : 0}" data-d="1" aria-label="${en ? "Add one" : "Agregar uno"}" ${i.n >= topeDe(p, v) ? "disabled" : ""}>+</button>
+            <button class="cart-del" data-act="quitar" data-p="${i.id}" data-g="${i.g}" data-m="${i.molido ? 1 : 0}">${en ? "Remove" : "Quitar"}</button>
           </div></div>
         <b class="mono cart-precio">${cop(i.precio * i.n)}</b></li>`;
     }).join("")}</ul>
@@ -914,7 +929,7 @@ async function pedidoTarjeta() {
   let j;
   try {
     const r = await fetch("/api/tarjeta", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items: UI.carrito.map((i) => ({ id: i.id, g: i.g, n: i.n })), bono: UI.bono?.codigo || "",
+      body: JSON.stringify({ items: UI.carrito.map((i) => ({ id: i.id, g: i.g, n: i.n, molido: !!i.molido })), bono: UI.bono?.codigo || "",
         comprador: d, idioma: UI.lang, reemplaza: reserva.leer(), total: visto,
         tarjeta: { token: f.token, payment_method_id: f.payment_method_id, issuer_id: f.issuer_id,
           identificacion: f.payer?.identification || null } }) });
@@ -950,15 +965,15 @@ document.addEventListener("click", (e) => {
   abrirCarrito(); renderCarrito();
 });
 
-function cambiarCantidad(pid, g, d) {
-  const p = prodById(pid), v = p.variantes.find((x) => x.g === +g), c = enCarrito(pid, +g);
+function cambiarCantidad(pid, g, d, mol = false) {
+  const p = prodById(pid), v = p.variantes.find((x) => x.g === +g), c = enCarrito(pid, +g, mol);
   if (!c) return;
   c.n = Math.max(0, Math.min(topeDe(p, v), c.n + d));
-  if (!c.n) UI.carrito = UI.carrito.filter((i) => !(i.id === pid && i.g === +g));
+  if (!c.n) UI.carrito = UI.carrito.filter((i) => i !== c);
   guardarCarrito(); renderCarrito(); renderNav(); renderTray();
 }
-function quitarDelCarrito(pid, g) {
-  UI.carrito = UI.carrito.filter((i) => !(i.id === pid && i.g === +g));
+function quitarDelCarrito(pid, g, mol = false) {
+  UI.carrito = UI.carrito.filter((i) => !(i.id === pid && i.g === +g && !!i.molido === !!mol));
   guardarCarrito(); renderCarrito(); renderNav(); renderTray();
 }
 
@@ -1007,7 +1022,8 @@ function registrarPedido(d, canal, srv) {
        Una reserva aparta del cupo de la preventa (0 = sin tope), no de las bolsas. */
     const pre = enPreventa(p);
     return { id: i.id, g: i.g, nombre: i.nombre, n: i.n, precio: i.precio,
-      forma: tx(saleDe(p, v)) + (pre ? " · " + rotuloPreventa() : ""), stock: pre ? CONFIG.preventa.cupo || 0 : v.stock,
+      forma: tx(formaItem(p, v, i.molido)) + (pre ? " · " + rotuloPreventa() : ""), stock: pre ? CONFIG.preventa.cupo || 0 : v.stock,
+      ...(i.molido ? { molido: true } : {}),
       ...(pre ? { preventa: true } : {}) };
   });
   recordado.poner(d);
@@ -1145,7 +1161,7 @@ async function pedidoMercado() {
   let j;
   try {
     const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items: UI.carrito.map((i) => ({ id: i.id, g: i.g, n: i.n })), bono: UI.bono?.codigo || "",
+      body: JSON.stringify({ items: UI.carrito.map((i) => ({ id: i.id, g: i.g, n: i.n, molido: !!i.molido })), bono: UI.bono?.codigo || "",
         comprador: d, idioma: UI.lang, reemplaza: reserva.leer() }) });
     j = await r.json();
   } catch { j = { ok: false, error: "red" }; }
@@ -1271,7 +1287,7 @@ async function pedidoWompi() {
   let j;
   try {
     const r = await fetch("/api/pago", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items: UI.carrito.map((i) => ({ id: i.id, g: i.g, n: i.n })), bono: UI.bono?.codigo || "",
+      body: JSON.stringify({ items: UI.carrito.map((i) => ({ id: i.id, g: i.g, n: i.n, molido: !!i.molido })), bono: UI.bono?.codigo || "",
         comprador: d, idioma: UI.lang, llavePublica: CONFIG.pagos.wompi.llavePublica, reemplaza: reserva.leer() }) });
     j = await r.json();
   } catch { j = { ok: false, error: "red" }; }

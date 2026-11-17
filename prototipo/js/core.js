@@ -273,6 +273,9 @@ function seed() {
       { id: "P-CAS", fincaId: "F-03", loteId: "C-003",
         nombre: { es: "Castillo", en: "Castillo" }, sub: { es: "Lavado · cosecha 2026", en: "Washed · 2026 harvest" },
         variedad: "Castillo", proceso: "Lavado", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026",
+        /* Se vende en grano, pero lo molemos si lo piden: la molienda es la de su
+           receta. El blend no lleva `muele` porque ya viene molido de fábrica. */
+        muele: true,
         color: "#C9381A",
         sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que lo muelas el día que lo preparas: así guarda el aroma.", en: "We ship it whole so you grind it the day you brew it, which keeps the aroma." },
         altitud: 1870, puntaje: 87, nivel: "DOCUMENTADO", fuente: "Catación SCA", fecha: "2026-11-03",
@@ -316,7 +319,7 @@ function seed() {
          "próximamente" y recogen correos. `color` es la tinta de cada café en la página. */
       { id: "P-PAR", fincaId: "F-02", loteId: null, color: "#2C4FA3",
         nombre: { es: "Cenicafé 1", en: "Cenicafé 1" }, sub: { es: "Finca El Paraíso · Palocolorado, Chinácota", en: "El Paraíso farm · Palocolorado, Chinácota" },
-        variedad: "Cenicafé 1", proceso: "Lavado", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026",
+        variedad: "Cenicafé 1", proceso: "Lavado", tueste: { es: "Medio", en: "Medium" }, cosecha: "2026", muele: true,
         sale: { es: "En grano", en: "Whole bean" }, saleNota: { es: "Lo mandamos entero para que no pierda aroma.", en: "We ship it whole so it keeps its aroma." },
         altitud: 1300, puntaje: 87, nivel: "DOCUMENTADO", fuente: "Catación SCA", fecha: "2026-11-03",
         notas: { es: ["Durazno", "Avellana", "Chocolate"], en: ["Peach", "Hazelnut", "Chocolate"] },

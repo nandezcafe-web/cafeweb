@@ -67,7 +67,10 @@ export function cotizar(cat, items, pctBono = 0) {
     if (!p || !v) return { error: "producto", id: it?.id };
     if (p.proximamente || !(v.precio > 0)) return { error: "no-disponible", id: p.id };
     if (!Number.isInteger(n) || n < 1) return { error: "cantidad", id: p.id };
-    const ya = lineas.find((l) => l.id === p.id && l.g === v.g);
+    /* Molido solo donde se ofrece: el navegador lo pide, pero aquí se decide.
+       No cambia el precio ni la bolsa que se aparta, solo cómo se despacha. */
+    const mol = !!(it?.molido && p.muele);
+    const ya = lineas.find((l) => l.id === p.id && l.g === v.g && !!l.molido === mol);
     /* En preventa: el precio de preventa si lo hay, y lo que se aparta es el cupo
        (0 = sin tope), no unas bolsas que todavía no existen. */
     const pre = enPreventa(p);
@@ -75,8 +78,8 @@ export function cotizar(cat, items, pctBono = 0) {
     else lineas.push({ id: p.id, g: v.g, n, precio: pre && p.preventaPrecio > 0 ? p.preventaPrecio : v.precio,
       stock: pre ? Number(p.cupo) || 0 : Number(v.stock) || 0,
       nombre: `${p.nombre?.es || p.id} ${gramos(v.g)}`,
-      forma: (p.sale?.es || "") + (pre ? " · preventa, sale el " + fechaCorta(p.entrega || p.cierre) : ""),
-      ...(pre ? { preventa: true } : {}) });
+      forma: (mol ? "Molido" : p.sale?.es || "") + (pre ? " · preventa, sale el " + fechaCorta(p.entrega || p.cierre) : ""),
+      ...(mol ? { molido: true } : {}), ...(pre ? { preventa: true } : {}) });
   }
   if (lineas.reduce((s, l) => s + l.n, 0) > MAX_BOLSAS) return { error: "cantidad" };
   const subtotal = lineas.reduce((s, l) => s + l.precio * l.n, 0);

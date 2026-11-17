@@ -297,6 +297,9 @@ escribir("data/catalogo.json", JSON.stringify({
        de siempre), el cupo por presentación (0 = sin tope) y el último día */
     ...(enPreventa(p) ? { preventaPrecio: CONFIG.preventa.precio || 0, cupo: CONFIG.preventa.cupo || 0, cierre: CONFIG.lanzamiento } : {}),
     /* stock: el inventario de arranque; después manda la hoja Stock */
+    /* muele: si ese café se puede pedir molido. El servidor lo revisa antes de
+       escribir "Molido" en el pedido, para que nadie lo pida donde no se ofrece. */
+    muele: !!p.muele,
     variantes: p.variantes.map((v) => ({ g: v.g, precio: p.proximamente ? 0 : v.precio, stock: v.stock || 0 })),
     url: { es: CONFIG.sitio + ruta("cafe", p.id, "es"), en: CONFIG.sitio + ruta("cafe", p.id, "en") } }))`)
     .map((p) => ({ ...p, foto: FOTO_CORREO[p.id] ? sitio + FOTO_CORREO[p.id] : "" })),

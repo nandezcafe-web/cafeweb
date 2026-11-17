@@ -896,3 +896,11 @@ html.js .tz:not(.in) .tz-at{opacity:0}
 .dice p{margin:0;font-size:1.02rem;line-height:1.6;color:var(--ink-2)}
 .dice p:first-child{font-size:1.12rem;color:var(--ink)}
 @media (max-width:760px){.dice{grid-template-columns:1fr;gap:14px}}
+
+/* En grano o molido: dos botones, el escogido en tinta llena. */
+.muele{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.mu{padding:13px 10px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);cursor:pointer;
+  font:800 .82rem var(--display);letter-spacing:.04em;text-transform:uppercase;transition:background .2s var(--ease-out),color .2s var(--ease-out)}
+.mu.on{background:var(--ink);color:var(--paper)}
+@media (hover:hover) and (pointer:fine){.mu:not(.on):hover{background:var(--paper-2)}}
+.mu:focus-visible{outline:2px solid var(--cherry);outline-offset:2px}

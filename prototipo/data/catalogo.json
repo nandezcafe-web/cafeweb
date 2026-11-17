@@ -23,6 +23,7 @@
       "cierre": "2026-11-20",
       "preventaPrecio": 0,
       "cupo": 90,
+      "muele": true,
       "variantes": [
         {
           "g": 250,
@@ -59,6 +60,7 @@
       "cierre": "2026-11-20",
       "preventaPrecio": 0,
       "cupo": 90,
+      "muele": true,
       "variantes": [
         {
           "g": 250,
@@ -95,6 +97,7 @@
       "cierre": "2026-11-20",
       "preventaPrecio": 0,
       "cupo": 90,
+      "muele": false,
       "variantes": [
         {
           "g": 250,

@@ -183,7 +183,7 @@ function textoFactura(p) {
   lineas.forEach((i) => {
     const n = Number(i.n) || 0, conIva = i.p * factor, sinIva = conIva / (1 + tasa / 100);
     base += sinIva * n; iva += (conIva - sinIva) * n;
-    L.push(`${n} × ${i.nom || i.id} · ${d2(sinIva)} c/u`);
+    L.push(`${n} × ${i.nom || i.id}${i.molido ? " · MOLIDO" : ""} · ${d2(sinIva)} c/u`);
   });
   if (envio) L.push(`1 × Envío · ${d2(envio)} · sin IVA (transporte de carga: confirmar con el contador)`);
   const total = base + iva + envio, cuadra = Math.abs(total - (Number(p.total) || 0)) < 1;

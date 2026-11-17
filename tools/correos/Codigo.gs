@@ -284,6 +284,9 @@ function pedido_(ss, d, correo) {
     corto_(d.documento, 30), corto_(d.direccion, 200), corto_(d.detalle, 200), corto_(d.departamento, 60),
     /* nom y p (precio con IVA) son para la factura; a es lo que se apartó del stock */
     JSON.stringify(items.map((i) => ({ id: corto_(i.id, 40), g: num_(i.g), n: num_(i.n), nom: corto_(i.nombre, 80), p: num_(i.precio), a: num_(i.a),
+      /* molido: el café se vende en grano pero este pedido lo quiere molido. Queda
+         guardado para que quien empaca lo vea, no solo en el correo del momento. */
+      ...(i.molido ? { molido: true } : {}),
       ...(i.preventa ? { preventa: true, stock: num_(i.stock) } : {}) }))),
     num_(d.iva), corto_(d.idioma, 5), ""]);
   const en = d.idioma === "en", lineas = productos + "\n\nTotal: " + pesos_(d.total) + (num_(d.descuento) ? " (" + (en ? "with " : "con ") + bono + ")" : "") +
@@ -433,9 +436,9 @@ function pago_(d) {
     }
     /* Llegó el pago de una reserva que ya se había liberado: se vuelve a apartar */
     if (f[2] === "cancelado") {
-      const its = itemsDe_(f[23]).map((x) => ({ id: x.id, g: x.g, n: x.n, nom: x.nom, nombre: x.nom, p: x.p, preventa: x.preventa, stock: x.stock }));
+      const its = itemsDe_(f[23]).map((x) => ({ id: x.id, g: x.g, n: x.n, nom: x.nom, nombre: x.nom, p: x.p, molido: x.molido, preventa: x.preventa, stock: x.stock }));
       const falta = descontarStock_(ss, its);
-      h.getRange(r, 24).setValue(JSON.stringify(its.map((x) => ({ id: x.id, g: x.g, n: x.n, nom: x.nom, p: x.p, a: x.a }))));
+      h.getRange(r, 24).setValue(JSON.stringify(its.map((x) => ({ id: x.id, g: x.g, n: x.n, nom: x.nom, p: x.p, a: x.a, ...(x.molido ? { molido: true } : {}) }))));
       let nota = "El pago llegó después de liberar la reserva; se volvió a apartar.";
       if (falta.length) nota += " Sin stock — " + falta.join("; ") + ".";
       /* el bono se había soltado al liberar: se vuelve a marcar usado */
