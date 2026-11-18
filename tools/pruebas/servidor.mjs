@@ -18,11 +18,26 @@ import path from "node:path";
 import { RAIZ, hojaSimulada, conectar, hojaResponde, api, llamar, WOMPI } from "./simulador.mjs";
 import { mercadoPagoSimulado, TOKEN_VALIDO } from "./mp-simulado.mjs";
 
-const PUERTO = Number(process.argv[2]) || 5190;
+const ARGS = process.argv.slice(2);
+const PUERTO = Number(ARGS.find((a) => /^\d+$/.test(a))) || 5190;
+/* --wompi-real: el widget y el cobro son los del Wompi de PRUEBAS de verdad (sandbox),
+   con las llaves de tools/pruebas/.wompi-prueba.env. La hoja sigue simulada. */
+const REAL = ARGS.includes("--wompi-real");
 const SITIO = path.join(RAIZ, "prototipo");
 const catalogo = JSON.parse(fs.readFileSync(path.join(SITIO, "data/catalogo.json"), "utf8"));
 const mundo = hojaSimulada(catalogo);
+const fetchReal = globalThis.fetch;
 conectar(mundo);
+const LLAVES = {};
+if (REAL) {
+  const archivo = path.join(RAIZ, "tools/pruebas/.wompi-prueba.env");
+  if (!fs.existsSync(archivo)) throw new Error("falta tools/pruebas/.wompi-prueba.env");
+  fs.readFileSync(archivo, "utf8").split(/\r?\n/).forEach((l) => { const m = l.match(/^\s*([A-Z_]+)\s*=\s*(\S+)/); if (m) LLAVES[m[1]] = m[2]; });
+  /* solo sandbox: con llaves de producción esto cobraría de verdad */
+  if (!/^pub_test_/.test(LLAVES.WOMPI_LLAVE_PUBLICA || "") || !/^test_integrity_/.test(LLAVES.WOMPI_INTEGRIDAD || "") || !/^test_events_/.test(LLAVES.WOMPI_EVENTOS || ""))
+    throw new Error("las llaves de .wompi-prueba.env deben ser de pruebas (pub_test_, test_integrity_, test_events_)");
+  Object.assign(process.env, { WOMPI_INTEGRIDAD: LLAVES.WOMPI_INTEGRIDAD, WOMPI_EVENTOS: LLAVES.WOMPI_EVENTOS });
+}
 process.chdir(RAIZ);   // api/_tienda.js lee prototipo/data/catalogo.json desde aquí
 const { pago, wompi } = await api();
 /* Mercado Pago simulado detrás de api/tarjeta.js, api/checkout.js y api/webhook.js */
@@ -62,7 +77,11 @@ const TIPOS = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; ch
   ".woff2": "font/woff2", ".ico": "image/x-icon", ".txt": "text/plain; charset=utf-8", ".xml": "application/xml" };
 
 /* El widget de Wompi, simulado: muestra el monto y los medios de prueba */
-const WIDGET = `window.WidgetCheckout = function (cfg) { this.cfg = cfg; };
+const WIDGET = `window.WidgetCheckout = function (cfg) {
+  /* como el real: un campo de la dirección presente pero sin valor no deja abrir */
+  var sa = cfg.shippingAddress || {};
+  for (var k in sa) if (sa[k] === undefined || sa[k] === null) throw new Error("Wompi Widget Error: Los campos de shipping address no estan completos o sus largos no son válidos");
+  this.cfg = cfg; };
 WidgetCheckout.prototype.open = function (cb) {
   var cfg = this.cfg, d = document.createElement("div");
   d.id = "wompi-prueba";
@@ -108,6 +127,26 @@ http.createServer(async (req, res) => {
       const aviso = await llamar(wompi, WOMPI.aviso(c.transaction));
       return responder(res, 200, { ...c, aviso });
     }
+    /* Wompi real: se le pregunta el estado a Wompi (consulta pública de la transacción, sin
+       secretos) y se le pasa a api/wompi.js el aviso firmado con el secreto de eventos de
+       pruebas, como haría Wompi con la URL de eventos (que no alcanza a localhost). */
+    if (REAL && u.pathname === "/wompi-real/aviso") {
+      const id = String(u.searchParams.get("id") || "");
+      if (!/^[\w-]+$/.test(id)) return responder(res, 400, { error: "id" });
+      let tr = null;
+      for (let i = 0; i < 30; i++) {
+        const r = await fetchReal("https://sandbox.wompi.co/v1/transactions/" + id);
+        tr = (await r.json()).data;
+        if (tr && tr.status !== "PENDING") break;
+        await new Promise((ok) => setTimeout(ok, 2000));
+      }
+      if (!tr) return responder(res, 502, { error: "wompi no respondió" });
+      const t = { id: tr.id, reference: tr.reference, status: tr.status, amount_in_cents: tr.amount_in_cents,
+        currency: tr.currency, payment_method_type: tr.payment_method_type };
+      const aviso = await llamar(wompi, WOMPI.aviso(t));
+      console.log("wompi real:", t.reference, t.status, t.payment_method_type, t.amount_in_cents / 100, "→", JSON.stringify(aviso));
+      return responder(res, 200, { transaccion: t, aviso });
+    }
     if (u.pathname === "/widget-prueba.js") return responder(res, 200, WIDGET, TIPOS[".js"]);
     if (u.pathname === "/mp-sdk-prueba.js") return responder(res, 200, SDK_MP, TIPOS[".js"]);
     if (u.pathname === "/estado-prueba") {
@@ -127,13 +166,26 @@ http.createServer(async (req, res) => {
     if (u.pathname === "/js/core.js") {
       /* los cambios de la tienda de prueba, solo en lo que se sirve: la hoja simulada, las
          llaves de prueba y el widget y los campos de tarjeta simulados */
-      const txt = cuerpo.toString("utf8")
+      let txt = cuerpo.toString("utf8")
         .replace(/registro: "[^"]*"/, 'registro: "/hoja-prueba"')
         /* el píxel de Meta es el real: una compra de prueba no se le cuenta a Meta */
         .replace(/metaPixel: "[^"]*"/, 'metaPixel: ""').replace(/ga4: "[^"]*"/, 'ga4: ""')
-        .replace('wompi: { llavePublica: "", widget: "https://checkout.wompi.co/widget.js" }', 'wompi: { llavePublica: "pub_test_PRUEBA", widget: "/widget-prueba.js" }')
         .replace('mp: { llavePublica: "", sdk: "https://sdk.mercadopago.com/js/v2" }', 'mp: { llavePublica: "TEST-PRUEBA", sdk: "/mp-sdk-prueba.js" }');
-      if (!txt.includes('"/hoja-prueba"') || !txt.includes("pub_test_PRUEBA") || !txt.includes('"/mp-sdk-prueba.js"'))
+      if (REAL) {
+        /* el widget de Wompi de verdad, en sandbox. Al cerrarlo, la página le pasa a este
+           servidor el id de la transacción para que confirme el estado con Wompi. */
+        txt = txt.replace(/pasarela: "[^"]*"/, 'pasarela: "wompi"')
+          .replace('wompi: { llavePublica: "", widget: "https://checkout.wompi.co/widget.js" }',
+            'wompi: { llavePublica: "' + LLAVES.WOMPI_LLAVE_PUBLICA + '", widget: "https://checkout.wompi.co/widget.js" }') +
+          '\nwindow.addEventListener("load", function () { var o = window.resultadoPago; window.resultadoPago = function (tr) {' +
+          ' if (tr && tr.id) fetch("/wompi-real/aviso?id=" + encodeURIComponent(tr.id)).then(function (r) { return r.json(); })' +
+          '.then(function (r) { document.body.setAttribute("data-aviso", JSON.stringify(r)); }); return o.apply(this, arguments); }; });\n';
+        if (!txt.includes(LLAVES.WOMPI_LLAVE_PUBLICA) || !txt.includes('pasarela: "wompi"')) throw new Error("no se pudo preparar core.js con Wompi real");
+      } else {
+        txt = txt.replace('wompi: { llavePublica: "", widget: "https://checkout.wompi.co/widget.js" }', 'wompi: { llavePublica: "pub_test_PRUEBA", widget: "/widget-prueba.js" }');
+        if (!txt.includes("pub_test_PRUEBA")) throw new Error("no se pudo preparar core.js para la tienda de prueba");
+      }
+      if (!txt.includes('"/hoja-prueba"') || !txt.includes('"/mp-sdk-prueba.js"'))
         throw new Error("no se pudo preparar core.js para la tienda de prueba");
       cuerpo = txt;
     }

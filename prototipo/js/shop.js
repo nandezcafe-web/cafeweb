@@ -1420,15 +1420,24 @@ async function abrirWompi(j, d) {
   try { await cargarWidget(); }
   catch { return toast(en ? "The payment window did not load. Check your connection and try again." : "No cargó la ventana de pago. Revisa tu conexión e intenta otra vez.", { type: "err" }); }
   const doc = d.documento.replace(/[^\dA-Za-z]/g, ""), tel = d.tel.replace(/\D/g, "").slice(-10);
-  const checkout = new window.WidgetCheckout({
-    currency: j.currency, amountInCents: j.amountInCents, reference: j.reference,
-    publicKey: CONFIG.pagos.wompi.llavePublica, signature: j.signature, expirationTime: j.expirationTime, taxInCents: j.taxInCents,
-    /* un NIT se escribe con su dígito de verificación separado por guion */
-    customerData: { email: d.correo, fullName: `${d.nombre} ${d.apellidos}`, phoneNumber: tel, phoneNumberPrefix: "+57",
-      legalId: doc, legalIdType: /-/.test(d.documento) ? "NIT" : "CC" },
-    shippingAddress: { addressLine1: d.direccion, addressLine2: d.detalle || undefined, city: d.ciudad, region: d.departamento,
-      phoneNumber: tel, country: "CO" },
-  });
+  /* El widget real rechaza un campo presente pero sin valor (addressLine2: undefined) y no
+     abre: el barrio, que es opcional, solo va si la persona lo escribió. (Lo encontró la
+     compra de prueba contra el Wompi de verdad; el simulado no lo validaba.) */
+  let checkout;
+  try {
+    checkout = new window.WidgetCheckout({
+      currency: j.currency, amountInCents: j.amountInCents, reference: j.reference,
+      publicKey: CONFIG.pagos.wompi.llavePublica, signature: j.signature, expirationTime: j.expirationTime, taxInCents: j.taxInCents,
+      /* un NIT se escribe con su dígito de verificación separado por guion */
+      customerData: { email: d.correo, fullName: `${d.nombre} ${d.apellidos}`, phoneNumber: tel, phoneNumberPrefix: "+57",
+        legalId: doc, legalIdType: /-/.test(d.documento) ? "NIT" : "CC" },
+      shippingAddress: { addressLine1: d.direccion, ...(d.detalle ? { addressLine2: d.detalle } : {}), city: d.ciudad, region: d.departamento,
+        phoneNumber: tel, country: "CO" },
+    });
+  } catch (e) {
+    console.error(e);
+    return toast(en ? "The payment window did not open. Check your details and try again." : "No se abrió la ventana de pago. Revisa tus datos e intenta otra vez.", { type: "err" });
+  }
   /* El carrito es un diálogo modal: mientras está abierto, todo lo demás de la
      página queda inerte y el widget de Wompi se pintaría debajo, sin poder
      tocarse. Se cierra antes; el carrito no se pierde, y si el pago no pasa se

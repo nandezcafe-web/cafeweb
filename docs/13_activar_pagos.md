@@ -51,7 +51,7 @@ En [prototipo/js/core.js](../prototipo/js/core.js), `CONFIG.pagos.wompi.llavePub
 | `NANDEZ_CLAVE` | La clave del panel (la que deja `configurar` en Apps Script) |
 
 ### D. La URL de eventos en Wompi
-En el panel de Wompi, *URL de eventos* = `https://cafeweb-five.vercel.app/api/wompi`. Se configura aparte en pruebas y en producción.
+En el panel de Wompi, *URL de eventos* = `https://www.nandezcoffee.com/api/wompi`. Se configura aparte en pruebas y en producción.
 
 ### E. La versión nueva del script de la hoja
 Pegar [tools/correos/Codigo.gs](../tools/correos/Codigo.gs) completo en Apps Script, ejecutar **configurar** (crea lo que falte sin tocar lo que hay: la hoja Stock, las columnas nuevas y un disparador **cada hora** que libera reservas) y publicar una **nueva versión** de la misma implementación (*Implementar → Administrar implementaciones → editar*), para que la URL no cambie.
@@ -106,7 +106,18 @@ node tools/pruebas/servidor.mjs                     # la tienda en el navegador:
 
 Las compras en el navegador encontraron **dos errores que se corrigieron**: el widget se abría debajo del carrito (un diálogo modal deja todo lo demás inerte, y el primer clic cerraba el carrito en vez de pagar), y la reserva sin pagar se olvidaba al recargar la página, con lo que se apartaban dos veces las mismas bolsas.
 
-**Lo que estas pruebas no cubren:** el Wompi de verdad. Eso se prueba en el paso F, con las llaves de prueba.
+**Lo que estas pruebas no cubren:** el Wompi de verdad. Para eso está la prueba contra el sandbox:
+
+```bash
+node tools/pruebas/wompi-real.mjs                       # Wompi de pruebas real, hoja simulada
+node tools/pruebas/servidor.mjs 5192 --wompi-real       # la tienda con el widget real de pruebas
+```
+
+Leen las llaves de **pruebas** de `tools/pruebas/.wompi-prueba.env` (fuera del repositorio; se niegan a correr con llaves de producción). Wompi tokeniza la tarjeta, valida la firma de integridad y decide el resultado; la hoja sigue simulada y no sale ningún correo.
+
+**Resultado del 18 de noviembre de 2026 (sandbox de la cuenta de la empresa):** 36/36. Tarjeta que aprueba y que rechaza, reintento que suelta la reserva rechazada, Nequi y PSE que aprueban y que rechazan: Wompi aceptó la firma en todos, cobró el total del servidor, los pagados quedaron pagados con dos correos desde thegang@ y los rechazados no. El widget real abrió con el monto fijo, el IVA y los datos del comprador ya llenos.
+
+La prueba real encontró **un error que el simulado no veía**: si el cliente dejaba vacío el barrio (opcional), la página le mandaba a Wompi `addressLine2: undefined` y el widget no abría, sin aviso. Se corrigió en `abrirWompi` (el campo solo va si tiene valor, y si el widget falla la persona ve un mensaje), y el widget simulado ahora valida lo mismo.
 
 ## 5. Límites conocidos
 
