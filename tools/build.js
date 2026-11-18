@@ -375,7 +375,7 @@ const llms = ev(c0, [
   '"- Dos cafés de una sola finca, en grano, y un blend de los dos, molido; los tres con tostión media. Cada dato (altura, variedad, proceso, puntaje) dice quién lo comprobó y cuándo.",',
   '...(visible("subasta") ? ["- Los lotes excepcionales se venden en subasta, con precio de reserva y mínimo de participantes."] : []), "",',
   '"## Preguntas frecuentes",',
-  '...FAQ.filter((f) => visible("subasta") || !/subasta/i.test(f.q.es)).map((f) => "### " + tx(f.q) + String.fromCharCode(10) + tx(f.a)), "",',
+  '...FAQ().filter((f) => visible("subasta") || !/subasta/i.test(f.q.es)).map((f) => "### " + tx(f.q) + String.fromCharCode(10) + tx(f.a)), "",',
   '"## Páginas"',
   '].join(String.fromCharCode(10))',
 ].join("")) + "\n" + urls.filter((u) => u.lang === "es").map((u) => "- " + u.loc).join("\n") + "\n";
@@ -389,6 +389,7 @@ const EMBEBER = { "cereza": "grano/cereza@0.5x.webp", "capa-corte": "grano/capa-
                   "p-cas@0.5x": "productos/p-cas@0.5x.webp",
                   "p-par@0.5x": "productos/p-par@0.5x.webp",
                   "p-ble@0.5x": "productos/p-ble@0.5x.webp",
+                  "p-tres@0.5x": "productos/p-tres@0.5x.webp",
                   "cierre@0.5x": "portada/cierre@0.5x.webp" };
 /* Cada pieza con su formato; hoy todas en WebP, pero el mapa admite JPG */
 const pieza64 = (k) => {

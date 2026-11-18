@@ -106,6 +106,8 @@ function listaEspera(id) {
     <p class="hint">${en ? `We write to you the day <b>${esc(tx(p.nombre))}</b> goes on sale, with its data sheet and price.`
       : `Te escribimos el día que salga <b>${esc(tx(p.nombre))}</b>, con su ficha y su precio.`}</p>
     <div class="field"><label class="lbl" for="le-mail">${en ? "Email" : "Correo"}</label><input id="le-mail" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none"></div>
+    ${gangOfrece() ? `<label class="g-consiente cart-gang"><input type="checkbox" id="le-gang">
+      <span>${en ? `Also send me news and offers from ${esc(CONFIG.marca)} by email.` : `Quiero recibir también noticias y ofertas de ${esc(CONFIG.marca)} por correo.`}</span></label>` : ""}
     <div class="dlg-actions"><button class="btn" data-act="close">${en ? "Cancel" : "Cancelar"}</button>
       <button class="btn primary" data-act="espera-ok" data-id="${p.id}">${t("avisame")}</button></div>`, "narrow");
   setTimeout(() => $("#le-mail")?.focus(), 50);
@@ -114,6 +116,13 @@ function listaEsperaOk(id) {
   const p = itemById(id), en = UI.lang === "en", correo = ($("#le-mail")?.value || "").trim();
   if (!p || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) { toast(en ? "Check the email." : "Revisa el correo.", { type: "err" }); return; }
   S.espera.push({ id: nextId("LE"), producto: p.id, correo, fecha: isoToday() }); save();
+  /* Si además marcó la casilla, el mismo correo entra a la comunidad: pedir que
+     le avisen de un café es intención alta, y hasta ahora ese correo quedaba
+     solo en la lista de espera, sin poder escribirle de nada más. */
+  if ($("#le-gang")?.checked && typeof apuntarComunidad === "function") {
+    apuntarComunidad(correo, () => {}, "espera");
+    medir("registro", { nombre: "lista de espera" });
+  }
   closeModal();
   registrar("espera", { producto: tx(p.nombre), correo },
     en ? `Hi, let me know when ${tx(p.nombre)} is out. My email: ${correo}` : `Hola, avísenme cuando salga ${tx(p.nombre)}. Mi correo: ${correo}`,
@@ -238,6 +247,65 @@ function subnavTienda(activa) {
     ${it.map(([v, txt]) => `<a href="${ruta(v)}" data-act="go" data-to="${v}"${activa === v ? ' aria-current="page"' : ""}>${txt}</a>`).join("")}</nav>`;
 }
 
+/* ---------- los tres, y el envío deja de cobrarse ----------
+   Una bolsa de $40.000 con $12.000 de envío es un 30 % encima, y el envío
+   gratis arranca justo en tres bolsas. Hasta ahora eso solo se decía dentro
+   del carrito ("te faltan $80.000"), cuando ya era tarde y en forma de deuda.
+   Aquí se dice antes y de un toque: los tres, el envío gratis y lo que se
+   ahorra. No es un producto nuevo ni un precio nuevo —son las mismas tres
+   bolsas al mismo precio—, así que no toca el cupo ni la hoja. */
+const tresDisponibles = () => S.productos.filter((p) => !p.proximamente && topeDe(p, principal(p)) > 0);
+function tresCuenta() {
+  const ps = tresDisponibles();
+  const suma = ps.reduce((n, p) => n + precioHoy(p, principal(p)), 0);
+  return { ps, suma, gratis: suma >= CONFIG.envio.gratisDesde, ahorro: CONFIG.envio.costo };
+}
+/* Los tres juntos, en una sola foto. Si el archivo no está, la imagen se quita
+   sola y queda el bloque con su texto: nunca el ícono de foto rota. */
+const FOTO_TRES = "/img/productos/p-tres.webp";
+const fotoTres = (en) => !FOTO_TRES ? "" : `<span class="g-tres-art"><img class="g-tres-foto" src="${foto(FOTO_TRES)}"
+  srcset="${foto(FOTO_TRES.replace(".webp", "@0.5x.webp"))} 400w, ${foto(FOTO_TRES)} 800w" sizes="(min-width:760px) 220px, 100vw"
+  width="800" height="800" alt="${esc(en ? "The three Nandez Coffee bags together" : "Las tres bolsas de Nandez Coffee juntas")}"
+  loading="lazy" decoding="async" onerror="this.closest('.g-tres-art').remove()"></span>`;
+
+/* Solo si de verdad alcanza el envío gratis: si un día el precio o el umbral
+   cambian y deja de alcanzar, el bloque no sale en vez de prometer de más. */
+function losTresHTML(en) {
+  const { ps, suma, gratis, ahorro } = tresCuenta();
+  if (ps.length < 2 || !gratis) return "";
+  return `<aside class="g-tres reveal">
+    ${fotoTres(en)}
+    <div class="g-tres-txt">
+      <p class="g-tres-tit">${en ? `Take all ${ps.length}` : `Llévate los ${ps.length === 3 ? "tres" : ps.length}`}</p>
+      <p class="g-tres-dice">${en ? `One bag of each, ${cop(suma)}, and shipping stops costing: that is ${cop(ahorro)} you keep.`
+        : `Una bolsa de cada uno, ${cop(suma)}, y el envío deja de cobrarse: son ${cop(ahorro)} que no pagas.`}</p>
+      <button class="btn primary" data-act="los-tres">${en ? "Add the three" : "Agregar los tres"}</button>
+    </div>
+  </aside>`;
+}
+/* ¿Vale ofrecer completar? Solo si falta alguno de los tres Y con los tres
+   puestos el envío sí llega a cero: si no alcanza, el botón mentiría. */
+function tresFaltan() {
+  const { ps, gratis } = tresCuenta();
+  if (ps.length < 2 || !gratis) return false;
+  return ps.some((p) => !enCarrito(p.id, principal(p).g, muelePide(p)));
+}
+/* Pone en el carrito lo que falte para tener una bolsa de cada uno: si ya hay
+   dos, agrega la que falta, no tres más. */
+function addLosTres() {
+  const { ps } = tresCuenta(), en = UI.lang === "en";
+  let puestas = 0;
+  ps.forEach((p) => {
+    const v = principal(p), mol = muelePide(p);
+    if (enCarrito(p.id, v.g, mol)) return;
+    UI.carrito.push({ id: p.id, g: v.g, n: 1, precio: precioHoy(p, v), nombre: `${tx(p.nombre)} ${gramos(v.g)}`, ...(mol ? { molido: true } : {}) });
+    puestas++;
+    medir("agregar", { nombre: tx(p.nombre), ids: [p.id], valor: precioHoy(p, v), n: 1 });
+  });
+  if (!puestas) return toast(en ? "They are already in your order." : "Ya los tienes en el pedido.");
+  guardarCarrito(); render(); abrirCarrito(); irAlPago();
+}
+
 function viewTienda() {
   const en = UI.lang === "en", p = S.productos.find((x) => !x.proximamente) || S.productos[0];
   const n = S.productos.length, ya = S.productos.filter((x) => !x.proximamente).length;
@@ -248,11 +316,12 @@ function viewTienda() {
         <p class="reveal" style="--i:2">${en ? "Coffee from neighbouring farms, the gear to brew it and Nandez Coffee Gang merch."
           : "Café de fincas vecinas, lo necesario para prepararlo y el merch Nandez Coffee Gang."}</p></div>
     </div>
-    <div class="g-puertas">
-      <a class="g-puerta reveal" style="--pc:${p.color || "#2F5A3C"};--i:3" href="${ruta("cafes")}" data-act="go" data-to="cafes">
-        <span class="g-puerta-art">${fotoProducto(p, { clase: "g-prod-foto", sizes: "(min-width:900px) 520px, 90vw" })}</span>
-        <span class="g-puerta-txt"><small>01 · ${n} ${en ? "coffees" : "cafés"}${ya < n ? ` · ${ya} ${en ? "on sale" : "a la venta"}` : ""}</small>
-          <b>${t("nav_cafes_esp")}</b><i>${en ? "Two single farm, whole bean, and a ground blend." : "Dos de una sola finca, en grano, y un blend molido."}</i></span></a>
+    <section class="g-tienda-cafes" aria-labelledby="g-tienda-cafes">
+      <p class="g-kicker reveal" id="g-tienda-cafes">01 · ${t("nav_cafes_esp")}${ya < n ? ` · ${ya} ${en ? "on sale" : "a la venta"}` : ""}</p>
+      <div class="dos">${S.productos.map((x, i) => cafeCard(x, i)).join("")}</div>
+      ${losTresHTML(en)}
+    </section>
+    <div class="g-puertas una">
       <a class="g-puerta oscura reveal" style="--i:4" href="${ruta("accesorios")}" data-act="go" data-to="accesorios">
         <span class="g-puerta-art"><img class="g-prod-foto" src="${foto("/img/productos/m-gor.jpg")}" width="640" height="640" alt="" loading="lazy" decoding="async"><span class="g-acc-pronto">${t("proximamente")}</span><span class="g-pronto">Nandez Coffee Gang<i>${t("proximamente")}</i></span></span>
         <span class="g-puerta-txt"><small>02 · ${accesoriosVisibles().length} ${en ? "pieces" : "piezas"} · ${t("proximamente").toLowerCase()}</small>
@@ -308,6 +377,7 @@ function viewCafes() {
           : "Dos de una sola finca, en grano, y un blend de los dos, molido. Todos de Norte de Santander."}</p></div>
     </div>
     <div class="dos">${S.productos.map((p, i) => cafeCard(p, i)).join("")}${visible("subasta") ? subastaCard(S.productos.length) : ""}</div>
+    ${losTresHTML(en)}
     ${CONFIG.cafeterias ? bloqueCafeterias() : ""}`;
 }
 
@@ -474,7 +544,8 @@ function viewCafe() {
         ? (en ? "Pre-order: you pay today and we ship it in the order reservations arrive" : "Preventa: pagas hoy y despachamos en el orden en que llegaron las reservas")
         : `${v.stock} ${t("disponibles")}`} · ${en
         ? `ships from Cúcuta within Colombia in ${tx(E.dias)} · ${cop(E.costo)}, free from ${cop(E.gratisDesde)}`
-        : `sale de Cúcuta y llega en ${tx(E.dias)} · envío ${cop(E.costo)}, gratis desde ${cop(E.gratisDesde)}`}</p>`;
+        : `sale de Cúcuta y llega en ${tx(E.dias)} · envío ${cop(E.costo)}, gratis desde ${cop(E.gratisDesde)}`}</p>
+      ${losTresHTML(en)}`;
   return `<article class="prod" style="--pc:${p.color || "#2F5A3C"}">
     <div class="prod-top">
     <div class="prod-buy reveal">
@@ -771,6 +842,37 @@ function bloquePago(envio, E) {
     </section>`;
 }
 
+/* ---------- entrar a la gang desde el pago ----------
+   Quien ya pagó es la mejor lista que hay, y hasta ahora el correo del pago solo
+   servía para mandar la guía: sin la casilla, la Ley 1581 no deja escribirle
+   después. Va aparte del correo y nunca marcada de antemano: la autorización
+   tiene que ser previa y expresa, y una casilla premarcada no lo es.
+   No se le ofrece a quien ya es miembro en este navegador. */
+let gangOk = false;
+const gangOfrece = () => !!CONFIG.registro && typeof popMiembro === "function" && !popMiembro();
+document.addEventListener("change", (e) => { if (e.target.id === "pd-gang") gangOk = e.target.checked; });
+
+/* El campo del bono arranca cerrado: una casilla de cupón vacía manda a buscar
+   un código fuera de la página, y de esa búsqueda mucha gente no vuelve. */
+let bonoAbierto = false;
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("[data-act='bono-abrir']")) return;
+  bonoAbierto = true; renderCarrito();
+  setTimeout(() => $("#pd-bono")?.focus(), 40);
+});
+
+/* El correo del pago, apenas lo escribe: así el carrito que se queda a medias
+   tiene dueño y el panel le puede mandar el recordatorio. Antes solo se
+   guardaba al pagar, o sea cuando ya no hacía falta. Es el mismo uso que
+   anuncia el aviso de cookies ("recordar tu carrito"). */
+document.addEventListener("change", (e) => {
+  if (e.target.id !== "pd-correo") return;
+  const c = (e.target.value || "").trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c)) return;
+  if (typeof recordarCorreo === "function") recordarCorreo(c);
+  if (typeof bitacoraCarrito === "function" && UI.carrito.length) bitacoraCarrito();
+});
+
 function renderCarrito() {
   const en = UI.lang === "en", cuerpo = $("#cart-body"); if (!cuerpo) return;
   if (!UI.carrito.length) {
@@ -812,6 +914,7 @@ function renderCarrito() {
         : `Incluye ${cop(ivaDe(totalCarrito() - desc))} de IVA (${CONFIG.iva} %)`}</p>` : ""}
       <p class="hint">${envio
         ? (en ? `Add ${cop(falta)} more and shipping is free. ` : `Te faltan ${cop(falta)} para el envío gratis. `)
+          + (tresFaltan() ? `<button class="enlace cart-bono-abrir" data-act="los-tres">${en ? "Complete with the other coffees" : "Completar con los otros cafés"}</button> ` : "")
         : ""}${UI.carrito.some((i) => enPreventa(prodById(i.id)))
         ? (en ? `Pre-order: the whole order ships together on ${fmtFecha(entregaPreventa())} by ${esc(E.transportadora)}, and arrives ${tx(E.dias)} later.`
               : `Preventa: el pedido completo sale junto el ${fmtFecha(entregaPreventa())} por ${esc(E.transportadora)} y llega ${tx(E.dias)} después.`)
@@ -833,9 +936,13 @@ function renderCarrito() {
           <option value="">${en ? "Choose" : "Escoge"}</option>
           ${DEPARTAMENTOS.map((x) => `<option${x === escrito["pd-depto"] ? " selected" : ""}>${esc(x)}</option>`).join("")}</select></div>
       <div class="field" style="grid-column:1/-1"><label class="lbl" for="pd-correo">${en ? "Email (for the tracking number)" : "Correo (para mandarte la guía)"}</label><input id="pd-correo" class="input" type="email" inputmode="email" autocomplete="email" autocapitalize="none" enterkeyhint="done"${val("pd-correo")}></div>
-      ${CONFIG.registro && !UI.bono ? `<div class="field cart-bono" style="grid-column:1/-1"><label class="lbl" for="pd-bono">${en ? "Welcome code" : "Código de bono"}</label>
+      ${gangOfrece() ? `<label class="g-consiente cart-gang" style="grid-column:1/-1"><input type="checkbox" id="pd-gang"${gangOk ? " checked" : ""}>
+        <span>${en ? `Also send me news and offers from ${esc(CONFIG.marca)} by email.` : `Quiero recibir también noticias y ofertas de ${esc(CONFIG.marca)} por correo.`}</span></label>` : ""}
+      ${CONFIG.registro && !UI.bono ? `<div class="field cart-bono" style="grid-column:1/-1">
+        ${bonoAbierto ? `<label class="lbl" for="pd-bono">${en ? "Welcome code" : "Código de bono"}</label>
         <div class="co-fila"><input id="pd-bono" class="input mono" autocapitalize="characters" autocomplete="off" placeholder="GANG-XXXXX"${val("pd-bono")}>
-          <button class="btn" data-act="bono-aplicar" ${UI.bonoCargando ? "disabled" : ""}>${UI.bonoCargando ? "…" : en ? "Apply" : "Aplicar"}</button></div></div>` : ""}
+          <button class="btn" data-act="bono-aplicar" ${UI.bonoCargando ? "disabled" : ""}>${UI.bonoCargando ? "…" : en ? "Apply" : "Aplicar"}</button></div>`
+        : `<button class="enlace cart-bono-abrir" data-act="bono-abrir">${en ? "Have a welcome code?" : "¿Tienes un código de bono?"}</button>`}</div>` : ""}
     </div>
 
     ${bloquePago(envio, E)}`;
@@ -1054,6 +1161,15 @@ function registrarPedido(d, canal, srv) {
   ]);
   /* el pedido salió: ese carrito ya no está abandonado, y el correo queda para el siguiente */
   recordarCorreo(d.correo);
+  /* Marcó la casilla: entra a la comunidad con el mismo camino del pop-up y el
+     pie, para que el código del bono lo siga creando la hoja y nadie reparta
+     descuentos por su cuenta. Si la hoja no lo recibe no se reintenta: el pedido
+     ya está hecho y no se le va a arruinar la compra por un registro. */
+  if (gangOk && d.correo && typeof apuntarComunidad === "function") {
+    apuntarComunidad(d.correo, () => {}, "pago");
+    medir("registro", { nombre: "pago" });
+  }
+  gangOk = false; bonoAbierto = false;
   /* Qué se compró, guardado aparte: la compra se le cuenta a Meta cuando la
      pasarela confirma el pago, y para entonces el carrito ya está vacío. */
   UI.comprado = { ref: pedido.id, ids: items.map((i) => i.id), n: items.reduce((s, i) => s + i.n, 0) };

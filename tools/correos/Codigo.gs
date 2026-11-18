@@ -36,13 +36,18 @@ const COLS_BONOS = ["codigo", "correo", "pct", "alta", "vence", "bienvenida", "u
    existe conserva el orden viejo y las filas de antes no se descuadran. */
 const COLS_PEDIDOS = ["id", "fecha", "estado", "nombre", "correo", "whatsapp", "ciudad", "productos", "subtotal", "descuento",
   "envio", "total", "bono", "canal", "pagado", "despachado", "transportadora", "guia", "notas",
-  "documento", "direccion", "detalle", "departamento", "items", "iva", "idioma", "transaccion"];
+  "documento", "direccion", "detalle", "departamento", "items", "iva", "idioma", "transaccion", "resena"];
 /* Una fila por presentación ("P-CAS-250"). Esta hoja es el stock de verdad:
    el navegador solo copia lo que diga aquí. Se puede corregir a mano. */
 const COLS_STOCK = ["id", "nombre", "stock", "actualizado"];
 const COLS_SUBS = ["correo", "plan", "kit", "pago", "cada_meses", "molienda", "ciudad", "alta", "estado", "proximo", "ultimo_envio", "envios", "notas", "idioma", "avisado"];
 /* Al suscriptor se le avisa este número de días antes de que salga su caja */
 const SUB_AVISO = 3;
+/* Días desde el despacho para preguntarle qué tal estuvo. El pedido llega en 2 a
+   5 días hábiles, así que a los 10 ya lo recibió y lo preparó varias veces: antes
+   se pregunta sobre un café que todavía no ha probado, y mucho después ya se le
+   olvidó. Una sola vez por pedido, y solo a quien aceptó recibir correos. */
+const RESENA_DIAS = 10;
 const PLAN_NOMBRE = { semilla: ["Semilla", "Seed"], cosecha: ["Cosecha", "Harvest"], barista: ["Barista", "Barista"], cafeteria: ["Cafetería", "Café"] };
 const planDe_ = (id, en) => (PLAN_NOMBRE[id] || [id, id])[en ? 1 : 0];
 const ESTADOS_PEDIDO = ["nuevo", "pagado", "despachado", "entregado", "cancelado"];
@@ -247,6 +252,30 @@ function mandarBienvenida_(h, fila) {
   h.getRange(fila, 6).setValue(new Date());
   return true;
 }
+/* ---------- la pregunta de después ----------
+   Hoy la página no tiene una sola reseña, y las únicas personas que pueden
+   escribirla son las que ya se tomaron el café. No promete nada a cambio —un
+   descuento por opinar compra elogios, no opiniones— y se responde al correo,
+   que es lo que esta operación puede atender. */
+function pedirResena_(f) {
+  if (MailApp.getRemainingDailyQuota() < 1) return false;
+  const en = f[25] === "en", correo = String(f[4]), nombre = String(f[3] || "").split(" ")[0];
+  const hola = (nombre ? (en ? "Hi " : "Hola ") + nombre + ", " : "");
+  const texto = en
+    ? hola + "your coffee has been with you for a few days now. We want to know how it went: what you brewed it with, how it tasted, whether it was what you expected."
+      + "\n\nReply to this email with a line and, if you like, a photo. A real person reads it, and what you write helps the next person decide."
+    : hola + "tu café ya lleva unos días contigo. Queremos saber qué tal te fue: con qué lo preparaste, a qué te supo, si era lo que esperabas."
+      + "\n\nRespóndenos a este correo con una línea y, si quieres, una foto. Del otro lado te lee una persona, y lo que escribas le sirve al que viene a decidirse.";
+  const cierre = en ? "If something was not right, tell us too: we would rather hear it from you than not hear it."
+    : "Si algo no estuvo bien, también dínoslo: preferimos que nos lo digas tú a no enterarnos.";
+  enviarCorreo_({ to: correo, name: MARCA,
+    subject: en ? "How was your " + MARCA + " coffee?" : "¿Qué tal te pareció el café?",
+    htmlBody: marco_(titulo_(en ? "How was " : "¿Qué tal ", en ? "the coffee?" : "estuvo?") + centrado_(texto) + centrado_(cierre, 14),
+      pieComunidad_(correo, en)),
+    body: texto + "\n\n" + cierre + "\n\n—\n" + MARCA + "\n" + (en ? "Unsubscribe: " : "Para no recibir más correos: ") + enlaceBaja_(correo) });
+  return true;
+}
+
 /* Busca un bono que se pueda usar hoy. No dice de quién es: solo si sirve. */
 function bonoVigente_(ss, codigo) {
   const c = corto_(codigo, 20).trim().toUpperCase(), filas = hojaDe_(ss, H_BONOS).getDataRange().getValues();
@@ -730,20 +759,25 @@ function actividad_(q) {
     cuota: MailApp.getRemainingDailyQuota(), hoja: ss.getUrl(), auto: CARRITO.auto };
 }
 
+/* Por dónde entró cada quien a la comunidad: el pop-up, el pie de página, la
+   página de la gang, la casilla del pago, la de "avísame" de un café o la de la
+   suscripción. Las tres últimas son correos de gente que ya mostró intención, y
+   vale la pena verlos aparte de los del pop-up. */
+const PUERTAS = ["pop", "pie", "pago", "espera", "suscripcion"];
 /* Cuántas personas entraron a la comunidad por cada puerta: el pop-up, el pie de
    página o la página de la gang. Sale de la bitácora Registros, que guarda lo que
    mandó la página. Los registros de antes del 10 de noviembre de 2026 no decían
    si venían del pop-up o del pie: quedan juntos como "comunidad, sin origen". */
 function inscritos_(ss) {
   const hace7 = masDias_(new Date(), -6).getTime(), puertas = {};
-  ["pop", "pie", "gang", "sin"].forEach((k) => { puertas[k] = { todos: {}, d7: {} }; });
+  ["pop", "pie", "gang", "pago", "espera", "suscripcion", "sin"].forEach((k) => { puertas[k] = { todos: {}, d7: {} }; });
   ss.getSheetByName(H_REGISTROS).getDataRange().getValues().slice(1).forEach((f) => {
     const tipo = String(f[1]), correo = String(f[2] || "").toLowerCase();
     if ((tipo !== "comunidad" && tipo !== "gang") || !correoValido_(correo)) return;
     let d = {};
     try { d = JSON.parse(f[3] || "{}"); } catch (e) {}
     if (d.consentimiento !== true) return;
-    const k = tipo === "gang" ? "gang" : d.origen === "pop" || d.origen === "pie" ? d.origen : "sin";
+    const k = tipo === "gang" ? "gang" : PUERTAS.indexOf(String(d.origen)) >= 0 ? String(d.origen) : "sin";
     puertas[k].todos[correo] = true;
     if (new Date(f[0]).getTime() >= hace7) puertas[k].d7[correo] = true;
   });
@@ -989,6 +1023,15 @@ function diario() {
     const clave = dia_(f[9]).toISOString().slice(0, 10);
     if (String(f[14] || "") === clave) continue;
     if (avisoCaja_(f)) hs.getRange(i + 1, 15).setValue(clave);
+  }
+
+  /* a quien recibió su pedido hace RESENA_DIAS, una sola vez, si acepta correos */
+  const hp = hojaDe_(ss, H_PEDIDOS), filasPed = hp.getDataRange().getValues();
+  for (let i = 1; i < filasPed.length; i++) {
+    const f = filasPed[i], correo = String(f[4]).toLowerCase();
+    if (!f[0] || f[27] || !f[15] || !correoValido_(correo)) continue;
+    if (hoy < masDias_(f[15], RESENA_DIAS) || !aceptaCorreos_(ss, correo)) continue;
+    if (pedirResena_(f)) hp.getRange(i + 1, 28).setValue(new Date());
   }
 
   lanzamiento_();

@@ -887,9 +887,24 @@ function meta(view, id) {
    subasta esté apagada, y una respuesta a algo que no existe hace daño en
    vez de ayudar. Lo que se pinta y lo que se le declara a Google salen de
    aquí, para que nunca se separen. */
-const faqVisibles = () => FAQ.filter((f) => !f.soloSi || visible(f.soloSi));
+const faqVisibles = () => FAQ().filter((f) => !f.soloSi || visible(f.soloSi));
 
-const FAQ = [
+/* Es una función y no una lista fija porque hay respuestas que llevan el precio
+   del envío y la fecha de entrega: evaluadas una sola vez al cargar quedarían
+   en el idioma de ese momento, y la mitad de ellas saldrían mal en inglés. */
+const FAQ = () => [
+  { q: { es: "¿Cuándo me llega el pedido?", en: "When does my order arrive?" },
+    a: { es: `${preventaAbierta() ? `Los cafés están en preventa: pagas hoy y despachamos el ${fmtFecha(entregaPreventa())}, en el orden en que llegaron las reservas. ` : ""}Sale de Cúcuta por ${CONFIG.envio.transportadora} y llega en ${CONFIG.envio.dias.es}; a zonas rurales puede tardar unos días más. Te mandamos la guía al correo para que lo sigas.`,
+         en: `${preventaAbierta() ? `The coffees are on pre-order: you pay today and we ship on ${fmtFecha(entregaPreventa())}, in the order reservations arrived. ` : ""}It ships from Cúcuta with ${CONFIG.envio.transportadora} and arrives in ${CONFIG.envio.dias.en}; rural areas can take a few days more. We email you the tracking number.` } },
+  { q: { es: "¿Cuánto cuesta el envío y a dónde llega?", en: "What does shipping cost and where do you ship?" },
+    a: { es: `${cop(CONFIG.envio.costo)} a cualquier ciudad de Colombia, y gratis en pedidos desde ${cop(CONFIG.envio.gratisDesde)} —que son tres bolsas—. Lo ves en el carrito antes de darnos ningún dato.`,
+         en: `${cop(CONFIG.envio.costo)} anywhere in Colombia, and free on orders from ${cop(CONFIG.envio.gratisDesde)} —that is three bags—. You see it in the cart before giving us any data.` } },
+  { q: { es: "¿Cómo puedo pagar?", en: "How can I pay?" },
+    a: { es: "Con tarjeta, PSE o Nequi, por la pasarela de pagos: la tarjeta no pasa por nuestros servidores. Todavía no hacemos pago contraentrega.",
+         en: "By card, PSE or Nequi, through the payment gateway: your card never passes through our servers. We do not do cash on delivery yet." } },
+  { q: { es: "¿Y si el café no me gusta o llega mal?", en: "What if I do not like the coffee, or it arrives damaged?" },
+    a: { es: `Si la bolsa llega rota, mojada o no es lo que pediste, escríbenos a ${CONFIG.correo} dentro de los 5 días siguientes con una foto y tu número de pedido: te la volvemos a enviar o te devolvemos el dinero, por nuestra cuenta. El café es un alimento, así que una vez abierto no lo podemos recibir de vuelta; si te arrepientes antes de que lo despachemos, cancelamos y te devolvemos todo.`,
+         en: `If the bag arrives broken, wet or is not what you ordered, write to ${CONFIG.correo} within 5 days with a photo and your order number: we send it again or refund you, at our cost. Coffee is food, so once opened we cannot take it back; if you change your mind before we ship, we cancel and refund you in full.` } },
   { q: { es: "¿Qué es el café de origen y en qué se diferencia del café común?", en: "What is single origin coffee and how is it different?" },
     a: { es: "El café de origen viene de una sola finca y una sola cosecha, no de la mezcla de muchos productores. Por eso se puede saber quién lo cultivó, a qué altura y con qué proceso, y por eso una taza sabe distinta de otra.",
          en: "Single origin coffee comes from one farm and one harvest, not from a blend of many growers. That is why you can know who grew it, at what altitude and with which process, and why one cup tastes different from another." } },

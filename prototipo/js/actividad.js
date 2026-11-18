@@ -184,7 +184,9 @@ function viewActividad() {
 
     <h3 class="op-tit">Quién se registró</h3>
     <p class="hint"><b>${fmtNum(d.nuevos.d7)}</b> en 7 días · <b>${fmtNum(d.nuevos.d30)}</b> en 30 días · <b>${fmtNum(d.nuevos.total)}</b> en total. La lista completa, los filtros y las campañas están en <b>Correos</b>.</p>
-    ${d.inscritos ? `<div class="mkt-grid">${[["pop", "Por el pop-up del bono"], ["pie", "Por el pie de página"], ["gang", "Por la página de la gang"], ["sin", "Comunidad, sin origen"]]
+    ${d.inscritos ? `<div class="mkt-grid">${[["pop", "Por el pop-up del bono"], ["pie", "Por el pie de página"], ["gang", "Por la página de la gang"],
+      ["pago", "Por la casilla del pago"], ["espera", "Por «avísame» de un café"], ["suscripcion", "Por la suscripción"], ["sin", "Comunidad, sin origen"]]
+      .filter(([k]) => d.inscritos[k])
       .map(([k, txt]) => `<div class="mkt" title="${k === "sin" ? "Se registraron antes del 10 de noviembre de 2026, cuando la página todavía no distinguía el pop-up del pie" : "Personas distintas que marcaron la casilla"}"><small>${txt}</small><b class="mono co-n">${fmtNum(d.inscritos[k].total)}</b><small>${fmtNum(d.inscritos[k].d7)} en los últimos 7 días</small></div>`).join("")}</div>
     <p class="hint">Cuenta personas que aceptaron recibir correos. «Sin origen» son los de antes del 10 de noviembre de 2026: entonces el pop-up y el pie llegaban igual a la hoja y no se pueden separar.</p>`
       : `<p class="hint err">Para ver cuántos trajo el pop-up y cuántos el pie de página, falta actualizar el script de la hoja: pega el <code>tools/correos/Codigo.gs</code> nuevo en Apps Script y publica una <b>versión nueva</b> de la misma implementación. Mientras tanto los registros siguen guardándose igual, solo que todos juntos.</p>`}

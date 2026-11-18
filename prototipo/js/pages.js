@@ -136,6 +136,8 @@ function suscribir(id) {
       <div class="field"><label class="lbl" for="sub-molienda">${en ? "How do you want it ground?" : "¿Cómo quieres la molienda?"}</label>
         <select id="sub-molienda" class="input">${MOLIENDAS.map((o) => `<option value="${o.id}" ${o.id === mol ? "selected" : ""}>${tx(o)}</option>`).join("")}</select></div>
       <small class="hint" style="grid-column:1/-1;margin:0">${en ? "Only subscribers choose the grind: each box is ground to order." : "Solo en la suscripción eliges la molienda: cada envío se muele a tu gusto."}</small>
+      ${gangOfrece() ? `<label class="g-consiente cart-gang" style="grid-column:1/-1"><input type="checkbox" id="sub-gang">
+        <span>${en ? `Also send me news and offers from ${esc(CONFIG.marca)} by email.` : `Quiero recibir también noticias y ofertas de ${esc(CONFIG.marca)} por correo.`}</span></label>` : ""}
     </div>
     <div class="dlg-actions"><button class="btn" data-act="close">${en ? "Cancel" : "Cancelar"}</button>
       <button class="btn primary" data-act="sub-ok" data-id="${id}">${en ? "Notify me" : "Avisarme"}</button></div>`, "narrow");
@@ -151,7 +153,14 @@ function suscribirOk(id) {
   const cada = 1;   /* solo mensual */
   const x = precioPlan(p, kit, seis);
   const d = { mail, plan: id, kit, seis, cada, ciudad: $("#sub-ciudad").value.trim(), molienda: mol.id, fecha: isoToday() };
-  S.suscriptores.unshift(d); save(); closeModal(); render();
+  S.suscriptores.unshift(d); save();
+  /* Quien pide que le avisen cuándo abre la suscripción está pidiendo que le
+     cobren: con la casilla marcada, ese correo también entra a la comunidad. */
+  if ($("#sub-gang")?.checked && typeof apuntarComunidad === "function") {
+    apuntarComunidad(mail, () => {}, "suscripcion");
+    medir("registro", { nombre: "suscripción" });
+  }
+  closeModal(); render();
   const pago = x.hoy ? `${cop(x.hoy)} de inscripción y luego ${cop(x.luego)} al mes`
     : x.total ? `${cop(x.total)} por 6 envíos` : `${cop(x.luego)} al mes`;
   registrar("suscripcion", d,
