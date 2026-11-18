@@ -260,27 +260,16 @@ function tresCuenta() {
   const suma = ps.reduce((n, p) => n + precioHoy(p, principal(p)), 0);
   return { ps, suma, gratis: suma >= CONFIG.envio.gratisDesde, ahorro: CONFIG.envio.costo };
 }
-/* Los tres juntos, en una sola foto. Si el archivo no está, la imagen se quita
-   sola y queda el bloque con su texto: nunca el ícono de foto rota. */
-const FOTO_TRES = "/img/productos/p-tres.webp";
-const fotoTres = (en) => !FOTO_TRES ? "" : `<span class="g-tres-art"><img class="g-tres-foto" src="${foto(FOTO_TRES)}"
-  srcset="${foto(FOTO_TRES.replace(".webp", "@0.5x.webp"))} 400w, ${foto(FOTO_TRES)} 800w" sizes="(min-width:760px) 220px, 100vw"
-  width="800" height="800" alt="${esc(en ? "The three Nandez Coffee bags together" : "Las tres bolsas de Nandez Coffee juntas")}"
-  loading="lazy" decoding="async" onerror="this.closest('.g-tres-art').remove()"></span>`;
-
 /* Solo si de verdad alcanza el envío gratis: si un día el precio o el umbral
    cambian y deja de alcanzar, el bloque no sale en vez de prometer de más. */
 function losTresHTML(en) {
   const { ps, suma, gratis, ahorro } = tresCuenta();
   if (ps.length < 2 || !gratis) return "";
   return `<aside class="g-tres reveal">
-    ${fotoTres(en)}
-    <div class="g-tres-txt">
-      <p class="g-tres-tit">${en ? `Take all ${ps.length}` : `Llévate los ${ps.length === 3 ? "tres" : ps.length}`}</p>
-      <p class="g-tres-dice">${en ? `One bag of each, ${cop(suma)}, and shipping stops costing: that is ${cop(ahorro)} you keep.`
-        : `Una bolsa de cada uno, ${cop(suma)}, y el envío deja de cobrarse: son ${cop(ahorro)} que no pagas.`}</p>
-      <button class="btn primary" data-act="los-tres">${en ? "Add the three" : "Agregar los tres"}</button>
-    </div>
+    <p class="g-tres-tit">${en ? `Take all ${ps.length}` : `Llévate los ${ps.length === 3 ? "tres" : ps.length}`}</p>
+    <p class="g-tres-dice">${en ? `One bag of each, ${cop(suma)}, and shipping stops costing: that is ${cop(ahorro)} you keep.`
+      : `Una bolsa de cada uno, ${cop(suma)}, y el envío deja de cobrarse: son ${cop(ahorro)} que no pagas.`}</p>
+    <button class="btn primary" data-act="los-tres">${en ? "Add the three" : "Agregar los tres"}</button>
   </aside>`;
 }
 /* ¿Vale ofrecer completar? Solo si falta alguno de los tres Y con los tres
@@ -316,12 +305,11 @@ function viewTienda() {
         <p class="reveal" style="--i:2">${en ? "Coffee from neighbouring farms, the gear to brew it and Nandez Coffee Gang merch."
           : "Café de fincas vecinas, lo necesario para prepararlo y el merch Nandez Coffee Gang."}</p></div>
     </div>
-    <section class="g-tienda-cafes" aria-labelledby="g-tienda-cafes">
-      <p class="g-kicker reveal" id="g-tienda-cafes">01 · ${t("nav_cafes_esp")}${ya < n ? ` · ${ya} ${en ? "on sale" : "a la venta"}` : ""}</p>
-      <div class="dos">${S.productos.map((x, i) => cafeCard(x, i)).join("")}</div>
-      ${losTresHTML(en)}
-    </section>
-    <div class="g-puertas una">
+    <div class="g-puertas">
+      <a class="g-puerta reveal" style="--pc:${p.color || "#2F5A3C"};--i:3" href="${ruta("cafes")}" data-act="go" data-to="cafes">
+        <span class="g-puerta-art">${fotoProducto(p, { clase: "g-prod-foto", sizes: "(min-width:900px) 520px, 90vw" })}</span>
+        <span class="g-puerta-txt"><small>01 · ${n} ${en ? "coffees" : "cafés"}${ya < n ? ` · ${ya} ${en ? "on sale" : "a la venta"}` : ""}</small>
+          <b>${t("nav_cafes_esp")}</b><i>${en ? "Two single farm, whole bean, and a ground blend." : "Dos de una sola finca, en grano, y un blend molido."}</i></span></a>
       <a class="g-puerta oscura reveal" style="--i:4" href="${ruta("accesorios")}" data-act="go" data-to="accesorios">
         <span class="g-puerta-art"><img class="g-prod-foto" src="${foto("/img/productos/m-gor.jpg")}" width="640" height="640" alt="" loading="lazy" decoding="async"><span class="g-acc-pronto">${t("proximamente")}</span><span class="g-pronto">Nandez Coffee Gang<i>${t("proximamente")}</i></span></span>
         <span class="g-puerta-txt"><small>02 · ${accesoriosVisibles().length} ${en ? "pieces" : "piezas"} · ${t("proximamente").toLowerCase()}</small>

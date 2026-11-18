@@ -2556,37 +2556,17 @@ html.js .tz:not(.in) .tz-at{opacity:0}
 .cart-bono-abrir:focus-visible{outline:2px solid var(--cherry);outline-offset:2px}
 
 /* Los tres juntos: el envío gratis dicho antes del carrito, no como deuda.
-   La foto va a sangre contra el borde, en su propio panel oscuro, y no flotando
-   sobre el papel: el fondo del render es casi negro y encima de la crema se veía
-   como un recuadro pegado. Así queda una banda de dos partes, como las puertas. */
-.g-tres{display:flex;flex-wrap:wrap;align-items:stretch;margin:26px 0 0;
-  border:1px solid var(--ink);background:var(--card);overflow:hidden}
-.g-tres-art{flex:0 0 220px;display:grid;place-items:center;background:#17171a;padding:10px;overflow:hidden}
-/* El alto va en píxeles, no en porcentaje: la foto lleva ancho y alto en el
-   atributo, así que el navegador le pone aspect-ratio, y un max-height en
-   porcentaje contra la celda de la rejilla no la frena —la foto se salía del
-   panel y se montaba encima del texto—. Es cuadrada: con el alto puesto, el
-   ancho sale solo. */
-.g-tres-foto{display:block;width:auto;height:170px;max-width:100%}
-.g-tres-txt{flex:1 1 300px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
-  gap:14px 18px;padding:20px 22px}
-.g-tres-tit{margin:0;flex:1 1 100%;font:800 1.15rem/1.1 var(--display);letter-spacing:.01em;text-transform:uppercase;color:var(--ink)}
-.g-tres-dice{margin:0;flex:1 1 220px;max-width:42ch;font-size:14px;line-height:1.5;color:var(--ink-2)}
+   Una franja de texto, sin foto: al lado de las tarjetas de café una imagen
+   más competía con ellas en vez de rematarlas. */
+.g-tres{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  gap:14px 24px;margin:26px 0 0;padding:22px 24px;border:1px solid var(--ink);background:var(--card)}
+.g-tres-tit{flex:1 1 100%;margin:0;font:800 1.15rem/1.1 var(--display);letter-spacing:.01em;text-transform:uppercase;color:var(--ink)}
+.g-tres-dice{flex:1 1 280px;margin:0;max-width:52ch;font-size:14px;line-height:1.5;color:var(--ink-2)}
 .g-tres .btn{flex:0 0 auto}
-@media (max-width:760px){
-  .g-tres-art{flex:1 1 100%;padding:14px 0}
-  .g-tres-txt{padding:18px}
-  .g-tres .btn{width:100%}
-}
-/* En la ficha la columna es angosta y arriba ya hay una foto grande de la bolsa:
-   ahí el bloque va solo con su texto. */
-.prod-buy .g-tres{margin-top:18px}
-.prod-buy .g-tres-art{display:none}
-.prod-buy .g-tres-txt{padding:16px 18px}
+@media (max-width:620px){.g-tres{padding:18px}.g-tres .btn{width:100%}}
+/* En la ficha la columna es angosta: el mismo bloque, más apretado */
+.prod-buy .g-tres{margin-top:18px;padding:16px 18px}
 .prod-buy .g-tres-tit{font-size:1rem}
-/* La tienda muestra los cafés y deja una sola puerta: la de accesorios */
-.g-tienda-cafes{margin-top:8px}
-.g-puertas.una{grid-template-columns:1fr}
 
 </style>
 </head>

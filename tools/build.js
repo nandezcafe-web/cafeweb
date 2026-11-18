@@ -389,7 +389,6 @@ const EMBEBER = { "cereza": "grano/cereza@0.5x.webp", "capa-corte": "grano/capa-
                   "p-cas@0.5x": "productos/p-cas@0.5x.webp",
                   "p-par@0.5x": "productos/p-par@0.5x.webp",
                   "p-ble@0.5x": "productos/p-ble@0.5x.webp",
-                  "p-tres@0.5x": "productos/p-tres@0.5x.webp",
                   "cierre@0.5x": "portada/cierre@0.5x.webp" };
 /* Cada pieza con su formato; hoy todas en WebP, pero el mapa admite JPG */
 const pieza64 = (k) => {
