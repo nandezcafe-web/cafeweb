@@ -24,6 +24,7 @@ Le compramos café a fincas de Norte de Santander —cada una con su variedad—
 
 | Archivo | Contenido |
 |---|---|
+| [docs/17_pauta_drop_001.md](docs/17_pauta_drop_001.md) | La pauta del Drop 001: por qué los anuncios no entregan, qué hacer el día del lanzamiento y en qué orden |
 | [docs/16_pixel_meta.md](docs/16_pixel_meta.md) | Cómo crear e instalar el píxel de Meta, probarlo y armar los públicos de remarketing |
 | [docs/12_correos_y_remarketing.md](docs/12_correos_y_remarketing.md) | Correos, bono de bienvenida, pedidos y suscripciones gratis: Hoja de Google, Gmail y las pestañas Pedidos, Actividad, Stock y Correos del panel |
 | [docs/11_rediseno_editorial.md](docs/11_rediseno_editorial.md) | Rediseño Coffee Gang: crítica a coff.com.co, referentes, la línea gráfica y lo que falta decidir |
